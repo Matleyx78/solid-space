@@ -1,7 +1,7 @@
 # [0.1-P5] Script per la CI
 
 - **Tappa:** 0.1 — [piano](../0.1-fondamenta.md)
-- **Issue:** da creare all'apertura della tappa
+- **Issue:** [#7](https://github.com/Matleyx78/solid-space/issues/7)
 - **Difficoltà:** media
 - **Agente:** codex
 - **Modello e impegno:** medio (sol medium); impegno medio

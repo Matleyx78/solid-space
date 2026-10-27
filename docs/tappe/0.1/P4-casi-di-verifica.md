@@ -1,7 +1,7 @@
 # [0.1-P4] Casi di verifica
 
 - **Tappa:** 0.1 — [piano](../0.1-fondamenta.md)
-- **Issue:** da creare all'apertura della tappa
+- **Issue:** [#6](https://github.com/Matleyx78/solid-space/issues/6)
 - **Difficoltà:** impegnativa
 - **Agente:** claude
 - **Modello e impegno:** forte (Opus 5.5 alto); impegno alto

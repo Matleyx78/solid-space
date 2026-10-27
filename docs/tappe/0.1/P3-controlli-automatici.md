@@ -1,7 +1,7 @@
 # [0.1-P3] Controlli automatici
 
 - **Tappa:** 0.1 — [piano](../0.1-fondamenta.md)
-- **Issue:** da creare all'apertura della tappa
+- **Issue:** [#5](https://github.com/Matleyx78/solid-space/issues/5)
 - **Difficoltà:** media
 - **Agente:** codex
 - **Modello e impegno:** medio (sol medium); impegno medio
