@@ -1,6 +1,6 @@
 # ADR 0005: Formato dei casi di verifica e strumenti di controllo
 
-- **Stato:** Proposto
+- **Stato:** Accettato
 - **Data:** 2026-10-27
 
 ## Contesto
