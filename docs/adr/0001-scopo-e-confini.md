@@ -1,6 +1,6 @@
 # ADR 0001: Scopo e confini
 
-- **Stato:** Proposto
+- **Stato:** Accettato
 - **Data:** 2026-10-27
 
 ## Contesto
