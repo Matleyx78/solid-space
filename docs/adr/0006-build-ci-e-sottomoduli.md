@@ -1,6 +1,6 @@
 # ADR 0006: Build, CI e sottomoduli
 
-- **Stato:** Proposto
+- **Stato:** Accettato
 - **Data:** 2026-10-27
 
 ## Contesto
