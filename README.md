@@ -1,47 +1,82 @@
 # solid-space
 
-> **Next-Generation Open-Source 3D Solid Modeling Kernel & Variational Constraint Solver**
+> **Il kernel geometrico di [Tecnigrafo](https://github.com/Matleyx78/tecnigrafo):
+> solver di vincoli, naming topologico stabile e modellazione solida robusta, in C++20.**
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Language: C++](https://img.shields.io/badge/Language-C%2B%2B-orange.svg)]()
-[![Architecture: Modular](https://img.shields.io/badge/Architecture-Modular%20Layered-green.svg)]()
+[![Language: C++20](https://img.shields.io/badge/Language-C%2B%2B20-orange.svg)]()
 
-**solid-space** è un progetto di ricerca e ingegneria software volto a sviluppare un kernel di modellazione solida B-Rep (*Boundary Representation*) e un risolutore geometrico variazionale libero di nuova generazione. 
+**solid-space** è la libreria che darà a Tecnigrafo prima il solver dei vincoli 2D e
+poi il modellatore solido 3D parametrico. Cresce a pezzi piccoli e verificabili,
+nell'ordine in cui Tecnigrafo ne ha bisogno, e poggia su
+[Open CASCADE Technology](https://dev.opencascade.org/) (OCCT) invece di rifarlo:
+OCCT sta dietro una facciata nostra, e un suo modulo si sostituisce solo quando le
+misure dimostrano che serve.
 
-L'obiettivo è colmare il divario strutturale tra gli standard proprietari di fascia industriale (**Siemens Parasolid + D-Cubed**, **Spatial ACIS**) e le soluzioni open-source esistenti, superando le fragilità storiche della geometria computazionale aperta[cite: 2, 4].
+> Stato: **tappa 0.1, fondamenta.** Per ora ci sono documenti e decisioni; il codice
+> comincia con la tappa 0.2. Il piano è in [docs/ROADMAP.md](docs/ROADMAP.md).
 
----
+## Cosa vuole dare
 
-## 🎯 Requisiti Non Negoziabili
+1. **Solver variazionale 2D e 3D** dietro un'interfaccia nostra: entità, vincoli e
+   chiavi stabili in ingresso, diagnosi dei conflitti in uscita. Il motore numerico
+   resta sostituibile.
+2. **Naming topologico stabile**: ogni operazione emette identificativi derivati
+   dalla sua genealogia, così schizzi, vincoli e feature non puntano mai a
+   puntatori di memoria e sopravvivono alla rigenerazione dell'albero.
+3. **Operazioni solide robuste**: booleane, raccordi, STEP. La robustezza viene da
+   un metodo (controllo di validità, strategie alternative, diagnosi chiare, un
+   archivio di casi difficili che cresce) prima che da riscritture.
 
-1. **Robustezza Deterministica delle Operazioni Booleane e di Raccordo:** Eliminazione dei fallimenti di cucitura e dell'inflazione cumulativa delle tolleranze.
-2. **Topological Naming Manager (TNM) Nativo:** Tracciamento persistente della genealogia delle entità per scongiurare il *face flipping* nelle rigenerazioni parametriche.
-3. **Solver Variazionale 2D/3D Scalabile:** Risoluzione simultanea a matrice sparsa guidata da decomposizione a grafo per grandi assiemi meccanici[cite: 2, 7].
+## Componenti
 
----
+| Componente | Contenuto | Dipende da |
+|---|---|---|
+| `robust` | predicati geometrici robusti e politica delle tolleranze | solo libreria standard |
+| `solver` | interfaccia del solver di vincoli e motore (libslvs, poi altro) | `robust` |
+| `naming` | identificativi stabili e grafo di genealogia | solo libreria standard |
+| `kernel` | facciata su OCCT: forme, operazioni, STEP | `robust`, `naming`, OCCT |
+| `features` | albero delle feature e rigenerazione, senza interfaccia grafica | `kernel`, `naming`, `solver` |
 
-## 🏛️ Architettura di Sistema a 4 Livelli
+Ogni componente si compila da solo: il CAD 2D di Tecnigrafo userà `robust` e
+`solver` senza avere OCCT. La mappa completa è in
+[docs/ARCHITETTURA.md](docs/ARCHITETTURA.md).
 
-Il kernel è organizzato in livelli rigorosamente disaccoppiati per garantire modularità, testabilità e isolamento delle astrazioni[cite: 2]:
+## Cosa non è
 
-```text
-┌─────────────────────────────────────────────────────────────────┐
-│ LIVELLO 4: Application & Feature Engine (CAD / History Tree)    │
-├─────────────────────────────────────────────────────────────────┤
-│ LIVELLO 3: Bridge & Topological Naming Manager (TNM)             │
-│   • Grafo di Genealogia Topologica (Lineage & Provenance)       │
-│   • Mappatura vincoli solver ↔ riferimenti B-Rep stabili        │
-├────────────────────────────────┬────────────────────────────────┤
-│ LIVELLO 2A: Geometric Solver   │ LIVELLO 2B: Kernel B-Rep       │
-│   • Graph-First (DRP)          │   • Cellular Topology          │
-│   • Decomposizione matrici     │   • Exact Predicates / Snap    │
-│   • Subsystem Gauss-Newton     │   • Bounded Tolerance Blending │
-├────────────────────────────────┴────────────────────────────────┤
-│ LIVELLO 1: Fondazioni Matematiche e Calcolo Numerico             │
-│   • Algebra lineare sparsa (Eigen / SuiteSparse)                │
-│   • Geometria Computazionale Robusta (Predicati esatti / CGAL) │
-├─────────────────────────────────────────────────────────────────┤
-│ LIVELLO 0: Substrato Geometrico & Interscambio (HAL)             │
-│   • Astrazione Curve/Superfici analitiche e NURBS               │
-│   • Parser formati industriali neutri (STEP AP203/214/242, IGES)│
-└─────────────────────────────────────────────────────────────────┘
+Non è un tentativo di eguagliare Parasolid o ACIS: decenni di casi limite non si
+rifanno con un piccolo gruppo. Le ambizioni del primo manifesto del progetto
+(topologia cellulare, raccordi propri, tolleranze rigide) non sono state buttate:
+stanno nell'appendice "Non ora" di [docs/VISIONE.md](docs/VISIONE.md), ciascuna con
+il dato che la riporterebbe nel piano.
+
+## Come si lavora
+
+Come in Tecnigrafo: il progetto avanza per **tappe**, una alla volta, divise in
+**pacchetti di lavoro**; le scelte di struttura si scrivono in **ADR**
+([docs/adr/](docs/adr/)); un lavoro è finito quando i test confermano i casi di
+verifica scritti prima. Il responsabile del progetto ha l'ultima parola.
+
+Persone e assistenti IA lavorano con le stesse regole: per gli agenti sono in
+[AGENTS.md](AGENTS.md), lo stile del codice in
+[docs/CODING_STYLE.md](docs/CODING_STYLE.md).
+
+## Documentazione
+
+- [docs/VISIONE.md](docs/VISIONE.md): scopo, principi e appendice "Non ora"
+- [docs/ARCHITETTURA.md](docs/ARCHITETTURA.md): componenti, dipendenze e regole
+- [docs/ROADMAP.md](docs/ROADMAP.md): tappe e decisioni del responsabile
+- [docs/tappe/](docs/tappe/): schede delle tappe
+- [docs/adr/](docs/adr/): decisioni architetturali
+
+## Licenza
+
+GNU General Public License v3.0 o successiva (`GPL-3.0-or-later`).
+
+## Componenti di terze parti
+
+Sono sottomoduli in `third_party/`, fissati a una versione e non modificati:
+
+- **Open CASCADE Technology**, LGPL 2.1 con eccezione: forme, operazioni e I/O STEP,
+  solo nel componente `kernel`.
+- **SolveSpace** (libslvs), GPLv3: primo motore del componente `solver`.
