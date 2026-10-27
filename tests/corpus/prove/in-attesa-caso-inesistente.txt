@@ -1,0 +1,2 @@
+# Prova del validatore: la riga punta a un caso che non esiste.
+kernel/non-esiste #12

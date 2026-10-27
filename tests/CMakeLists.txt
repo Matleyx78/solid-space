@@ -40,3 +40,15 @@ target_compile_definitions(solid_space_banco_test PRIVATE
 
 ss_configure_target(solid_space_banco_test)
 gtest_discover_tests(solid_space_banco_test DISCOVERY_MODE PRE_TEST)
+
+# Verification corpus (ADR 0005): the structural validator and its own tests,
+# under ctest with the label "corpus". Python is a development tool, not a
+# dependency of the library, so it is needed here and nowhere else. -B keeps
+# bytecode files out of the source tree.
+find_package(Python3 3.9 REQUIRED COMPONENTS Interpreter)
+add_test(NAME corpus_validate
+  COMMAND ${Python3_EXECUTABLE} -B ${CMAKE_CURRENT_SOURCE_DIR}/corpus/valida_corpus.py
+          ${CMAKE_CURRENT_SOURCE_DIR}/corpus)
+add_test(NAME corpus_validator_tests
+  COMMAND ${Python3_EXECUTABLE} -B ${CMAKE_CURRENT_SOURCE_DIR}/corpus/test_valida_corpus.py)
+set_tests_properties(corpus_validate corpus_validator_tests PROPERTIES LABELS corpus)

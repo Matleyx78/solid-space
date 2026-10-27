@@ -1,0 +1,12 @@
+{
+  "versione": 1,
+  "sorgenti": {
+    "dati-prova": {
+      "nome": "dati-prova.bin",
+      "indirizzo": "https://example.org/dati-prova.bin",
+      "versione": "1.0",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "licenza": "CC0-1.0"
+    }
+  }
+}

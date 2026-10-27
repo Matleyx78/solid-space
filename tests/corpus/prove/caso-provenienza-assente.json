@@ -1,0 +1,8 @@
+{
+  "versione": 1,
+  "id": "caso-provenienza-assente",
+  "componente": "kernel",
+  "descrizione": "Prova del validatore: manca la provenienza, quindi il caso non è valido.",
+  "ingresso": { "operazione": "parallelepipedo", "dimensioni": [1, 1, 1] },
+  "atteso": { "volume": "1" }
+}
