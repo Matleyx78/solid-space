@@ -218,8 +218,8 @@ Quando ti fermi per uno di questi motivi, o per un caso di riferimento che ritie
 sbagliato, **non aspettare la CI**: scrivi il commento nella pull request o nella
 issue, togli `AA-Presa in carico` e termina la sessione.
 
-Gli script per aspettare la CI e leggerne gli errori li consegna il pacchetto P3:
-quando ci saranno, questa sezione li indicherà.
+Gli script per aspettare la CI e leggerne gli errori li consegna il pacchetto P5
+della tappa 0.1: quando ci saranno, questa sezione li indicherà.
 
 ## Prima di dichiarare il lavoro finito
 

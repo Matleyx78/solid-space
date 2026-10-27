@@ -59,8 +59,10 @@ già state create tutte, tranne `tappa-X.Y`, che nasce all'apertura di ogni tapp
    - Nome: `main protetto`. **Enforcement status:** *Active*.
    - **Target branches** → **Add target** → *Include default branch*.
    - Spunta **Require status checks to pass** e aggiungi, uno per uno, i
-     controlli che la CI mostra in una pull request (i nomi li fissa il pacchetto
-     P3; tra questi ci sarà la separazione tra riferimenti e lavoro).
+     controlli che la CI mostra in una pull request. I nomi sono nell'[ADR
+     0006](adr/0006-build-ci-e-sottomoduli.md), punto 5: `Formatting (clang-format
+     18)`, `Linux (GCC, clang-tidy)`, `Windows (MSVC)`, `macOS (Apple Clang)`,
+     `Linux (ASan, UBSan)` e `Reference separation (ADR 0004)`.
    - Nella sezione **Bypass list** aggiungi *Repository admin*, così in caso di
      emergenza puoi ancora unire tu.
    - **Create**.

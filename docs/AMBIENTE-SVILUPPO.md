@@ -13,8 +13,11 @@ saranno scritti in [AGENTS.md](../AGENTS.md), sezione "Comandi".
 
 ```sh
 sudo apt update
-sudo apt install build-essential cmake ninja-build git gdb libgtest-dev
+sudo apt install build-essential cmake ninja-build git gdb libgtest-dev python3
 ```
+
+`python3` serve solo agli strumenti di sviluppo (il controllo dei casi di verifica,
+[ADR 0005](adr/0005-formato-dei-casi-di-verifica.md)), non alla libreria.
 
 Non servono Qt né altre librerie grafiche: solid-space non ha interfaccia. OCCT
 non si installa: dalla tappa 0.5 lo porta il sottomodulo `third_party/occt`, o un
