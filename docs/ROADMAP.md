@@ -12,7 +12,7 @@ lavora **solo** sui pacchetti della tappa aperta.
 
 | Tappa | Versione | Componente | Obiettivo | Serve a Tecnigrafo per | Stato |
 |---|---|---|---|---|---|
-| 1 | 0.1 | tutti | Fondamenta: documenti, ADR, scheletro CMake, CI, sistema di verifica | tutto | **aperta** ([scheda](tappe/0.1-fondamenta.md), [milestone v0.1](https://github.com/Matleyx78/solid-space/milestone/1), issue #4–#7) |
+| 1 | 0.1 | tutti | Fondamenta: documenti, ADR, scheletro CMake, CI, sistema di verifica | tutto | **in chiusura: prova manuale da completare** ([scheda](tappe/0.1-fondamenta.md), [note di rilascio](rilasci/0.1.md), [milestone v0.1](https://github.com/Matleyx78/solid-space/milestone/1), issue #4–#7 chiuse) |
 | 2 | 0.2 | `robust` | Predicati `orient2d` e `incircle`, poi 3D; politica delle tolleranze | tappa 0.7 (modifiche) | in programma |
 | 3 | 0.3 | `solver` | Interfaccia del solver e primo motore su libslvs, schizzi 2D | tappa dei vincoli 2D | in programma |
 | 4 | 0.4 | `naming` | `StableId`, grafo di genealogia, salvataggio | fase 2 | in programma |
