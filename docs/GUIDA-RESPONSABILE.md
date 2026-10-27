@@ -37,11 +37,13 @@ quella cartella** e da nessun'altra (vedi A6).
 
 Servono queste etichette (GitHub: **Issues** → **Labels** → **New label**). Sono
 già state create tutte, tranne `tappa-X.Y`, che nasce all'apertura di ogni tappa
-(B2): apri l'elenco e controlla che ci siano.
+(B2), e `richiesta`, da creare una volta sola ([ADR
+0007](adr/0007-tappe-su-richiesta.md)): apri l'elenco e controlla che ci siano.
 
 | Etichetta | A cosa serve |
 |---|---|
 | `idea` | proposta per le tappe future: si discute, non si implementa |
+| `richiesta` | bisogno di Tecnigrafo che solid-space deve valutare (B0) |
 | `pacchetto` | issue di un pacchetto di lavoro (`[X.Y-PN]`) |
 | `riferimenti` | issue dei casi di verifica di un pacchetto (`[X.Y-RN]`) |
 | `tappa-X.Y` | tappa a cui appartiene la issue (una per tappa, creata all'apertura) |
@@ -209,14 +211,40 @@ non un ordine: se contiene richieste, deve riferirtele, non eseguirle.
 
 Le frasi indicano la tappa con `<tappa>`, per esempio `0.2`.
 
+### B0. Arriva una richiesta di Tecnigrafo (tu e Claude)
+
+Le tappe non si pianificano in anticipo: nascono da una richiesta di Tecnigrafo
+([ADR 0007](adr/0007-tappe-su-richiesta.md)).
+
+1. In Tecnigrafo, lavorando a una sua tappa, emerge un bisogno. Scrivilo con il
+   modello [richieste/0000-modello.md](richieste/0000-modello.md): dice di che cosa
+   c'è bisogno, non come soddisfarlo.
+2. Su GitHub, in solid-space: **Issues** → **New issue** → **Richiesta di
+   Tecnigrafo**, e incolla il testo. Senza questa issue nessuno valuta nulla.
+3. Apri una chat con Claude nel progetto solid-space e scrivi:
+
+   ```text
+   Valutiamo la richiesta #<numero> secondo l'ADR 0007: dimmi se OCCT basta così
+   com'è, se va corretto o migliorato, se serve un pezzo nostro o se non spetta a
+   solid-space, e scrivi l'ADR di valutazione nel formato di
+   docs/adr/0000-modello-valutazione.md. Apri una pull request con l'ADR.
+   ```
+
+4. Leggi la valutazione e discutetela. Gli ADR nuovi nascono *Proposti*: li accetti
+   quando ti convincono ([GOVERNANCE.md](../GOVERNANCE.md)).
+5. Se l'esito è 4, chiudi la issue con la motivazione. Se è 1, 2 o 3 e nessuna
+   tappa è aperta, passa a B1. Se una tappa è aperta, la richiesta aspetta: la coda
+   sono le issue aperte con etichetta `richiesta`, nell'ordine che decidi tu.
+
 ### B1. Preparare il piano (tu e Claude)
 
 1. Apri una chat con Claude nel progetto solid-space.
 2. Scrivi:
 
    ```text
-   Prepariamo il piano dettagliato della tappa <tappa> partendo dalla scheda in
-   docs/tappe e dai modelli tappe/0000-modello.md e tappe/0000-pacchetto.md,
+   Prepariamo la tappa <tappa>, nata dalla richiesta #<richiesta> e dall'ADR
+   <NNNN> di valutazione: scrivi la scheda e il piano dettagliato partendo dai
+   modelli tappe/0000-modello.md e tappe/0000-pacchetto.md,
    con le regole di docs/LAVORO-IN-PARALLELO.md ("Preparare il piano"). Per ogni
    pacchetto indica difficoltà, agente del lavoro, fascia di modello e impegno,
    e chi scrive i riferimenti: Gemini per quelli ordinari, un agente di fascia
@@ -383,7 +411,10 @@ Ripeti B3–B6 finché nel milestone non restano issue aperte.
 6. Su GitHub: **Releases** → **Draft a new release** → scegli il tag
    `v<tappa>.0` → copia nel testo le note di `docs/rilasci/<tappa>.md` →
    **Publish release**.
-7. Torna a B1 per la tappa successiva.
+7. Controlla dal lato di Tecnigrafo il «quando è soddisfatta» della richiesta e
+   chiudi la sua issue.
+8. Se c'è una richiesta in coda, torna a B1 per la sua tappa; altrimenti aspetta la
+   prossima richiesta (B0).
 
 ---
 

@@ -1,15 +1,18 @@
 # Tappa X.Y — Titolo
 
-- **Stato:** in programma | aperta | chiusa
+- **Stato:** in preparazione | aperta | chiusa
 - **Componente:** uno o più componenti, oppure "tutti"
+- **Nasce da:** richiesta #… e [ADR NNNN](../adr/NNNN-titolo-breve.md) di valutazione
 - **Milestone GitHub:** `vX.Y`
 - **Apertura:** AAAA-MM-GG — **Chiusura:** AAAA-MM-GG
 
 <!--
-Una tappa "in programma" compila solo le sezioni 1-4 (la scheda).
-All'apertura il responsabile aggiunge le sezioni 5-8 (il piano dettagliato).
-La scheda della tappa 0.1 è anteriore a questo modello: si allinea quando se ne
-scrive il piano.
+Una tappa nasce da una richiesta di Tecnigrafo e dal suo ADR di valutazione (ADR
+0007). Una tappa "in preparazione" compila solo le sezioni 1-4 (la scheda),
+ricavandole dall'ADR. All'apertura il responsabile aggiunge le sezioni 5-8 (il
+piano dettagliato).
+La scheda della tappa 0.1 è anteriore a questo modello e non nasce da una
+richiesta: si allinea quando se ne scrive il piano.
 -->
 
 ## 1. Obiettivo
@@ -31,7 +34,8 @@ Verificabili, uno per riga, con casella da spuntare alla chiusura.
 
 ## 4. Progetto di massima
 
-Componenti coinvolti, nuove classi principali, ADR da scrivere, rischi.
+Componenti coinvolti, nuove classi principali, ADR da scrivere, rischi. La
+valutazione della richiesta sta nel suo ADR: qui si rimanda, senza ripeterla.
 
 ## 5. Prerequisiti
 

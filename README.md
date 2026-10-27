@@ -17,7 +17,9 @@ misure dimostrano che serve.
 > componenti, CI sui tre sistemi e formato dei casi di verifica completati.
 > La prova manuale del responsabile è da completare nelle
 > [note di rilascio](docs/rilasci/0.1.md). Nessun algoritmo geometrico ancora;
-> la tappa 0.2 resta in programma. Il piano è in [docs/ROADMAP.md](docs/ROADMAP.md).
+> la prossima tappa nascerà da una richiesta di Tecnigrafo
+> ([ADR 0007](docs/adr/0007-tappe-su-richiesta.md)). Il piano è in
+> [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Cosa vuole dare
 
@@ -56,7 +58,8 @@ il dato che la riporterebbe nel piano.
 ## Come si lavora
 
 Con lo stesso metodo di Tecnigrafo, ma in un progetto che vive anche da solo: il
-progetto avanza per **tappe**, una alla volta, divise in **pacchetti di lavoro**;
+progetto avanza per **tappe**, una alla volta, ciascuna nata da una richiesta di
+Tecnigrafo e divisa in **pacchetti di lavoro**;
 le scelte di struttura si scrivono in **ADR** ([docs/adr/](docs/adr/)); un lavoro è
 finito quando i test confermano i casi di verifica scritti prima. Il responsabile
 del progetto ha l'ultima parola ([GOVERNANCE.md](GOVERNANCE.md)).
@@ -72,6 +75,7 @@ agenti in parallelo in [docs/LAVORO-IN-PARALLELO.md](docs/LAVORO-IN-PARALLELO.md
 - [docs/ARCHITETTURA.md](docs/ARCHITETTURA.md): componenti, dipendenze e regole
 - [docs/ROADMAP.md](docs/ROADMAP.md): tappe e decisioni del responsabile
 - [docs/tappe/](docs/tappe/): schede delle tappe e modelli di piano e di pacchetto
+- [docs/richieste/](docs/richieste/): modello della richiesta di Tecnigrafo a solid-space
 - [docs/adr/](docs/adr/): decisioni architetturali
 - [docs/LAVORO-IN-PARALLELO.md](docs/LAVORO-IN-PARALLELO.md): come lavorano più persone e agenti
 - [docs/GUIDA-RESPONSABILE.md](docs/GUIDA-RESPONSABILE.md): guida passo per passo del responsabile

@@ -44,9 +44,9 @@ ne condivide metodo e regole ([ADR 0001](docs/adr/0001-scopo-e-confini.md)), ma
 **vive anche da solo**: ha il suo repository, la sua roadmap, i suoi ADR e le sue
 regole di lavoro, e si compila e si prova senza Tecnigrafo.
 
-- I due progetti hanno lo stesso responsabile. Le priorità di solid-space seguono
-  il calendario di Tecnigrafo; quando Tecnigrafo lo cambia, il responsabile
-  aggiorna la tabella della [roadmap](docs/ROADMAP.md).
+- I due progetti hanno lo stesso responsabile. Le priorità di solid-space le
+  dettano le richieste di Tecnigrafo ([ADR 0007](docs/adr/0007-tappe-su-richiesta.md)):
+  una tappa nasce da una richiesta, non da un calendario.
 - Le interfacce tra i due si decidono insieme, con un ADR per parte quando serve.
 - **Ognuno scrive solo a casa sua.** Chi lavora a solid-space (persone o agenti)
   scrive codice e documenti solo in solid-space. In Tecnigrafo può leggere e, su
@@ -57,10 +57,11 @@ regole di lavoro, e si compila e si prova senza Tecnigrafo.
 
 ## Come si decide
 
-- **Tappe:** il responsabile scrive la scheda, poi il piano dettagliato con i
-  pacchetti di lavoro, apre la tappa e la chiude quando i criteri sono verificati
-  (regole in [docs/ROADMAP.md](docs/ROADMAP.md)). Il piano si può discutere
-  pubblicamente prima dell'apertura.
+- **Tappe:** nascono da una richiesta di Tecnigrafo e dall'ADR che la valuta
+  ([ADR 0007](docs/adr/0007-tappe-su-richiesta.md)); poi il responsabile scrive la
+  scheda e il piano dettagliato con i pacchetti di lavoro, apre la tappa e la chiude
+  quando i criteri sono verificati (regole in [docs/ROADMAP.md](docs/ROADMAP.md)).
+  Il piano si può discutere pubblicamente prima dell'apertura.
 - **Lavoro ordinario** (pacchetti della tappa aperta, correzioni, test): issue
   assegnata → pull request → revisione → merge
   ([docs/LAVORO-IN-PARALLELO.md](docs/LAVORO-IN-PARALLELO.md)).
