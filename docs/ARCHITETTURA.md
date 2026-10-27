@@ -84,3 +84,5 @@ tappa.
 | [0002](adr/0002-componenti-e-dipendenze.md) | Componenti e dipendenze | Proposto |
 | [0003](adr/0003-convenzioni.md) | Convenzioni di linguaggio, errori e stile | Proposto |
 | [0004](adr/0004-robustezza-e-verifica.md) | Robustezza e verifica | Proposto |
+| [0005](adr/0005-formato-dei-casi-di-verifica.md) | Formato dei casi di verifica e strumenti di controllo | Proposto |
+| [0006](adr/0006-build-ci-e-sottomoduli.md) | Build, CI e sottomoduli | Proposto |
