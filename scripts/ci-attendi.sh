@@ -116,7 +116,9 @@ while :; do
             if [[ -n $failed ]]; then
                 rm -f "$(timeouts_file)"
                 echo "run $run: still $status, but a check has already failed:"
-                sed 's/^/  - /' <<< "$failed"
+                while IFS= read -r name; do
+                    printf '  - %s\n' "$name"
+                done <<< "$failed"
                 echo "Do not wait for the other jobs: read why with scripts/ci-errori.sh $run"
                 exit 1
             fi
