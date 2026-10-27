@@ -13,8 +13,11 @@ nell'ordine in cui Tecnigrafo ne ha bisogno, e poggia su
 OCCT sta dietro una facciata nostra, e un suo modulo si sostituisce solo quando le
 misure dimostrano che serve.
 
-> Stato: **tappa 0.1, fondamenta.** Per ora ci sono documenti e decisioni; il codice
-> comincia con la tappa 0.2. Il piano è in [docs/ROADMAP.md](docs/ROADMAP.md).
+> Stato: **tappa 0.1, fondamenta, in chiusura.** Scheletro CMake dei cinque
+> componenti, CI sui tre sistemi e formato dei casi di verifica completati.
+> La prova manuale del responsabile è da completare nelle
+> [note di rilascio](docs/rilasci/0.1.md). Nessun algoritmo geometrico ancora;
+> la tappa 0.2 resta in programma. Il piano è in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Cosa vuole dare
 
