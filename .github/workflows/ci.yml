@@ -96,11 +96,6 @@ jobs:
           cat "$trial/log"
           grep -q 'clang-format-violations' "$trial/log"
       - run: scripts/controlla.sh --solo formato 2>&1 | scripts/ci-annota.sh
-      - name: P5 deliberate failure trial
-        run: |
-          shellcheck scripts/ci-annota.sh scripts/ci-attendi.sh scripts/ci-errori.sh
-          printf 'CMake Error: Deliberate P5 integration trial\n' | scripts/ci-annota.sh
-          exit 1
 
   linux:
     name: Linux (GCC, clang-tidy)
