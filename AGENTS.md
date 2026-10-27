@@ -179,11 +179,23 @@ confermano casi di verifica scritti **prima** da un agente o da una persona
 
 ## Comandi
 
-La tappa 0.1 non ha ancora consegnato lo scheletro di compilazione: finché non c'è
-(pacchetti P2 e P3 della [scheda](docs/tappe/0.1-fondamenta.md)), non esistono
-comandi di build e test da eseguire. Quando ci saranno, li troverai qui, nello
-stesso schema di Tecnigrafo: un solo comando locale che esegue gli stessi passi
-della CI.
+Un solo comando esegue formato (clang-format 18), configurazione, compilazione e
+test, fermandosi al primo errore e mostrando la coda del log:
+
+```sh
+scripts/controlla.sh
+scripts/controlla.sh --tidy              # anche clang-tidy 18 sui file toccati
+scripts/controlla.sh --solo formato      # oppure configura, compila, test, tidy
+SS_BUILD_SUFFIX=-codex scripts/controlla.sh --tidy
+SS_PRESET=asan scripts/controlla.sh      # AddressSanitizer e UBSan
+```
+
+Servono gli strumenti di [AMBIENTE-SVILUPPO.md](docs/AMBIENTE-SVILUPPO.md).
+`SS_PRESET` vale `release` se omesso; `SS_BUILD_SUFFIX` separa le cartelle di build.
+`--solo` presuppone che i passi precedenti siano già stati eseguiti.
+Per l'analisi dei file modificati il riferimento è `origin/main`; si può scegliere
+un altro commit con `SS_BASE_REF`. Se cambia la configurazione dell'analisi, si
+controllano tutti i sorgenti. La CI usa lo stesso comando per build e test.
 
 Se nel tuo ambiente mancano gli strumenti di build (compilatori, CMake, Ninja o
 altri pacchetti di sistema), **non installarli**: un'installazione dura a lungo, può

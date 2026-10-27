@@ -1,0 +1,31 @@
+# Tecnigrafo code formatting. Requires clang-format 18 (docs/adr/0002).
+---
+Language: Cpp
+BasedOnStyle: Google
+Standard: c++20
+ColumnLimit: 100
+IndentWidth: 4
+AccessModifierOffset: -4
+IndentCaseLabels: true
+NamespaceIndentation: None
+FixNamespaceComments: true
+PointerAlignment: Left
+ReferenceAlignment: Left
+DerivePointerAlignment: false
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortLambdasOnASingleLine: Inline
+InsertBraces: true
+SeparateDefinitionBlocks: Always
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup
+IncludeCategories:
+  # Project headers first, then third-party (Qt, gtest), then the standard library.
+  - Regex: '^"'
+    Priority: 1
+  - Regex: '^<(gtest/.*)>'
+    Priority: 2
+  - Regex: '^<.*>'
+    Priority: 3
+...

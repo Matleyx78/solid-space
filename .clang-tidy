@@ -1,0 +1,89 @@
+# Tecnigrafo static analysis. Requires clang-tidy 18 (docs/adr/0002).
+# Every disabled check is listed with the reason; adding exclusions needs a
+# review by the project maintainer.
+---
+Checks: >
+  -*,
+  bugprone-*,
+  cert-*,
+  clang-analyzer-*,
+  cppcoreguidelines-*,
+  misc-*,
+  modernize-*,
+  performance-*,
+  portability-*,
+  readability-*,
+  -bugprone-easily-swappable-parameters,
+  -cert-err58-cpp,
+  -cppcoreguidelines-avoid-const-or-ref-data-members,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-owning-memory,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -cppcoreguidelines-pro-type-vararg,
+  -misc-include-cleaner,
+  -misc-non-private-member-variables-in-classes,
+  -modernize-use-trailing-return-type,
+  -readability-function-cognitive-complexity,
+  -readability-identifier-length,
+  -readability-magic-numbers,
+  -readability-math-missing-parentheses,
+  -readability-uppercase-literal-suffix
+
+# Reasons for the exclusions above:
+#  easily-swappable-parameters  geometry APIs naturally take (x, y), (a, b)
+#  cert-err58-cpp               static Qt/gtest objects are fine
+#  avoid-const-or-ref-members   non-owning references in non-copyable helpers
+#                                (painters, views) are intended
+#  avoid/readability magic nums  enforced in review: named constants for real
+#                                magic values, but 0.5, 2.0, 4.0 in formulas are math
+#  owning-memory                Qt parent-child ownership uses raw new
+#  pointer-arithmetic, vararg   required by main(argc, argv), printf, Qt macros
+#  include-cleaner              noisy with Qt umbrella headers
+#  non-private-member-variables plain aggregates (Vec2, Color) are intended
+#  trailing-return-type         style choice: classic return types
+#  cognitive-complexity         reviewed by humans instead
+#  identifier-length            x, y, a, b are standard math names
+#  math-missing-parentheses     already enforced by convention where useful
+#  uppercase-literal-suffix     1U vs 1u is not worth a rule
+
+WarningsAsErrors: '*'
+HeaderFilterRegex: '(robust|naming|solver|kernel|features)/(include|src)/.*'
+FormatStyle: file
+CheckOptions:
+  - key: readability-identifier-naming.NamespaceCase
+    value: lower_case
+  - key: readability-identifier-naming.ClassCase
+    value: CamelCase
+  - key: readability-identifier-naming.StructCase
+    value: CamelCase
+  - key: readability-identifier-naming.EnumCase
+    value: CamelCase
+  - key: readability-identifier-naming.FunctionCase
+    value: camelBack
+  - key: readability-identifier-naming.MethodCase
+    value: camelBack
+  - key: readability-identifier-naming.VariableCase
+    value: camelBack
+  - key: readability-identifier-naming.ParameterCase
+    value: camelBack
+  - key: readability-identifier-naming.PrivateMemberCase
+    value: camelBack
+  - key: readability-identifier-naming.PrivateMemberPrefix
+    value: m_
+  - key: readability-identifier-naming.ConstexprVariableCase
+    value: CamelCase
+  - key: readability-identifier-naming.ConstexprVariablePrefix
+    value: k
+  - key: readability-identifier-naming.GlobalConstantCase
+    value: CamelCase
+  - key: readability-identifier-naming.GlobalConstantPrefix
+    value: k
+  - key: readability-identifier-naming.StaticConstantCase
+    value: CamelCase
+  - key: readability-identifier-naming.StaticConstantPrefix
+    value: k
+  - key: cppcoreguidelines-special-member-functions.AllowSoleDefaultDtor
+    value: true
+  - key: misc-const-correctness.WarnPointersAsValues
+    value: false
+...
