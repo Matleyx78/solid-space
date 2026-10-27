@@ -1,0 +1,8 @@
+# Every change needs the approval of the listed owner (see GOVERNANCE.md).
+*                @Matleyx78
+/docs/adr/       @Matleyx78
+/.github/        @Matleyx78
+/.claude/        @Matleyx78
+/AGENTS.md       @Matleyx78
+/.clang-format   @Matleyx78
+/.clang-tidy     @Matleyx78
