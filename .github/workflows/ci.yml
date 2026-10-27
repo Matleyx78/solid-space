@@ -1,0 +1,157 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 The solid-space authors
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  references:
+    name: Reference separation (ADR 0004)
+    runs-on: ubuntu-24.04
+    outputs:
+      build: ${{ steps.changes.outputs.build }}
+      base: ${{ steps.changes.outputs.base }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: false
+      - name: Check changed paths
+        id: changes
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          IS_PR: ${{ github.event_name == 'pull_request' }}
+        run: |
+          python3 - <<'PY'
+          import os
+          import subprocess
+
+          def classify(paths):
+              reference = any(p.startswith('tests/corpus/casi/') or
+                              p == 'tests/corpus/sorgenti.json' for p in paths)
+              work = any(not (p.startswith('tests/corpus/casi/') or p in {
+                  'tests/corpus/sorgenti.json', 'tests/corpus/in-attesa.txt'
+              }) for p in paths)
+              return reference and work
+
+          # Exercise the guard itself, including moves out of the reference tree.
+          assert classify(['tests/corpus/casi/robust/a.json', 'robust/src/a.cpp'])
+          assert classify(['tests/corpus/sorgenti.json', 'README.md'])
+          assert not classify(['tests/corpus/in-attesa.txt'])
+          assert not classify(['tests/corpus/casi/robust/a.json', 'tests/corpus/in-attesa.txt'])
+          base = os.environ['BASE_SHA']
+          if not base or set(base) == {'0'}:
+              base = subprocess.check_output(['git', 'hash-object', '-t', 'tree', '/dev/null']).decode().strip()
+          paths = subprocess.check_output([
+              'git', 'diff', '--name-only', '--no-renames', '-z', base, 'HEAD'
+          ]).decode().strip('\0').split('\0')
+          paths = [p for p in paths if p]
+          if os.environ['IS_PR'] == 'true' and classify(paths):
+              raise SystemExit('ADR 0004: reference cases and work must be in separate pull requests.')
+          docs_only = all(p.startswith('docs/') or p.endswith('.md') or p in {
+              'LICENSE', 'COPYING', 'NOTICE'
+          } for p in paths)
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write(f'build={str(not docs_only).lower()}\nbase={base}\n')
+          print('\n'.join(paths))
+          print(f'Documentation only: {docs_only}')
+          PY
+
+  formatting:
+    name: Formatting (clang-format 18)
+    needs: references
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+      - run: sudo apt-get update && sudo apt-get install -y clang-format-18
+      - name: Reject a deliberately malformed trial commit
+        run: |
+          trial=$(mktemp -d)
+          trap 'rm -rf "$trial"' EXIT
+          git clone --quiet --no-local . "$trial/repo"
+          cd "$trial/repo"
+          printf '\nint   formattingTrial( ){return 0;}\n' >> robust/src/robust.cpp
+          git add robust/src/robust.cpp
+          git -c user.name='CI trial' -c user.email='ci@example.invalid' commit -qm 'test: malformed formatting trial'
+          if scripts/controlla.sh --solo formato > "$trial/log" 2>&1; then
+            echo 'Formatting accepted malformed code' >&2
+            exit 1
+          fi
+          cat "$trial/log"
+          grep -q 'clang-format-violations' "$trial/log"
+      - run: scripts/controlla.sh --solo formato
+
+  linux:
+    name: Linux (GCC, clang-tidy)
+    needs: references
+    if: needs.references.outputs.build == 'true'
+    runs-on: ubuntu-24.04
+    env:
+      SS_BASE_REF: ${{ needs.references.outputs.base }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: false
+      - run: sudo apt-get update && sudo apt-get install -y ninja-build libgtest-dev clang-format-18 clang-tidy-18
+      - run: scripts/controlla.sh --tidy
+
+  windows:
+    name: Windows (MSVC)
+    needs: references
+    if: needs.references.outputs.build == 'true'
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+      - uses: ilammy/msvc-dev-cmd@v1
+      - run: |
+          scripts/controlla.sh --solo configura
+          scripts/controlla.sh --solo compila
+          scripts/controlla.sh --solo test
+
+  macos:
+    name: macOS (Apple Clang)
+    needs: references
+    if: needs.references.outputs.build == 'true'
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+      - run: |
+          scripts/controlla.sh --solo configura
+          scripts/controlla.sh --solo compila
+          scripts/controlla.sh --solo test
+
+  sanitizers:
+    name: Linux (ASan, UBSan)
+    needs: references
+    if: needs.references.outputs.build == 'true'
+    runs-on: ubuntu-24.04
+    env:
+      SS_PRESET: asan
+      ASAN_OPTIONS: detect_leaks=1:halt_on_error=1
+      UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+      - run: sudo apt-get update && sudo apt-get install -y ninja-build libgtest-dev clang-format-18
+      - run: scripts/controlla.sh

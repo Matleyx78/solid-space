@@ -25,6 +25,12 @@
       "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
     },
     {
+      "name": "tidy",
+      "displayName": "Release with clang-tidy 18",
+      "inherits": "release",
+      "cacheVariables": { "CMAKE_CXX_CLANG_TIDY": "clang-tidy-18" }
+    },
+    {
       "name": "asan",
       "displayName": "Debug with AddressSanitizer and UBSan",
       "inherits": "base",
