@@ -7,6 +7,10 @@ on:
   push:
     branches: [main]
 
+defaults:
+  run:
+    shell: bash
+
 permissions:
   contents: read
 
@@ -91,7 +95,7 @@ jobs:
           fi
           cat "$trial/log"
           grep -q 'clang-format-violations' "$trial/log"
-      - run: scripts/controlla.sh --solo formato
+      - run: scripts/controlla.sh --solo formato 2>&1 | scripts/ci-annota.sh
 
   linux:
     name: Linux (GCC, clang-tidy)
@@ -106,7 +110,7 @@ jobs:
           fetch-depth: 0
           submodules: false
       - run: sudo apt-get update && sudo apt-get install -y ninja-build libgtest-dev clang-format-18 clang-tidy-18
-      - run: scripts/controlla.sh --tidy
+      - run: scripts/controlla.sh --tidy 2>&1 | scripts/ci-annota.sh
 
   windows:
     name: Windows (MSVC)
@@ -122,9 +126,9 @@ jobs:
           submodules: false
       - uses: ilammy/msvc-dev-cmd@v1
       - run: |
-          scripts/controlla.sh --solo configura
-          scripts/controlla.sh --solo compila
-          scripts/controlla.sh --solo test
+          scripts/controlla.sh --solo configura 2>&1 | scripts/ci-annota.sh
+          scripts/controlla.sh --solo compila 2>&1 | scripts/ci-annota.sh
+          scripts/controlla.sh --solo test 2>&1 | scripts/ci-annota.sh
 
   macos:
     name: macOS (Apple Clang)
@@ -136,9 +140,9 @@ jobs:
         with:
           submodules: false
       - run: |
-          scripts/controlla.sh --solo configura
-          scripts/controlla.sh --solo compila
-          scripts/controlla.sh --solo test
+          scripts/controlla.sh --solo configura 2>&1 | scripts/ci-annota.sh
+          scripts/controlla.sh --solo compila 2>&1 | scripts/ci-annota.sh
+          scripts/controlla.sh --solo test 2>&1 | scripts/ci-annota.sh
 
   sanitizers:
     name: Linux (ASan, UBSan)
@@ -154,4 +158,4 @@ jobs:
         with:
           submodules: false
       - run: sudo apt-get update && sudo apt-get install -y ninja-build libgtest-dev clang-format-18
-      - run: scripts/controlla.sh
+      - run: scripts/controlla.sh 2>&1 | scripts/ci-annota.sh
