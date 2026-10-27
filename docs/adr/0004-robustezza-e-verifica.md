@@ -2,6 +2,10 @@
 
 - **Stato:** Accettato
 - **Data:** 2026-10-27
+- **Corretto:** 2026-10-27 — la citazione di una tappa futura per numero (punto 10)
+  è sostituita dall'evento che la fa nascere, perché le tappe del piano iniziale
+  non esistono più ([ADR 0007](0007-tappe-su-richiesta.md)); lo decide il
+  responsabile.
 
 ## Contesto
 
@@ -52,7 +56,7 @@ indipendenti dal programma (ADR 0011 di Tecnigrafo). Qui lo si estende al 3D.
    contro aritmetica razionale esatta, anche su punti quasi allineati e quasi
    cocircolari.
 10. **Strumenti automatici.** AddressSanitizer e UBSan in CI; fuzzing dell'import
-    STEP dalla tappa 0.5, come Tecnigrafo fa per il DXF.
+    STEP dalla tappa che porta l'import STEP, come Tecnigrafo fa per il DXF.
 
 ### Cambiamenti
 

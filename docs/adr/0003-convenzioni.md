@@ -2,6 +2,10 @@
 
 - **Stato:** Accettato
 - **Data:** 2026-10-27
+- **Corretto:** 2026-10-27 — la citazione di una tappa futura per numero (punto 7)
+  è sostituita dall'evento che la fa nascere, perché le tappe del piano iniziale
+  non esistono più ([ADR 0007](0007-tappe-su-richiesta.md)); lo decide il
+  responsabile.
 
 ## Contesto
 
@@ -37,7 +41,7 @@ da un progetto all'altro ritrova gli stessi comandi.
    stabili (ADR 0001 e VISIONE.md), mai con indirizzi di memoria.
 7. **Numeri.** Lunghezze in `double` nelle unità del modello, senza conversioni
    interne; angoli in radianti. Sistema di coordinate e unità del 3D si fissano
-   nell'ADR della tappa 0.5.
+   nell'ADR della tappa che porta OCCT.
 8. **Commit e pull request.** Formato Conventional Commits
    (`feat(solver): ...`). Una pull request per pacchetto. Il responsabile aggiunge
    la firma di origine (`Signed-off-by`) a ciò che unisce; gli agenti non la

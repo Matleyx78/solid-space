@@ -50,7 +50,7 @@ I nomi dicono che cosa fanno, non come: `orient2d`, non `computeDet3`.
 - Mai confrontare due `double` con `==`, né con una soglia scritta a mano, per
   decidere un fatto geometrico: le decisioni discrete (orientamento, "dentro o
   fuori") passano dai predicati e dalla politica delle tolleranze di `robust`.
-- Il sistema di coordinate del 3D si fissa nell'ADR della tappa 0.5. Nel 2D le
+- Il sistema di coordinate del 3D si fissa nell'ADR della tappa che porta OCCT. Nel 2D le
   convenzioni sono quelle di Tecnigrafo (Y verso l'alto, angoli antiorari da +X).
 
 ## Test

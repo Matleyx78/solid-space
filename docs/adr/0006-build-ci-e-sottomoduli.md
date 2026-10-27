@@ -2,6 +2,10 @@
 
 - **Stato:** Accettato
 - **Data:** 2026-10-27
+- **Corretto:** 2026-10-27 — le citazioni di tappe future per numero (contesto,
+  punti 1 e 6, alternative) sono sostituite dall'evento che le fa nascere, perché
+  le tappe del piano iniziale non esistono più
+  ([ADR 0007](0007-tappe-su-richiesta.md)); lo decide il responsabile.
 
 ## Contesto
 
@@ -9,7 +13,7 @@ L'[ADR 0002](0002-componenti-e-dipendenze.md) fissa i componenti, i target con a
 e l'esistenza di un'opzione per spegnere `kernel` e `features`; l'[ADR
 0003](0003-convenzioni.md) fissa strumenti e avvisi. Restano da decidere i nomi
 dell'opzione e dei preset, la matrice della CI, come si acquisisce GoogleTest e che
-cosa fa la CI dei sottomoduli, finché OCCT non entra in gioco (tappa 0.5).
+cosa fa la CI dei sottomoduli, finché OCCT non entra in gioco (con la tappa che lo porta).
 
 Tecnigrafo ha già risolto problemi analoghi; qui si riprende il suo impianto dove
 vale anche per una libreria.
@@ -17,8 +21,8 @@ vale anche per una libreria.
 ## Decisione
 
 1. **Opzione per spegnere il nucleo.** `SOLID_SPACE_BUILD_KERNEL`, attiva di
-   default. Spenta, esclude `kernel` e `features`, e con loro OCCT. Dalla tappa 0.5
-   la CI prova sia con l'opzione accesa sia spenta.
+   default. Spenta, esclude `kernel` e `features`, e con loro OCCT. Dalla tappa che porta
+   OCCT la CI prova sia con l'opzione accesa sia spenta.
 2. **Avvisi come errori.** L'opzione `SOLID_SPACE_WARNINGS_AS_ERRORS` è **spenta di
    default**, perché chi incorpora la libreria con un altro compilatore non deve
    vederla fallire; la accendono tutti i preset del progetto. Gli avvisi sono quelli
@@ -43,7 +47,7 @@ vale anche per una libreria.
      documentazione.
 6. **Sottomoduli.** La CI non scarica `third_party/occt` né
    `third_party/solvespace` finché un pacchetto non ne ha bisogno. Quando arriva la
-   tappa 0.5, OCCT si cerca come pacchetto di sistema o si compila con una cache.
+   tappa che porta OCCT, OCCT si cerca come pacchetto di sistema o si compila con una cache.
 7. **Un solo comando locale.** `scripts/controlla.sh` esegue gli stessi passi della
    CI, nello stesso ordine, e si ferma al primo errore.
 
@@ -52,8 +56,10 @@ vale anche per una libreria.
 - **Avvisi come errori sempre accesi:** una libreria incorporata si romperebbe con
   compilatori che il progetto non ha provato.
 - **Più compilatori su Linux fin dall'inizio** (GCC e Clang): più sicurezza, più
-  tempo di CI; si riconsidera dalla tappa 0.2, quando c'è codice vero.
-- **Scaricare i sottomoduli sempre:** OCCT è grande e non serve prima della 0.5.
+  tempo di CI; si riconsidera con la prima tappa che porta codice geometrico, quando c'è codice
+  vero.
+- **Scaricare i sottomoduli sempre:** OCCT è grande e non serve prima della tappa
+  che lo porta.
 
 ## Conseguenze
 
