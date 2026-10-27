@@ -14,7 +14,7 @@ lavora **solo** sui pacchetti della tappa aperta.
 
 | Tappa | Versione | Componente | Obiettivo | Nata da | Stato |
 |---|---|---|---|---|---|
-| 1 | 0.1 | tutti | Fondamenta: documenti, ADR, scheletro CMake, CI, sistema di verifica | fondamenta ([ADR 0001](adr/0001-scopo-e-confini.md)) | **in chiusura: prova manuale da completare** ([scheda](tappe/0.1-fondamenta.md), [note di rilascio](rilasci/0.1.md), [milestone v0.1](https://github.com/Matleyx78/solid-space/milestone/1), issue #4–#7 chiuse) |
+| 1 | 0.1 | tutti | Fondamenta: documenti, ADR, scheletro CMake, CI, sistema di verifica | fondamenta ([ADR 0001](adr/0001-scopo-e-confini.md)) | **chiusa il 2026-10-27**, prova manuale non registrata ([scheda](tappe/0.1-fondamenta.md), [note di rilascio](rilasci/0.1.md), [milestone v0.1](https://github.com/Matleyx78/solid-space/milestone/1), issue #4–#7 chiuse) |
 
 Non ci sono altre tappe: la prossima nasce dalla prima richiesta di Tecnigrafo. Le
 richieste in attesa sono le issue aperte con l'etichetta `richiesta`, nell'ordine

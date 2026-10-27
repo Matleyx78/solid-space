@@ -13,9 +13,9 @@ nell'ordine in cui Tecnigrafo ne ha bisogno, e poggia su
 OCCT sta dietro una facciata nostra, e un suo modulo si sostituisce solo quando le
 misure dimostrano che serve.
 
-> Stato: **tappa 0.1, fondamenta, in chiusura.** Scheletro CMake dei cinque
-> componenti, CI sui tre sistemi e formato dei casi di verifica completati.
-> La prova manuale del responsabile è da completare nelle
+> Stato: **tappa 0.1, fondamenta, chiusa il 2026-10-27.** Scheletro CMake dei
+> cinque componenti, CI sui tre sistemi e formato dei casi di verifica completati.
+> La prova manuale del responsabile non è registrata nelle
 > [note di rilascio](docs/rilasci/0.1.md). Nessun algoritmo geometrico ancora;
 > la prossima tappa nascerà da una richiesta di Tecnigrafo
 > ([ADR 0007](docs/adr/0007-tappe-su-richiesta.md)). Il piano è in
