@@ -52,22 +52,28 @@ il dato che la riporterebbe nel piano.
 
 ## Come si lavora
 
-Come in Tecnigrafo: il progetto avanza per **tappe**, una alla volta, divise in
-**pacchetti di lavoro**; le scelte di struttura si scrivono in **ADR**
-([docs/adr/](docs/adr/)); un lavoro è finito quando i test confermano i casi di
-verifica scritti prima. Il responsabile del progetto ha l'ultima parola.
+Con lo stesso metodo di Tecnigrafo, ma in un progetto che vive anche da solo: il
+progetto avanza per **tappe**, una alla volta, divise in **pacchetti di lavoro**;
+le scelte di struttura si scrivono in **ADR** ([docs/adr/](docs/adr/)); un lavoro è
+finito quando i test confermano i casi di verifica scritti prima. Il responsabile
+del progetto ha l'ultima parola ([GOVERNANCE.md](GOVERNANCE.md)).
 
-Persone e assistenti IA lavorano con le stesse regole: per gli agenti sono in
-[AGENTS.md](AGENTS.md), lo stile del codice in
-[docs/CODING_STYLE.md](docs/CODING_STYLE.md).
+Come contribuire: [CONTRIBUTING.md](CONTRIBUTING.md). Persone e assistenti IA
+lavorano con le stesse regole: per gli agenti sono in [AGENTS.md](AGENTS.md), lo
+stile del codice in [docs/CODING_STYLE.md](docs/CODING_STYLE.md), il lavoro di più
+agenti in parallelo in [docs/LAVORO-IN-PARALLELO.md](docs/LAVORO-IN-PARALLELO.md).
 
 ## Documentazione
 
 - [docs/VISIONE.md](docs/VISIONE.md): scopo, principi e appendice "Non ora"
 - [docs/ARCHITETTURA.md](docs/ARCHITETTURA.md): componenti, dipendenze e regole
 - [docs/ROADMAP.md](docs/ROADMAP.md): tappe e decisioni del responsabile
-- [docs/tappe/](docs/tappe/): schede delle tappe
+- [docs/tappe/](docs/tappe/): schede delle tappe e modelli di piano e di pacchetto
 - [docs/adr/](docs/adr/): decisioni architetturali
+- [docs/LAVORO-IN-PARALLELO.md](docs/LAVORO-IN-PARALLELO.md): come lavorano più persone e agenti
+- [docs/GUIDA-RESPONSABILE.md](docs/GUIDA-RESPONSABILE.md): guida passo per passo del responsabile
+- [docs/AMBIENTE-SVILUPPO.md](docs/AMBIENTE-SVILUPPO.md): strumenti da installare
+- [GOVERNANCE.md](GOVERNANCE.md) e [CONTRIBUTING.md](CONTRIBUTING.md): governo e contributi
 
 ## Licenza
 

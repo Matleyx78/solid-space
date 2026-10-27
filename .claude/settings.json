@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "deny": [
+      "Edit(~/progetti/tecnigrafo/**)",
+      "Bash(git -C *tecnigrafo* *)",
+      "Bash(cd *tecnigrafo*)"
+    ]
+  }
+}
