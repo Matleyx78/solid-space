@@ -1,0 +1,8 @@
+{
+  "versione": 1,
+  "id": "caso-campo-mancante",
+  "componente": "kernel",
+  "descrizione": "Prova del validatore: manca il campo \"atteso\".",
+  "ingresso": { "operazione": "parallelepipedo", "dimensioni": [1, 1, 1] },
+  "provenienza": { "tipo": "calcolo-a-mano", "procedimento": "Prova: nessun valore." }
+}

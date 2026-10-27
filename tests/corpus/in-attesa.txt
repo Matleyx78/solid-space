@@ -1,0 +1,3 @@
+# Casi non ancora obbligatori, uno per riga: <componente>/<id> #<issue>
+# Il numero è la issue del pacchetto di lavoro che renderà il caso obbligatorio.
+# Chi fa quel pacchetto toglie la riga. La regola completa è in README.md.

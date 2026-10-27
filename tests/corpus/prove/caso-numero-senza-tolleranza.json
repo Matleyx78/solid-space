@@ -1,0 +1,9 @@
+{
+  "versione": 1,
+  "id": "caso-numero-senza-tolleranza",
+  "componente": "kernel",
+  "descrizione": "Prova del validatore: un valore atteso è un numero nudo, senza frazione né tolleranza.",
+  "ingresso": { "operazione": "parallelepipedo", "dimensioni": [1, 1, 1] },
+  "atteso": { "volume": 1.0 },
+  "provenienza": { "tipo": "calcolo-a-mano", "procedimento": "Prova: 1 x 1 x 1." }
+}
