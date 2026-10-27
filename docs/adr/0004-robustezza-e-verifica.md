@@ -1,6 +1,6 @@
 # ADR 0004: Robustezza e verifica
 
-- **Stato:** Proposto
+- **Stato:** Accettato
 - **Data:** 2026-10-27
 
 ## Contesto
