@@ -1,6 +1,6 @@
 # ADR 0003: Convenzioni di linguaggio, errori e stile
 
-- **Stato:** Proposto
+- **Stato:** Accettato
 - **Data:** 2026-10-27
 
 ## Contesto
