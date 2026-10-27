@@ -1,7 +1,7 @@
 # [0.1-P2] Scheletro CMake
 
 - **Tappa:** 0.1 — [piano](../0.1-fondamenta.md)
-- **Issue:** da creare all'apertura della tappa
+- **Issue:** [#4](https://github.com/Matleyx78/solid-space/issues/4)
 - **Difficoltà:** media
 - **Agente:** claude
 - **Modello e impegno:** medio (Sonnet 5.5 alto); impegno medio
