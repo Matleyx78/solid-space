@@ -35,9 +35,9 @@ quella cartella** e da nessun'altra (vedi A6).
 
 ### A2. Le etichette
 
-Servono queste etichette (GitHub: **Issues** → **Labels** → **New label**). Se
-la pull request di questa guida è già stata unita, sono già state create: apri
-l'elenco e controlla che ci siano tutte.
+Servono queste etichette (GitHub: **Issues** → **Labels** → **New label**). Sono
+già state create tutte, tranne `tappa-X.Y`, che nasce all'apertura di ogni tappa
+(B2): apri l'elenco e controlla che ci siano.
 
 | Etichetta | A cosa serve |
 |---|---|
