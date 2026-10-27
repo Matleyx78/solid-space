@@ -230,8 +230,25 @@ Quando ti fermi per uno di questi motivi, o per un caso di riferimento che ritie
 sbagliato, **non aspettare la CI**: scrivi il commento nella pull request o nella
 issue, togli `AA-Presa in carico` e termina la sessione.
 
-Gli script per aspettare la CI e leggerne gli errori li consegna il pacchetto P5
-della tappa 0.1: quando ci saranno, questa sezione li indicherà.
+Aspetta la CI e leggine gli errori con un solo comando per operazione (solo API
+REST; servono `jq` e `gh` oppure `curl`):
+
+```sh
+scripts/ci-attendi.sh             # CI del commit corrente, già pubblicato
+scripts/ci-attendi.sh <sha>       # oppure un commit preciso
+scripts/ci-attendi.sh <run-id>    # oppure una run precisa
+scripts/ci-errori.sh <run-id>     # job falliti, passi e righe di errore
+```
+
+Il repository pubblico si legge anche senza token con `curl`; `GITHUB_TOKEN`
+aumenta il limite delle richieste anonime. `SS_REPO` cambia il repository.
+`ci-attendi.sh` restituisce 0 con tutto verde, 1 se un controllo fallisce,
+2 se l'API non risponde, 3 se la CI è ancora in corso, 4 se è annullata,
+5 dopo dieci attese consecutive scadute sulla stessa run. Con 3 rilancia lo
+stesso comando; con 1 leggi subito gli errori, senza aspettare gli altri job.
+Con 2, 4 o 5 riferisci il problema nella pull request e termina come sopra.
+`SS_ATTESA_MAX`, `SS_ATTESA_PAUSA` e `SS_ATTESA_RILANCI` regolano durata,
+intervallo e numero massimo di attese (default: 540 secondi, 90 secondi, dieci).
 
 ## Prima di dichiarare il lavoro finito
 
