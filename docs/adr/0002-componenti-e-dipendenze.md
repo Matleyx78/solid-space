@@ -1,6 +1,6 @@
 # ADR 0002: Componenti e dipendenze
 
-- **Stato:** Proposto
+- **Stato:** Accettato
 - **Data:** 2026-10-27
 
 ## Contesto
