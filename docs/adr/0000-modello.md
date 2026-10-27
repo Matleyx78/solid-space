@@ -49,7 +49,11 @@ nell'intestazione la riga **Corretto:** con la data e il motivo.
 - un cambiamento delle regole di dipendenza tra componenti o dell'interfaccia
   pubblica di un componente;
 - la sostituzione di un modulo di OCCT o del motore del solver;
-- una convenzione che riguarda tutto il progetto.
+- una convenzione che riguarda tutto il progetto;
+- una richiesta di Tecnigrafo a solid-space: sempre, anche quando basta OCCT o il
+  bisogno non spetta a solid-space, nel formato di
+  [0000-modello-valutazione.md](0000-modello-valutazione.md)
+  ([ADR 0007](0007-tappe-su-richiesta.md)).
 
 Non serve per una funzione, un'ottimizzazione o una correzione che resta dentro un
 componente e le sue interfacce.

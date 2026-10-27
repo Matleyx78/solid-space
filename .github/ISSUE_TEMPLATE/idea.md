@@ -5,7 +5,7 @@ labels: idea
 ---
 
 > Le idee non autorizzano a scrivere codice. Se approvata, il responsabile la
-> inserisce nella scheda di una tappa futura (docs/ROADMAP.md).
+> inserisce nella scheda di una tappa in preparazione (docs/ROADMAP.md).
 
 ## Problema
 
@@ -15,8 +15,8 @@ labels: idea
 
 <!-- Come dovrebbe funzionare, dal punto di vista di chi usa la libreria. -->
 
-## In quale tappa la vedresti
+## Quale bisogno di Tecnigrafo la richiede
 
-<!-- Una delle tappe in docs/ROADMAP.md, e perché. -->
+<!-- Che cosa, in Tecnigrafo, avrebbe bisogno di questa funzione, e quando. Se non lo sai, scrivilo. -->
 
 ## Alternative considerate

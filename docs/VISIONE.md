@@ -82,6 +82,10 @@ Le regole sono nell'[ADR 0004](adr/0004-robustezza-e-verifica.md).
 | Tappa dei vincoli 2D | `solver` con chiavi handle più ruolo, senza OCCT |
 | Fase 2, modellatore 3D | `kernel`, `naming`, `features` |
 
+La tabella è una previsione, non un impegno: che cosa Tecnigrafo prende davvero, e
+quando, lo stabiliscono le sue richieste
+([ADR 0007](adr/0007-tappe-su-richiesta.md)).
+
 Come Tecnigrafo incorpora la libreria (sottomodulo, `FetchContent` o altro) si
 decide con l'ADR di Tecnigrafo che introduce la dipendenza.
 
