@@ -13,7 +13,7 @@ labels: richiesta
 
 ## Da dove nasce
 
-<!-- Tappa di Tecnigrafo e collegamento alla issue, pull request o discussione. -->
+<!-- Tappa di Tecnigrafo e issue con etichetta richiesta-solid-space, scritta come Matleyx78/tecnigrafo#N; eventuale pull request o discussione. -->
 
 ## Il bisogno
 

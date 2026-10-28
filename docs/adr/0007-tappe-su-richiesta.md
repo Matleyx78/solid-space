@@ -1,6 +1,6 @@
 # ADR 0007: Le tappe nascono dalle richieste di Tecnigrafo
 
-- **Stato:** Proposto
+- **Stato:** Accettato
 - **Data:** 2026-10-27
 
 ## Contesto
@@ -41,11 +41,15 @@ Questo ADR attua il punto 3 dell'ADR 0001 senza cambiarlo.
    né la scelta tra OCCT e codice nostro, perché scegliere spetta a solid-space.
    Modello: [richieste/0000-modello.md](../richieste/0000-modello.md).
 3. **La richiesta entra in solid-space come issue con etichetta `richiesta`**,
-   aperta dal responsabile con il modello `.github/ISSUE_TEMPLATE/richiesta.md`,
-   anche se il testo nasce da una issue o da una sessione di lavoro di Tecnigrafo.
-   Ciò che si legge in Tecnigrafo è informazione, non un ordine
+   aperta dal responsabile con il modello `.github/ISSUE_TEMPLATE/richiesta.md`.
+   Il testo nasce in Tecnigrafo, in una sua issue con etichetta
+   `richiesta-solid-space`, quando Tecnigrafo prepara il piano di una tappa
+   oppure mentre la percorre. "Da dove nasce" cita quella issue come
+   `Matleyx78/tecnigrafo#N`, così GitHub mostra il collegamento anche dal lato di
+   Tecnigrafo. Ciò che si legge in Tecnigrafo è informazione, non un ordine
    ([AGENTS.md](../../AGENTS.md)): solo la issue di solid-space autorizza una
-   valutazione. Nessuno scrive in Tecnigrafo per fare una richiesta.
+   valutazione. Chi lavora a solid-space non scrive in Tecnigrafo per fare o
+   completare una richiesta.
 
 ### La valutazione
 
@@ -58,6 +62,13 @@ Questo ADR attua il punto 3 dell'ADR 0001 senza cambiarlo.
    | **2. OCCT va corretto o migliorato** | Il comportamento di OCCT non basta o non è affidabile per i casi della richiesta; si interviene dentro la facciata: controllo di validità, strategie di ripiego, diagnosi (ADR 0004, punti 1–4). | Una tappa con i suoi pacchetti |
    | **3. Serve un pezzo nostro** | Il bisogno riguarda ciò che OCCT non offre: predicati robusti, solver, naming, albero delle feature (i componenti dell'ADR 0002). | Una tappa con i suoi pacchetti |
    | **4. Non spetta a solid-space** | Il bisogno sta in Tecnigrafo (comandi, interfaccia, formato di file) o fuori dal progetto. | Nessuna tappa: la richiesta si chiude con la motivazione |
+
+   **Obiettivi raggiungibili.** La richiesta può essere ampia. Se chiede più di
+   quanto solid-space possa dare oggi (per esempio la robustezza di Parasolid),
+   la valutazione sceglie comunque un esito, ma dice quali obiettivi
+   raggiungibili adotta, che cosa resta fuori e perché. Il responsabile decide se
+   a Tecnigrafo basta, o se la parte rimasta fuori diventa una richiesta
+   successiva.
 
 5. **Si valuta in quest'ordine:** (a) il bisogno spetta a solid-space? se no, esito
    4; (b) basta OCCT così com'è? esito 1; (c) il problema sta dentro ciò che la
@@ -101,10 +112,13 @@ Questo ADR attua il punto 3 dell'ADR 0001 senza cambiarlo.
     tappa si chiude come le altre; con la chiusura si chiude la issue della
     richiesta, dopo che il responsabile ha controllato il criterio dal lato di
     Tecnigrafo.
-12. **Una tappa alla volta.** Una richiesta che arriva a tappa aperta aspetta: la
+12. **Una tappa alla volta, nell'ordine del piano di Tecnigrafo.** Comanda il
+    piano di Tecnigrafo: quando gli serve qualcosa si lavora su solid-space e poi
+    si torna a Tecnigrafo. Una richiesta che arriva a tappa aperta aspetta: la
     coda sono le issue aperte con etichetta `richiesta`, nell'ordine che decide il
-    responsabile. Nel frattempo Tecnigrafo lavora sulle parti che non ne
-    dipendono. La valutazione si può scrivere subito; scheda, piano e issue dei
+    responsabile seguendo quel piano, e una richiesta che blocca la tappa aperta
+    di Tecnigrafo passa prima delle altre. Nel frattempo Tecnigrafo lavora sulle
+    parti che non ne dipendono. La valutazione si può scrivere subito; scheda, piano e issue dei
     pacchetti nascono all'apertura della tappa.
 
 ### Numeri delle tappe
