@@ -16,8 +16,11 @@ non c'è la issue qui nessuno valuta nulla.
 
 1. **Titolo.** «Richiesta: » seguito dal bisogno in una frase, senza dire come
    soddisfarlo.
-2. **Da dove nasce.** La tappa di Tecnigrafo e il collegamento alla issue, alla
-   pull request o alla discussione di Tecnigrafo in cui il bisogno è emerso.
+2. **Da dove nasce.** La tappa di Tecnigrafo e la sua issue con etichetta
+   `richiesta-solid-space`, scritta come `Matleyx78/tecnigrafo#N` (così GitHub
+   mostra il collegamento anche dal lato di Tecnigrafo), più la pull request o la
+   discussione in cui il bisogno è emerso. Il bisogno può emergere quando
+   Tecnigrafo prepara il piano di una tappa oppure mentre la percorre.
 3. **Il bisogno.** Che cosa Tecnigrafo non riesce a fare o fa male, descritto da
    chi usa la libreria: che cosa vuole ottenere e che cosa succede oggi.
 4. **Casi concreti.** Situazioni reali in cui il bisogno si presenta: ingressi,
@@ -41,22 +44,25 @@ non c'è la issue qui nessuno valuta nulla.
 
 ## Esempio (inventato, per mostrare il modello)
 
-> **Richiesta: decidere in modo affidabile da che parte sta un punto rispetto a
+> **Richiesta: decidere in modo coerente da che parte sta un punto rispetto a
 > un segmento**
 >
-> **Da dove nasce:** tappa 0.7 di Tecnigrafo (comandi di modifica), issue di
-> Tecnigrafo #… sul taglio di entità.
+> **Da dove nasce:** tappa 0.7 di Tecnigrafo (comandi di modifica),
+> Matleyx78/tecnigrafo#… sul taglio di entità.
 >
-> **Il bisogno:** il comando di taglio sceglie la parte da tenere in base a da che
-> parte sta un punto rispetto a un segmento. Con punti quasi allineati il
-> risultato cambia tra una esecuzione e l'altra dei calcoli sullo stesso
-> disegno.
+> **Il bisogno:** il comando di taglio decide se due entità si intersecano e da
+> che parte di un segmento sta il pezzo da tenere. Con punti quasi allineati le
+> due decisioni si contraddicono: una dice che i segmenti si attraversano,
+> l'altra che stanno dalla stessa parte, e il taglio tiene il pezzo sbagliato o
+> dice che non c'è nulla da tagliare. Inoltre lo stesso disegno dà risultati
+> diversi su Windows, Linux e macOS.
 >
 > **Casi concreti:** disegno `taglio-01.dxf`, entità 12 e 15; tre punti
 > allineati a meno di 1e-12.
 >
-> **Quando è soddisfatta:** lo stesso disegno dà sempre lo stesso risultato di
-> taglio, anche su punti quasi allineati.
+> **Quando è soddisfatta:** il taglio tiene sempre il pezzo giusto, anche su
+> punti quasi allineati, e la CI dà lo stesso risultato sui tre sistemi
+> operativi.
 >
 > **Vincoli:** nessuna dipendenza dal 3D né da OCCT; compila su Windows, Linux e
 > macOS.
@@ -67,7 +73,9 @@ non c'è la issue qui nessuno valuta nulla.
 ## Dopo la richiesta
 
 1. Il responsabile apre la issue e, con un agente, si scrive l'ADR di valutazione.
-2. Se l'esito è 1, 2 o 3 nasce una tappa, appena la precedente è chiusa; se è 4, la
-   richiesta si chiude con la motivazione.
+2. Se l'esito è 1, 2 o 3 nasce una tappa, appena la precedente è chiusa e
+   nell'ordine che dà il piano di Tecnigrafo; se è 4, la richiesta si chiude con
+   la motivazione. Una richiesta ampia riceve gli obiettivi raggiungibili, e la
+   valutazione dice che cosa resta fuori.
 3. Alla chiusura della tappa il responsabile controlla dal lato di Tecnigrafo il
    «quando è soddisfatta» e chiude la richiesta.

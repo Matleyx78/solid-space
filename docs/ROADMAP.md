@@ -18,7 +18,7 @@ lavora **solo** sui pacchetti della tappa aperta.
 
 Non ci sono altre tappe: la prossima nasce dalla prima richiesta di Tecnigrafo. Le
 richieste in attesa sono le issue aperte con l'etichetta `richiesta`, nell'ordine
-che decide il responsabile. I numeri di versione si assegnano in ordine di nascita
+che decide il responsabile seguendo il piano di Tecnigrafo (ADR 0007, punto 12). I numeri di versione si assegnano in ordine di nascita
 (0.2, 0.3, …) e non indicano un componente.
 
 ## Regole delle tappe

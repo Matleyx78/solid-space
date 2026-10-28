@@ -234,7 +234,8 @@ Le tappe non si pianificano in anticipo: nascono da una richiesta di Tecnigrafo
    quando ti convincono ([GOVERNANCE.md](../GOVERNANCE.md)).
 5. Se l'esito è 4, chiudi la issue con la motivazione. Se è 1, 2 o 3 e nessuna
    tappa è aperta, passa a B1. Se una tappa è aperta, la richiesta aspetta: la coda
-   sono le issue aperte con etichetta `richiesta`, nell'ordine che decidi tu.
+   sono le issue aperte con etichetta `richiesta`, nell'ordine che decidi tu
+   seguendo il piano di Tecnigrafo: prima quella che blocca la sua tappa aperta.
 
 ### B1. Preparare il piano (tu e Claude)
 
