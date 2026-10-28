@@ -97,7 +97,7 @@ dell'archivio di casi e una soglia dichiarata in anticipo.
 
 | Idea | Perché non ora | Che cosa la riporterebbe nel piano |
 |---|---|---|
-| Topologia cellulare: partizione preventiva dello spazio in celle, booleane come scelta di celle | È un nuovo kernel B-Rep, non un miglioramento: costo di ricerca molto alto | Una classe di casi di booleana che fallisce in modo non recuperabile con le strategie della tappa 0.5 |
+| Topologia cellulare: partizione preventiva dello spazio in celle, booleane come scelta di celle | È un nuovo kernel B-Rep, non un miglioramento: costo di ricerca molto alto | Una classe di casi di booleana che fallisce in modo non recuperabile con le strategie di ripiego del `kernel` (ADR 0004) |
 | Struttura coedge/half-edge propria al posto di quella di OCCT | Costringerebbe a riscrivere tutto ciò che sta sopra `TopoDS` | Una navigazione topologica che con OCCT è dimostrabilmente impraticabile per un'operazione necessaria |
 | Motore di raccordi proprio (rolling ball, cliff edge, cuspidi, vertex blend con patch di Gregory) | Il raccordo è il punto più debole di OCCT ma anche il più difficile da rifare | Archivio con raccordi che falliscono dopo tutte le strategie alternative, e una classe ben delimitata da coprire |
 | Modellazione a tolleranza rigida, snap-rounding deterministico nelle booleane | Richiede di toccare il cuore delle operazioni di OCCT | Fallimenti ripetibili attribuiti all'inflazione delle tolleranze |

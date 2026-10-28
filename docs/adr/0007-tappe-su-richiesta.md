@@ -111,15 +111,14 @@ Questo ADR attua il punto 3 dell'ADR 0001 senza cambiarlo.
 
 13. **I numeri di versione si assegnano in ordine di nascita** (0.2, 0.3, …) e non
     indicano più un componente.
-14. **Gli altri documenti citano tappe future per numero.** Si leggono come
-    l'evento che le fa nascere, e non si riscrivono ora (gli ADR accettati non si
-    modificano): «tappa 0.2» è la prima tappa con codice da provare contro i casi
-    di verifica (ADR 0005, ADR 0006, `tests/corpus/README.md`); «tappa 0.3», la
-    prima che porta libslvs; «tappa 0.4», la prima che fissa il naming
-    ([ARCHITETTURA.md](../ARCHITETTURA.md)); «tappa 0.5», la prima che porta OCCT
-    (ADR 0003, ADR 0004, ADR 0006, [CODING_STYLE.md](../CODING_STYLE.md),
-    [AMBIENTE-SVILUPPO.md](../AMBIENTE-SVILUPPO.md), VISIONE.md). Li corregge la
-    tappa quando nasce.
+14. **Le tappe future non si citano per numero.** Negli altri documenti si cita
+    l'evento che le fa nascere («la tappa che porta OCCT», «la prima tappa con
+    codice geometrico da provare»). Le citazioni per numero del piano iniziale
+    (ADR 0003, 0004, 0005 e 0006, ARCHITETTURA, CODING_STYLE, AMBIENTE-SVILUPPO,
+    VISIONE e `tests/corpus/README.md`) sono state corrette il 2026-10-27 con
+    l'autorizzazione del responsabile; ogni ADR toccato porta la riga
+    **Corretto:**. La scheda e le note di rilascio della tappa 0.1 restano com'erano:
+    sono storia.
 
 ## Alternative considerate
 

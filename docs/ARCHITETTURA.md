@@ -48,7 +48,7 @@ Il componente `naming` non conosce OCCT. Le operazioni del `kernel` gli passano 
 cosa è stato generato, modificato o cancellato (gli algoritmi di costruzione di
 OCCT espongono queste informazioni), e `naming` ne ricava gli identificativi e
 tiene il grafo di genealogia. La funzione degli identificativi e il formato di
-salvataggio si fissano con l'ADR della tappa 0.4.
+salvataggio si fissano con l'ADR della tappa che porta il naming.
 
 ## Dove si trova cosa
 
