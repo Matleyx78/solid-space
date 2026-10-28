@@ -1,6 +1,6 @@
 # ADR 0007: Le tappe nascono dalle richieste di Tecnigrafo
 
-- **Stato:** Proposto
+- **Stato:** Accettato
 - **Data:** 2026-10-27
 
 ## Contesto
