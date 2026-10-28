@@ -20,7 +20,7 @@ sudo apt install build-essential cmake ninja-build git gdb libgtest-dev python3
 [ADR 0005](adr/0005-formato-dei-casi-di-verifica.md)), non alla libreria.
 
 Non servono Qt né altre librerie grafiche: solid-space non ha interfaccia. OCCT
-non si installa: dalla tappa 0.5 lo porta il sottomodulo `third_party/occt`, o un
+non si installa: dalla tappa che lo porta c'è il sottomodulo `third_party/occt`, o un
 pacchetto di sistema se c'è ([ADR 0002](adr/0002-componenti-e-dipendenze.md)).
 
 Se la GoogleTest dei repository è troppo vecchia, CMake scarica da sola la

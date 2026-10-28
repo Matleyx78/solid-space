@@ -2,6 +2,10 @@
 
 - **Stato:** Accettato
 - **Data:** 2026-10-27
+- **Corretto:** 2026-10-27 — le citazioni di una tappa futura per numero (contesto
+  e punto 5) sono sostituite dall'evento che la fa nascere, perché le tappe del
+  piano iniziale non esistono più ([ADR 0007](0007-tappe-su-richiesta.md)); lo
+  decide il responsabile.
 
 ## Contesto
 
@@ -13,7 +17,7 @@ che cosa significa "in attesa" né con quale strumento si controlla il tutto.
 
 La tappa 0.1 non ha codice geometrico da eseguire: i casi si possono definire e
 validare, non ancora confrontare con un risultato. Il confronto arriva con la
-tappa 0.2.
+prima tappa che porta codice geometrico da provare.
 
 ## Decisione
 
@@ -42,7 +46,8 @@ tappa 0.2.
    giusto, provenienza dichiarata, voci di `sorgenti.json` complete, hash dei file
    scaricati già presenti in locale, righe di `in-attesa.txt` che puntano a casi
    esistenti. Non scarica nulla: i test non dipendono dalla rete. L'esecuzione dei
-   casi contro il codice entra con la tappa 0.2.
+   casi contro il codice entra con la prima tappa che porta codice geometrico da
+   provare.
 6. **Strumento.** Il validatore è uno script **Python 3 con sola libreria
    standard**, eseguito da `ctest`. Python è uno strumento di sviluppo, non una
    dipendenza della libreria: chi usa solid-space non ne ha bisogno.

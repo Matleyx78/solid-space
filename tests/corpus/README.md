@@ -1,8 +1,8 @@
 # Archivio dei casi di verifica
 
 Qui stanno i casi di verifica di solid-space: piccoli problemi con il risultato
-giusto già scritto, che dalla tappa 0.2 i test confrontano con il comportamento del
-codice. Il metodo è nell'[ADR 0004](../../docs/adr/0004-robustezza-e-verifica.md),
+giusto già scritto, che dalla prima tappa con codice geometrico da provare i test
+confrontano con il comportamento del codice. Il metodo è nell'[ADR 0004](../../docs/adr/0004-robustezza-e-verifica.md),
 le decisioni sul formato nell'[ADR 0005](../../docs/adr/0005-formato-dei-casi-di-verifica.md).
 Questo file è la **specifica completa del formato, versione 1**: per scrivere un
 caso non serve leggere altro.
@@ -70,11 +70,12 @@ Ogni valore ha una di queste forme:
   approssimato. Un conteggio è un valore esatto: `"6"`, non `6`.
 - `valore` e `tolleranza` sono chiavi riservate. `null` non è ammesso.
 - Testo che non sia una frazione non è ancora previsto. Quando un caso ne avrà
-  bisogno (per esempio gli `StableId` della genealogia, tappa 0.4) si aggiunge un
+  bisogno (per esempio gli `StableId` della genealogia, con la tappa che porta il naming) si aggiunge un
   campo al formato, come dice l'ADR 0005.
 - Che cosa si confronta per ciascuna chiave (volume, area, numero di facce,
   validità, genealogia) lo stabiliscono i pacchetti che eseguono i casi, dalla
-  tappa 0.2. Qui contano solo la forma e la provenienza.
+  prima tappa con codice geometrico da provare. Qui contano solo la forma e la
+  provenienza.
 
 ### `provenienza`
 
@@ -149,8 +150,8 @@ Controlla la **struttura**: i campi dei casi, di `sorgenti.json` e di
 `in-attesa.txt`, il loro tipo, la provenienza, l'hash delle copie locali e i
 riferimenti (la `sorgente` di un caso, i casi di `in-attesa.txt`). Ogni errore è
 una riga `file: campo: motivo` su stderr e l'esito è 1; con l'archivio valido l'esito
-è 0. **Non** esegue i casi contro il codice (entra con la tappa 0.2), non scarica
-file e non giudica se i valori attesi siano giusti.
+è 0. **Non** esegue i casi contro il codice (entra con la prima tappa con codice
+geometrico da provare), non scarica file e non giudica se i valori attesi siano giusti.
 
 I file in `prove/` sono sbagliati di proposito, uno per difetto: li usano i test del
 validatore e il validatore non li guarda.
