@@ -25,8 +25,8 @@ operazioni di `kernel` passano a `naming` la genealogia che emettono.
 | `features` | `solid_space::features` | grafo delle feature, rigenerazione, risoluzione dei riferimenti | `kernel`, `naming`, `solver` |
 
 Ogni componente è un target CMake con alias `solid_space::<nome>` e si compila da
-solo. Il CAD 2D di Tecnigrafo userà `robust` e `solver`, senza OCCT; l'opzione che
-spegne `kernel` e `features` si definirà nella tappa 0.1.
+solo. Il CAD 2D di Tecnigrafo userà `robust` e `solver`, senza OCCT: l'opzione
+CMake `SOLID_SPACE_BUILD_KERNEL=OFF` spegne `kernel` e `features`.
 
 ## Regole che valgono ovunque
 
@@ -80,9 +80,10 @@ tappa.
 | ADR | Titolo | Stato |
 |---|---|---|
 | [0000](adr/0000-modello.md) | Modello di ADR | Modello |
-| [0001](adr/0001-scopo-e-confini.md) | Scopo e confini | Proposto |
-| [0002](adr/0002-componenti-e-dipendenze.md) | Componenti e dipendenze | Proposto |
-| [0003](adr/0003-convenzioni.md) | Convenzioni di linguaggio, errori e stile | Proposto |
-| [0004](adr/0004-robustezza-e-verifica.md) | Robustezza e verifica | Proposto |
-| [0005](adr/0005-formato-dei-casi-di-verifica.md) | Formato dei casi di verifica e strumenti di controllo | Proposto |
-| [0006](adr/0006-build-ci-e-sottomoduli.md) | Build, CI e sottomoduli | Proposto |
+| [0001](adr/0001-scopo-e-confini.md) | Scopo e confini | Accettato |
+| [0002](adr/0002-componenti-e-dipendenze.md) | Componenti e dipendenze | Accettato |
+| [0003](adr/0003-convenzioni.md) | Convenzioni di linguaggio, errori e stile | Accettato |
+| [0004](adr/0004-robustezza-e-verifica.md) | Robustezza e verifica | Accettato |
+| [0005](adr/0005-formato-dei-casi-di-verifica.md) | Formato dei casi di verifica e strumenti di controllo | Accettato |
+| [0006](adr/0006-build-ci-e-sottomoduli.md) | Build, CI e sottomoduli | Accettato |
+| [0007](adr/0007-tappe-su-richiesta.md) | Le tappe nascono dalle richieste di Tecnigrafo | Accettato |

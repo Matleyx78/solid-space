@@ -94,7 +94,7 @@ Decisioni del responsabile che cambiano le regole o le tappe, in ordine di data.
   git). Ogni tappa parte da una richiesta e da un ADR di valutazione che decide se
   OCCT basta così com'è, se va corretto o migliorato, se serve un pezzo nostro o se
   il bisogno non spetta a solid-space
-  ([ADR 0007](adr/0007-tappe-su-richiesta.md), proposto).
+  ([ADR 0007](adr/0007-tappe-su-richiesta.md), accettato).
 - **2026-10-27: tappa 0.1 chiusa e citazioni di tappe corrette.** Il responsabile
   dichiara chiusa la tappa 0.1 e, poiché le tappe del piano iniziale non esistono
   più, autorizza a correggere negli ADR e negli altri documenti le citazioni di
