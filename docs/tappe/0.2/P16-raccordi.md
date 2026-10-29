@@ -93,8 +93,8 @@ toccano, parallele, cerchio e linea, arco e linea, raggio 0) e `CIRCLE` *Ttr* m 
 n (due linee con raggio 8, cerchio e linea con raggio 6) di
 `autocad-raccordi.dxf`:
 
-- registra in `sorgenti.json` (e, con la decisione 3 della sezione 5 del
-  piano, copia in `esterni/`) il DXF del
+- registra in `sorgenti.json`, con la copia obbligatoria in `esterni/`, il DXF
+  del
   repository [Matleyx78/dxf-test-file](https://github.com/Matleyx78/dxf-test-file)
   (licenza CC0, commit `4ad9fff8a88e65561f3998a56a95adf921b58792`, SHA-256
   `aecc6725a0d5b0b76c11eef4c9f93613e7beda91c0a2a225496ea8899118e842`) e lo

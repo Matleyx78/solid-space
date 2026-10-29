@@ -86,11 +86,11 @@ double quadraticToDouble(const Dyadic& a, const Dyadic& b, const Dyadic& d, cons
 - **Determinismo** (ADR 0008, punto 5): tutto il calcolo nei `.cpp`; le
   intestazioni interne dichiarano, non calcolano in virgola mobile; le opzioni
   dei target le ha messe P3.
-- Nessuna eccezione attraversa l'interfaccia (ADR 0003, punto 5). I numeri
-  esatti di qualunque grandezza allocano memoria, come i `std::vector` dei
-  risultati del contratto: `std::bad_alloc`, all'esaurimento della memoria, è
-  l'unica eccezione possibile, e come trattarla lo decide il responsabile prima
-  dell'apertura (piano, sezione 5). Le funzioni interne non sono `noexcept`.
+- Nessuna eccezione attraversa l'interfaccia, salvo `std::bad_alloc` quando la
+  memoria è esaurita (ADR 0003, punto 5, corretto): i numeri esatti di
+  qualunque grandezza allocano memoria, come i `std::vector` dei risultati del
+  contratto, e quell'eccezione non si intercetta. Le funzioni interne non sono
+  `noexcept`.
 - Nessun file comune. Nessun `CMakeLists.txt`: sorgenti e test li raccoglie la
   compilazione preparata da P3, che dà ai test di `tests/geom2d/` l'accesso a
   `geom2d/src/`. Il pacchetto non ha casi propri, quindi non tocca

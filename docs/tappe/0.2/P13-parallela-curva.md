@@ -67,11 +67,10 @@ grandezza della curva e di |d|; quella di un raggio è la stessa. R13 copre alme
   precisione del file, provenienza `file-pubblico`.
 
 R13 registra in `sorgenti.json` il DXF e lo script che lo ha prodotto (li usano
-anche R14a e R14b, che non li registrano di nuovo) e, se il responsabile ha preso
-la decisione 3 della sezione 5 del piano, ne mette la copia in `esterni/`. Casi,
-voci e copie stanno nella stessa pull request di riferimenti: la guardia della
-CI la accetta perché P1, da cui R13 dipende, conta allora `esterni/` tra i
-riferimenti. Senza la decisione, solo le voci.
+anche R14a e R14b, che non li registrano di nuovo) e ne mette la copia,
+obbligatoria, in `esterni/` (ADR 0005, punto 3). Casi, voci e copie stanno nella
+stessa pull request di riferimenti: la guardia della CI la accetta perché P1, da
+cui R13 dipende, conta `esterni/` tra i riferimenti.
 
 - `autocad-offset.dxf` del repository
   [Matleyx78/dxf-test-file](https://github.com/Matleyx78/dxf-test-file), licenza

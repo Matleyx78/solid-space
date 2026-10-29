@@ -143,3 +143,15 @@ Decisioni del responsabile che cambiano le regole o le tappe, in ordine di data.
   [ADR 0011](adr/0011-raccordi-e-tangenze-nel-piano.md) e
   [0012](adr/0012-curva-parallela-nel-piano.md), accettati con il loro
   contratto: le intestazioni `tangency.hpp` e `offset.hpp` di `geom2d`.
+- **2026-10-29: decisioni per la tappa 0.2.** Preparando il piano, il
+  responsabile decide: `atan2` segue lo standard C anche per gli zeri, cioè
+  `atan2(±0, −0)` vale ±π (il commento di `trigonometry.hpp` si allinea con il
+  pacchetto P5, issue `contratto` #31); `std::bad_alloc` è l'unica eccezione
+  che può attraversare un'interfaccia pubblica ([ADR 0003](adr/0003-convenzioni.md),
+  corretto); le copie dei file esterni in `tests/corpus/esterni/` sono
+  obbligatorie e sono riferimenti, come in Tecnigrafo
+  ([ADR 0005](adr/0005-formato-dei-casi-di-verifica.md), corretto); l'elenco dei
+  casi in attesa è l'unica eccezione alla regola che lega con "Dipende da" i
+  pacchetti che toccano gli stessi file
+  ([LAVORO-IN-PARALLELO.md](LAVORO-IN-PARALLELO.md), "Preparare il piano"), come
+  già si fa in Tecnigrafo.

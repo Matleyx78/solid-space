@@ -6,6 +6,11 @@
   è sostituita dall'evento che la fa nascere, perché le tappe del piano iniziale
   non esistono più ([ADR 0007](0007-tappe-su-richiesta.md)); lo decide il
   responsabile.
+- **Corretto:** 2026-10-29 — il punto 5 ammette una sola eccezione,
+  `std::bad_alloc` quando la memoria è esaurita, come per ogni contenitore della
+  libreria standard; lo decide il responsabile preparando la tappa 0.2, che
+  porta i primi risultati con `std::vector` e i numeri esatti di qualunque
+  grandezza.
 
 ## Contesto
 
@@ -36,7 +41,12 @@ da un progetto all'altro ritrova gli stessi comandi.
    per chi legge e il luogo del problema (identificativi stabili degli elementi
    coinvolti). Le eccezioni delle librerie esterne si fermano dentro il
    componente. Chi chiama l'interfaccia in modo che viola una precondizione
-   documentata ottiene un'asserzione in debug, non un risultato.
+   documentata ottiene un'asserzione in debug, non un risultato. **Unica
+   eccezione:** `std::bad_alloc`, quando la memoria è esaurita, può attraversare
+   le funzioni che allocano (contenitori della libreria standard nei risultati,
+   numeri esatti di grandezza qualsiasi), come in ogni programma C++ che usa la
+   libreria standard; non si intercetta né si trasforma in diagnosi. Le funzioni
+   dichiarate `noexcept` non allocano.
 6. **Nessun puntatore come riferimento.** Gli elementi si citano con identificativi
    stabili (ADR 0001 e VISIONE.md), mai con indirizzi di memoria.
 7. **Numeri.** Lunghezze in `double` nelle unità del modello, senza conversioni

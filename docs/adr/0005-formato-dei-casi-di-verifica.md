@@ -6,6 +6,13 @@
   e punto 5) sono sostituite dall'evento che la fa nascere, perché le tappe del
   piano iniziale non esistono più ([ADR 0007](0007-tappe-su-richiesta.md)); lo
   decide il responsabile.
+- **Corretto:** 2026-10-29 — le copie locali dei file esterni
+  (`tests/corpus/esterni/`) entrano nella disposizione (punto 1), sono
+  obbligatorie (punto 3) e sono riferimenti (punto 7), come in Tecnigrafo i file
+  che stanno nella cartella dei casi; il download verificato si rimanda al primo
+  file esterno che non conviene copiare (alternative). Lo decide il responsabile preparando la tappa 0.2, i
+  cui riferimenti portano i primi file esterni (i DXF di AutoCAD della tappa 0.7
+  di Tecnigrafo).
 
 ## Contesto
 
@@ -25,6 +32,7 @@ prima tappa che porta codice geometrico da provare.
    - `casi/<componente>/<nome>.json`: un caso per file;
    - `sorgenti.json`: i file presi dall'esterno;
    - `in-attesa.txt`: i casi non ancora obbligatori;
+   - `esterni/<nome>`: le copie dei file elencati in `sorgenti.json`;
    - `README.md`: la specifica completa del formato (la scrive P4).
 2. **Un caso** è un oggetto JSON con questi campi: `versione` del formato (1),
    `id` (uguale al nome del file senza estensione), `componente`, `descrizione`,
@@ -37,7 +45,8 @@ prima tappa che porta codice geometrico da provare.
 3. **`sorgenti.json`** elenca, per ogni file preso dall'esterno: nome, indirizzo,
    versione, hash SHA-256 e licenza (identificatore SPDX). Solo licenze compatibili
    con la GPLv3 e che permettono la ridistribuzione; se non è così, il file non
-   entra nel repository.
+   entra nel repository. Ogni file elencato ha la sua copia in `esterni/<nome>`,
+   e il validatore ne controlla l'hash.
 4. **Casi in attesa.** `in-attesa.txt` ha un caso per riga, con il numero della
    issue del pacchetto di lavoro che lo renderà obbligatorio. Un caso in attesa
    non fa fallire i test. Chi fa il lavoro toglie le righe del proprio pacchetto:
@@ -52,7 +61,8 @@ prima tappa che porta codice geometrico da provare.
    standard**, eseguito da `ctest`. Python è uno strumento di sviluppo, non una
    dipendenza della libreria: chi usa solid-space non ne ha bisogno.
 7. **Un pacchetto scrive riferimenti oppure fa il lavoro, mai entrambi.** Sono
-   riferimenti `tests/corpus/casi/` e `tests/corpus/sorgenti.json`;
+   riferimenti `tests/corpus/casi/`, `tests/corpus/sorgenti.json` e
+   `tests/corpus/esterni/`;
    `in-attesa.txt` può cambiare in entrambi i tipi di pacchetto. Lo controlla un
    job della CI (pacchetto P3 della tappa 0.1).
 
@@ -63,8 +73,10 @@ prima tappa che porta codice geometrico da provare.
 - **Formato a righe di testo, senza JSON:** più semplice, ma povero per valori
   strutturati (punti, facce, genealogia) e per le frazioni esatte.
 - **Validatore con download dei file esterni in ogni esecuzione:** rende i test
-  dipendenti dalla rete. Il download verificato si introduce con il primo file
-  esterno, in un passo separato della CI.
+  dipendenti dalla rete. Il download verificato si introduce solo con il primo
+  file esterno che non conviene copiare in `esterni/` (per esempio perché è
+  troppo grande), in un passo separato della CI; gli altri hanno la loro copia,
+  e il loro hash si controlla senza rete.
 
 ## Conseguenze
 

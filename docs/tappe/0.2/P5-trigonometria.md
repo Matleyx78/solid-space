@@ -18,6 +18,8 @@
 
 ## File
 
+- `robust/include/solid_space/robust/trigonometry.hpp`: **solo** la frase sugli
+  zeri del commento di `atan2`, come decide la issue `contratto` #31
 - `robust/src/trigonometry.cpp` (nuovo)
 - `robust/src/trigonometry_constants.hpp` (nuovo, privato, se serve)
 - `tests/robust/trigonometry_test.cpp` (nuovo)
@@ -28,7 +30,7 @@
 
 Realizzare, senza cambiarle, `sinCos` e `atan2` di `trigonometry.hpp`: errore al
 più `kTrigMaxErrorUlps` (2 ulp) dal valore esatto, angoli di `sinCos` fino a
-`kMaxTrigArgument` (2^20), zeri con segno di `atan2` come dice il commento, e gli
+`kMaxTrigArgument` (2^20), zeri con segno di `atan2` come lo standard C (issue #31), e gli
 stessi bit su ogni piattaforma.
 
 - **Solo operazioni arrotondate correttamente** (somme, prodotti, divisioni,
@@ -50,18 +52,21 @@ stessi bit su ogni piattaforma.
 | Operazione | `ingresso` | `atteso` |
 |---|---|---|
 | `sinCos` | `angolo` | `seno`, `coseno`: approssimati |
-| `atan2` | `y`, `x` | `angolo`: approssimato, oppure esatto per i valori garantiti (`atan2(+0, +0)` è 0) |
+| `atan2` | `y`, `x` | `angolo`: approssimato, oppure esatto per i valori garantiti (`atan2(±0, +0)` è ±0) |
 
 Dove conta lo zero con segno, `atteso` aggiunge per il valore la chiave
 `<nome>_negativo` (`seno_negativo`, `angolo_negativo`): vero quando il risultato
 ha il bit del segno (`std::signbit`). Il confronto esatto non distingue +0 da −0
 (P2), e questa chiave sì. Lo zero negativo in ingresso si scrive `"-0x0p+0"`.
 
-**Da decidere prima di R5b.** `trigonometry.hpp` dice che `atan2(0, 0)` è 0 e che
-gli zeri con segno seguono lo standard C, che però dà ±π per `atan2(±0, −0)`. R5b
-non scrive casi con x = −0 e y = ±0 finché il responsabile non lo decide (piano,
-sezione 5); se la decisione cambia il commento dell'intestazione, è una modifica
-del contratto con l'etichetta `contratto`.
+**Gli zeri di `atan2`** (issue `contratto` #31, decisa dal responsabile il
+2026-10-29). Il commento di `trigonometry.hpp` si contraddiceva («gli zeri con
+segno seguono lo standard C» e «`atan2(0, 0)` è 0»). Vale lo standard C:
+`atan2(±0, +0)` è ±0 e `atan2(±0, −0)` è ±π (il `double` più vicino a π, con il
+segno di y). Questo pacchetto cambia la frase del commento, «atan2(0, 0) is 0»,
+in «atan2(±0, +0) is ±0 and atan2(±0, −0) is ±π», e nient'altro
+dell'intestazione. R5b scrive i quattro casi con questi valori; `math.atan2` di
+Python dà gli stessi.
 
 La tolleranza di un valore è 2 ulp del valore esatto (2 · 2^-1074 quando il valore
 esatto è 0). **R5a** copre almeno: una griglia di angoli in [−2π, 2π]; i
@@ -75,8 +80,10 @@ di Python ad alta precisione; `provenienza` dice quante cifre e come.
 
 ## Regole della tappa che valgono qui
 
-- **Contratto:** `trigonometry.hpp` non cambia, commenti compresi. Se qualcosa
-  manca o non torna, fermati e scrivilo nella issue (etichetta `contratto`).
+- **Contratto:** `trigonometry.hpp` non cambia, commenti compresi, salvo la frase
+  sugli zeri di `atan2` che questa scheda autorizza (issue `contratto` #31; ADR
+  0007, punto 15). Se qualcos'altro manca o non torna, fermati e scrivilo nella
+  issue (etichetta `contratto`). La pull request chiude anche #31 (`Closes #31`).
 - **Determinismo** (ADR 0008, punto 5): tutto il calcolo nel `.cpp`; le opzioni
   dei target le ha messe P3 e non si toccano.
 - Le precondizioni violate sono `assert`; nessuna eccezione esce.
@@ -98,6 +105,8 @@ di Python ad alta precisione; `provenienza` dice quante cifre e come.
 
 - `sinCos` e `atan2` sono realizzate come dichiara `trigonometry.hpp`, senza
   funzioni trigonometriche della libreria standard e senza codice copiato.
+- Il commento di `atan2` dice gli zeri come la issue #31, e il resto
+  dell'intestazione non è cambiato.
 - I casi di `[0.2-R5a]` e `[0.2-R5b]` passano e i loro
   blocchi sono tolti da `in-attesa.txt`.
 - Il job del determinismo è verde.
