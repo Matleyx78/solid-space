@@ -13,15 +13,23 @@ successivo. Il titolo dice il bisogno, non la soluzione.
 
 | Esito | Formato | Che cosa nasce |
 |---|---|---|
-| 1. OCCT basta così com'è | breve | tappa piccola, o nessuna |
-| 2. OCCT va corretto o migliorato | completo | tappa con i pacchetti |
-| 3. Serve un pezzo nostro | completo | tappa con i pacchetti |
-| 4. Non spetta a solid-space | breve | nessuna tappa |
+| 1. OCCT basta così com'è | breve | pacchetti nella tappa, o nessuno |
+| 2. OCCT va corretto o migliorato | completo, con il contratto | pacchetti nella tappa |
+| 3. Serve un pezzo nostro | completo, con il contratto | pacchetti nella tappa |
+| 4. Non spetta a solid-space | breve | nessun pacchetto |
+
+I pacchetti stanno nella tappa di solid-space che corrisponde alla tappa di
+Tecnigrafo da cui nasce la richiesta (ADR 0007, punto 10).
 
 Si sceglie in quest'ordine: spetta a solid-space? basta OCCT così com'è? il
 problema sta dentro ciò che la facciata può correggere? altrimenti serve un pezzo
 che OCCT non ha. Sostituire un modulo di OCCT non è un esito: serve un ADR con i
 dati dell'archivio e una soglia dichiarata prima (ADR 0007, punto 6).
+
+**Quando decide un vincolo già preso** (per il 2D, l'ADR 0030 di Tecnigrafo,
+punto 5, esclude OCCT da `core`), la valutazione lo cita in una o due righe
+invece di rifare il confronto con OCCT, e usa lo spazio per il pezzo nostro e
+per il contratto (ADR 0007, punto 8).
 
 ## Intestazione (uguale nei due formati)
 
@@ -30,7 +38,7 @@ dati dell'archivio e una soglia dichiarata prima (ADR 0007, punto 6).
 
 - **Stato:** Proposto | Accettato | Sostituito da ADR NNNN
 - **Data:** AAAA-MM-GG
-- **Richiesta:** #N — da Tecnigrafo: tappa X.Y, <collegamento>
+- **Richiesta:** #N — da Tecnigrafo: tappa X.Y, Matleyx78/tecnigrafo#N
 - **Esito:** 1 OCCT basta | 2 OCCT da correggere o migliorare | 3 pezzo nostro | 4 non spetta a solid-space
 - **Tappa:** X.Y ([scheda](../tappe/X.Y-nome.md)) | nessuna
 ```
@@ -59,15 +67,27 @@ Il bisogno di Tecnigrafo in tre o quattro righe, con il collegamento alla issue
 - Esito 2: dove sta il problema (quale operazione, quali casi) e quale parte si
   corregge dentro la facciata.
 - Esito 3: perché OCCT non offre il pezzo e in quale componente (ADR 0002) sta.
+  Se un vincolo già preso esclude OCCT, basta citarlo.
 
 ## Alternative considerate
 
-Gli altri esiti, uno per uno, con il motivo per cui si scartano. Per l'esito 3,
-anche l'eventuale uso di una libreria esistente.
+Gli altri esiti, uno per uno, con il motivo per cui si scartano (una riga
+ciascuno, se li esclude un vincolo già preso). Per l'esito 3, anche l'eventuale
+uso di una libreria esistente.
 
 ## Decisione
 
 Che cosa si fa, in frasi numerate e verificabili.
+
+## Contratto
+
+Le intestazioni pubbliche in bozza che stanno nella stessa pull request (ADR
+0007, punto 15), con il percorso di ciascuna: che cosa dichiarano, quale errore
+garantisce ogni costruzione, quali diagnosi restituiscono. Compilano senza
+implementazione. Quando l'ADR è accettato diventano il contratto con Tecnigrafo:
+da allora si cambiano solo con una decisione dei due progetti (etichetta
+`contratto`). Se la valutazione non cambia interfacce pubbliche, si scrive
+«nessuno».
 
 ## Conseguenze
 

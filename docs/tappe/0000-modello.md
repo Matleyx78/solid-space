@@ -2,13 +2,14 @@
 
 - **Stato:** in preparazione | aperta | chiusa
 - **Componente:** uno o più componenti, oppure "tutti"
-- **Nasce da:** richiesta #… e [ADR NNNN](../adr/NNNN-titolo-breve.md) di valutazione
+- **Per la tappa di Tecnigrafo:** X.Y
+- **Nasce da:** richieste #…, #…, ciascuna con il suo [ADR NNNN](../adr/NNNN-titolo-breve.md) di valutazione
 - **Milestone GitHub:** `vX.Y`
 - **Apertura:** AAAA-MM-GG — **Chiusura:** AAAA-MM-GG
 
 <!--
-Una tappa nasce da una richiesta di Tecnigrafo e dal suo ADR di valutazione (ADR
-0007). Una tappa "in preparazione" compila solo le sezioni 1-4 (la scheda),
+Una tappa raccoglie le richieste di una tappa di Tecnigrafo, ciascuna con il suo
+ADR di valutazione (ADR 0007, punto 10). Una tappa "in preparazione" compila solo le sezioni 1-4 (la scheda),
 ricavandole dall'ADR. All'apertura il responsabile aggiunge le sezioni 5-8 (il
 piano dettagliato).
 La scheda della tappa 0.1 è anteriore a questo modello e non nasce da una

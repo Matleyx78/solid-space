@@ -2,6 +2,8 @@ Closes #<!-- numero della issue del pacchetto o del bug -->
 
 **Tappa e pacchetto:** <!-- es. 0.2 / P3, 0.2 / R3 (riferimenti), oppure "correzione di un errore" -->
 
+**Sblocca:** <!-- le issue di Tecnigrafo che questo pacchetto sblocca, scritte come Matleyx78/tecnigrafo#N (GitHub mostra il rimando in quelle issue), oppure "niente" (ADR 0007, punto 16) -->
+
 ## Cosa cambia
 
 <!-- Due o tre frasi. -->
@@ -13,6 +15,7 @@ Closes #<!-- numero della issue del pacchetto o del bug -->
 - [ ] Ho toccato solo i file elencati nel pacchetto (o ho spiegato qui perché no)
 - [ ] Ogni condizione "Fatto quando" del pacchetto è verificata
 - [ ] Rispetta gli ADR (nessuna nuova dipendenza, nessuna intestazione pubblica con tipi di OCCT o libslvs)
+- [ ] Non cambia le intestazioni di un contratto accettato, oppure la scheda del pacchetto lo autorizza (etichetta `contratto`, ADR 0007, punto 15)
 - [ ] Test richiesti presenti e funzionanti
 - [ ] Modalità di controllo (ADR 0004), se esiste `tests/corpus/`:
   - lavoro: non ho toccato i casi che non sono del mio pacchetto
