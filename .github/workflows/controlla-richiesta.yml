@@ -1,0 +1,84 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 The solid-space authors
+#
+# Checks `richiesta` issues (ADR 0007, point 3) and comments on what is missing.
+# One comment per issue, updated in place; it never closes, labels or edits the
+# issue. The checker and its tests live in .github/scripts/.
+name: Richiesta
+
+on:
+  issues:
+    types: [opened, edited, reopened, labeled]
+  pull_request:
+    paths:
+      - .github/scripts/controlla-richiesta*.js
+      - .github/workflows/controlla-richiesta.yml
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Check request
+    if: >-
+      github.event_name == 'issues' &&
+      contains(github.event.issue.labels.*.name, 'richiesta') &&
+      (github.event.action != 'labeled' || github.event.label.name == 'richiesta')
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      issues: write
+    concurrency:
+      group: richiesta-${{ github.event.issue.number }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/scripts
+          persist-credentials: false
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const path = `${process.env.GITHUB_WORKSPACE}/.github/scripts/controlla-richiesta.js`;
+            const { MARKER, check, render } = require(path);
+            const issue = context.payload.issue;
+            const problems = check(issue.title, issue.body || '');
+            const params = { ...context.repo, issue_number: issue.number };
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              ...params,
+              per_page: 100,
+            });
+            const previous = comments.find(
+              (c) => c.user && c.user.type === 'Bot' && (c.body || '').includes(MARKER),
+            );
+            // A complete request gets a comment only to replace an earlier list.
+            if (problems.length === 0 && !previous) {
+              core.info('Request complete.');
+              return;
+            }
+            const body = render(problems);
+            if (previous && previous.body === body) {
+              core.info('Comment already up to date.');
+            } else if (previous) {
+              await github.rest.issues.updateComment({
+                ...context.repo,
+                comment_id: previous.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({ ...params, body });
+            }
+            core.info(problems.length === 0 ? 'Request complete.' : problems.join('\n'));
+
+  test:
+    name: Request checker tests
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node --test .github/scripts/controlla-richiesta.test.js

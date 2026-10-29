@@ -76,18 +76,32 @@ Le regole sono nell'[ADR 0004](adr/0004-robustezza-e-verifica.md).
 
 ## 4. Il rapporto con Tecnigrafo
 
-| Quando in Tecnigrafo | Che cosa prende da solid-space |
-|---|---|
-| Tappa 0.7, comandi di modifica | predicati robusti (`robust`) per intersezioni, trim e offset |
-| Tappa dei vincoli 2D | `solver` con chiavi handle più ruolo, senza OCCT |
-| Fase 2, modellatore 3D | `kernel`, `naming`, `features` |
+| Quando in Tecnigrafo | Che cosa prende da solid-space | Tappa di solid-space |
+|---|---|---|
+| Tappa 0.7, comandi di modifica | decisioni e costruzioni geometriche robuste del piano per intersezioni, trim, raccordi e offset (richieste #20–#23) | 0.2, in preparazione |
+| Tappa dei vincoli 2D | `solver` con chiavi handle più ruolo, senza OCCT | quella che nascerà dalle sue richieste |
+| Fase 2, modellatore 3D | `kernel`, `naming`, `features` | quelle che nasceranno dalle sue richieste |
 
-La tabella è una previsione, non un impegno: che cosa Tecnigrafo prende davvero, e
-quando, lo stabiliscono le sue richieste
-([ADR 0007](adr/0007-tappe-su-richiesta.md)).
+Dalla seconda riga in giù la tabella è una previsione, non un impegno: che cosa
+Tecnigrafo prende davvero, e quando, lo stabiliscono le sue richieste. Le regole
+del rapporto sono nell'[ADR 0007](adr/0007-tappe-su-richiesta.md), corretto il
+2026-10-29:
 
-Come Tecnigrafo incorpora la libreria (sottomodulo, `FetchContent` o altro) si
-decide con l'ADR di Tecnigrafo che introduce la dipendenza.
+- a ogni tappa di Tecnigrafo che chiede qualcosa corrisponde una tappa di
+  solid-space, aperta insieme a quella (punti 10–12);
+- la richiesta nasce e vive qui, in una sola issue (punto 3);
+- la valutazione porta il contratto, le intestazioni pubbliche in bozza su cui
+  Tecnigrafo scrive le sue schede (punto 15);
+- ogni pacchetto unito è utilizzabile, e Tecnigrafo non aspetta la fine della
+  tappa ma il pacchetto che gli serve (punto 16);
+- la verità geometrica sta nell'archivio dei casi di solid-space, e i riferimenti
+  di Tecnigrafo verificano la traduzione dalle entità alle curve e i comandi
+  (punto 17).
+
+Come Tecnigrafo incorpora la libreria lo decide il suo ADR 0030: un sottomodulo
+fissato a un commit di `main`. Con la correzione decisa dal responsabile il
+2026-10-29, lo aggiorna il pacchetto di Tecnigrafo che usa il pezzo nuovo, al
+commit che chiude il pacchetto di solid-space.
 
 ## 5. Appendice: Non ora
 

@@ -168,6 +168,48 @@ validatore e il validatore non li guarda.
 6. Esegui il validatore. Una pull request di riferimenti tocca solo
    `tests/corpus/` (ADR 0005, punto 7).
 
+## Casi che arrivano da Tecnigrafo
+
+L'archivio è la **verità geometrica** dei due progetti
+([ADR 0007](../../docs/adr/0007-tappe-su-richiesta.md), punto 17): i calcoli
+delicati si fanno una volta sola, qui, e i riferimenti di Tecnigrafo citano questi
+casi invece di rifarli.
+
+- **Da dove arrivano.** Dai «casi concreti» delle issue `richiesta` e dai file
+  DXF di prova che Tecnigrafo allega al piano di una sua tappa, spesso salvati da
+  AutoCAD. Entrano qui con un pacchetto di riferimenti della tappa di solid-space,
+  come ogni altro caso: valori attesi indipendenti da solid-space e da
+  Tecnigrafo, provenienza scritta.
+- **I file DXF.** Un DXF preso da Tecnigrafo è un file esterno: ha la sua voce in
+  `sorgenti.json`, con l'indirizzo del file nel repository di Tecnigrafo **a un
+  commit preciso** (non `main`), quel commit come `versione`, l'hash e la licenza.
+  I valori letti dal file (coordinate, punti calcolati da AutoCAD) hanno
+  provenienza `file-pubblico`; quelli ricavati a mano dagli stessi dati hanno
+  `calcolo-a-mano` o `aritmetica-esatta`.
+- **Il nome.** L'`id` dice che cosa prova, non da dove viene; la `descrizione`
+  cita la richiesta (`#N`) e, se c'è, il file e le entità di Tecnigrafo da cui
+  nasce.
+- **Il componente.** Il caso sta nella cartella del componente che lo deve
+  superare. Un componente nuovo entra nell'elenco qui sopra con l'ADR che lo
+  introduce.
+
+### Disaccordi con Tecnigrafo
+
+Se un riferimento di Tecnigrafo e un caso di questo archivio danno valori diversi
+per la stessa geometria:
+
+1. si apre una issue **in solid-space**, con i due valori, il caso e il
+   riferimento di Tecnigrafo citati in forma assoluta
+   (`Matleyx78/tecnigrafo#N` o il percorso del file a un commit);
+2. **decide l'archivio**: Tecnigrafo allinea il suo riferimento al caso;
+3. se è il caso a essere sbagliato, lo corregge un pacchetto di riferimenti di
+   solid-space, scritto da un agente diverso da chi ha scritto il caso, e la
+   issue lo cita. Il codice non si adatta mai al valore che si ritiene sbagliato
+   (AGENTS.md, "In un pacchetto di lavoro").
+
+Chi lavora a solid-space non scrive in Tecnigrafo per allineare il riferimento:
+lo segnala al responsabile.
+
 ## Cambiare il formato
 
 Il formato è un contratto (ADR 0005): un campo si aggiunge, non si cambia; per
