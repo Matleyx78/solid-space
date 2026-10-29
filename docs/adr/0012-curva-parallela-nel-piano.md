@@ -1,0 +1,222 @@
+# ADR 0012: Curva parallela di linee, archi, cerchi e polilinee del piano
+
+- **Stato:** Proposto
+- **Data:** 2026-10-29
+- **Richiesta:** #22 — da Tecnigrafo: tappa 0.7, Matleyx78/tecnigrafo#328
+- **Esito:** 3 pezzo nostro
+- **Tappa:** 0.2 (scheda da scrivere all'apertura)
+
+## Richiesta
+
+Tecnigrafo chiede la curva parallela a una distanza data, dal lato indicato da
+un punto, di una linea, di un arco, di un cerchio e di una polilinea aperta o
+chiusa fatta di segmenti e archi: il risultato di `OFFSET` di AutoCAD con
+`OFFSETGAPTYPE=0` (giunzioni chiuse prolungando i pezzi, pezzi che si
+annullano tolti). Nei casi semplici il risultato deve essere sempre giusto,
+entro un errore dichiarato e senza autointersezioni; negli altri, un risultato
+senza autointersezioni o una risposta che dice che non è riuscito, mai un
+risultato sbagliato in silenzio. Tecnigrafo deve sapere che cosa è garantito,
+per scriverlo al suo utente. Il testo completo è nella issue #22.
+
+## Valutazione
+
+- **Spetta a solid-space:** la curva parallela è un compito di `geom2d`
+  ([ADR 0008](0008-componente-geom2d.md), punto 2, prerequisito di questa
+  valutazione), e le giunzioni sono intersezioni dell'[ADR
+  0010](0010-posizione-e-intersezioni-nel-piano.md): devono venire dalle stesse
+  decisioni esatte.
+- **Esiti 1 e 2 esclusi da un vincolo già preso:** `core` di Tecnigrafo compila
+  senza librerie esterne, quindi senza OCCT (ADR 0030 di Tecnigrafo, punto 5;
+  [ADR 0007](0007-tappe-su-richiesta.md), punto 8).
+- **Esito 3**, in `geom2d`, sopra le curve, le intersezioni e il lato dell'ADR
+  0010 e la regola delle tolleranze dell'[ADR
+  0009](0009-regola-delle-tolleranze-del-piano.md).
+- **Che cosa vuol dire "giusto".** La richiesta dà la regola di AutoCAD, non una
+  definizione. Questo ADR ne scrive una, sui valori esatti, in quattro passi
+  (`offset.hpp`): ogni pezzo si sposta; due pezzi vicini si uniscono nel loro
+  punto comune più vicino al vertice, o con un arco centrato nel vertice se le
+  curve prolungate non si incontrano; un pezzo che le giunzioni girano al
+  contrario si toglie; i pezzi ridotti esattamente a un punto si tolgono. Nei
+  casi semplici è il comportamento di AutoCAD osservato in
+  `autocad-offset.dxf` e riassunto nella bozza dell'ADR 0035 di Tecnigrafo,
+  punto 8 (Matleyx78/tecnigrafo#330).
+- **Su che cosa si basa:** il testo della richiesta, il calcolo a mano dei suoi
+  casi (sotto) e, come informazione, la descrizione dei casi di
+  `autocad-offset.dxf`. **Non verificato:** nessun prototipo è stato eseguito;
+  le prestazioni sono un obiettivo da misurare; e il caso g di
+  `autocad-offset.dxf` (l'arco che sparisce con distanza 5) non si è potuto
+  confrontare con i quattro passi senza le sue coordinate: se AutoCAD chiude la
+  giunzione in un modo che i passi non danno, lo segnala il pacchetto di
+  riferimenti e decide il responsabile, con l'etichetta `contratto`.
+
+### I casi della richiesta
+
+| Caso | Risposta |
+|---|---|
+| 1. Rettangolo chiuso 100×50, `d` = 10, verso l'interno e l'esterno | semplici: il rettangolo 80×30 dentro e 120×70 fuori, con gli spigoli vivi, perché due lati consecutivi prolungati si incontrano sempre |
+| 2. Asola (due segmenti paralleli e due semicerchi tangenti), verso l'interno e l'esterno | semplici se `d` è minore del raggio R dei semicerchi verso l'interno, e sempre verso l'esterno: l'asola con semicerchi di raggio R − `d` o R + `d`. Nei punti di tangenza i pezzi spostati hanno lo stesso estremo esatto, quindi non serve una giunzione. Verso l'interno con `d` ≥ R i semicerchi si annullano e le due rette spostate non si incontrano o coincidono: `failed` |
+| 3. Polilinea a L con un lato più corto di `d`, verso l'interno dell'angolo | non semplice: il lato corto, tagliato dalla giunzione, gira al contrario e si toglie (passo 3); il risultato è quello dei passi, senza autointersezioni, oppure `failed` |
+| 4. Polilinea con un arco interno di raggio minore di `d` | non semplice: l'arco si annulla (passo 1, confronto esatto tra raggio e distanza) e i vicini si uniscono nel loro punto comune; se non si incontrano, `failed` con `openJoint` |
+| 5. Polilinea a U stretta, `d` maggiore di metà larghezza | il fondo gira al contrario e si toglie, i due lati spostati sono paralleli e non si incontrano: `failed` con `openJoint`. AutoCAD non crea nulla (caso f di `autocad-offset.dxf`) |
+| 6. Gli stessi casi a coordinate dell'ordine di 1e6 | le stesse risposte per i dati traslati, che sono già arrotondati; gli errori sono relativi a M = 1e6 (circa 3.6e-9 per i vertici, 1.4e-8 per le curve) |
+
+## Alternative considerate
+
+- **Esito 1 o 2 (OCCT, `BRepOffsetAPI_MakeOffset`):** esclusi dall'ADR 0030 di
+  Tecnigrafo, punto 5.
+- **Esito 4, la curva parallela in Tecnigrafo:** le giunzioni sono
+  intersezioni, e i controlli sulle autointersezioni sono le decisioni esatte
+  dell'ADR 0010; rifarli in Tecnigrafo significherebbe due implementazioni
+  delle stesse decisioni.
+- **Un algoritmo generale** (curva grezza, poi taglio delle parti più vicine
+  della distanza, come le librerie di offset di poligoni): copre più casi non
+  semplici, ma è un pezzo molto più grande da scrivere e da provare, e la
+  richiesta chiede garanzie solo nei casi semplici. Se Tecnigrafo ne avrà
+  bisogno, nascerà da una richiesta; il contratto non lo impedisce, perché
+  negli altri casi promette solo "un risultato senza autointersezioni o
+  `failed`".
+- **Una libreria esistente** (Clipper2, licenza Boost): lavora su poligoni a
+  coordinate intere e approssima gli archi con segmenti, mentre il risultato
+  deve tornare una polilinea con archi; e `core` non ha dipendenze esterne.
+- **Restituire il risultato anche quando si autointerseca**, lasciando il
+  controllo a Tecnigrafo: un risultato sbagliato potrebbe uscire in silenzio,
+  che la richiesta esclude.
+- **Il controllo delle autointersezioni del tutto esatto anche tra pezzi
+  consecutivi:** una retta tangente a un arco in un vertice, dopo
+  l'arrotondamento, può toccarlo o tagliarlo di nuovo a una distanza minima dal
+  vertice; il controllo esatto darebbe `failed` proprio nei casi comuni (l'asola
+  del caso 2). Per i pezzi consecutivi vale la regola dell'ADR 0009, e per
+  questo la funzione riceve la `TolerancePolicy`.
+- **Il lato come punto, dentro `geom2d`:** per una polilinea il lato dipende dal
+  pezzo più vicino al punto, cioè da una proiezione, che resta a Tecnigrafo
+  (ADR 0010, punto 9). La distanza con segno, sinistra positiva come in
+  `side()`, tiene il contratto piccolo; Tecnigrafo ottiene il segno con
+  `side()` sul pezzo che sceglie.
+- **Una diagnosi per `failed` e `vanished`:** non sono errori nei dati ma
+  risposte. Sono valori (`OffsetOutcome`, `OffsetFailure`), e i codici di
+  diagnosi dell'ADR 0010 non cambiano.
+
+## Decisione
+
+1. **La curva parallela sta in `geom2d`**, nell'intestazione `offset.hpp`, con
+   due funzioni: `offsetCurve` per una curva e `offsetPolyline` per una
+   polilinea.
+2. **La distanza ha il segno del lato:** positiva a sinistra, negativa a
+   destra, guardando nella direzione della curva (`side()`); per un cerchio e
+   per un arco antiorario la sinistra è l'interno. Zero dà la curva stessa.
+3. **Una curva** si sposta sempre, e il risultato è dello stesso tipo: un
+   segmento lungo la normale; un cerchio e un arco cambiano solo il raggio
+   (l'arco tiene angolo iniziale e ampiezza, quindi le stesse direzioni esatte
+   D0 e D1 dell'ADR 0010); un segmento di polilinea curvo tiene il bulge, quindi
+   lo stesso angolo al centro. Se il nuovo raggio, confrontato esattamente con
+   zero, è zero o negativo, la risposta è `vanished`.
+4. **Una polilinea** dà il risultato definito dai quattro passi di `offset.hpp`,
+   sui valori esatti: spostamento dei pezzi, giunzioni nel punto comune più
+   vicino al vertice o con un arco di raggio |`d`| centrato nel vertice, pezzi
+   girati al contrario tolti, pezzi ridotti a un punto tolti. Le decisioni dei
+   passi (dove si incontrano due curve, quale punto è più vicino al vertice,
+   se un pezzo gira al contrario) sono esatte.
+5. **Mai un risultato sbagliato in silenzio.** Prima di restituire `done`,
+   `offsetPolyline` controlla sui `double` del risultato che due pezzi non
+   consecutivi non abbiano punti comuni (esatto, come `intersect()`), che due
+   pezzi consecutivi si incontrino solo nel vertice comune o in punti che
+   coincidono con esso per la regola dell'ADR 0009, e che il risultato non
+   incontri la polilinea di partenza. Altrimenti risponde `failed`, con il
+   motivo (`OffsetFailure`).
+6. **Che cosa è garantito**, la risposta alla domanda di Tecnigrafo:
+   - linee, archi e cerchi: sempre `done` o `vanished`;
+   - polilinee nei **casi semplici** (nessun pezzo si annulla o si toglie, e
+     il risultato esatto resta più lontano di epsilon(M), ADR 0009, da se
+     stesso e dalla polilinea di partenza): sempre `done`, con `simple` vero,
+     e il risultato è quello esatto entro gli errori del punto 7;
+   - polilinee negli **altri casi**: `done` con il risultato dei passi, senza
+     autointersezioni e senza incontrare la polilinea di partenza, oppure
+     `failed`. Può differire da AutoCAD.
+7. **Errori dichiarati.** I vertici entro `kRelativePointError` (2^-48) ·
+   max(M, |p|) dai vertici esatti; ogni punto del risultato entro
+   `kRelativeOffsetError` = 2^-46 · max(M, |p|) dalla curva esatta, e il
+   contrario. 2^-46 è 16 volte sotto la tolleranza relativa dell'ADR 0009. M è
+   la grandezza dei dati e di |`d`|.
+8. **Le origini dei pezzi.** Il risultato dice per ogni pezzo da quale pezzo
+   di partenza viene, o attorno a quale vertice gira se è un arco di giunzione
+   (`OffsetPiece`), così Tecnigrafo conserva le larghezze dei pezzi che restano.
+9. **Dominio e diagnosi** come nell'ADR 0010; una distanza non finita è
+   `invalidValue`, una oltre `kMaxCoordinate` è `outOfDomain`; una giunzione
+   che cadrebbe oltre il dominio dà `failed` con `beyondDomain`. I pezzi della
+   polilinea ridotti esattamente a un punto (vertici ripetuti) si tolgono senza
+   diagnosi. I codici di diagnosi non cambiano.
+10. **Determinismo:** la regola dell'ADR 0008, punto 5.
+11. **Prestazioni**, obiettivo da misurare nella tappa: il controllo del punto 5
+    confronta ogni coppia di pezzi; per le polilinee dei disegni (fino a
+    qualche centinaio di pezzi) resta sotto il tempo di un comando. Una
+    struttura che riduca le coppie, se servirà, non cambia il contratto.
+12. **Obiettivi raggiungibili adottati.** Si garantisce il punto 6. **Non** si
+    garantiscono: un risultato negli altri casi, né che coincida con quello di
+    AutoCAD; le giunzioni di `OFFSETGAPTYPE` 1 e 2 (archi e smussi). Restano a
+    Tecnigrafo il lato da un punto, le larghezze, i layer e il comando.
+
+## Contratto
+
+Intestazione pubblica in bozza in questa pull request ([ADR
+0007](0007-tappe-su-richiesta.md), punto 15):
+
+- `geom2d/include/solid_space/geom2d/offset.hpp`: `kRelativeOffsetError`,
+  `OffsetOutcome`, `CurveOffset`, `offsetCurve`, `OffsetFailure`,
+  `PieceOrigin`, `OffsetPiece`, `PolylineOffset`, `offsetPolyline`.
+
+Usa senza cambiarli i tipi del contratto dell'ADR 0010 (`curves.hpp`,
+`diagnosis.hpp`) e `TolerancePolicy` dell'ADR 0009. Le funzioni sono solo
+dichiarate; il test `tests/geom2d/contract_test.cpp` controlla che
+l'intestazione compili con le firme dichiarate, senza chiamare nulla di non
+realizzato.
+
+## Conseguenze
+
+- Componente: `geom2d`. Nessuna nuova dipendenza.
+- **Per Tecnigrafo** (lo decide il responsabile): il punto 9 della bozza
+  dell'ADR 0035 ("che cosa si garantisce") può citare il punto 6 di questo ADR,
+  con la definizione di caso semplice scritta qui, che aggiunge la distanza di
+  epsilon(M); la scheda del pacchetto della curva parallela (P17 nella bozza
+  della #330) si scrive su `offset.hpp`, con il lato tradotto in segno da
+  `side()` e i tre esiti `done`, `vanished`, `failed` che corrispondono già ai
+  suoi `Done`, `Vanished`, `Failed`. La verità geometrica dei casi sta in
+  `tests/corpus/` (ADR 0007, punto 17).
+- Rischio: le giunzioni tra curve spostate e il controllo finale sono il pezzo
+  più grande della tappa. Dipende dalle intersezioni dell'ADR 0010 e dalla
+  regola dell'ADR 0009, quindi viene dopo i loro pacchetti, con un pacchetto
+  per le curve singole e uno per le polilinee, ciascuno con i suoi riferimenti.
+
+## Verifica
+
+- **Casi di riferimento** in `tests/corpus/casi/geom2d/`, scritti prima da un
+  agente diverso da chi scrive il codice (ADR 0004):
+  - i sei casi della richiesta, con le risposte della tabella sopra, alle due
+    scale, con i dati in `double` come Tecnigrafo li darebbe;
+  - i casi a–h di `autocad-offset.dxf`, che Tecnigrafo porta nell'archivio con
+    la sua provenienza (ADR 0007, punto 17);
+  - i casi limite: distanza esattamente uguale al raggio (`vanished`) e un ulp
+    sotto; pezzi tangenti nei vertici, aperti e chiusi; vertici ripetuti;
+    inversione di 180° (giunzione ad arco); polilinea di un solo pezzo; distanza
+    zero; giunzione oltre il dominio; un caso `failed` per ciascun motivo.
+- **Valori attesi** da aritmetica esatta: le decisioni con `fractions` di Python
+  e confronti tra numeri algebrici; vertici e curve con il modulo `decimal` ad
+  alta precisione, con la tolleranza del caso pari all'errore dichiarato. Per i
+  casi di AutoCAD, i valori del DXF, con la tolleranza della precisione del
+  file.
+- **Proprietà**, provate dai test del pacchetto su dati generati in modo
+  deterministico: ogni `done` supera il controllo del punto 5 rifatto con
+  `intersect()`; ogni vertice di una giunzione non ad arco dista |`d`| dalle
+  rette o dai cerchi dei due pezzi di partenza entro l'errore dichiarato;
+  `offsetPolyline` di una polilinea di un pezzo concorda con `offsetCurve`;
+  spostare di `d` e poi di −`d` un caso semplice senza giunzioni restituisce la
+  polilinea di partenza entro il doppio dell'errore.
+- **Determinismo:** il job della CI dell'ADR 0008, punto 5, confronta anche
+  questi risultati sui tre sistemi operativi.
+- **Criteri di chiusura**, dal "quando è soddisfatta" della richiesta:
+  - [ ] nei casi semplici il risultato è sempre `done`, entro l'errore
+    dichiarato e senza autointersezioni;
+  - [ ] negli altri casi c'è un risultato senza autointersezioni o `failed`
+    con il motivo, mai un risultato sbagliato in silenzio;
+  - [ ] i casi della richiesta danno la risposta giusta o `failed`, con gli
+    stessi bit sui tre sistemi operativi; il responsabile lo verifica anche dal
+    lato di Tecnigrafo.
