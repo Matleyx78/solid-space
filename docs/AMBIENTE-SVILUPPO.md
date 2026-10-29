@@ -54,7 +54,8 @@ formatterebbe il codice in modo diverso da quello che la CI accetta.
 Con le impostazioni predefinite Antigravity CLI (`agy`) chiede conferma prima di
 ogni scrittura e di ogni comando, e il responsabile deve restare davanti allo
 schermo. Si configura una volta, in Debian (anche in WSL), con due accorgimenti.
-L'installazione è in [GUIDA-RESPONSABILE.md](GUIDA-RESPONSABILE.md), A4.
+L'installazione è nella guida del responsabile, in Tecnigrafo:
+[GUIDA-RESPONSABILE.md, A4](https://github.com/Matleyx78/tecnigrafo/blob/main/docs/GUIDA-RESPONSABILE.md#a4-installare-gemini-antigravity-cli-sui-tuoi-due-pc).
 
 **1. Regole dei permessi.** In `~/.gemini/antigravity-cli/settings.json` si
 autorizzano i comandi che servono al lavoro e si vietano quelli che spettano solo
@@ -89,7 +90,8 @@ Il file è unico per tutta la macchina, non per progetto: le regole valgono anch
 quando `agy` lavora in un'altra cartella. Il confine con Tecnigrafo non si
 ottiene con queste regole ma con quelle di
 [AGENTS.md](../AGENTS.md) ("Dove puoi scrivere") e con l'avvio dalla cartella
-giusta ([GUIDA-RESPONSABILE.md](GUIDA-RESPONSABILE.md), A6).
+giusta (guida del responsabile, in Tecnigrafo:
+[GUIDA-RESPONSABILE.md, A7](https://github.com/Matleyx78/tecnigrafo/blob/main/docs/GUIDA-RESPONSABILE.md#a7-il-confine-tra-i-due-repository)).
 
 **2. Modalità automatica e artifact.** Si avvia con:
 

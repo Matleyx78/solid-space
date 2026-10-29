@@ -52,8 +52,9 @@ Un agente che lavora a solid-space scrive codice e documenti **solo in
 solid-space**. In Tecnigrafo e negli altri repository può leggere e, se il
 responsabile glielo chiede indicando la issue o la pull request, scrivere un
 commento: nient'altro. La regola completa è in [AGENTS.md](../AGENTS.md), "Dove
-puoi scrivere"; come farla rispettare, in
-[GUIDA-RESPONSABILE.md](GUIDA-RESPONSABILE.md), parte A.
+puoi scrivere"; come farla rispettare, nella guida del responsabile, in
+Tecnigrafo:
+[GUIDA-RESPONSABILE.md, A7](https://github.com/Matleyx78/tecnigrafo/blob/main/docs/GUIDA-RESPONSABILE.md#a7-il-confine-tra-i-due-repository).
 
 ## 1. Preparare il piano
 

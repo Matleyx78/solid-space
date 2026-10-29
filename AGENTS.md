@@ -7,9 +7,11 @@ fermati e segnalalo invece di procedere.
 
 solid-space è il kernel geometrico di Tecnigrafo e ne condivide metodo e regole: se
 conosci [Tecnigrafo](https://github.com/Matleyx78/tecnigrafo), qui trovi le stesse
-abitudini. Ma è un **progetto autonomo**: tutto ciò che serve per lavorarci
-(regole, tappe, ADR, guide) sta in questo repository, e non devi aprire Tecnigrafo
-per seguirle.
+abitudini. Ma è un **progetto autonomo**: le regole per gli agenti, le tappe, i
+piani e gli ADR stanno in questo repository, e non devi aprire Tecnigrafo per
+seguirli. Solo la guida del responsabile, scritta per la persona e non per gli
+agenti, è una per i due progetti e sta in Tecnigrafo
+([docs/GUIDA-RESPONSABILE.md](https://github.com/Matleyx78/tecnigrafo/blob/main/docs/GUIDA-RESPONSABILE.md)).
 
 ## Dove puoi scrivere
 
