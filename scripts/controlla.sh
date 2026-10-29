@@ -88,7 +88,7 @@ for entry in database:
         relative = path.resolve().relative_to(root).as_posix()
     except ValueError:
         continue
-    if relative.split('/')[0] not in {'robust', 'naming', 'solver', 'kernel', 'features', 'tests'}:
+    if relative.split('/')[0] not in {'robust', 'geom2d', 'naming', 'solver', 'kernel', 'features', 'tests'}:
         continue
     if all_sources or relative in changed:
         sources.add(str(path.resolve()))

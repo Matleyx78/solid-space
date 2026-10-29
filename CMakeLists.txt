@@ -22,6 +22,7 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/SolidSpaceWarnings.cmake")
 # One target per component, in dependency order (ADR 0002): a component only
 # links the ones defined before it, so the graph cannot have cycles.
 add_subdirectory(robust)
+add_subdirectory(geom2d)
 add_subdirectory(naming)
 add_subdirectory(solver)
 if(SOLID_SPACE_BUILD_KERNEL)

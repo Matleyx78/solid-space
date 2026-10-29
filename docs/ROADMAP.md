@@ -17,7 +17,7 @@ lavora **solo** sui pacchetti della tappa aperta.
 | Tappa | Versione | Per la tappa di Tecnigrafo | Componente | Obiettivo | Nata da | Stato |
 |---|---|---|---|---|---|---|
 | 1 | 0.1 | — | tutti | Fondamenta: documenti, ADR, scheletro CMake, CI, sistema di verifica | fondamenta ([ADR 0001](adr/0001-scopo-e-confini.md)) | **chiusa** ([scheda](tappe/0.1-fondamenta.md), [note di rilascio](rilasci/0.1.md), [milestone v0.1](https://github.com/Matleyx78/solid-space/milestone/1), issue #4–#7 chiuse) |
-| 2 | 0.2 | 0.7, comandi di modifica | da decidere con le valutazioni | Le decisioni e le costruzioni geometriche del piano che chiede la tappa 0.7 di Tecnigrafo | richieste #20, #21, #22 e #23 | **in preparazione** |
+| 2 | 0.2 | 0.7, comandi di modifica | `robust`, `geom2d` ([ADR 0008](adr/0008-componente-geom2d.md)) | Le decisioni e le costruzioni geometriche del piano che chiede la tappa 0.7 di Tecnigrafo | richieste #20, #21, #22 e #23 | **in preparazione** |
 
 Lo stato delle singole richieste (in valutazione, in lavoro, soddisfatte) non si
 scrive qui: si legge nel Project «Tecnigrafo» del responsabile, che raccoglie
@@ -131,3 +131,11 @@ Decisioni del responsabile che cambiano le regole o le tappe, in ordine di data.
   utilizzabile da Tecnigrafo; la verità geometrica sta in `tests/corpus/`. Le
   richieste #20–#23 della tappa 0.7 di Tecnigrafo formano la tappa 0.2. Lo stato
   delle richieste si legge nel Project «Tecnigrafo».
+- **2026-10-29: architettura del piano.** Le decisioni e le costruzioni
+  geometriche del piano stanno in un componente nuovo, `geom2d`, sopra
+  `robust`, che tiene predicati esatti, calcolo deterministico e politica delle
+  tolleranze ([ADR 0008](adr/0008-componente-geom2d.md), accettato). Le
+  richieste #20, #21, #22 e #23 hanno esito 3, serve un pezzo nostro; le
+  valutazioni di #23 e #20 sono gli [ADR 0009](adr/0009-regola-delle-tolleranze-del-piano.md) e
+  [0010](adr/0010-posizione-e-intersezioni-nel-piano.md), accettati con il loro
+  contratto: le intestazioni pubbliche di `robust` e `geom2d` che dichiarano.

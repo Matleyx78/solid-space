@@ -15,6 +15,10 @@ namespace solid_space::robust {
 extern const int kSkeletonAnchor;
 }
 
+namespace solid_space::geom2d {
+extern const int kSkeletonAnchor;
+}
+
 namespace solid_space::naming {
 extern const int kSkeletonAnchor;
 }
@@ -35,6 +39,7 @@ extern const int kSkeletonAnchor;
 
 TEST(Banco, ComponentsAlwaysBuiltLink) {
     EXPECT_EQ(solid_space::robust::kSkeletonAnchor, 0);
+    EXPECT_EQ(solid_space::geom2d::kSkeletonAnchor, 0);
     EXPECT_EQ(solid_space::naming::kSkeletonAnchor, 0);
     EXPECT_EQ(solid_space::solver::kSkeletonAnchor, 0);
 }

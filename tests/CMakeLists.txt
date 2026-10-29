@@ -20,7 +20,8 @@ include(GoogleTest)
 # the kernel components follow SOLID_SPACE_BUILD_KERNEL.
 add_executable(solid_space_banco_test banco/banco_test.cpp)
 target_link_libraries(solid_space_banco_test PRIVATE
-  solid_space::robust solid_space::naming solid_space::solver GTest::gtest_main)
+  solid_space::robust solid_space::geom2d solid_space::naming solid_space::solver
+  GTest::gtest_main)
 
 set(ss_banco_has_kernel 0)
 if(TARGET solid_space::kernel)
@@ -40,6 +41,15 @@ target_compile_definitions(solid_space_banco_test PRIVATE
 
 ss_configure_target(solid_space_banco_test)
 gtest_discover_tests(solid_space_banco_test DISCOVERY_MODE PRE_TEST)
+
+# Draft contracts (ADR 0007, point 15): the public headers of robust and
+# geom2d compile and keep their declared signatures. They call nothing that is
+# not implemented yet.
+add_executable(solid_space_contract_test robust/contract_test.cpp geom2d/contract_test.cpp)
+target_link_libraries(solid_space_contract_test PRIVATE
+  solid_space::robust solid_space::geom2d GTest::gtest_main)
+ss_configure_target(solid_space_contract_test)
+gtest_discover_tests(solid_space_contract_test DISCOVERY_MODE PRE_TEST)
 
 # Verification corpus (ADR 0005): the structural validator and its own tests,
 # under ctest with the label "corpus". Python is a development tool, not a
