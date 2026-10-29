@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 The solid-space authors
 
-// The draft contract of geom2d (ADR 0007, point 15; ADR 0009 and ADR 0010):
+// The draft contract of geom2d (ADR 0007, point 15; ADR 0009 to ADR 0012):
 // the public headers compile, and the declared functions have the declared
 // signatures. Nothing declared is called, because nothing is implemented yet.
 
@@ -9,7 +9,9 @@
 #include "solid_space/geom2d/curves.hpp"
 #include "solid_space/geom2d/diagnosis.hpp"
 #include "solid_space/geom2d/intersection.hpp"
+#include "solid_space/geom2d/offset.hpp"
 #include "solid_space/geom2d/side.hpp"
+#include "solid_space/geom2d/tangency.hpp"
 
 #include <gtest/gtest.h>
 
@@ -71,6 +73,30 @@ static_assert(std::is_same_v<decltype(&geom2d::onSameCircle),
                              geom2d::Result<bool> (*)(const geom2d::Curve&, const geom2d::Curve&,
                                                       const robust::TolerancePolicy&)>);
 
+// Tangency (ADR 0011).
+static_assert(std::is_same_v<decltype(&geom2d::tangentsFrom),
+                             geom2d::Result<geom2d::TangentsFromPoint> (*)(
+                                 geom2d::Point2, const geom2d::Curve&, geom2d::Extension)>);
+static_assert(std::is_same_v<decltype(&geom2d::tangentCircles),
+                             geom2d::Result<geom2d::TangentCircles> (*)(
+                                 const geom2d::Curve&, const geom2d::Curve&, double)>);
+static_assert(std::is_same_v<decltype(&geom2d::tangentCircleNear),
+                             geom2d::Result<geom2d::ChosenCircle> (*)(
+                                 const geom2d::Curve&, geom2d::Point2, const geom2d::Curve&,
+                                 geom2d::Point2, double)>);
+static_assert(
+    std::is_same_v<decltype(&geom2d::fillet), geom2d::Result<geom2d::Fillet> (*)(
+                                                  const geom2d::Curve&, geom2d::Point2,
+                                                  const geom2d::Curve&, geom2d::Point2, double)>);
+
+// Offset (ADR 0012).
+static_assert(
+    std::is_same_v<decltype(&geom2d::offsetCurve),
+                   geom2d::Result<geom2d::CurveOffset> (*)(const geom2d::Curve&, double)>);
+static_assert(std::is_same_v<decltype(&geom2d::offsetPolyline),
+                             geom2d::Result<geom2d::PolylineOffset> (*)(
+                                 const geom2d::Polyline&, double, const robust::TolerancePolicy&)>);
+
 // The constants of the contract: the angle limits are the doubles nearest to
 // pi / 2, 3 pi / 2 and 2 pi, and the construction errors stay well below the
 // relative tolerance (ADR 0009, point 5).
@@ -81,6 +107,10 @@ static_assert(geom2d::kRelativePointError == 0x1p-48);
 static_assert(geom2d::kRelativeStationError == 0x1p-46);
 static_assert(64 * geom2d::kRelativePointError == robust::kRelativeTolerance);
 static_assert(16 * geom2d::kRelativeStationError == robust::kRelativeTolerance);
+static_assert(geom2d::kRelativeArcError == 0x1p-46);
+static_assert(geom2d::kRelativeOffsetError == 0x1p-46);
+static_assert(16 * geom2d::kRelativeArcError == robust::kRelativeTolerance);
+static_assert(16 * geom2d::kRelativeOffsetError == robust::kRelativeTolerance);
 
 }  // namespace
 
@@ -96,4 +126,13 @@ TEST(Geom2dContract, CurvesAreAggregatesOfTheirData) {
     const geom2d::Curve curve = geom2d::PolylineSegment{{0.0, 0.0}, {2.0, 0.0}, 1.0};
     ASSERT_TRUE(std::holds_alternative<geom2d::PolylineSegment>(curve));
     EXPECT_EQ(std::get<geom2d::PolylineSegment>(curve).bulge, 1.0);
+}
+
+TEST(Geom2dContract, ChoicesStartWithNothingFound) {
+    // A default result never claims a construction that was not made.
+    EXPECT_EQ(geom2d::ChosenCircle{}.outcome, geom2d::TangencyOutcome::none);
+    EXPECT_EQ(geom2d::Fillet{}.outcome, geom2d::TangencyOutcome::none);
+    EXPECT_EQ(geom2d::PolylineOffset{}.outcome, geom2d::OffsetOutcome::failed);
+    EXPECT_EQ(geom2d::PolylineOffset{}.failure, geom2d::OffsetFailure::none);
+    EXPECT_FALSE(geom2d::TangentCircles{}.infinitelyMany);
 }
