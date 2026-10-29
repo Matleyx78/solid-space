@@ -1,4 +1,4 @@
-# [0.2-P17] Documenti: determinismo e stato del contratto
+# [0.2-P18] Documenti: determinismo e stato del contratto
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
 - **Issue:** #…
@@ -7,8 +7,9 @@
 - **Modello e impegno:** leggero; impegno basso
 - **Riferimenti:** non servono: documentazione e commenti, nessun cambiamento di
   comportamento
-- **Dipende da:** P8, P11, P13, P15 (cioè tutti i pacchetti che realizzano le
-  intestazioni del contratto)
+- **Dipende da:** P8, P11, P14, P16, P17: i primi quattro chiudono le catene che
+  realizzano le intestazioni del contratto, P17 è l'ultimo altro pacchetto che
+  tocca `tests/CMakeLists.txt`
 - **Sblocca in Tecnigrafo:** niente
 - **Componente:** documenti (più i commenti iniziali delle intestazioni del
   contratto)
@@ -70,8 +71,8 @@ solo una o due righe di commento.
 ## Regole della tappa che valgono qui
 
 - Documenti in italiano, commenti del codice in inglese.
-- Prima di cominciare controlla che le issue di P8, P11, P13 e P15 siano chiuse:
-  la frase del punto 3 e i commenti del punto 4 sono veri solo dopo.
+- Prima di cominciare controlla che le issue di P8, P11, P14, P16 e P17 siano
+  chiuse: la frase del punto 3 e i commenti del punto 4 sono veri solo dopo.
 - Nelle intestazioni, se una riga da cambiare non è come la descrive questa
   scheda, fermati e scrivilo nella issue.
 - `clang-format` sulle intestazioni toccate (`scripts/controlla.sh --solo

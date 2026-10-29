@@ -1,4 +1,4 @@
-# [0.2-P16] Banco delle prestazioni
+# [0.2-P17] Banco delle prestazioni
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
 - **Issue:** #…
@@ -6,7 +6,7 @@
 - **Agente:** codex
 - **Modello e impegno:** medio; impegno medio
 - **Riferimenti:** non servono: il banco misura, non cambia il comportamento
-- **Dipende da:** P11, P13, P15
+- **Dipende da:** P11, P14, P16
 - **Sblocca in Tecnigrafo:** niente
 - **Componente:** nessuno (`tests/prestazioni/`)
 - **Da leggere:** [ADR 0010](../../adr/0010-posizione-e-intersezioni-nel-piano.md)
@@ -48,7 +48,9 @@ ogni riga e gli obiettivi degli ADR accanto a ciascuna.
 - Nessuna nuova dipendenza: niente librerie di benchmark, solo `<chrono>`.
 - Se una misura supera l'obiettivo dell'ADR, lo scrivi nella pull request: un
   miglioramento è una richiesta o un pacchetto nuovo, deciso dal responsabile.
-- File comune: `tests/CMakeLists.txt` (solo le tue righe).
+- File comune: `tests/CMakeLists.txt`, l'unico `CMakeLists.txt` che un pacchetto
+  tocca dopo P3 (il banco è un eseguibile a sé); dopo di te lo tocca solo P18,
+  che dipende da questo pacchetto.
 
 ## Test richiesti
 

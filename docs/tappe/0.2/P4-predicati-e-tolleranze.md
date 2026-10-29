@@ -25,13 +25,10 @@
 - `robust/src/exact_sum.hpp`, `robust/src/exact_sum.cpp` (nuovi, privati)
 - `robust/src/predicates.cpp`, `robust/src/tolerance.cpp` (nuovi)
 - `robust/src/robust.cpp` (si toglie: era il segnaposto)
-- `robust/CMakeLists.txt`
 - `tests/robust/predicates_test.cpp`, `tests/robust/tolerance_test.cpp`,
   `tests/robust/exact_sum_test.cpp` (nuovi)
 - `tests/corpus/esegui/op_robust.cpp` (nuovo)
-- `tests/CMakeLists.txt` (anche un eseguibile per i test interni di `robust`, che
-  vede `robust/src/`)
-- `tests/corpus/in-attesa.txt` (togliere le righe di R4a e R4b)
+- `tests/corpus/in-attesa.txt` (togliere i blocchi di R4a e R4b)
 
 ## Cosa fare
 
@@ -106,8 +103,10 @@ il procedimento è in `provenienza`.
   `negligible` ed `epsilon`.
 - Le precondizioni violate sono `assert` (ADR 0003); nessuna eccezione esce.
 - Le operazioni dei casi stanno in `op_robust.cpp`; P5 ha il suo file.
-- File comuni: `robust/CMakeLists.txt`, `tests/CMakeLists.txt`,
-  `tests/corpus/in-attesa.txt` (solo le tue righe).
+- File comuni: solo `tests/corpus/in-attesa.txt`, dove togli i blocchi dei tuoi
+  riferimenti e nient'altro (piano, sezione 6). Nessun `CMakeLists.txt`: sorgenti
+  e test li raccoglie la compilazione preparata da P3 (i test di unità in
+  `tests/<componente>/`, le operazioni dei casi in `tests/corpus/esegui/`).
 
 ## Test richiesti
 
@@ -123,6 +122,7 @@ il procedimento è in `provenienza`.
 
 - `orient2d` e `TolerancePolicy` sono realizzate come dichiarano le intestazioni,
   senza cambiarle.
-- I casi di `[0.2-R4a]` e `[0.2-R4b]` passano e le loro righe sono tolte da `in-attesa.txt`.
+- I casi di `[0.2-R4a]` e `[0.2-R4b]` passano e i loro
+  blocchi sono tolti da `in-attesa.txt`.
 - Il job del determinismo è verde.
 - La CI è verde.

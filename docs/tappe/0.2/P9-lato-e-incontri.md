@@ -21,11 +21,9 @@
 
 - `geom2d/src/side.cpp` (nuovo)
 - `geom2d/src/carriers.hpp`, `geom2d/src/carriers.cpp` (nuovi, interni)
-- `geom2d/CMakeLists.txt`
 - `tests/geom2d/side_test.cpp`, `tests/geom2d/carriers_test.cpp` (nuovi)
 - `tests/corpus/esegui/op_side.cpp` (nuovo)
-- `tests/CMakeLists.txt`
-- `tests/corpus/in-attesa.txt` (togliere le righe di R9)
+- `tests/corpus/in-attesa.txt` (togliere il blocco di R9)
 
 ## Cosa fare
 
@@ -39,7 +37,7 @@ coordinate omogenee.
 
 **Interno** (`carriers.hpp`, namespace `solid_space::geom2d::detail`): gli
 incontri esatti dei **sostegni** di due curve (rette e cerchi interi, dal
-significato esatto di P7), che P10, P13, P14 e P15 usano.
+significato esatto di P7), che P10, P12, P14, P15 e P16 usano.
 
 - Due rette: un punto (razionale, in coordinate omogenee), nessuno (parallele
   distinte) o la stessa retta.
@@ -88,9 +86,11 @@ archi»): il lato rispetto al cerchio intero non dipende da D0 e D1.
   trigonometriche di `<cmath>`.
 - Decisioni esatte, nessuna soglia: la regola delle tolleranze non entra qui.
 - Le intestazioni interne di P6 e P7 si usano, non si cambiano; `carriers.hpp`
-  la usano P10, P13, P14 e P15: tienila documentata.
-- File comuni: `geom2d/CMakeLists.txt`, `tests/CMakeLists.txt`,
-  `tests/corpus/in-attesa.txt` (solo le tue righe).
+  la usano P10, P12, P14, P15 e P16: tienila documentata.
+- File comuni: solo `tests/corpus/in-attesa.txt`, dove togli i blocchi dei tuoi
+  riferimenti e nient'altro (piano, sezione 6). Nessun `CMakeLists.txt`: sorgenti
+  e test li raccoglie la compilazione preparata da P3 (i test di unità in
+  `tests/<componente>/`, le operazioni dei casi in `tests/corpus/esegui/`).
 
 ## Test richiesti
 
@@ -109,6 +109,7 @@ archi»): il lato rispetto al cerchio intero non dipende da D0 e D1.
 - `side` è realizzata come dichiara `side.hpp`.
 - Gli incontri dei sostegni sono nell'intestazione interna, documentati e
   provati dai test di unità.
-- I casi di `[0.2-R9]` passano e le loro righe sono tolte da `in-attesa.txt`.
+- I casi di `[0.2-R9]` passano e il loro blocco è tolto da
+  `in-attesa.txt`.
 - Il job del determinismo è verde.
 - La CI è verde.

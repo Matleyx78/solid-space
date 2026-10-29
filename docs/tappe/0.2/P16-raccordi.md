@@ -1,35 +1,33 @@
-# [0.2-P15] `geom2d`: cerchio tangente vicino ai punti e raccordo
+# [0.2-P16] `geom2d`: cerchio tangente vicino ai punti e raccordo
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
 - **Issue:** #…
 - **Difficoltà:** impegnativa
 - **Agente:** claude-2
 - **Modello e impegno:** forte; impegno alto
-- **Riferimenti:** issue `[0.2-R15a]` (#…, casi della richiesta) e `[0.2-R15c]`
-  (#…, regole di `fillet`), agente codex (calcoli delicati); `[0.2-R15b]` (#…,
+- **Riferimenti:** issue `[0.2-R16a]` (#…, casi della richiesta) e `[0.2-R16c]`
+  (#…, regole di `fillet`), agente codex (calcoli delicati); `[0.2-R16b]` (#…,
   casi di AutoCAD), agente gemini. I loro casi servono anche
   a Matleyx78/tecnigrafo#366
-- **Dipende da:** P14, R15a, R15b, R15c
-- **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#367 (con P14): di norma è
-  l'ultimo
+- **Dipende da:** P15, R16a, R16b, R16c
+- **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#367 (con P4–P10, P12, P15): di
+  norma è l'ultimo
 - **Componente:** `geom2d`
 - **Da leggere:** [ADR 0011](../../adr/0011-raccordi-e-tangenze-nel-piano.md)
   (Decisione, punti 4–7, 9 e 11; Alternative, la scelta tra candidati);
   `geom2d/include/solid_space/geom2d/tangency.hpp` (`TangencyOutcome`,
   `ChosenCircle`, `tangentCircleNear`, `Fillet`, `fillet` e le sue quattro
   regole), `side.hpp`, `intersection.hpp`; le intestazioni interne
-  `geom2d/src/tangency_internal.hpp` (P14), `positions.hpp` (P10); `robust`
+  `geom2d/src/tangency_internal.hpp` (P15), `positions.hpp` (P10); `robust`
   `trigonometry.hpp` (`atan2`)
 
 ## File
 
 - `geom2d/src/fillet.cpp` (nuovo)
-- `geom2d/src/tangency_internal.hpp` (di P14: solo aggiunte, se servono)
-- `geom2d/CMakeLists.txt`
+- `geom2d/src/tangency_internal.hpp` (di P15: solo aggiunte, se servono)
 - `tests/geom2d/fillet_test.cpp` (nuovo)
 - `tests/corpus/esegui/op_fillet.cpp` (nuovo)
-- `tests/CMakeLists.txt`
-- `tests/corpus/in-attesa.txt` (togliere le righe di R15a, R15b e R15c)
+- `tests/corpus/in-attesa.txt` (togliere i blocchi di R16a, R16b e R16c)
 
 ## Cosa fare
 
@@ -56,21 +54,21 @@ con i loro tipi.
 - **Diagnosi** come dice l'intestazione, con `dato` 0 e 1 per le curve, 2 per il
   raggio, 3 e 4 per i punti indicati.
 
-### Casi di verifica (per R15a, R15b e R15c)
+### Casi di verifica (per R16a, R16b e R16c)
 
 | Operazione | `ingresso` | `atteso` |
 |---|---|---|
-| `tangentCircleNear` | `prima`, `vicino_prima`, `seconda`, `vicino_seconda`, `raggio` | `esito`: nome di `TangencyOutcome`; con `found`, `cerchio`: come un elemento di `cerchi` di `tangentCircles` (P14); oppure `diagnosi` |
-| `fillet` | `prima`, `punto_prima`, `seconda`, `punto_seconda`, `raggio` | `esito`; con `found`: `centro`, `raggio`, `sulla_prima` e `sulla_seconda` (punti di tangenza), `semicerchio`: booleano, `arco`: la curva attesa nella forma `{"arco": {...}}` di P12, con valori esatti o approssimati, `bulge`: approssimato; oppure `diagnosi` |
+| `tangentCircleNear` | `prima`, `vicino_prima`, `seconda`, `vicino_seconda`, `raggio` | `esito`: nome di `TangencyOutcome`; con `found`, `cerchio`: come un elemento di `cerchi` di `tangentCircles` (P15); oppure `diagnosi` |
+| `fillet` | `prima`, `punto_prima`, `seconda`, `punto_seconda`, `raggio` | `esito`; con `found`: `centro`, `raggio`, `sulla_prima` e `sulla_seconda` (punti di tangenza), `semicerchio`: booleano, `arco`: la curva attesa nella forma `{"arco": {...}}` di P13, con valori esatti o approssimati, `bulge`: approssimato; oppure `diagnosi` |
 
 Un punto di tangenza si scrive `{"punto": punto, "sulla_curva": posizione}`, come
-in P14. Tolleranze: punti `kRelativePointError · max(M, |p|)`; angoli,
+in P15. Tolleranze: punti `kRelativePointError · max(M, |p|)`; angoli,
 ampiezza e bulge dell'arco la tolleranza che corrisponde, per il suo raggio e la
 sua corda, a uno scostamento di `kRelativeArcError · max(M, |p|)` (chi scrive il
 caso la ricava e la scrive in `provenienza`); il raggio di `fillet` è esatto
 (quello chiesto), salvo il semicerchio.
 
-**R15a** (codex) copre almeno:
+**R16a** (codex) copre almeno:
 
 - **#21, casi 1, 2, 4, 5 e 7:** segmenti perpendicolari, raggio 10; segmento e
   cerchio che si intersecano e che non si toccano (il raccordo esiste se e solo
@@ -81,7 +79,7 @@ caso la ricava e la scrive in `provenienza`); il raggio di `fillet` è esatto
 - `tangentCircleNear` con due candidati chiaramente diversi e con una parità
   esatta (il primo della lista).
 
-**R15c** (codex) copre le regole di `fillet`: parallele sulla stessa retta
+**R16c** (codex) copre le regole di `fillet`: parallele sulla stessa retta
 (`infinitelyMany`); raggio zero (lo spigolo; curve senza punti comuni: `none`;
 sovrapposte: `infinitelyMany`); punto indicato esattamente sulla retta o sul
 cerchio dell'altra curva, anche fuori dalla curva data (`ambiguousPick`);
@@ -89,7 +87,7 @@ raccordo che non entra (`none`); punti di tangenza diametralmente opposti
 (l'arco antiorario); punti di tangenza coincidenti; le diagnosi, con il `dato`
 giusto.
 
-**R15b** (gemini) porta i casi `FILLET` a–f (angolo retto, linee che non si
+**R16b** (gemini) porta i casi `FILLET` a–f (angolo retto, linee che non si
 toccano, parallele, cerchio e linea, arco e linea, raggio 0) e `CIRCLE` *Ttr* m e
 n (due linee con raggio 8, cerchio e linea con raggio 6) di
 `autocad-raccordi.dxf`:
@@ -100,8 +98,9 @@ n (due linee con raggio 8, cerchio e linea con raggio 6) di
   `aecc6725a0d5b0b76c11eef4c9f93613e7beda91c0a2a225496ea8899118e842`) e lo
   script `4-raccordi.scr` di Tecnigrafo (`docs/tappe/0.7/dxf-di-prova/`,
   licenza GPL-3.0-or-later, a un commit fissato di `main`), con le regole di
-  `tests/corpus/README.md`, «Casi che arrivano da Tecnigrafo». Dipende da R12,
-  che scrive per primo in `sorgenti.json`;
+  `tests/corpus/README.md`, «Casi che arrivano da Tecnigrafo». Dipende da P1,
+  che fa accettare le copie in `esterni/` dalla guardia della CI, e da R13, che
+  scrive per primo in `sorgenti.json`;
 - l'ingresso sono le figure di partenza, i punti indicati e i raggi dello
   script; `atteso` è la geometria che AutoCAD ha disegnato, letta dal DXF con la
   tolleranza della precisione del file: `esito` `found`, il centro, il raggio, i
@@ -125,10 +124,12 @@ Per gli archi vale la regola del README («Gli archi»).
 - La scelta del lato viene da `side()` (ADR 0011, punto 4): nessuna regola
   propria.
 - Le intestazioni interne di P6, P7, P9 e P10 si usano senza cambiarle; a quella
-  di P14 (`tangency_internal.hpp`) puoi solo aggiungere. Se serve altro,
+  di P15 (`tangency_internal.hpp`) puoi solo aggiungere. Se serve altro,
   fermati e scrivilo nella issue.
-- File comuni: `geom2d/CMakeLists.txt`, `tests/CMakeLists.txt`,
-  `tests/corpus/in-attesa.txt` (solo le tue righe).
+- File comuni: solo `tests/corpus/in-attesa.txt`, dove togli i blocchi dei tuoi
+  riferimenti e nient'altro (piano, sezione 6). Nessun `CMakeLists.txt`: sorgenti
+  e test li raccoglie la compilazione preparata da P3 (i test di unità in
+  `tests/<componente>/`, le operazioni dei casi in `tests/corpus/esegui/`).
 
 ## Test richiesti
 
@@ -139,12 +140,12 @@ Per gli archi vale la regola del README («Gli archi»).
   coincidenti né diametralmente opposti, scambiare le due curve e i due punti dà
   lo stesso cerchio di raccordo, con l'arco nel verso opposto.
 - L'`Arc` e il bulge descrivono lo stesso arco entro `kRelativeArcError`.
-- I casi di R15a, R15b e R15c.
+- I casi di R16a, R16b e R16c.
 
 ## Fatto quando
 
 - `tangentCircleNear` e `fillet` sono realizzate come dichiara `tangency.hpp`.
-- I casi di `[0.2-R15a]`, `[0.2-R15b]` e `[0.2-R15c]` passano e le loro righe sono tolte da
-  `in-attesa.txt`.
+- I casi di `[0.2-R16a]`, `[0.2-R16b]` e `[0.2-R16c]` passano e i loro
+  blocchi sono tolti da `in-attesa.txt`.
 - Il job del determinismo è verde.
 - La CI è verde.

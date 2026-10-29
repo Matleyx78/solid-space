@@ -137,28 +137,68 @@ dice quale chiave.
 
 ### Il programma (`main.cpp`)
 
-- Un test GoogleTest per caso, con nome `Corpus.<componente>_<id>` (trattini
-  sostituiti da `_`), registrato a partire dalla tabella generata.
-- Un caso in attesa dà `GTEST_SKIP()` con il numero della issue, prima di
-  cercare la sua operazione.
-- Un caso obbligatorio senza operazione registrata fallisce.
-- Se la variabile d'ambiente `SS_RISULTATI` contiene un percorso, il programma
-  scrive in quel file una riga per caso eseguito,
-  `<componente>/<id> <canonicalText>`, in ordine di nome (serve a P3).
+Due modi, scelti dalla riga di comando.
+
+**Modo normale** (quello di `ctest`, un processo per caso):
+
+- un test GoogleTest per caso, con nome `Corpus.<componente>_<id>` (trattini
+  sostituiti da `_`), registrato a partire dalla tabella generata;
+- un caso in attesa dà `GTEST_SKIP()` con il numero della issue, prima di
+  cercare la sua operazione;
+- un caso obbligatorio senza operazione registrata fallisce;
+- in questo modo il programma **non scrive mai** file di risultati, così i
+  processi che `ctest` avvia in parallelo non si contendono nulla.
+
+**Modo risultati** (`--ss-results=<file>`, per il confronto tra i sistemi di
+P3):
+
+- il programma non usa il runner di GoogleTest: scorre la tabella generata, in
+  ordine di `<componente>/<id>` (ordine dei byte, lo stesso su ogni sistema), ed
+  esegue **tutti e soli i casi obbligatori**, uno dopo l'altro, nello stesso
+  processo;
+- per ciascuno scrive una riga `<componente>/<id> <canonicalText>`, anche quando
+  il risultato non coincide con `atteso` (il confronto con `atteso` lo fanno i
+  test del modo normale; qui conta che i tre sistemi diano gli stessi bit);
+- in testa scrive `# casi: N`, con N il numero dei casi obbligatori della
+  tabella;
+- un caso obbligatorio senza operazione, o un'operazione che non sa leggere il
+  suo `ingresso`, dà una riga `<componente>/<id> ERRORE <motivo>` e l'esito del
+  programma è 1;
+- scrive in `<file>.tmp` e lo rinomina in `<file>` solo alla fine, se tutto è
+  andato bene: un file a metà non esiste mai;
+- ogni altra opzione (per esempio `--gtest_filter`, che sceglierebbe un
+  sottoinsieme) insieme a `--ss-results` è un errore d'uso, con esito 2.
+
+**Completezza.** Il generatore scrive anche, accanto alla tabella,
+`obbligatori.txt`: gli `<componente>/<id>` dei casi obbligatori, uno per riga,
+nello stesso ordine. Il modo risultati controlla che le righe scritte
+corrispondano una per una a quell'elenco (tutti e soli, senza ripetizioni), e P3
+rifà lo stesso controllo sui file che arrivano dai tre sistemi prima di
+confrontarli.
 
 ### Compilazione (`tests/CMakeLists.txt`)
 
-Un comando che rigenera il `.cpp` quando cambia un caso, `in-attesa.txt` o il
-generatore; l'eseguibile `solid_space_corpus_test`, con i file di `esegui/` e i
-file `op_*.cpp` che i pacchetti successivi aggiungono; i test scoperti con
-`gtest_discover_tests` e l'etichetta `corpus`; `test_genera_casi.py` sotto
-`ctest` come gli altri test Python.
+- Un comando che rigenera il `.cpp` e `obbligatori.txt` quando cambia un caso,
+  `in-attesa.txt` o il generatore.
+- L'eseguibile `solid_space_corpus_test`, con i file di `esegui/` e **tutti** i
+  file `tests/corpus/esegui/op_*.cpp`, raccolti con
+  `file(GLOB ... CONFIGURE_DEPENDS ...)`: i pacchetti successivi aggiungono il
+  loro file `op_<area>.cpp` e non toccano `tests/CMakeLists.txt`.
+- I test del modo normale scoperti con `gtest_discover_tests` e l'etichetta
+  `corpus`.
+- Un test `corpus_results`, con le etichette `corpus` e `determinismo`, che
+  esegue una volta il programma con
+  `--ss-results=${CMAKE_BINARY_DIR}/corpus/risultati.txt`: è l'unico processo che
+  scrive quel file, quindi non ci sono scritture concorrenti né sovrascritture
+  da processi diversi. `obbligatori.txt` sta nella stessa cartella.
+- `test_genera_casi.py` sotto `ctest` come gli altri test Python.
 
 ### Il README
 
 Una sezione "Esecuzione" che dice come i casi diventano test, che cosa vuol dire
-uguale per ogni forma, dove si aggiunge un'operazione, e che `SS_RISULTATI`
-scrive i risultati.
+uguale per ogni forma, dove si aggiunge un'operazione, e come si producono
+`risultati.txt` e `obbligatori.txt` (il modo risultati e il test
+`corpus_results`).
 
 ## Regole della tappa che valgono qui
 
@@ -169,8 +209,8 @@ scrive i risultati.
   `esegui/`, come `casi/` e `prove/`.
 - Il pacchetto non tocca le intestazioni del contratto e non chiama nessuna
   funzione non realizzata.
-- File comuni: `tests/CMakeLists.txt` (solo le tue righe) e
-  `tests/corpus/README.md` (dopo P1).
+- File comuni: `tests/CMakeLists.txt` (poi lo tocca P3, che dipende da P2) e
+  `tests/corpus/README.md` (dopo P1, da cui P2 dipende).
 
 ## Test richiesti
 
@@ -181,14 +221,22 @@ scrive i risultati.
 - `value_test.cpp`: `compare` per ogni forma, con un caso uguale e uno
   diverso, e il percorso nel messaggio; `canonicalText` scrive i `double` in
   esadecimale, con lo zero negativo, NaN e gli infiniti.
+- Il modo risultati, con una tabella di prova di pochi casi (un test del
+  programma, non l'archivio): l'ordine delle righe non dipende dall'ordine dei
+  casi nella tabella; un caso in attesa non compare; un caso senza operazione dà
+  `ERRORE` ed esito 1 e il file non viene creato; `--gtest_filter` insieme a
+  `--ss-results` dà esito 2.
 - Con l'archivio di oggi, che non ha casi di `robust` e `geom2d`, l'eseguibile
-  gira e passa; `casi/kernel/cubo-lato-1.json` non si tocca.
+  gira e passa, e `corpus_results` scrive un file con la sola riga `# casi: 0`;
+  `casi/kernel/cubo-lato-1.json` non si tocca.
 
 ## Fatto quando
 
 - Ogni caso dell'archivio è un test di `ctest`, e un caso in attesa è saltato con
   il numero della sua issue.
-- Un pacchetto aggiunge un'operazione scrivendo solo il suo file `op_<area>.cpp`
-  e una riga in `tests/CMakeLists.txt`.
-- `SS_RISULTATI` scrive i risultati in forma canonica.
+- Un pacchetto aggiunge un'operazione scrivendo solo il suo file
+  `op_<area>.cpp`, senza toccare `tests/CMakeLists.txt`.
+- Il test `corpus_results` scrive, in un solo processo, `risultati.txt` con tutti
+  e soli i casi obbligatori in forma canonica e in ordine fisso, e
+  `obbligatori.txt` li elenca.
 - La CI è verde.

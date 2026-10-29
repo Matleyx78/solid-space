@@ -2,19 +2,23 @@
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
 - **Issue:** #…
-- **Difficoltà:** facile
+- **Difficoltà:** media
 - **Agente:** codex
-- **Modello e impegno:** leggero; impegno basso
+- **Modello e impegno:** medio; impegno medio
 - **Riferimenti:** non servono: il pacchetto prepara il formato in cui si
-  scrivono i riferimenti della tappa; lo provano i test del validatore
-- **Dipende da:** —
+  scrivono i riferimenti della tappa; lo provano i test del validatore e quelli
+  della guardia nella CI
+- **Dipende da:** la decisione del responsabile su `esterni/` (piano, sezione 5,
+  decisione 3), presa prima dell'apertura
 - **Sblocca in Tecnigrafo:** niente direttamente; da qui partono tutti i
   pacchetti di riferimenti della tappa
-- **Componente:** nessuno (`tests/corpus/`)
+- **Componente:** nessuno (`tests/corpus/` e la guardia della CI)
 - **Da leggere:** [ADR 0005](../../adr/0005-formato-dei-casi-di-verifica.md)
-  (Decisione e Conseguenze), [ADR 0008](../../adr/0008-componente-geom2d.md)
+  (Decisione, con il punto 7 come lo avrà lasciato la decisione del
+  responsabile, e Conseguenze), [ADR 0008](../../adr/0008-componente-geom2d.md)
   punto 8, [tests/corpus/README.md](../../../tests/corpus/README.md),
-  `tests/corpus/valida_corpus.py` e `test_valida_corpus.py`
+  `tests/corpus/valida_corpus.py` e `test_valida_corpus.py`, il job `references`
+  di `.github/workflows/ci.yml`
 
 ## File
 
@@ -22,10 +26,14 @@
 - `tests/corpus/test_valida_corpus.py`
 - `tests/corpus/prove/caso-nome-non-valido.json` (nuovo)
 - `tests/corpus/README.md`
+- `.github/workflows/ci.yml` (solo il job `references`)
+- `.gitattributes` (nuovo)
 
 ## Cosa fare
 
-Tre aggiunte al formato, che non cambiano nessun caso esistente.
+Tre aggiunte al formato, che non cambiano nessun caso esistente, e l'adeguamento
+della separazione tra riferimenti e lavoro ai file esterni e la forma a blocchi
+di `in-attesa.txt` (le due sezioni dopo il testo del README).
 
 1. **Il componente `geom2d`** entra nell'elenco dei componenti, dopo `robust`
    (validatore e README, "Disposizione"), come chiede l'ADR 0008, punto 8.
@@ -93,14 +101,57 @@ Regole per chi scrive i casi:
 - **La descrizione** cita la richiesta (`#20`) e, se c'è, il caso della richiesta
   o il file e le entità da cui nasce.
 
+### I file esterni sono riferimenti
+
+R13 e R16b aggiungono casi, voci di `sorgenti.json` e le copie dei DXF e degli
+script in `tests/corpus/esterni/`, tutto nella stessa pull request (R14b usa le
+copie di R13 senza toccarle). Oggi la guardia della CI (job `references`, ADR
+0005, punto 7) conta `esterni/` come lavoro e respinge quella pull request. Con
+la decisione 3 della sezione 5 del piano:
+
+- **guardia:** in `classify` i riferimenti sono `tests/corpus/casi/`,
+  `tests/corpus/sorgenti.json` **e `tests/corpus/esterni/`**; il lavoro è tutto
+  il resto tranne `tests/corpus/in-attesa.txt`, che resta ammesso in entrambi.
+  Così una pull request di riferimenti può portare le copie, e una di lavoro
+  che tocca `esterni/` è respinta come oggi una che tocca `casi/`. Le
+  asserzioni in testa allo script provano i due casi nuovi: casi, voce e copia
+  insieme (accettati) e una copia insieme a un file di codice (respinti),
+  anche quando la copia è spostata fuori da `esterni/`;
+- **validatore:** ogni file in `esterni/` deve avere la sua voce in
+  `sorgenti.json` (stesso `nome`); un file senza voce è un errore con il nome
+  del file. Così `esterni/` non può contenere altro che copie registrate, con
+  l'hash controllato;
+- **`.gitattributes`:** `tests/corpus/esterni/** -text`, perché git non
+  cambi i fine riga dei DXF e degli script su Windows: l'hash è dei byte
+  originali;
+- **README:** "Disposizione" e "`sorgenti.json`" dicono che le copie in
+  `esterni/` sono parte dei riferimenti e si aggiungono solo con una pull
+  request di riferimenti; la frase sul download verificato dice che serve solo
+  per un file che non si può copiare.
+
+### `in-attesa.txt` a blocchi
+
+Nel README, sezione "`in-attesa.txt`": in una tappa le righe di ogni pacchetto
+di riferimenti stanno in un blocco preceduto dal commento `# [X.Y-RN]`,
+nell'ordine dei pacchetti nel piano; il pacchetto di lavoro toglie i blocchi dei
+suoi riferimenti, commento compreso. È la forma che rende sicura l'eccezione
+della sezione 6 del piano (file comuni). Il validatore non cambia: già ignora i
+commenti.
+
 ## Regole della tappa che valgono qui
 
 - Il formato dell'ADR 0005 non cambia: si aggiungono un componente, una forma di
   `atteso` e un vocabolario. Se qualcosa non torna, ci si ferma e si scrive nella
   issue; decide il responsabile.
 - Python 3.9 con la sola libreria standard, come il resto del validatore.
-- Il pacchetto non scrive casi in `tests/corpus/casi/`: sono dei pacchetti di
-  riferimenti.
+- Il pacchetto non scrive casi in `tests/corpus/casi/` né copie in `esterni/`:
+  sono dei pacchetti di riferimenti.
+- Non parte senza la decisione 3 della sezione 5 del piano: la guardia applica
+  l'ADR 0005, punto 7, e senza la decisione `esterni/` non è un riferimento. P1
+  non scrive negli ADR: la correzione dell'ADR, se il responsabile la decide, sta
+  nella pull request di apertura della tappa.
+- File comuni: `tests/corpus/README.md` (poi lo tocca P2, che dipende da P1);
+  `.github/workflows/ci.yml` (poi lo tocca P3, che dipende da P2).
 
 ## Test richiesti
 
@@ -109,7 +160,11 @@ Regole per chi scrive i casi:
 - Il validatore rifiuta, con file e campo, una stringa che non è né frazione né
   nome (`"At start"`, `"_x"`, `"1a"`): il file
   `prove/caso-nome-non-valido.json`.
-- Le righe di `in-attesa.txt` con `geom2d/<id>` sono accettate.
+- Le righe di `in-attesa.txt` con `geom2d/<id>` sono accettate, anche in
+  blocchi con il commento `# [0.2-R4a]`.
+- Il validatore rifiuta un file in `esterni/` senza voce in `sorgenti.json` (un
+  file di prova nuovo in `prove/`, o una cartella temporanea nel test).
+- Le asserzioni della guardia nella CI passano, con i casi nuovi.
 - `ctest -L corpus` passa sui tre sistemi.
 
 ## Fatto quando
@@ -118,5 +173,8 @@ Regole per chi scrive i casi:
 - I nomi sono ammessi in `atteso` e le stringhe che non sono né frazioni né nomi
   sono rifiutate con un messaggio che dice file e campo.
 - La sezione "Dati del piano" del README contiene il vocabolario e le regole qui
-  sopra.
+  sopra, e la sezione "`in-attesa.txt`" i blocchi.
+- La guardia della CI conta `tests/corpus/esterni/` tra i riferimenti, il
+  validatore rifiuta le copie non registrate e `.gitattributes` tiene i loro
+  byte.
 - La CI è verde.

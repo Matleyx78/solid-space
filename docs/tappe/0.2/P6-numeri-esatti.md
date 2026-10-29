@@ -7,7 +7,7 @@
 - **Modello e impegno:** forte; impegno alto
 - **Riferimenti:** non servono: il pacchetto non ha funzioni pubbliche; si prova
   con i suoi test di unità e, attraverso le funzioni pubbliche, con i casi di
-  R7a–R15c
+  R7a–R16c
 - **Dipende da:** P3
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#357 (con P4, P5, P7–P11) e
   #373 (con P4, P5, P7, P8)
@@ -23,10 +23,7 @@
 - `geom2d/src/exact/dyadic.hpp`, `geom2d/src/exact/dyadic.cpp` (nuovi)
 - `geom2d/src/exact/quadratic.hpp`, `geom2d/src/exact/quadratic.cpp` (nuovi)
 - `geom2d/src/geom2d.cpp` (si toglie: era il segnaposto)
-- `geom2d/CMakeLists.txt`
 - `tests/geom2d/exact_test.cpp` (nuovo)
-- `tests/CMakeLists.txt` (un eseguibile per i test interni di `geom2d`, che
-  vede `geom2d/src/`)
 
 ## Cosa fare
 
@@ -44,7 +41,7 @@ intero di grandezza qualsiasi per una potenza di due.
 
 L'interfaccia interna, nel namespace `solid_space::geom2d::exact`; i nomi e le
 firme li fissi tu, ma devono offrire almeno questo e restare documentati nelle
-due intestazioni, perché li usano P7–P15:
+due intestazioni, perché li usano P7–P16:
 
 ```cpp
 namespace solid_space::geom2d::exact {
@@ -78,8 +75,9 @@ double quadraticToDouble(const Dyadic& a, const Dyadic& b, const Dyadic& d, cons
 - **Prestazioni:** i numeri piccoli (uno o due "limb") non allocano memoria; il
   filtro in virgola mobile delle singole decisioni lo scrivono i pacchetti che le
   fanno, non questo.
-- **Radici annidate** (rette spostate contro cerchi spostati, ADR 0011) non
-  servono qui: se servono, le aggiunge P14 in un suo file.
+- **Radici annidate** (rette e cerchi spostati, che servono a curva parallela e
+  tangenze) non sono di questo pacchetto: le porta P12, sopra questi numeri, nei
+  suoi file. Qui bastano una e due radici.
 - Togli il segnaposto `geom2d/src/geom2d.cpp`: da qui `geom2d` ha codice vero.
 
 ## Regole della tappa che valgono qui
@@ -93,8 +91,10 @@ double quadraticToDouble(const Dyadic& a, const Dyadic& b, const Dyadic& d, cons
   risultati del contratto: `std::bad_alloc`, all'esaurimento della memoria, è
   l'unica eccezione possibile, e come trattarla lo decide il responsabile prima
   dell'apertura (piano, sezione 5). Le funzioni interne non sono `noexcept`.
-- File comuni: `geom2d/CMakeLists.txt`, `tests/CMakeLists.txt` (solo le tue
-  righe). L'eseguibile dei test interni lo riusano P7–P15.
+- Nessun file comune. Nessun `CMakeLists.txt`: sorgenti e test li raccoglie la
+  compilazione preparata da P3, che dà ai test di `tests/geom2d/` l'accesso a
+  `geom2d/src/`. Il pacchetto non ha casi propri, quindi non tocca
+  `in-attesa.txt`.
 
 ## Test richiesti
 

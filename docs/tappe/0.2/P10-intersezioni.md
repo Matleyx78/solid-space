@@ -23,11 +23,9 @@
 - `geom2d/src/positions.hpp`, `geom2d/src/positions.cpp` (nuovi, interni)
 - `geom2d/src/carriers.hpp`, `geom2d/src/carriers.cpp` (di P9: solo aggiunte, se
   servono)
-- `geom2d/CMakeLists.txt`
 - `tests/geom2d/positions_test.cpp`, `tests/geom2d/intersection_test.cpp` (nuovi)
 - `tests/corpus/esegui/op_intersection.cpp` (nuovo)
-- `tests/CMakeLists.txt`
-- `tests/corpus/in-attesa.txt` (togliere le righe di R10a e R10b)
+- `tests/corpus/in-attesa.txt` (togliere i blocchi di R10a e R10b)
 
 ## Cosa fare
 
@@ -36,7 +34,7 @@ tipi: `Extension`, `Location`, `Contact`, `CurvePosition`, `IntersectionPoint`,
 `Overlap`, `PairIntersections`. `intersectAlong` è di P11.
 
 **Interno** (`positions.hpp`, namespace `solid_space::geom2d::detail`), che P11,
-P13, P14 e P15 riusano:
+P14, P15 e P16 riusano:
 
 - la `Location` esatta di un punto esatto su una curva (prima dell'inizio,
   all'inizio, dentro, alla fine, oltre la fine), con le regole degli archi
@@ -69,7 +67,7 @@ P13, P14 e P15 riusano:
   ordine canonico delle due curve e scambiare i ruoli alla fine.
 
 Il filtro in virgola mobile delle decisioni frequenti (ADR 0010, punto 8) è
-tuo, con il limite d'errore nel commento; il banco di P16 lo misurerà.
+tuo, con il limite d'errore nel commento; il banco di P17 lo misurerà.
 
 ### Casi di verifica (per R10a e R10b)
 
@@ -118,9 +116,11 @@ forma a + b·√d; coordinate e stazioni con `decimal` ad alta precisione.
 - Le intestazioni interne di P6 e P7 si usano senza cambiarle; a quella di P9
   (`carriers.hpp`) puoi solo aggiungere, senza cambiare ciò che c'è. Se serve
   altro, fermati e scrivilo nella issue.
-- `positions.hpp` la usano P11, P13, P14 e P15: tienila documentata.
-- File comuni: `geom2d/CMakeLists.txt`, `tests/CMakeLists.txt`,
-  `tests/corpus/in-attesa.txt` (solo le tue righe).
+- `positions.hpp` la usano P11, P14, P15 e P16: tienila documentata.
+- File comuni: solo `tests/corpus/in-attesa.txt`, dove togli i blocchi dei tuoi
+  riferimenti e nient'altro (piano, sezione 6). Nessun `CMakeLists.txt`: sorgenti
+  e test li raccoglie la compilazione preparata da P3 (i test di unità in
+  `tests/<componente>/`, le operazioni dei casi in `tests/corpus/esegui/`).
 
 ## Test richiesti
 
@@ -141,7 +141,7 @@ E i casi di R10a e R10b.
 
 - `intersect` è realizzata come dichiara `intersection.hpp`.
 - Le posizioni lungo le curve sono nell'intestazione interna, documentate.
-- I casi di `[0.2-R10a]` e `[0.2-R10b]` passano, con la simmetria, e le loro righe sono tolte da
-  `in-attesa.txt`.
+- I casi di `[0.2-R10a]` e `[0.2-R10b]` passano, con la simmetria, e i loro
+  blocchi sono tolti da `in-attesa.txt`.
 - Il job del determinismo è verde.
 - La CI è verde.

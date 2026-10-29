@@ -24,11 +24,9 @@
 - `geom2d/src/curve_meaning.hpp`, `geom2d/src/curve_meaning.cpp` (nuovi,
   interni)
 - `geom2d/src/curves.cpp` (nuovo)
-- `geom2d/CMakeLists.txt`
 - `tests/geom2d/curve_meaning_test.cpp`, `tests/geom2d/curves_test.cpp` (nuovi)
 - `tests/corpus/esegui/op_curves.cpp` (nuovo)
-- `tests/CMakeLists.txt`
-- `tests/corpus/in-attesa.txt` (togliere le righe di R7a e R7b)
+- `tests/corpus/in-attesa.txt` (togliere i blocchi di R7a e R7b)
 
 ## Cosa fare
 
@@ -49,7 +47,7 @@ ciò che serve a tutti i pacchetti successivi per decidere sulle curve.
   fine, con m razionale nei dati), il verso, e per un arco le direzioni D0 e D1
   date da `robust::sinCos` con le quattro regole di `curves.hpp` (cerchio intero,
   un punto, alpha), decise esattamente da D0 e D1 senza trigonometria.
-- Le domande di base che P8–P15 rifanno spesso: se una direzione dal centro sta
+- Le domande di base che P8–P16 rifanno spesso: se una direzione dal centro sta
   sull'arco, prima o dopo; la grandezza M di più curve.
 
 Il significato esatto si calcola una volta per curva e si riusa: le funzioni
@@ -93,10 +91,12 @@ da serie calcolate con `decimal` di Python; i razionali da `fractions`.
 - **Determinismo** (ADR 0008, punto 5): calcolo nei `.cpp`; niente funzioni
   trigonometriche di `<cmath>`: seni, coseni e angoli vengono da `robust`.
 - Decisioni esatte, costruzioni con l'errore dichiarato, nessuna soglia.
-- `curve_meaning.hpp` è un'intestazione interna che P8–P15 useranno: tienila
+- `curve_meaning.hpp` è un'intestazione interna che P8–P16 useranno: tienila
   documentata.
-- File comuni: `geom2d/CMakeLists.txt`, `tests/CMakeLists.txt`,
-  `tests/corpus/in-attesa.txt` (solo le tue righe).
+- File comuni: solo `tests/corpus/in-attesa.txt`, dove togli i blocchi dei tuoi
+  riferimenti e nient'altro (piano, sezione 6). Nessun `CMakeLists.txt`: sorgenti
+  e test li raccoglie la compilazione preparata da P3 (i test di unità in
+  `tests/<componente>/`, le operazioni dei casi in `tests/corpus/esegui/`).
 
 ## Test richiesti
 
@@ -115,6 +115,7 @@ da serie calcolate con `decimal` di Python; i razionali da `fractions`.
 - `pieces`, `magnitude`, `endpoints` e `length` sono realizzate come dichiara
   `curves.hpp`, con il controllo dei dati nell'ordine scritto lì.
 - Il significato esatto delle curve è nell'intestazione interna, documentato.
-- I casi di `[0.2-R7a]` e `[0.2-R7b]` passano e le loro righe sono tolte da `in-attesa.txt`.
+- I casi di `[0.2-R7a]` e `[0.2-R7b]` passano e i loro
+  blocchi sono tolti da `in-attesa.txt`.
 - Il job del determinismo è verde.
 - La CI è verde.
