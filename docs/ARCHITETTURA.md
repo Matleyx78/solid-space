@@ -100,5 +100,5 @@ intestazioni del contratto con Tecnigrafo, in bozza e non ancora realizzate
 | [0008](adr/0008-componente-geom2d.md) | Il componente `geom2d` | Accettato |
 | [0009](adr/0009-regola-delle-tolleranze-del-piano.md) | Una regola unica per coincidenze e tolleranze del piano (richiesta #23, esito 3) | Accettato |
 | [0010](adr/0010-posizione-e-intersezioni-nel-piano.md) | Posizione reciproca e intersezioni di linee, archi e cerchi del piano (richiesta #20, esito 3) | Accettato |
-| [0011](adr/0011-raccordi-e-tangenze-nel-piano.md) | Raccordi e tangenze tra linee, archi e cerchi del piano (richiesta #21, esito 3) | Proposto |
-| [0012](adr/0012-curva-parallela-nel-piano.md) | Curva parallela di linee, archi, cerchi e polilinee del piano (richiesta #22, esito 3) | Proposto |
+| [0011](adr/0011-raccordi-e-tangenze-nel-piano.md) | Raccordi e tangenze tra linee, archi e cerchi del piano (richiesta #21, esito 3) | Accettato |
+| [0012](adr/0012-curva-parallela-nel-piano.md) | Curva parallela di linee, archi, cerchi e polilinee del piano (richiesta #22, esito 3) | Accettato |

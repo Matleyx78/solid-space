@@ -1,6 +1,6 @@
 # ADR 0011: Raccordi e tangenze tra linee, archi e cerchi del piano
 
-- **Stato:** Proposto
+- **Stato:** Accettato
 - **Data:** 2026-10-29
 - **Richiesta:** #21 — da Tecnigrafo: tappa 0.7, Matleyx78/tecnigrafo#327
 - **Esito:** 3 pezzo nostro

@@ -141,5 +141,5 @@ Decisioni del responsabile che cambiano le regole o le tappe, in ordine di data.
   contratto: le intestazioni pubbliche di `robust` e `geom2d` che dichiarano.
   Le valutazioni di #21 e #22 sono gli
   [ADR 0011](adr/0011-raccordi-e-tangenze-nel-piano.md) e
-  [0012](adr/0012-curva-parallela-nel-piano.md), proposti con il loro
+  [0012](adr/0012-curva-parallela-nel-piano.md), accettati con il loro
   contratto: le intestazioni `tangency.hpp` e `offset.hpp` di `geom2d`.

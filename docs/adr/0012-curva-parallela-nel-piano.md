@@ -1,6 +1,6 @@
 # ADR 0012: Curva parallela di linee, archi, cerchi e polilinee del piano
 
-- **Stato:** Proposto
+- **Stato:** Accettato
 - **Data:** 2026-10-29
 - **Richiesta:** #22 — da Tecnigrafo: tappa 0.7, Matleyx78/tecnigrafo#328
 - **Esito:** 3 pezzo nostro
