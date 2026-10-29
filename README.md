@@ -37,14 +37,15 @@ misure dimostrano che serve.
 
 | Componente | Contenuto | Dipende da |
 |---|---|---|
-| `robust` | predicati geometrici robusti e politica delle tolleranze | solo libreria standard |
+| `robust` | predicati geometrici robusti, trigonometria deterministica e politica delle tolleranze | solo libreria standard |
+| `geom2d` | curve del piano: intersezioni, lato, tangenze, curva parallela | `robust` |
 | `solver` | interfaccia del solver di vincoli e motore (libslvs, poi altro) | `robust` |
 | `naming` | identificativi stabili e grafo di genealogia | solo libreria standard |
 | `kernel` | facciata su OCCT: forme, operazioni, STEP | `robust`, `naming`, OCCT |
 | `features` | albero delle feature e rigenerazione, senza interfaccia grafica | `kernel`, `naming`, `solver` |
 
-Ogni componente si compila da solo: il CAD 2D di Tecnigrafo userà `robust` e
-`solver` senza avere OCCT. La mappa completa è in
+Ogni componente si compila da solo: il CAD 2D di Tecnigrafo userà `robust`,
+`geom2d` e `solver` senza avere OCCT. La mappa completa è in
 [docs/ARCHITETTURA.md](docs/ARCHITETTURA.md).
 
 ## Cosa non è

@@ -5,7 +5,7 @@
 add_library(solid_space_robust STATIC src/robust.cpp)
 add_library(solid_space::robust ALIAS solid_space_robust)
 
-# Public headers will live in include/solid_space/robust/ (ADR 0003, point 4).
+# Public headers live in include/solid_space/robust/ (ADR 0003, point 4).
 target_include_directories(solid_space_robust PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 target_compile_features(solid_space_robust PUBLIC cxx_std_20)

@@ -114,9 +114,10 @@ pull request e passa al pacchetto successivo.
 - **Nessuna intestazione pubblica include OCCT, libslvs, Eigen o altre dipendenze
   esterne** (ADR 0002). Le forme e le strutture del solver sono maniglie opache.
 - **Le dipendenze tra componenti vanno in un verso solo**: `features` →
-  `kernel`, `naming`, `solver`; `kernel` → `robust`, `naming`; `solver` → `robust`.
-  `robust` e `naming` non dipendono da nulla. Un componente non include uno che
-  sta sopra di lui.
+  `kernel`, `naming`, `solver`; `kernel` → `robust`, `naming`, `geom2d`;
+  `solver` → `robust`, `geom2d`; `geom2d` → `robust`. `robust` e `naming` non
+  dipendono da nulla. Un componente non include uno che sta sopra di lui
+  ([ADR 0008](docs/adr/0008-componente-geom2d.md)).
 - Gli elementi si citano con identificativi stabili (`StableId`), mai con
   puntatori o indirizzi, e mai con tipi del nucleo.
 - Nessuna eccezione attraversa un'interfaccia pubblica: gli errori sono valori con
