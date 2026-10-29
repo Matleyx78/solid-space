@@ -5,8 +5,8 @@
 - **Difficoltà:** media
 - **Agente:** codex
 - **Modello e impegno:** medio; impegno alto
-- **Riferimenti:** issue `[0.2-R12]` (#…), agente gemini. I suoi casi servono
-  anche a Matleyx78/tecnigrafo#362
+- **Riferimenti:** issue `[0.2-R12]` (#…), agente gemini (con i casi a, b e c di
+  `autocad-offset.dxf`). I suoi casi servono anche a Matleyx78/tecnigrafo#362
 - **Dipende da:** P7, R12
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#363 (con P13)
 - **Componente:** `geom2d`
@@ -21,7 +21,7 @@
 - `geom2d/src/offset_curve.cpp` (nuovo)
 - `geom2d/CMakeLists.txt`
 - `tests/geom2d/offset_curve_test.cpp` (nuovo)
-- `tests/corpus/esegui/op_parallela_curva.cpp` (nuovo)
+- `tests/corpus/esegui/op_offset_curve.cpp` (nuovo)
 - `tests/CMakeLists.txt`
 - `tests/corpus/in-attesa.txt` (togliere le righe di R12)
 
@@ -62,7 +62,24 @@ grandezza della curva e di |d|; quella di un raggio è la stessa. R12 copre alme
 - un pezzo curvo con bulge 1 e uno con bulge piccolo;
 - segmenti obliqui, con la normale irrazionale;
 - coordinate di 1e6;
-- distanza NaN, infinita, oltre `kMaxCoordinate`; curva ridotta a un punto.
+- distanza NaN, infinita, oltre `kMaxCoordinate`; curva ridotta a un punto;
+- **i casi a, b e c di `autocad-offset.dxf`** (linea con d = 5, cerchio con 3
+  dentro e fuori, arco con 4 fuori e dentro): l'ingresso dallo script, `atteso`
+  la geometria che AutoCAD ha disegnato, letta dal DXF con la tolleranza della
+  precisione del file, provenienza `file-pubblico`.
+
+R12 registra in `sorgenti.json`, con la copia in `esterni/`, il DXF e lo script
+che lo ha prodotto (li usano anche R13a e R13b, che non li registrano di nuovo):
+
+- `autocad-offset.dxf` del repository
+  [Matleyx78/dxf-test-file](https://github.com/Matleyx78/dxf-test-file), licenza
+  CC0, al commit `4ad9fff8a88e65561f3998a56a95adf921b58792`, SHA-256
+  `8ffddd1f67c4ea365fb01483edcc948c08aa583136849f8dc071916d9e6d8189`;
+- lo script `3-offset.scr` di Tecnigrafo (`docs/tappe/0.7/dxf-di-prova/`,
+  licenza GPL-3.0-or-later), a un commit fissato di `main`, con il suo hash.
+
+Le regole sono quelle di `tests/corpus/README.md`, «Casi che arrivano da
+Tecnigrafo».
 
 I valori attesi: confronti tra raggio e distanza con `fractions` di Python; punti
 spostati con `decimal` (una radice). Per gli archi vale la regola del README

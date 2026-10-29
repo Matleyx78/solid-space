@@ -5,9 +5,10 @@
 - **Difficoltà:** impegnativa
 - **Agente:** claude-2
 - **Modello e impegno:** forte; impegno alto
-- **Riferimenti:** issue `[0.2-R14]` (#…), agente codex (calcoli delicati: radici
-  annidate). I suoi casi servono anche a Matleyx78/tecnigrafo#366
-- **Dipende da:** P10, R14
+- **Riferimenti:** issue `[0.2-R14a]` (#…, `tangentsFrom`) e `[0.2-R14b]` (#…,
+  `tangentCircles`), agente codex (calcoli delicati: radici annidate). I loro
+  casi servono anche a Matleyx78/tecnigrafo#366
+- **Dipende da:** P10, R14a, R14b
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#367 (con P15)
 - **Componente:** `geom2d`
 - **Da leggere:** [ADR 0011](../../adr/0011-raccordi-e-tangenze-nel-piano.md)
@@ -27,9 +28,9 @@
   i numeri con radici annidate)
 - `geom2d/CMakeLists.txt`
 - `tests/geom2d/tangency_test.cpp` (nuovo)
-- `tests/corpus/esegui/op_tangenze.cpp` (nuovo)
+- `tests/corpus/esegui/op_tangency.cpp` (nuovo)
 - `tests/CMakeLists.txt`
-- `tests/corpus/in-attesa.txt` (togliere le righe di R14)
+- `tests/corpus/in-attesa.txt` (togliere le righe di R14a e R14b)
 
 ## Cosa fare
 
@@ -58,7 +59,7 @@ Realizzare, senza cambiarle, `tangentsFrom` e `tangentCircles` di
 - **Interno** (`tangency_internal.hpp`): i candidati con le loro decisioni, nella
   forma che P15 usa per scegliere (lato, posizioni, centro esatto).
 
-### Casi di verifica (per R14)
+### Casi di verifica (per R14a e R14b)
 
 | Operazione | `ingresso` | `atteso` |
 |---|---|---|
@@ -69,23 +70,24 @@ Un punto di tangenza (`TangencyPoint`) si scrive sempre
 `{"punto": punto, "sulla_curva": posizione}`, anche in P15. Tolleranze: centri e
 punti `kRelativePointError · max(M, |p|)`, stazioni
 `kRelativeStationError · max(M, |s|)`; il punto di `tangentsFrom` con `on` è
-esatto. R14 copre almeno:
+esatto. **R14a** (`tangentsFrom`) e **R14b** (`tangentCircles`) coprono almeno:
 
-- **#21, casi 3, 6 e 7:** due archi concentrici (nessun cerchio per ogni raggio,
-  infiniti quando i raggi differiscono o si sommano di esattamente 2r); tangenti
-  da un punto sul cerchio (`on`, il punto stesso) e da un punto a R + 1e-12 dal
-  centro (R = 5, centro nell'origine: `outside`, due punti a y ≈ ±3.16e-6); gli
-  stessi a coordinate dell'ordine di 1e6 (il punto sta `on`, come dice la tabella
-  dell'ADR 0011);
-- per ogni coppia di tipi (segmento, arco, cerchio, pezzo dritto e curvo):
+- **#21, casi 6 e 7** (R14a): tangenti da un punto sul cerchio (`on`, il punto
+  stesso) e da un punto a R + 1e-12 dal centro (R = 5, centro nell'origine:
+  `outside`, due punti a y ≈ ±3.16e-6); gli stessi a coordinate dell'ordine di
+  1e6 (il punto sta `on`, come dice la tabella dell'ADR 0011);
+- `tangentsFrom` (R14a) con il punto sul cerchio e a un ulp, dentro e fuori, con e
+  senza prolungamento di un arco; curva dritta (`notCircular`); punto non valido
+  (`dato` 1);
+- **#21, caso 3** (R14b): due archi concentrici (nessun cerchio per ogni raggio,
+  infiniti quando i raggi differiscono o si sommano di esattamente 2r), anche a
+  coordinate di 1e6;
+- per ogni coppia di tipi (R14b; segmento, arco, cerchio, pezzo dritto e curvo):
   cerchi che entrano esattamente (un solo cerchio) e di un ulp in più o in meno;
   curve tangenti tra loro; stessa retta, stesso cerchio, rette parallele a
   distanza esattamente 2r; punti di tangenza esattamente agli estremi (`atStart`,
   `atEnd`) e oltre;
-- `tangentsFrom` con il punto sul cerchio e a un ulp, dentro e fuori, con e senza
-  prolungamento di un arco;
-- raggio zero, negativo, NaN (diagnosi con `dato` 2); curva dritta per
-  `tangentsFrom` (`notCircular`).
+- raggio zero, negativo, NaN (R14b: diagnosi con `dato` 2).
 
 I valori attesi: decisioni con `fractions` di Python e confronti tra numeri
 algebrici (elevamenti al quadrato, scritti in `provenienza`); centri e punti con
@@ -116,12 +118,12 @@ deterministico, anche quasi degeneri:
   centro;
 - `tangentsFrom` dà `on` esattamente quando `side()` dà `on` per lo stesso punto.
 
-E i casi di R14.
+E i casi di R14a e R14b.
 
 ## Fatto quando
 
 - `tangentsFrom` e `tangentCircles` sono realizzate come dichiara
   `tangency.hpp`.
-- I casi di `[0.2-R14]` passano e le loro righe sono tolte da `in-attesa.txt`.
+- I casi di `[0.2-R14a]` e `[0.2-R14b]` passano e le loro righe sono tolte da `in-attesa.txt`.
 - Il job del determinismo è verde.
 - La CI è verde.

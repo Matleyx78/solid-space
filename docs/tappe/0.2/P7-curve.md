@@ -5,9 +5,10 @@
 - **Difficoltà:** impegnativa
 - **Agente:** claude-2
 - **Modello e impegno:** forte; impegno alto
-- **Riferimenti:** issue `[0.2-R7]` (#…), agente codex (calcoli delicati: archi al
-  limite degli arrotondamenti)
-- **Dipende da:** P5, P6, R7
+- **Riferimenti:** issue `[0.2-R7a]` (#…, dati e curve ridotte a un punto) e
+  `[0.2-R7b]` (#…, pezzi, grandezza, estremi, lunghezze), agente codex (calcoli
+  delicati: archi al limite degli arrotondamenti)
+- **Dipende da:** P5, P6, R7a, R7b
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#357 (con P4–P6, P8–P11) e #373
   (con P4–P6, P8)
 - **Componente:** `geom2d`
@@ -25,9 +26,9 @@
 - `geom2d/src/curves.cpp` (nuovo)
 - `geom2d/CMakeLists.txt`
 - `tests/geom2d/curve_meaning_test.cpp`, `tests/geom2d/curves_test.cpp` (nuovi)
-- `tests/corpus/esegui/op_curve.cpp` (nuovo)
+- `tests/corpus/esegui/op_curves.cpp` (nuovo)
 - `tests/CMakeLists.txt`
-- `tests/corpus/in-attesa.txt` (togliere le righe di R7)
+- `tests/corpus/in-attesa.txt` (togliere le righe di R7a e R7b)
 
 ## Cosa fare
 
@@ -54,7 +55,7 @@ ciò che serve a tutti i pacchetti successivi per decidere sulle curve.
 Il significato esatto si calcola una volta per curva e si riusa: le funzioni
 interne prendono la forma già calcolata.
 
-### Casi di verifica (per R7)
+### Casi di verifica (per R7a e R7b)
 
 | Operazione | `ingresso` | `atteso` |
 |---|---|---|
@@ -63,17 +64,17 @@ interne prendono la forma già calcolata.
 | `endpoints` | `curva` | `inizio`, `fine`: punti approssimati, tolleranza `kRelativePointError · max(M, |p|)`; oppure `diagnosi` |
 | `length` | `curva` | `lunghezza`: approssimato, tolleranza `kRelativeStationError · max(M, |s|)`; oppure `diagnosi` |
 
-R7 copre almeno:
+**R7a** copre i dati e le curve ridotte a un punto, **R7b** il resto; almeno:
 
-- **dati:** per ogni tipo, NaN, infinito, raggio negativo, coordinata o raggio
+- **dati** (R7a): per ogni tipo, NaN, infinito, raggio negativo, coordinata o raggio
   oltre 2^50, angolo oltre 2^20, punto m di un pezzo curvo oltre il dominio; due
   difetti insieme, per l'ordine delle diagnosi; `dato` è sempre `"0"`;
-- **curve ridotte a un punto:** segmento con inizio uguale alla fine, raggio
+- **curve ridotte a un punto** (R7a): segmento con inizio uguale alla fine, raggio
   zero, pezzo con inizio uguale alla fine, arco di ampiezza 0, arco in cui
   `angolo_iniziale + ampiezza` arrotondato è uguale ad `angolo_iniziale` (per
   esempio angolo 1e6 e ampiezza 1e-12: D0 e D1 sono lo stesso `double`);
-- **archi interi:** |ampiezza| uguale o oltre `kFullTurn`, positiva e negativa;
-- `pieces` di polilinee aperte e chiuse, con zero, uno e due vertici, con bulge
+- **archi interi** (R7b): |ampiezza| uguale o oltre `kFullTurn`, positiva e negativa;
+- `pieces` (R7b) di polilinee aperte e chiuse, con zero, uno e due vertici, con bulge
   diversi;
 - `magnitude` di ogni tipo, anche di un pezzo curvo il cui punto m sta fuori dal
   rettangolo degli estremi;
@@ -107,13 +108,13 @@ da serie calcolate con `decimal` di Python; i razionali da `fractions`.
   direzione D0 o D1); `length` di un cerchio intero entro l'errore da 2πr;
   `pieces` di una polilinea chiusa ha come ultimo pezzo il ritorno al primo
   vertice, con il bulge dell'ultimo.
-- I casi di R7 passano.
+- I casi di R7a e R7b passano.
 
 ## Fatto quando
 
 - `pieces`, `magnitude`, `endpoints` e `length` sono realizzate come dichiara
   `curves.hpp`, con il controllo dei dati nell'ordine scritto lì.
 - Il significato esatto delle curve è nell'intestazione interna, documentato.
-- I casi di `[0.2-R7]` passano e le loro righe sono tolte da `in-attesa.txt`.
+- I casi di `[0.2-R7a]` e `[0.2-R7b]` passano e le loro righe sono tolte da `in-attesa.txt`.
 - Il job del determinismo è verde.
 - La CI è verde.

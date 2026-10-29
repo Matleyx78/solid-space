@@ -7,7 +7,7 @@
 - **Modello e impegno:** forte; impegno alto
 - **Riferimenti:** non servono: il pacchetto non ha funzioni pubbliche; si prova
   con i suoi test di unità e, attraverso le funzioni pubbliche, con i casi di
-  R7–R15
+  R7a–R15c
 - **Dipende da:** P3
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#357 (con P4, P5, P7–P11) e
   #373 (con P4, P5, P7, P8)
@@ -88,8 +88,11 @@ double quadraticToDouble(const Dyadic& a, const Dyadic& b, const Dyadic& d, cons
 - **Determinismo** (ADR 0008, punto 5): tutto il calcolo nei `.cpp`; le
   intestazioni interne dichiarano, non calcolano in virgola mobile; le opzioni
   dei target le ha messe P3.
-- Nessuna eccezione esce da `geom2d`: un'allocazione fallita è l'unico caso, e
-  resta quello della libreria standard.
+- Nessuna eccezione attraversa l'interfaccia (ADR 0003, punto 5). I numeri
+  esatti di qualunque grandezza allocano memoria, come i `std::vector` dei
+  risultati del contratto: `std::bad_alloc`, all'esaurimento della memoria, è
+  l'unica eccezione possibile, e come trattarla lo decide il responsabile prima
+  dell'apertura (piano, sezione 5). Le funzioni interne non sono `noexcept`.
 - File comuni: `geom2d/CMakeLists.txt`, `tests/CMakeLists.txt` (solo le tue
   righe). L'eseguibile dei test interni lo riusano P7–P15.
 

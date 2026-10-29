@@ -5,10 +5,11 @@
 - **Difficoltà:** impegnativa
 - **Agente:** claude
 - **Modello e impegno:** forte; impegno alto
-- **Riferimenti:** issue `[0.2-R13a]` (#…), agente codex (calcoli delicati), e
-  `[0.2-R13b]` (#…), agente gemini (casi di AutoCAD). I loro casi servono anche
+- **Riferimenti:** issue `[0.2-R13a]` (#…, casi della richiesta e caso g) e
+  `[0.2-R13c]` (#…, casi limite), agente codex (calcoli delicati); `[0.2-R13b]`
+  (#…, casi di AutoCAD), agente gemini. I loro casi servono anche
   a Matleyx78/tecnigrafo#362
-- **Dipende da:** P10, P12, R13a, R13b
+- **Dipende da:** P10, P12, R13a, R13b, R13c
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#363 (con P12): di norma è
   l'ultimo
 - **Componente:** `geom2d`
@@ -26,9 +27,9 @@
   interni, se servono a tenere il file principale leggibile)
 - `geom2d/CMakeLists.txt`
 - `tests/geom2d/offset_polyline_test.cpp` (nuovo)
-- `tests/corpus/esegui/op_parallela_polilinea.cpp` (nuovo)
+- `tests/corpus/esegui/op_offset_polyline.cpp` (nuovo)
 - `tests/CMakeLists.txt`
-- `tests/corpus/in-attesa.txt` (togliere le righe di R13a e R13b)
+- `tests/corpus/in-attesa.txt` (togliere le righe di R13a, R13b e R13c)
 
 ## Cosa fare
 
@@ -58,7 +59,7 @@ al vertice, se un pezzo gira al contrario) sono esatte, con gli incontri dei
 sostegni di P9 e le posizioni di P10. Il controllo finale confronta ogni coppia di
 pezzi (ADR 0012, punto 11): una struttura che riduca le coppie non serve ora.
 
-### Casi di verifica (per R13a e R13b)
+### Casi di verifica (per R13a, R13b e R13c)
 
 | Operazione | `ingresso` | `atteso` |
 |---|---|---|
@@ -69,7 +70,7 @@ la tolleranza che corrisponde, per la sua corda, a uno scostamento della curva d
 `kRelativeOffsetError · max(M, |p|)` (chi scrive il caso la ricava e la scrive in
 `provenienza`). M è la grandezza della polilinea e di |d|.
 
-**R13a** (codex) copre almeno:
+**R13a** (codex) copre i casi della richiesta e il caso g di AutoCAD:
 
 - **#22, casi 1–6:** il rettangolo 100×50 con d = 10 dentro e fuori (80×30 e
   120×70, spigoli vivi); l'asola dentro con d minore del raggio, dentro con d
@@ -77,35 +78,39 @@ la tolleranza che corrisponde, per la sua corda, a uno scostamento della curva d
   l'interno; la polilinea con un arco interno di raggio minore di d; la U stretta
   con d maggiore di metà larghezza (`failed`, `openJoint`); e gli stessi a
   coordinate di 1e6, con le risposte della tabella dell'ADR 0012;
-- i casi limite della «Verifica» dell'ADR 0012: distanza esattamente uguale al
-  raggio di un pezzo (sparisce) e un ulp sotto; pezzi tangenti nei vertici,
-  aperti e chiusi (nessuna giunzione: stesso estremo esatto); vertici ripetuti;
-  inversione di 180° (giunzione ad arco); polilinea di un solo pezzo (come
-  `offsetCurve`); distanza zero; una giunzione oltre il dominio (`beyondDomain`);
-  un caso `failed` per ciascun motivo (`openJoint`, `beyondDomain`,
+- **il caso g di `autocad-offset.dxf`** (la conca con un arco di raggio 3, con
+  d = 2 e d = 5): i valori attesi si calcolano con i quattro passi di
+  `offset.hpp`, e si confrontano con ciò che AutoCAD ha disegnato. Se
+  differiscono (l'ADR 0012 lo teme per d = 5), il caso non si scrive: R13a si
+  ferma su quel caso e lo scrive nella issue, e decide il responsabile con
+  l'etichetta `contratto`. R13a non registra il DXF in `sorgenti.json`: i valori
+  vengono dal calcolo, e la descrizione cita il file e il caso.
+
+**R13c** (codex) copre i casi limite della «Verifica» dell'ADR 0012:
+
+- distanza esattamente uguale al raggio di un pezzo (sparisce) e un ulp sotto;
+  pezzi tangenti nei vertici, aperti e chiusi (nessuna giunzione: stesso estremo
+  esatto); vertici ripetuti; inversione di 180° (giunzione ad arco); polilinea di
+  un solo pezzo (come `offsetCurve`); distanza zero;
+- un caso `failed` per ciascun motivo (`openJoint`, `beyondDomain`,
   `selfIntersection`, `meetsOriginal`);
 - diagnosi della polilinea (`dato` 0) e della distanza (`dato` 1).
 
-**R13b** (gemini) porta i casi a–h di `autocad-offset.dxf` (linea, cerchio,
-arco, rettangolo, asola, U, conca con l'arco di raggio 3, rettangolo a 1e6):
+**R13b** (gemini) porta i casi d, e, f e h di `autocad-offset.dxf` (rettangolo,
+asola, U, rettangolo a 1e6); i casi a, b e c sono curve singole e stanno in R12,
+il caso g in R13a:
 
-- il file è quello del repository
-  [Matleyx78/dxf-test-file](https://github.com/Matleyx78/dxf-test-file), licenza
-  CC0, al commit `4ad9fff8a88e65561f3998a56a95adf921b58792`, SHA-256
-  `8ffddd1f67c4ea365fb01483edcc948c08aa583136849f8dc071916d9e6d8189`; i passi e i
-  punti dei comandi sono nello script `3-offset.scr` di Tecnigrafo
-  (`docs/tappe/0.7/dxf-di-prova/`, licenza GPL-3.0-or-later), letto a un commit
-  fissato. Entrambi entrano in `sorgenti.json` (tests/corpus/README.md, «Casi che
-  arrivano da Tecnigrafo»);
-- l'ingresso sono le figure di partenza, con il lato tradotto nel segno di d;
-  `atteso` sono le entità che AutoCAD ha creato, lette dal DXF, con la
-  tolleranza della precisione del file; provenienza `file-pubblico`;
-- dove il contratto non garantisce di coincidere con AutoCAD (i casi non
-  semplici, ADR 0012, punto 6), chi scrive il caso controlla con i quattro passi
-  che la risposta sia la stessa; **se non lo è** (per esempio il caso g con
-  distanza 5), non scrive il caso, si ferma e lo scrive nella issue: decide il
-  responsabile, con l'etichetta `contratto`. Il caso f con distanza 4 («nessun
-  risultato») è `failed`.
+- il DXF e lo script `3-offset.scr` li registra R12 in `sorgenti.json`, con la
+  copia in `esterni/`: R13b li usa e non tocca `sorgenti.json`;
+- l'ingresso sono le figure di partenza, con il lato tradotto nel segno di d
+  (positivo a sinistra, nel verso della polilinea); `atteso` è la geometria che
+  AutoCAD ha disegnato, letta dal DXF con la tolleranza della precisione del
+  file (vertici, bulge, chiusura), e `esito`; provenienza `file-pubblico`. Le
+  chiavi che il DXF non dice (`motivo`, `semplice`, `origini`) non si scrivono;
+- questi casi sono semplici, salvo f con d = 4, dove AutoCAD non crea nulla e
+  l'ADR 0012 (tabella, caso 5) dà `failed`. Se un caso ti sembra non semplice, o
+  la geometria di AutoCAD ti sembra diversa da quella che l'ADR 0012 descrive,
+  non scriverlo: fermati su quel caso e scrivilo nella issue.
 
 Per gli archi vale la regola del README («Gli archi»).
 
@@ -136,13 +141,13 @@ deterministico:
 - spostare di d e poi di −d un caso semplice senza giunzioni restituisce la
   polilinea di partenza entro il doppio dell'errore.
 
-E i casi di R13a e R13b.
+E i casi di R13a, R13b e R13c.
 
 ## Fatto quando
 
 - `offsetPolyline` è realizzata come dichiara `offset.hpp`, con il controllo
   finale.
-- I casi di `[0.2-R13a]` e `[0.2-R13b]` passano e le loro righe sono tolte da
+- I casi di `[0.2-R13a]`, `[0.2-R13b]` e `[0.2-R13c]` passano e le loro righe sono tolte da
   `in-attesa.txt`.
 - Il job del determinismo è verde.
 - La CI è verde.

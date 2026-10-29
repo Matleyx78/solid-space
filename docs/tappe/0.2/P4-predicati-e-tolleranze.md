@@ -5,9 +5,10 @@
 - **Difficoltà:** impegnativa
 - **Agente:** claude
 - **Modello e impegno:** forte; impegno alto
-- **Riferimenti:** issue `[0.2-R4]` (#…), agente codex (calcoli delicati). I
-  suoi casi servono anche a Matleyx78/tecnigrafo#356 e #372
-- **Dipende da:** P2, P3, R4
+- **Riferimenti:** issue `[0.2-R4a]` (#…, `orient2d`) e `[0.2-R4b]` (#…, regola
+  delle tolleranze), agente codex (calcoli delicati). I casi di R4b servono anche
+  a Matleyx78/tecnigrafo#356 e #372
+- **Dipende da:** P2, P3, R4a, R4b
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#357 (con P5–P11) e #373 (con
   P5–P8): nella pull request, «Sblocca:» li cita se con questo pacchetto sono uniti
   tutti gli altri della loro riga (piano, sezione 6)
@@ -17,7 +18,7 @@
   punto 7, [ADR 0008](../../adr/0008-componente-geom2d.md) punti 5–7;
   `robust/include/solid_space/robust/predicates.hpp`, `tolerance.hpp`,
   `point.hpp`, `diagnosis.hpp`, `result.hpp`; `tests/robust/contract_test.cpp`;
-  `tests/corpus/esegui/dati.hpp` e `operazioni.hpp` (P2)
+  `tests/corpus/esegui/plane_data.hpp` e `operations.hpp` (P2)
 
 ## File
 
@@ -25,10 +26,12 @@
 - `robust/src/predicates.cpp`, `robust/src/tolerance.cpp` (nuovi)
 - `robust/src/robust.cpp` (si toglie: era il segnaposto)
 - `robust/CMakeLists.txt`
-- `tests/robust/predicates_test.cpp`, `tests/robust/tolerance_test.cpp` (nuovi)
+- `tests/robust/predicates_test.cpp`, `tests/robust/tolerance_test.cpp`,
+  `tests/robust/exact_sum_test.cpp` (nuovi)
 - `tests/corpus/esegui/op_robust.cpp` (nuovo)
-- `tests/CMakeLists.txt`
-- `tests/corpus/in-attesa.txt` (togliere le righe di R4)
+- `tests/CMakeLists.txt` (anche un eseguibile per i test interni di `robust`, che
+  vede `robust/src/`)
+- `tests/corpus/in-attesa.txt` (togliere le righe di R4a e R4b)
 
 ## Cosa fare
 
@@ -44,7 +47,11 @@ di prodotti di due `double`, `Σ ± xᵢ·yᵢ`, **per ogni esponente**. I dati 
 subnormali, quindi le espansioni di `double` non bastano (per esempio
 `orient2d((0, 0), (1e-200, 0), (0, 1e-200))` è positivo, e un calcolo in `double`
 lo dà nullo). Le scelte di rappresentazione sono tue; l'intestazione privata le
-documenta. `orient2d` e `coincident` si scrivono come somme di prodotti dei
+documenta. **Memoria fissa, senza allocazioni:** `orient2d`, `epsilon`,
+`coincident` e `negligible` sono `noexcept`, e un'allocazione fallita
+terminerebbe il programma; la grandezza massima dei numeri è nota (prodotti di
+due `double` con esponenti da −1074 a 1023, quindi qualche migliaio di bit), e
+il commento dice il conto. `orient2d` e `coincident` si scrivono come somme di prodotti dei
 `double` ricevuti (le differenze si sviluppano, non si arrotondano).
 
 **Un filtro in virgola mobile** decide il caso comune quando il suo limite
@@ -56,29 +63,29 @@ operazioni che IEEE 754 arrotonda correttamente: lo stesso `double` ovunque.
 `forUnit` dà `DiagnosisCode::invalidValue`, con un messaggio che dice il motivo,
 nei casi elencati nell'intestazione.
 
-### Casi di verifica (per R4)
+### Casi di verifica (per R4a e R4b)
 
 Operazioni, chiavi e forme (vocabolario comune in `tests/corpus/README.md`,
 "Dati del piano"):
 
 | Operazione | `ingresso` | `atteso` |
 |---|---|---|
-| `orient2d` | `a`, `b`, `c`: punti | `segno`: `"-1"`, `"0"` o `"1"` |
-| `forUnit` | `unita_in_metri` | `lunghezza_minima`: esatto (il `double` di `floorLength()`), oppure `diagnosi` |
+| `orient2d` | `a`, `b`, `c`: punti | `segno`: `"negative"`, `"zero"` o `"positive"` (i nomi di `Sign`) |
+| `forUnit` | `unita_in_metri` | `lunghezza_minima`: esatto (il `double` di `floorLength()`), oppure `diagnosi` (`{"codice": "invalidValue"}`, senza `dato`: la diagnosi di `robust` non lo ha) |
 | `epsilon` | `unita_in_metri`, `grandezza` | `epsilon`: esatto |
 | `coincident` | `unita_in_metri`, `a`, `b` | `coincidono`: booleano |
 | `negligible` | `unita_in_metri`, `lunghezza`, `grandezza` | `trascurabile`: booleano |
 
-R4 copre almeno:
+**R4a** (`orient2d`) e **R4b** (le altre quattro operazioni) coprono almeno:
 
-- **#23, casi 1, 4 e 5:** gli estremi (10, 0) e (10, 1e-10) in millimetri vicino
+- **#23, casi 1, 4 e 5** (R4b): gli estremi (10, 0) e (10, 1e-10) in millimetri vicino
   all'origine e lo stesso caso in chilometri con coordinate di 1e5
   (`coincident`); un pezzo lungo 1e-14 alle due scale (`negligible`);
-- `orient2d`: punti esattamente allineati, quasi allineati (un ulp, e il punto a
+- `orient2d` (R4a): punti esattamente allineati, quasi allineati (un ulp, e il punto a
   1e-13 da un segmento del caso 7 della #20), coordinate minuscole e subnormali,
   coordinate di grandezze molto diverse, coordinate di `kMaxCoordinate`, punti
   coincidenti;
-- `forUnit` con unità 0, negativa, infinita, NaN, e con un'unità che darebbe un
+- `forUnit` (R4b) con unità 0, negativa, infinita, NaN, e con un'unità che darebbe un
   pavimento oltre `kMaxCoordinate` (diagnosi); 0.001 e 1000;
 - `epsilon` con M sotto e sopra `floorLength() / kRelativeTolerance`, M = 0;
 - `coincident` e `negligible` con la distanza esattamente uguale a epsilon (vero)
@@ -104,18 +111,18 @@ il procedimento è in `provenienza`.
 
 ## Test richiesti
 
-- `predicates_test.cpp`: il filtro e il calcolo esatto danno lo stesso segno su
+- `exact_sum_test.cpp` e `predicates_test.cpp`: il filtro e il calcolo esatto danno lo stesso segno su
   dati generati in modo deterministico, anche quasi degeneri; permutare i tre
   punti cambia il segno come la parità della permutazione; scalare per una
   potenza di due non cambia il segno, anche verso i subnormali.
 - `tolerance_test.cpp`: le precondizioni documentate, `unitInMeters` e
   `floorLength` per alcune unità, simmetria di `coincident`.
-- I casi di R4 passano.
+- I casi di R4a e R4b passano.
 
 ## Fatto quando
 
 - `orient2d` e `TolerancePolicy` sono realizzate come dichiarano le intestazioni,
   senza cambiarle.
-- I casi di `[0.2-R4]` passano e le loro righe sono tolte da `in-attesa.txt`.
+- I casi di `[0.2-R4a]` e `[0.2-R4b]` passano e le loro righe sono tolte da `in-attesa.txt`.
 - Il job del determinismo è verde.
 - La CI è verde.

@@ -30,6 +30,11 @@
   `predicates.hpp`, `result.hpp`, `tolerance.hpp`, `trigonometry.hpp`) e
   `geom2d/include/solid_space/geom2d/` (`coincidence.hpp`, `curves.hpp`,
   `diagnosis.hpp`, `intersection.hpp`, `offset.hpp`, `side.hpp`, `tangency.hpp`)
+- i commenti «draft contract» di `tests/CMakeLists.txt`,
+  `tests/robust/contract_test.cpp` e `tests/geom2d/contract_test.cpp`
+
+Sono più della quindicina di file di un pacchetto, ma in sedici di essi cambiano
+solo una o due righe di commento.
 
 ## Cosa fare
 
@@ -58,6 +63,9 @@
    `point.hpp`) si toglie. Nessun'altra riga cambia: né dichiarazioni, né altri
    commenti. È l'unica modifica alle intestazioni del contratto che il piano
    autorizza (sezione 3).
+5. **I test del contratto:** nei tre file di test, «draft contract» e «nothing
+   that is not implemented yet» diventano commenti che dicono che quei test
+   controllano le firme del contratto; il codice dei test non cambia.
 
 ## Regole della tappa che valgono qui
 
@@ -73,7 +81,8 @@
 
 - Nessun test nuovo; `scripts/controlla.sh` passa (formato e compilazione delle
   intestazioni).
-- `git diff` sulle intestazioni mostra solo righe di commento.
+- `git diff` sulle intestazioni e sui tre file di test mostra solo righe di
+  commento.
 
 ## Fatto quando
 

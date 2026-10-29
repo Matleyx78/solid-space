@@ -5,9 +5,10 @@
 - **Difficoltà:** impegnativa
 - **Agente:** claude
 - **Modello e impegno:** forte; impegno alto
-- **Riferimenti:** issue `[0.2-R10]` (#…), agente codex (calcoli delicati). I suoi
-  casi servono anche a Matleyx78/tecnigrafo#356
-- **Dipende da:** P9, R10
+- **Riferimenti:** issue `[0.2-R10a]` (#…, casi della richiesta) e `[0.2-R10b]`
+  (#…, casi limite), agente codex (calcoli delicati). I loro casi servono anche a
+  Matleyx78/tecnigrafo#356
+- **Dipende da:** P9, R10a, R10b
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#357 (con P4–P9, P11)
 - **Componente:** `geom2d`
 - **Da leggere:** [ADR 0010](../../adr/0010-posizione-e-intersezioni-nel-piano.md)
@@ -24,9 +25,9 @@
   servono)
 - `geom2d/CMakeLists.txt`
 - `tests/geom2d/positions_test.cpp`, `tests/geom2d/intersection_test.cpp` (nuovi)
-- `tests/corpus/esegui/op_intersezioni.cpp` (nuovo)
+- `tests/corpus/esegui/op_intersection.cpp` (nuovo)
 - `tests/CMakeLists.txt`
-- `tests/corpus/in-attesa.txt` (togliere le righe di R10)
+- `tests/corpus/in-attesa.txt` (togliere le righe di R10a e R10b)
 
 ## Cosa fare
 
@@ -42,9 +43,14 @@ P13, P14 e P15 riusano:
   interi di `curves.hpp`;
 - l'ordine esatto di due punti esatti lungo una curva (stessa radice o radici
   diverse, con P6), per una curva chiusa a partire dal suo inizio;
-- la stazione arrotondata entro `kRelativeStationError`, mai decrescente lungo
-  una lista ordinata (se l'arrotondamento la farebbe scendere, si prende la
-  precedente: l'ordine è quello esatto, la stazione lo segue).
+- la stazione arrotondata entro `kRelativeStationError`: una funzione del solo
+  punto esatto e della curva, che non guarda la lista in cui il punto sta, e che
+  non decresce lungo la curva (per esempio l'arrotondamento monotono di una
+  quantità esatta che cresce con la posizione). Solo così le stazioni non
+  decrescono lungo `points` **e** lo scambio degli argomenti, o un tagliente
+  chiamato da solo (P11), dà gli stessi bit. Correggere una stazione guardando la
+  precedente nella lista romperebbe la simmetria; se non trovi una funzione così,
+  fermati e scrivilo nella issue (piano, sezione 4).
 
 **`intersect`**, sopra gli incontri dei sostegni di P9:
 
@@ -65,7 +71,7 @@ P13, P14 e P15 riusano:
 Il filtro in virgola mobile delle decisioni frequenti (ADR 0010, punto 8) è
 tuo, con il limite d'errore nel commento; il banco di P16 lo misurerà.
 
-### Casi di verifica (per R10)
+### Casi di verifica (per R10a e R10b)
 
 | Operazione | `ingresso` | `atteso` |
 |---|---|---|
@@ -77,9 +83,9 @@ con tolleranza `kRelativePointError · max(M, |p|)`, le stazioni con
 anche `intersect` con gli argomenti scambiati e fa fallire il caso se i bit non
 sono gli stessi (con i ruoli scambiati): ogni caso prova anche la simmetria.
 
-R10 copre almeno:
+**R10a** copre i casi della richiesta, **R10b** il resto; almeno:
 
-- **#20, casi 1, 2, 3, 4, 6 e 8:** i segmenti a X; il cerchio contro y = 5,
+- **#20, casi 1, 2, 3, 4, 6 e 8** (R10a): i segmenti a X; il cerchio contro y = 5,
   y = 5 + 1e-12 e y = 5 − 1e-12 (tangenza, nessun punto, due incroci a
   x ≈ ±3.16e-6); i due archi dello stesso cerchio sovrapposti per 30° (scelti
   secondo la regola «Gli archi»); il segmento a T (`atEnd` e `inside`); il
@@ -87,7 +93,7 @@ R10 copre almeno:
   punto senza prolungamento); e gli stessi traslati di (1e6, 1e6) e scalati di
   1e-3, con le risposte della tabella dell'ADR 0010 (il caso 2 traslato dà tre
   tangenze);
-- per ogni coppia di tipi (segmento, arco, cerchio, pezzo dritto e curvo): punti
+- per ogni coppia di tipi (R10b; segmento, arco, cerchio, pezzo dritto e curvo): punti
   coincidenti, incroci agli estremi, tangenze esatte e quasi tangenze di un ulp,
   sovrapposizioni parziali, totali e ridotte a un punto, `whole`, archi quasi
   nulli e quasi interi (con la regola «Gli archi»), prolungamenti, curve
@@ -129,13 +135,13 @@ deterministico, anche quasi degeneri:
   entrambi, `side` mette gli estremi del secondo da parti opposte della retta del
   primo; per una tangenza, `side` non li mette mai da parti opposte.
 
-E i casi di R10.
+E i casi di R10a e R10b.
 
 ## Fatto quando
 
 - `intersect` è realizzata come dichiara `intersection.hpp`.
 - Le posizioni lungo le curve sono nell'intestazione interna, documentate.
-- I casi di `[0.2-R10]` passano, con la simmetria, e le loro righe sono tolte da
+- I casi di `[0.2-R10a]` e `[0.2-R10b]` passano, con la simmetria, e le loro righe sono tolte da
   `in-attesa.txt`.
 - Il job del determinismo è verde.
 - La CI è verde.

@@ -5,15 +5,16 @@
 - **Difficoltà:** impegnativa
 - **Agente:** claude-2
 - **Modello e impegno:** forte; impegno alto
-- **Riferimenti:** issue `[0.2-R5]` (#…), agente codex (calcoli delicati)
-- **Dipende da:** P2, P3, R5
+- **Riferimenti:** issue `[0.2-R5a]` (#…, `sinCos`) e `[0.2-R5b]` (#…, `atan2`), agente codex
+  (calcoli delicati)
+- **Dipende da:** P2, P3, R5a, R5b
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#357 (con P4, P6–P11) e #373
   (con P4, P6–P8): gli archi passano dalla trigonometria
 - **Componente:** `robust`
 - **Da leggere:** [ADR 0008](../../adr/0008-componente-geom2d.md) punto 5,
   [ADR 0010](../../adr/0010-posizione-e-intersezioni-nel-piano.md) (Contratto:
   `trigonometry.hpp`); `robust/include/solid_space/robust/trigonometry.hpp`;
-  `tests/corpus/esegui/dati.hpp` e `operazioni.hpp` (P2)
+  `tests/corpus/esegui/plane_data.hpp` e `operations.hpp` (P2)
 
 ## File
 
@@ -21,9 +22,9 @@
 - `robust/src/trigonometry_constants.hpp` (nuovo, privato, se serve)
 - `robust/CMakeLists.txt`
 - `tests/robust/trigonometry_test.cpp` (nuovo)
-- `tests/corpus/esegui/op_trigonometria.cpp` (nuovo)
+- `tests/corpus/esegui/op_trigonometry.cpp` (nuovo)
 - `tests/CMakeLists.txt`
-- `tests/corpus/in-attesa.txt` (togliere le righe di R5)
+- `tests/corpus/in-attesa.txt` (togliere le righe di R5a e R5b)
 
 ## Cosa fare
 
@@ -46,21 +47,33 @@ stessi bit su ogni piattaforma.
 - Il commento in cima a `trigonometry.cpp` dice come si arriva ai 2 ulp:
   riduzione, polinomio, ricostruzione, con i limiti d'errore di ciascuno.
 
-### Casi di verifica (per R5)
+### Casi di verifica (per R5a e R5b)
 
 | Operazione | `ingresso` | `atteso` |
 |---|---|---|
 | `sinCos` | `angolo` | `seno`, `coseno`: approssimati |
-| `atan2` | `y`, `x` | `angolo`: approssimato, oppure esatto per i valori garantiti (`atan2(0, 0)` è 0) |
+| `atan2` | `y`, `x` | `angolo`: approssimato, oppure esatto per i valori garantiti (`atan2(+0, +0)` è 0) |
+
+Dove conta lo zero con segno, `atteso` aggiunge per il valore la chiave
+`<nome>_negativo` (`seno_negativo`, `angolo_negativo`): vero quando il risultato
+ha il bit del segno (`std::signbit`). Il confronto esatto non distingue +0 da −0
+(P2), e questa chiave sì. Lo zero negativo in ingresso si scrive `"-0x0p+0"`.
+
+**Da decidere prima di R5b.** `trigonometry.hpp` dice che `atan2(0, 0)` è 0 e che
+gli zeri con segno seguono lo standard C, che però dà ±π per `atan2(±0, −0)`. R5b
+non scrive casi con x = −0 e y = ±0 finché il responsabile non lo decide (piano,
+sezione 5); se la decisione cambia il commento dell'intestazione, è una modifica
+del contratto con l'etichetta `contratto`.
 
 La tolleranza di un valore è 2 ulp del valore esatto (2 · 2^-1074 quando il valore
-esatto è 0). R5 copre almeno: una griglia di angoli in [−2π, 2π]; i `double` più
-vicini ai multipli di π/4 e π/2 (dove seno o coseno sono quasi zero); angoli
-vicini a 2^20, positivi e negativi; angoli minuscoli e subnormali; `atan2` nei
-quattro quadranti, sugli assi, con rapporti y/x enormi e minuscoli, con zeri con
-segno (`atan2(+0, −1)` è il `double` più vicino a π, `atan2(−0, −1)` il suo
-opposto). I valori esatti vengono da serie calcolate con `decimal` di Python ad
-alta precisione; `provenienza` dice quante cifre e come.
+esatto è 0). **R5a** copre almeno: una griglia di angoli in [−2π, 2π]; i
+`double` più vicini ai multipli di π/4 e π/2 (dove seno o coseno sono quasi
+zero); angoli vicini a 2^20, positivi e negativi; angoli minuscoli e subnormali;
+`sinCos(−0)` (seno −0). **R5b** copre almeno: `atan2` nei quattro quadranti,
+sugli assi, con rapporti y/x enormi e minuscoli, e con zeri con segno
+(`atan2(+0, −1)` è il `double` più vicino a π, `atan2(−0, −1)` il suo opposto,
+`atan2(−0, +1)` è −0). I valori esatti vengono da serie calcolate con `decimal`
+di Python ad alta precisione; `provenienza` dice quante cifre e come.
 
 ## Regole della tappa che valgono qui
 
@@ -79,12 +92,12 @@ alta precisione; `provenienza` dice quante cifre e come.
   simmetrie (`sinCos(−x)`, `atan2(−y, x)`) esatte bit per bit dove la funzione le
   garantisce per costruzione; continuità ai bordi della riduzione; nessun
   risultato fuori da [−1, 1] o da [−π, π].
-- I casi di R5 passano, e il job del determinismo li confronta sui tre sistemi.
+- I casi di R5a e R5b passano, e il job del determinismo li confronta sui tre sistemi.
 
 ## Fatto quando
 
 - `sinCos` e `atan2` sono realizzate come dichiara `trigonometry.hpp`, senza
   funzioni trigonometriche della libreria standard e senza codice copiato.
-- I casi di `[0.2-R5]` passano e le loro righe sono tolte da `in-attesa.txt`.
+- I casi di `[0.2-R5a]` e `[0.2-R5b]` passano e le loro righe sono tolte da `in-attesa.txt`.
 - Il job del determinismo è verde.
 - La CI è verde.

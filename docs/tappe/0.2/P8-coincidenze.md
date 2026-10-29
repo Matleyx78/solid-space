@@ -5,9 +5,10 @@
 - **Difficoltà:** media
 - **Agente:** codex
 - **Modello e impegno:** medio; impegno alto
-- **Riferimenti:** issue `[0.2-R8]` (#…), agente claude (calcoli delicati: i bordi
+- **Riferimenti:** issue `[0.2-R8a]` (#…, casi della richiesta e diagnosi) e
+  `[0.2-R8b]` (#…, bordi), agente claude (calcoli delicati: i bordi
   della tolleranza). I suoi casi servono anche a Matleyx78/tecnigrafo#356 e #372
-- **Dipende da:** P4, P7, R8
+- **Dipende da:** P4, P7, R8a, R8b
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#373 (con P4–P7: di norma è
   l'ultimo) e #357 (con P4–P7, P9–P11)
 - **Componente:** `geom2d`
@@ -23,9 +24,9 @@
 - `geom2d/src/coincidence.cpp` (nuovo)
 - `geom2d/CMakeLists.txt`
 - `tests/geom2d/coincidence_test.cpp` (nuovo)
-- `tests/corpus/esegui/op_coincidenze.cpp` (nuovo)
+- `tests/corpus/esegui/op_coincidence.cpp` (nuovo)
 - `tests/CMakeLists.txt`
-- `tests/corpus/in-attesa.txt` (togliere le righe di R8)
+- `tests/corpus/in-attesa.txt` (togliere le righe di R8a e R8b)
 
 ## Cosa fare
 
@@ -47,7 +48,7 @@ le regole della tabella dell'ADR 0009, punto 3, e i commenti dell'intestazione.
 - **Simmetria:** `areAligned`, `areConcentric` e `onSameCircle` danno la stessa
   risposta scambiando le curve.
 
-### Casi di verifica (per R8)
+### Casi di verifica (per R8a e R8b)
 
 | Operazione | `ingresso` | `atteso` |
 |---|---|---|
@@ -57,16 +58,20 @@ le regole della tabella dell'ADR 0009, punto 3, e i commenti dell'intestazione.
 | `areConcentric` | `prima`, `seconda`, `unita_in_metri` | `risposta`, oppure `diagnosi` |
 | `onSameCircle` | `prima`, `seconda`, `unita_in_metri` | `risposta`, oppure `diagnosi` |
 
-R8 copre almeno:
+**R8a** copre i casi della richiesta, i dati esattamente coincidenti e le
+diagnosi; **R8b** i bordi. Almeno:
 
-- **#23, casi 2, 3, 4 e 5:** linee lunghe 10 che divergono di 1e-12 rad
+- **#23, casi 2, 3, 4 e 5** (R8a): linee lunghe 10 che divergono di 1e-12 rad
   (`areAligned`), archi con i centri a 1e-11 e lo stesso raggio
   (`areConcentric`, `onSameCircle`), un pezzo lungo 1e-14 (`isDegenerate`), in
   millimetri vicino all'origine e in chilometri con coordinate di 1e5, con le
   risposte della tabella dell'ADR 0009;
-- per ogni funzione il bordo: la grandezza confrontata esattamente uguale a
-  epsilon (vero) e il `double` successivo (falso), con epsilon dato dal pavimento
-  e con epsilon dato dalla parte relativa;
+- per ogni funzione il bordo (R8b): la grandezza confrontata esattamente uguale
+  a epsilon (vero) e il `double` successivo (falso), con epsilon dato dal
+  pavimento e con epsilon dato dalla parte relativa. I bordi si scrivono con
+  segmenti, cerchi e pezzi: con un arco la grandezza confrontata dipende da D0 e
+  D1 (regola «Gli archi»); e M non deve venire dal punto m di un pezzo curvo,
+  che `magnitude` arrotonda a `double` senza dire come;
 - dati esattamente coincidenti, allineati, concentrici o degeneri (sempre vero);
 - `isDegenerate` di un arco fino a mezzo giro (la corda), di uno più grande e di
   un cerchio (il diametro); `isStraight` con bulge 0 (sempre vero) e con la
@@ -96,12 +101,12 @@ gli archi vale la regola del README («Gli archi»).
   generati in modo deterministico; dati esattamente coincidenti danno sempre
   vero (ADR 0009, punto 5); invertire un segmento non cambia la risposta di
   `areAligned`.
-- I casi di R8 passano.
+- I casi di R8a e R8b passano.
 
 ## Fatto quando
 
 - Le cinque funzioni sono realizzate come dichiara `coincidence.hpp`, con
   confronti esatti.
-- I casi di `[0.2-R8]` passano e le loro righe sono tolte da `in-attesa.txt`.
+- I casi di `[0.2-R8a]` e `[0.2-R8b]` passano e le loro righe sono tolte da `in-attesa.txt`.
 - Il job del determinismo è verde.
 - La CI è verde.

@@ -7,7 +7,7 @@
 - **Modello e impegno:** forte; impegno alto
 - **Riferimenti:** issue `[0.2-R9]` (#…), agente codex (calcoli delicati). I suoi
   casi servono anche a Matleyx78/tecnigrafo#356. Gli incontri interni si provano
-  con i test di unità qui e con i casi di R10 attraverso `intersect`
+  con i test di unità qui e con i casi di R10a e R10b attraverso `intersect`
 - **Dipende da:** P4, P7, R9
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#357 (con P4–P8, P10, P11)
 - **Componente:** `geom2d`
@@ -23,7 +23,7 @@
 - `geom2d/src/carriers.hpp`, `geom2d/src/carriers.cpp` (nuovi, interni)
 - `geom2d/CMakeLists.txt`
 - `tests/geom2d/side_test.cpp`, `tests/geom2d/carriers_test.cpp` (nuovi)
-- `tests/corpus/esegui/op_lato.cpp` (nuovo)
+- `tests/corpus/esegui/op_side.cpp` (nuovo)
 - `tests/CMakeLists.txt`
 - `tests/corpus/in-attesa.txt` (togliere le righe di R9)
 

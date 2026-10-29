@@ -48,7 +48,7 @@ In `ingresso`:
 | Dato | Forma |
 |---|---|
 | operazione | `"operazione"`: il nome C++ della funzione del contratto (`orient2d`, `intersect`, `offsetPolyline`) |
-| numero | un numero JSON, cioè il `double` più vicino a ciò che è scritto, oppure una stringa con il `double` in esadecimale C (`"0x1.0000000000001p+0"`, `"-0x1p-1074"`) quando serve un valore preciso al bit |
+| numero | un numero JSON, cioè il `double` più vicino a ciò che è scritto; oppure una stringa con il `double` in esadecimale C (`"0x1.0000000000001p+0"`, `"-0x1p-1074"`) quando serve un valore preciso al bit, e sempre per lo zero negativo (`"-0x0p+0"`: il JSON non lo distingue da 0); oppure `"nan"`, `"inf"`, `"-inf"`, che il JSON non ammette |
 | punto | `[x, y]`, due numeri |
 | curva | un oggetto con una sola chiave: `{"segmento": {"inizio": punto, "fine": punto}}`; `{"arco": {"centro": punto, "raggio": n, "angolo_iniziale": n, "ampiezza": n}}`; `{"cerchio": {"centro": punto, "raggio": n}}`; `{"pezzo": {"inizio": punto, "fine": punto, "bulge": n}}` (un segmento di polilinea) |
 | polilinea | `{"vertici": [[x, y, bulge], …], "chiusa": true}`; il bulge è quello del segmento che parte dal vertice |
@@ -62,7 +62,7 @@ In `atteso`, oltre alle forme di sempre:
 | nome | il nome dell'enumeratore, come nel C++ (`"atStart"`) |
 | punto | `[x, y]`, ogni coordinata esatta o approssimata |
 | posizione su una curva | `{"posizione": nome di Location, "stazione": approssimato}` |
-| diagnosi | `{"diagnosi": {"codice": nome di DiagnosisCode, "dato": intero esatto}}`; quando la funzione dà una diagnosi, `atteso` ha solo questa chiave |
+| diagnosi | `{"diagnosi": {"codice": nome di DiagnosisCode, "dato": intero esatto}}` per `geom2d`; `{"diagnosi": {"codice": nome}}` per `robust`, la cui diagnosi non dice il dato. Quando la funzione intera dà una diagnosi, `atteso` ha solo questa chiave; una diagnosi dentro un elemento (per esempio un tagliente scartato da `intersectAlong`) ha la stessa forma, accanto alle altre chiavi dell'elemento |
 | conteggi e indici | interi esatti (`"0"`, `"3"`) |
 
 Regole per chi scrive i casi:
@@ -70,6 +70,12 @@ Regole per chi scrive i casi:
 - **Le chiavi e le operazioni** di ogni funzione sono nella scheda del pacchetto
   che la realizza (`docs/tappe/0.2/`), sezione "Casi di verifica"; dopo il
   merge, anche nel file `tests/corpus/esegui/op_<area>.cpp` di quel pacchetto.
+  Un caso può scrivere solo una parte delle chiavi di un risultato: si confronta
+  ciò che è scritto.
+- **I file esterni** (i DXF e gli script di Tecnigrafo) hanno la loro copia in
+  `esterni/`, perché le loro licenze (CC0, GPL-3.0-or-later) lo permettono: il
+  validatore ne controlla l'hash e nessun test scarica nulla, quindi il download
+  verificato non serve in questa tappa.
 - **Le tolleranze di un valore costruito** sono l'errore che la funzione
   dichiara nella sua intestazione (per esempio `kRelativePointError · max(M,
   |p|)`), calcolato da chi scrive il caso sul valore esatto e arrotondato per

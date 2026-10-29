@@ -25,7 +25,7 @@
   se servono)
 - `geom2d/CMakeLists.txt`
 - `tests/geom2d/intersect_along_test.cpp` (nuovo)
-- `tests/corpus/esegui/op_intersezioni_lungo.cpp` (nuovo)
+- `tests/corpus/esegui/op_intersect_along.cpp` (nuovo)
 - `tests/CMakeLists.txt`
 - `tests/corpus/in-attesa.txt` (togliere le righe di R11)
 
@@ -49,7 +49,9 @@ tipi (`Cut`, `CutterContact`, `CutterOverlap`, `SkippedCutter`,
 - **un tagliente non valido** (dati non validi, fuori dominio, ridotto a un punto)
   non fa fallire la chiamata: va in `skipped` con la sua diagnosi e `input`
   i + 1; l'ospite non valido dà la diagnosi con `input` 0;
-- stazioni mai decrescenti lungo `cuts`; sovrapposizioni in ordine di inizio
+- stazioni mai decrescenti lungo `cuts`, con le stazioni di P10, che dipendono
+  solo dal punto esatto e dalla curva (piano, sezione 4): così le stazioni di un
+  `Cut` sono quelle della chiamata a coppie; sovrapposizioni in ordine di inizio
   lungo l'ospite, poi di indice; `omittedBeyondDomain` sommato su tutti i
   taglienti.
 

@@ -21,11 +21,11 @@
 
 - `tests/corpus/genera_casi.py` (nuovo)
 - `tests/corpus/test_genera_casi.py` (nuovo)
-- `tests/corpus/esegui/valore.hpp`, `valore.cpp` (nuovi)
-- `tests/corpus/esegui/operazioni.hpp`, `operazioni.cpp` (nuovi)
-- `tests/corpus/esegui/principale.cpp` (nuovo)
-- `tests/corpus/esegui/dati.hpp`, `dati.cpp` (nuovi)
-- `tests/corpus/esegui/valore_test.cpp` (nuovo)
+- `tests/corpus/esegui/value.hpp`, `value.cpp` (nuovi)
+- `tests/corpus/esegui/operations.hpp`, `operations.cpp` (nuovi)
+- `tests/corpus/esegui/main.cpp` (nuovo)
+- `tests/corpus/esegui/plane_data.hpp`, `plane_data.cpp` (nuovi)
+- `tests/corpus/esegui/value_test.cpp` (nuovo)
 - `tests/corpus/README.md` (sezione nuova "Esecuzione")
 - `tests/CMakeLists.txt`
 
@@ -40,9 +40,9 @@ alternative: niente lettore JSON in C++).
 `python3 genera_casi.py <cartella del corpus> <file .cpp da scrivere>
 --componenti robust geom2d`. Legge i casi dei componenti indicati e
 `in-attesa.txt` (riusa le funzioni di lettura di
-`valida_corpus.py`, senza duplicarle) e scrive una tabella di `Caso`: `id`,
+`valida_corpus.py`, senza duplicarle) e scrive una tabella di casi: `id`,
 `componente`, numero della issue se il caso è in attesa (0 se è obbligatorio),
-`ingresso` e `atteso` come alberi di `Valore`. Regole:
+`ingresso` e `atteso` come alberi di `Value`. Regole:
 
 - in `ingresso` un numero JSON diventa il suo `double`, scritto nel C++ come
   letterale esadecimale (`float.hex`), così nessun compilatore lo riarrotonda;
@@ -58,79 +58,84 @@ alternative: niente lettore JSON in C++).
   del formato) non si eseguono: li porterà nell'eseguibile la tappa che realizza
   quel componente, aggiungendolo a `--componenti`.
 
-### I valori (`valore.hpp`)
+### I valori (`value.hpp`)
 
 ```cpp
 namespace solid_space::corpus {
 
 /// A value of a case, read from its JSON (ingresso, atteso) or produced by an
 /// operation (the result to compare).
-class Valore {
+class Value {
 public:
-    enum class Tipo : std::uint8_t {
-        booleano, numero, esatto, approssimato, nome, testo, elenco, gruppo
+    enum class Kind : std::uint8_t {
+        boolean, number, exact, approximate, name, text, list, group
     };
-    // Constructors for each kind, accessors with a precondition on tipo(),
-    // and for gruppo the lookup by key (nullptr when the key is missing).
-    static Valore intero(std::int64_t value);  // an exact integer, as "3"
+    // Constructors for each kind, accessors with a precondition on kind(),
+    // and for group the lookup by key (nullptr when the key is missing).
+    static Value integer(std::int64_t value);  // an exact integer, as "3"
     ...
 };
 
 /// Compares a result with what the case expects: the empty list when they
 /// agree, otherwise one line per difference with the path ("punti[1].punto[0]").
-[[nodiscard]] std::vector<std::string> confronta(const Valore& atteso, const Valore& ottenuto);
+[[nodiscard]] std::vector<std::string> compare(const Value& expected, const Value& actual);
 
-/// The canonical text of a result, with every double in hexadecimal, for the
-/// comparison between systems (P3).
-[[nodiscard]] std::string testoCanonico(const Valore& ottenuto);
+/// The canonical text of a result, with every double in hexadecimal (signed
+/// zeros, NaN and infinities included), for the comparison between systems (P3).
+[[nodiscard]] std::string canonicalText(const Value& actual);
 }
 ```
 
-Regole di `confronta`:
+Regole di `compare` (in `atteso` le forme del README; nel risultato gli stessi tipi):
 
 - esatto contro numero: uguali solo se il testo esatto ha un `double` e il
-  numero è quello (`+0` e `-0` sono uguali); esatto contro esatto: lo stesso
-  testo;
+  numero è quello (`+0` e `-0` sono uguali: dove il segno dello zero conta, la
+  scheda del pacchetto aggiunge una chiave booleana); esatto contro esatto: lo
+  stesso testo;
 - approssimato contro numero: `|numero − valore| <= tolleranza`;
 - booleano, nome: uguali;
 - elenco: stessa lunghezza ed elementi uguali, nell'ordine;
 - gruppo: ogni chiave di `atteso` c'è nel risultato ed è uguale; le chiavi in più
   del risultato non contano, così un caso può fermarsi a ciò che vuole provare.
 
-### Le operazioni (`operazioni.hpp`)
+### Le operazioni (`operations.hpp`)
 
 ```cpp
 namespace solid_space::corpus {
 
-/// What an operation does with the ingresso of a case: its result, as a
-/// Valore to compare with atteso.
-using Operazione = Valore (*)(const Valore& ingresso);
+/// What an operation does with the "ingresso" of a case: its result, as a
+/// Value to compare with "atteso".
+using Operation = Value (*)(const Value& input);
 
 /// Registers an operation under the name used in "operazione". Each
-/// tests/corpus/esegui/op_<area>.cpp holds one static Registrazione per
+/// tests/corpus/esegui/op_<area>.cpp holds one static Registration per
 /// operation; registering the same name twice is a test failure.
-class Registrazione {
+class Registration {
 public:
-    Registrazione(std::string_view nome, Operazione operazione);
+    Registration(std::string_view name, Operation operation);
 };
 
-[[nodiscard]] Operazione trovaOperazione(std::string_view nome);  // nullptr if none
+[[nodiscard]] Operation findOperation(std::string_view name);  // nullptr if none
 }
 ```
 
-### I dati del piano (`dati.hpp`)
+### I dati del piano (`plane_data.hpp`)
 
 Lettura e scrittura del vocabolario della sezione "Dati del piano" del README,
-per tutti i pacchetti della tappa: `numero`, `punto` (`robust::Point2`),
-`curva` (`geom2d::Curve`), `polilinea` (`geom2d::Polyline`), `prolungamento`
-(`geom2d::Extension`); e verso `Valore`: `punto`, `curva`, `posizione`
-(`geom2d::CurvePosition`), `diagnosi` (di `robust` e di `geom2d`) e i nomi di
-`Location`, `Contact`, `Side` e dei due `DiagnosisCode`. Usa solo i **tipi** delle
+per tutti i pacchetti della tappa (nomi C++ in inglese, chiavi JSON del
+README): lettura di numero (anche `"nan"`, `"inf"`, `"-inf"` e l'esadecimale),
+punto (`robust::Point2`), curva (`geom2d::Curve`), polilinea
+(`geom2d::Polyline`), prolungamento (`geom2d::Extension`); scrittura verso
+`Value` di punto, curva, posizione (`geom2d::CurvePosition`), diagnosi (di
+`robust`, senza `dato`, e di `geom2d`) e dei nomi di `Location`, `Contact`,
+`Side` e dei due `DiagnosisCode`. I nomi degli altri enumeratori (`Placement`,
+`TangencyOutcome`, `OffsetOutcome`, `OffsetFailure`, `PieceOrigin`) li scrive il
+file `op_<area>.cpp` del pacchetto che li usa. Usa solo i **tipi** delle
 intestazioni del contratto, nessuna funzione: compila prima che le funzioni
 siano realizzate. Un dato malformato fa fallire il caso con un messaggio che
 dice quale chiave.
 
-### Il programma (`principale.cpp`)
+### Il programma (`main.cpp`)
 
 - Un test GoogleTest per caso, con nome `Corpus.<componente>_<id>` (trattini
   sostituiti da `_`), registrato a partire dalla tabella generata.
@@ -139,7 +144,7 @@ dice quale chiave.
 - Un caso obbligatorio senza operazione registrata fallisce.
 - Se la variabile d'ambiente `SS_RISULTATI` contiene un percorso, il programma
   scrive in quel file una riga per caso eseguito,
-  `<componente>/<id> <testoCanonico>`, in ordine di nome (serve a P3).
+  `<componente>/<id> <canonicalText>`, in ordine di nome (serve a P3).
 
 ### Compilazione (`tests/CMakeLists.txt`)
 
@@ -159,6 +164,9 @@ scrive i risultati.
 
 - Nessuna nuova dipendenza: GoogleTest c'è già, Python con la sola libreria
   standard.
+- Codice e commenti in inglese (AGENTS.md); in italiano restano le chiavi JSON
+  dei casi, i nomi dei file Python accanto a `valida_corpus.py` e la cartella
+  `esegui/`, come `casi/` e `prove/`.
 - Il pacchetto non tocca le intestazioni del contratto e non chiama nessuna
   funzione non realizzata.
 - File comuni: `tests/CMakeLists.txt` (solo le tue righe) e
@@ -170,9 +178,9 @@ scrive i risultati.
   lo stesso letterale; una frazione che è un `double` porta il `double`, una che
   non lo è no; un caso in attesa porta la sua issue; l'uscita è la stessa
   rigenerando.
-- `valore_test.cpp`: `confronta` per ogni forma, con un caso uguale e uno
-  diverso, e il percorso nel messaggio; `testoCanonico` scrive i `double` in
-  esadecimale.
+- `value_test.cpp`: `compare` per ogni forma, con un caso uguale e uno
+  diverso, e il percorso nel messaggio; `canonicalText` scrive i `double` in
+  esadecimale, con lo zero negativo, NaN e gli infiniti.
 - Con l'archivio di oggi, che non ha casi di `robust` e `geom2d`, l'eseguibile
   gira e passa; `casi/kernel/cubo-lato-1.json` non si tocca.
 

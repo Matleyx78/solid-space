@@ -5,10 +5,11 @@
 - **Difficoltà:** impegnativa
 - **Agente:** claude-2
 - **Modello e impegno:** forte; impegno alto
-- **Riferimenti:** issue `[0.2-R15a]` (#…), agente codex (calcoli delicati), e
-  `[0.2-R15b]` (#…), agente gemini (casi di AutoCAD). I loro casi servono anche
+- **Riferimenti:** issue `[0.2-R15a]` (#…, casi della richiesta) e `[0.2-R15c]`
+  (#…, regole di `fillet`), agente codex (calcoli delicati); `[0.2-R15b]` (#…,
+  casi di AutoCAD), agente gemini. I loro casi servono anche
   a Matleyx78/tecnigrafo#366
-- **Dipende da:** P14, R15a, R15b
+- **Dipende da:** P14, R15a, R15b, R15c
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#367 (con P14): di norma è
   l'ultimo
 - **Componente:** `geom2d`
@@ -26,9 +27,9 @@
 - `geom2d/src/tangency_internal.hpp` (di P14: solo aggiunte, se servono)
 - `geom2d/CMakeLists.txt`
 - `tests/geom2d/fillet_test.cpp` (nuovo)
-- `tests/corpus/esegui/op_raccordi.cpp` (nuovo)
+- `tests/corpus/esegui/op_fillet.cpp` (nuovo)
 - `tests/CMakeLists.txt`
-- `tests/corpus/in-attesa.txt` (togliere le righe di R15a e R15b)
+- `tests/corpus/in-attesa.txt` (togliere le righe di R15a, R15b e R15c)
 
 ## Cosa fare
 
@@ -45,7 +46,8 @@ con i loro tipi.
   vicino al punto indicato, con distanze al quadrato confrontate esattamente);
   raggio zero (lo spigolo, scelto come sceglie `tangentCircleNear`); altrimenti i
   candidati di `tangentCircles` con i lati indicati dai punti tramite `side()`
-  (`ambiguousPick` se un punto sta sull'altra curva); l'arco più corto tra i
+  (`ambiguousPick` se un punto sta esattamente sulla retta o sul cerchio
+  dell'altra curva, anche fuori dalla curva data); l'arco più corto tra i
   punti di tangenza, con il verso deciso esattamente, nelle due forme `Arc`
   (raggio esatto, angoli da `robust::atan2`) e bulge.
 - **Errori dichiarati:** centri e punti entro `kRelativePointError`, l'arco nelle
@@ -54,12 +56,12 @@ con i loro tipi.
 - **Diagnosi** come dice l'intestazione, con `dato` 0 e 1 per le curve, 2 per il
   raggio, 3 e 4 per i punti indicati.
 
-### Casi di verifica (per R15a e R15b)
+### Casi di verifica (per R15a, R15b e R15c)
 
 | Operazione | `ingresso` | `atteso` |
 |---|---|---|
 | `tangentCircleNear` | `prima`, `vicino_prima`, `seconda`, `vicino_seconda`, `raggio` | `esito`: nome di `TangencyOutcome`; con `found`, `cerchio`: come un elemento di `cerchi` di `tangentCircles` (P14); oppure `diagnosi` |
-| `fillet` | `prima`, `punto_prima`, `seconda`, `punto_seconda`, `raggio` | `esito`; con `found`: `centro`, `raggio`, `sulla_prima` e `sulla_seconda` (punti di tangenza), `semicerchio`: booleano, `arco`: `{"centro": punto, "raggio": n, "angolo_iniziale": n, "ampiezza": n}`, `bulge`; oppure `diagnosi` |
+| `fillet` | `prima`, `punto_prima`, `seconda`, `punto_seconda`, `raggio` | `esito`; con `found`: `centro`, `raggio`, `sulla_prima` e `sulla_seconda` (punti di tangenza), `semicerchio`: booleano, `arco`: la curva attesa nella forma `{"arco": {...}}` di P12, con valori esatti o approssimati, `bulge`: approssimato; oppure `diagnosi` |
 
 Un punto di tangenza si scrive `{"punto": punto, "sulla_curva": posizione}`, come
 in P14. Tolleranze: punti `kRelativePointError · max(M, |p|)`; angoli,
@@ -76,36 +78,39 @@ caso la ricava e la scrive in `provenienza`); il raggio di `fillet` è esatto
   segmenti quasi allineati; segmenti paralleli a distanza 20 (il semicerchio di
   raggio 10 qualunque sia il raggio chiesto); gli stessi a coordinate di 1e6,
   con le risposte della tabella dell'ADR 0011;
-- ogni regola di `fillet`: parallele sulla stessa retta (`infinitelyMany`),
-  raggio zero (lo spigolo; curve senza punti comuni: `none`; sovrapposte:
-  `infinitelyMany`), punto indicato esattamente sulla retta o sul cerchio
-  dell'altra curva (`ambiguousPick`), raccordo che non entra (`none`), punti di
-  tangenza diametralmente opposti (l'arco antiorario), punti di tangenza
-  coincidenti;
 - `tangentCircleNear` con due candidati chiaramente diversi e con una parità
-  esatta (il primo della lista);
-- le diagnosi, con il `dato` giusto.
+  esatta (il primo della lista).
+
+**R15c** (codex) copre le regole di `fillet`: parallele sulla stessa retta
+(`infinitelyMany`); raggio zero (lo spigolo; curve senza punti comuni: `none`;
+sovrapposte: `infinitelyMany`); punto indicato esattamente sulla retta o sul
+cerchio dell'altra curva, anche fuori dalla curva data (`ambiguousPick`);
+raccordo che non entra (`none`); punti di tangenza diametralmente opposti
+(l'arco antiorario); punti di tangenza coincidenti; le diagnosi, con il `dato`
+giusto.
 
 **R15b** (gemini) porta i casi `FILLET` a–f (angolo retto, linee che non si
 toccano, parallele, cerchio e linea, arco e linea, raggio 0) e `CIRCLE` *Ttr* m e
 n (due linee con raggio 8, cerchio e linea con raggio 6) di
 `autocad-raccordi.dxf`:
 
-- il file è quello del repository
-  [Matleyx78/dxf-test-file](https://github.com/Matleyx78/dxf-test-file), licenza
-  CC0, al commit `4ad9fff8a88e65561f3998a56a95adf921b58792`, SHA-256
-  `aecc6725a0d5b0b76c11eef4c9f93613e7beda91c0a2a225496ea8899118e842`; i punti
-  indicati e i raggi sono nello script `4-raccordi.scr` di Tecnigrafo
-  (`docs/tappe/0.7/dxf-di-prova/`, licenza GPL-3.0-or-later), letto a un commit
-  fissato. Entrambi entrano in `sorgenti.json` (tests/corpus/README.md, «Casi che
-  arrivano da Tecnigrafo»);
-- l'ingresso sono le figure di partenza e i punti dello script; `atteso` è ciò
-  che AutoCAD ha disegnato (l'arco di raccordo o il cerchio, e dove ha tagliato o
-  prolungato le curve, che dice la posizione dei punti di tangenza), letto dal
-  DXF con la tolleranza della precisione del file; provenienza `file-pubblico`;
+- registra in `sorgenti.json`, con la copia in `esterni/`, il DXF del
+  repository [Matleyx78/dxf-test-file](https://github.com/Matleyx78/dxf-test-file)
+  (licenza CC0, commit `4ad9fff8a88e65561f3998a56a95adf921b58792`, SHA-256
+  `aecc6725a0d5b0b76c11eef4c9f93613e7beda91c0a2a225496ea8899118e842`) e lo
+  script `4-raccordi.scr` di Tecnigrafo (`docs/tappe/0.7/dxf-di-prova/`,
+  licenza GPL-3.0-or-later, a un commit fissato di `main`), con le regole di
+  `tests/corpus/README.md`, «Casi che arrivano da Tecnigrafo». Dipende da R12,
+  che scrive per primo in `sorgenti.json`;
+- l'ingresso sono le figure di partenza, i punti indicati e i raggi dello
+  script; `atteso` è la geometria che AutoCAD ha disegnato, letta dal DXF con la
+  tolleranza della precisione del file: `esito` `found`, il centro, il raggio, i
+  punti di tangenza (solo `punto`), l'arco o il cerchio. Le chiavi che il DXF non
+  dice (le posizioni dei punti di tangenza, i lati) non si scrivono;
+  provenienza `file-pubblico`;
 - se AutoCAD disegna un arco che le regole di `fillet` non danno (per esempio
-  l'arco più lungo, ADR 0011, punto 11), chi scrive il caso non lo scrive, si
-  ferma e lo scrive nella issue: decide il responsabile, con l'etichetta
+  l'arco più lungo, ADR 0011, punto 11), quel caso non si scrive: fermati su
+  quel caso e scrivilo nella issue; decide il responsabile, con l'etichetta
   `contratto`.
 
 Per gli archi vale la regola del README («Gli archi»).
@@ -130,15 +135,16 @@ Per gli archi vale la regola del README («Gli archi»).
 - Il raccordo trovato è tra i cerchi di `tangentCircles` con i lati che dice la
   regola 3, e gli estremi dell'arco coincidono con i punti di tangenza per la
   regola dell'ADR 0009 (ADR 0011, punto 7).
-- Fuori dalla regola 1 e senza parità nella scelta, scambiare le due curve e i
-  due punti dà lo stesso cerchio di raccordo, con l'arco nel verso opposto.
+- Fuori dalla regola 1, senza parità nella scelta e con punti di tangenza né
+  coincidenti né diametralmente opposti, scambiare le due curve e i due punti dà
+  lo stesso cerchio di raccordo, con l'arco nel verso opposto.
 - L'`Arc` e il bulge descrivono lo stesso arco entro `kRelativeArcError`.
-- I casi di R15a e R15b.
+- I casi di R15a, R15b e R15c.
 
 ## Fatto quando
 
 - `tangentCircleNear` e `fillet` sono realizzate come dichiara `tangency.hpp`.
-- I casi di `[0.2-R15a]` e `[0.2-R15b]` passano e le loro righe sono tolte da
+- I casi di `[0.2-R15a]`, `[0.2-R15b]` e `[0.2-R15c]` passano e le loro righe sono tolte da
   `in-attesa.txt`.
 - Il job del determinismo è verde.
 - La CI è verde.
