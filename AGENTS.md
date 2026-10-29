@@ -123,7 +123,8 @@ pull request e passa al pacchetto successivo.
 - Gli elementi si citano con identificativi stabili (`StableId`), mai con
   puntatori o indirizzi, e mai con tipi del nucleo.
 - Nessuna eccezione attraversa un'interfaccia pubblica: gli errori sono valori con
-  diagnosi (ADR 0003).
+  diagnosi (ADR 0003). Unica eccezione ammessa: `std::bad_alloc` quando la
+  memoria è esaurita, che non si intercetta (ADR 0003, punto 5).
 - Nessuna nuova dipendenza e nessuna modifica agli ADR accettati senza che il
   responsabile lo abbia deciso. Non toccare i sottomoduli in `third_party/`: sono
   fissati e non si modificano.
