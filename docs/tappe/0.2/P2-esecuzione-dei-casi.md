@@ -27,6 +27,9 @@
 - `tests/corpus/esegui/plane_data.hpp`, `plane_data.cpp` (nuovi)
 - `tests/corpus/esegui/value_test.cpp` (nuovo)
 - `tests/corpus/README.md` (sezione nuova "Esecuzione")
+- `tests/corpus/valida_corpus.py`, solo se le sue funzioni di lettura non si
+  possono importare così come sono: il minimo per renderle importabili, senza
+  cambiare il comportamento del validatore
 - `tests/CMakeLists.txt`
 
 ## Cosa fare
@@ -37,8 +40,11 @@ alternative: niente lettore JSON in C++).
 
 ### Il generatore (`genera_casi.py`)
 
-`python3 genera_casi.py <cartella del corpus> <file .cpp da scrivere>
---componenti robust geom2d`. Legge i casi dei componenti indicati e
+`python3 genera_casi.py <cartella del corpus> <cartella di uscita>
+--componenti robust geom2d`. Scrive nella cartella di uscita due file:
+`casi.cpp`, la tabella, e `obbligatori.txt`. In `tests/CMakeLists.txt` la
+cartella di uscita è `${CMAKE_BINARY_DIR}/corpus/`. Legge i casi dei componenti
+indicati e
 `in-attesa.txt` (riusa le funzioni di lettura di
 `valida_corpus.py`, senza duplicarle) e scrive una tabella di casi: `id`,
 `componente`, numero della issue se il caso è in attesa (0 se è obbligatorio),
@@ -169,12 +175,13 @@ P3):
 - ogni altra opzione (per esempio `--gtest_filter`, che sceglierebbe un
   sottoinsieme) insieme a `--ss-results` è un errore d'uso, con esito 2.
 
-**Completezza.** Il generatore scrive anche, accanto alla tabella,
-`obbligatori.txt`: gli `<componente>/<id>` dei casi obbligatori, uno per riga,
-nello stesso ordine. Il modo risultati controlla che le righe scritte
-corrispondano una per una a quell'elenco (tutti e soli, senza ripetizioni), e P3
-rifà lo stesso controllo sui file che arrivano dai tre sistemi prima di
-confrontarli.
+**Completezza.** `obbligatori.txt` elenca gli `<componente>/<id>` dei casi
+obbligatori, uno per riga, nello stesso ordine del modo risultati. Il programma
+non lo legge: scrive una riga per ogni caso obbligatorio della tabella per
+costruzione, e un confronto con un elenco uscito dalla stessa generazione non
+proverebbe nulla. Il controllo vero lo fa P3 sui file che arrivano dai tre
+sistemi: un'esecuzione interrotta, ripetuta o ristretta non produce un
+`risultati.txt` che corrisponda a `obbligatori.txt`.
 
 ### Compilazione (`tests/CMakeLists.txt`)
 

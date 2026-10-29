@@ -50,6 +50,14 @@ Realizzare, senza cambiarle, `tangentsFrom` e `tangentCircles` di
   annidate (ADR 0011, «Che cosa rende possibili decisioni esatte» e rischio):
   incontri, lati, ordine lungo una curva e numeri esatti vengono da
   `offset_carriers.hpp` ed `exact/tower.hpp` di P12.
+- **Posizioni e stazioni dei punti con radici annidate.** I punti di tangenza
+  di `tangentCircles` hanno radici annidate, e `positions.hpp` di P10 tratta
+  solo i punti di P6 e P9. La loro `CurvePosition` la calcola questo pacchetto in
+  `tangency.cpp`: la `Location` con l'ordine esatto di P12 rispetto agli estremi
+  della curva, la stazione con la stessa regola di P10 (una funzione del solo
+  punto esatto e della curva, che non decresce lungo la curva), a partire
+  dall'arrotondamento di P12. Se la regola di P10 non si può applicare a questi
+  punti senza cambiarne i file, fermati e scrivilo nella issue.
 - **Interno** (`tangency_internal.hpp`): i candidati con le loro decisioni, nella
   forma che P16 usa per scegliere (lato, posizioni, centro esatto).
 

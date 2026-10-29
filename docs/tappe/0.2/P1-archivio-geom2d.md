@@ -8,8 +8,9 @@
 - **Riferimenti:** non servono: il pacchetto prepara il formato in cui si
   scrivono i riferimenti della tappa; lo provano i test del validatore e quelli
   della guardia nella CI
-- **Dipende da:** la decisione del responsabile su `esterni/` (piano, sezione 5,
-  decisione 3), presa prima dell'apertura
+- **Dipende da:** — (la parte sui file esterni si fa solo se il responsabile ha
+  preso la decisione 3 della sezione 5 del piano prima dell'apertura; la issue lo
+  dice)
 - **Sblocca in Tecnigrafo:** niente direttamente; da qui partono tutti i
   pacchetti di riferimenti della tappa
 - **Componente:** nessuno (`tests/corpus/` e la guardia della CI)
@@ -25,9 +26,12 @@
 - `tests/corpus/valida_corpus.py`
 - `tests/corpus/test_valida_corpus.py`
 - `tests/corpus/prove/caso-nome-non-valido.json` (nuovo)
+- con la decisione 3: `tests/corpus/prove/esterni-senza-voce/` e
+  `tests/corpus/prove/voce-senza-copia/` (nuove: piccoli archivi di prova per i
+  due controlli nuovi del validatore)
 - `tests/corpus/README.md`
-- `.github/workflows/ci.yml` (solo il job `references`)
-- `.gitattributes` (nuovo)
+- con la decisione 3: `.github/workflows/ci.yml` (solo il job `references`) e
+  `.gitattributes` (nuovo)
 
 ## Cosa fare
 
@@ -80,10 +84,11 @@ Regole per chi scrive i casi:
   merge, anche nel file `tests/corpus/esegui/op_<area>.cpp` di quel pacchetto.
   Un caso può scrivere solo una parte delle chiavi di un risultato: si confronta
   ciò che è scritto.
-- **I file esterni** (i DXF e gli script di Tecnigrafo) hanno la loro copia in
-  `esterni/`, perché le loro licenze (CC0, GPL-3.0-or-later) lo permettono: il
-  validatore ne controlla l'hash e nessun test scarica nulla, quindi il download
-  verificato non serve in questa tappa.
+- **I file esterni** (i DXF e gli script di Tecnigrafo): con la decisione 3
+  hanno la loro copia in `esterni/`, perché le loro licenze (CC0,
+  GPL-3.0-or-later) lo permettono, e il validatore ne controlla l'hash senza
+  scaricare nulla; senza, si registrano solo le voci (sezione «I file esterni
+  sono riferimenti»).
 - **Le tolleranze di un valore costruito** sono l'errore che la funzione
   dichiara nella sua intestazione (per esempio `kRelativePointError · max(M,
   |p|)`), calcolato da chi scrive il caso sul valore esatto e arrotondato per
@@ -103,11 +108,14 @@ Regole per chi scrive i casi:
 
 ### I file esterni sono riferimenti
 
+Questa parte si fa **solo con la decisione 3** della sezione 5 del piano, che
+corregge l'ADR 0005 (punti 1 e 7) e la regola del README sul download verificato.
+
 R13 e R16b aggiungono casi, voci di `sorgenti.json` e le copie dei DXF e degli
 script in `tests/corpus/esterni/`, tutto nella stessa pull request (R14b usa le
 copie di R13 senza toccarle). Oggi la guardia della CI (job `references`, ADR
 0005, punto 7) conta `esterni/` come lavoro e respinge quella pull request. Con
-la decisione 3 della sezione 5 del piano:
+la decisione 3:
 
 - **guardia:** in `classify` i riferimenti sono `tests/corpus/casi/`,
   `tests/corpus/sorgenti.json` **e `tests/corpus/esterni/`**; il lavoro è tutto
@@ -118,16 +126,23 @@ la decisione 3 della sezione 5 del piano:
   insieme (accettati) e una copia insieme a un file di codice (respinti),
   anche quando la copia è spostata fuori da `esterni/`;
 - **validatore:** ogni file in `esterni/` deve avere la sua voce in
-  `sorgenti.json` (stesso `nome`); un file senza voce è un errore con il nome
-  del file. Così `esterni/` non può contenere altro che copie registrate, con
-  l'hash controllato;
+  `sorgenti.json` (stesso `nome`), e ogni voce la sua copia in `esterni/`; i due
+  difetti sono errori con il nome del file. Così `esterni/` contiene solo copie
+  registrate, e ogni file esterno ha l'hash controllato a ogni esecuzione;
 - **`.gitattributes`:** `tests/corpus/esterni/** -text`, perché git non
   cambi i fine riga dei DXF e degli script su Windows: l'hash è dei byte
   originali;
 - **README:** "Disposizione" e "`sorgenti.json`" dicono che le copie in
-  `esterni/` sono parte dei riferimenti e si aggiungono solo con una pull
-  request di riferimenti; la frase sul download verificato dice che serve solo
-  per un file che non si può copiare.
+  `esterni/` sono parte dei riferimenti, si aggiungono solo con una pull request
+  di riferimenti e sono obbligatorie; un file che la licenza non lascia copiare
+  non entra nell'archivio finché un ADR non introduce il download verificato
+  (la frase che oggi lo assegna al primo pacchetto con un file esterno cambia di
+  conseguenza).
+
+**Senza la decisione 3** questa parte non si fa: R13 e R16b registrano le voci
+senza copie, come il README già permette, e nessun hash si controlla; il
+download verificato che il README promette resta da fare, con un pacchetto da
+aggiungere al piano (riga in "Modifiche al piano").
 
 ### `in-attesa.txt` a blocchi
 
@@ -146,10 +161,11 @@ commenti.
 - Python 3.9 con la sola libreria standard, come il resto del validatore.
 - Il pacchetto non scrive casi in `tests/corpus/casi/` né copie in `esterni/`:
   sono dei pacchetti di riferimenti.
-- Non parte senza la decisione 3 della sezione 5 del piano: la guardia applica
-  l'ADR 0005, punto 7, e senza la decisione `esterni/` non è un riferimento. P1
-  non scrive negli ADR: la correzione dell'ADR, se il responsabile la decide, sta
-  nella pull request di apertura della tappa.
+- La parte sui file esterni si fa solo con la decisione 3 della sezione 5 del
+  piano: la guardia applica l'ADR 0005, punto 7, e senza la decisione `esterni/`
+  non è un riferimento. P1 non scrive negli ADR: la correzione, se il
+  responsabile la decide, sta nella pull request di apertura della tappa, e la
+  issue di P1 dice se c'è.
 - File comuni: `tests/corpus/README.md` (poi lo tocca P2, che dipende da P1);
   `.github/workflows/ci.yml` (poi lo tocca P3, che dipende da P2).
 
@@ -162,9 +178,9 @@ commenti.
   `prove/caso-nome-non-valido.json`.
 - Le righe di `in-attesa.txt` con `geom2d/<id>` sono accettate, anche in
   blocchi con il commento `# [0.2-R4a]`.
-- Il validatore rifiuta un file in `esterni/` senza voce in `sorgenti.json` (un
-  file di prova nuovo in `prove/`, o una cartella temporanea nel test).
-- Le asserzioni della guardia nella CI passano, con i casi nuovi.
+- Con la decisione 3: il validatore rifiuta un file in `esterni/` senza voce
+  (`prove/esterni-senza-voce/`) e una voce senza copia (`prove/voce-senza-copia/`);
+  le asserzioni della guardia nella CI passano, con i casi nuovi.
 - `ctest -L corpus` passa sui tre sistemi.
 
 ## Fatto quando
@@ -174,7 +190,7 @@ commenti.
   sono rifiutate con un messaggio che dice file e campo.
 - La sezione "Dati del piano" del README contiene il vocabolario e le regole qui
   sopra, e la sezione "`in-attesa.txt`" i blocchi.
-- La guardia della CI conta `tests/corpus/esterni/` tra i riferimenti, il
-  validatore rifiuta le copie non registrate e `.gitattributes` tiene i loro
-  byte.
+- Con la decisione 3: la guardia della CI conta `tests/corpus/esterni/` tra i
+  riferimenti, il validatore pretende una copia per ogni voce e una voce per
+  ogni copia, e `.gitattributes` tiene i loro byte.
 - La CI è verde.

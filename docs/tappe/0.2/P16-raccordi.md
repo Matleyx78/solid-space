@@ -18,7 +18,8 @@
   `geom2d/include/solid_space/geom2d/tangency.hpp` (`TangencyOutcome`,
   `ChosenCircle`, `tangentCircleNear`, `Fillet`, `fillet` e le sue quattro
   regole), `side.hpp`, `intersection.hpp`; le intestazioni interne
-  `geom2d/src/tangency_internal.hpp` (P15), `positions.hpp` (P10); `robust`
+  `geom2d/src/tangency_internal.hpp` (P15), `positions.hpp` (P10),
+  `offset_carriers.hpp` ed `exact/tower.hpp` (P12); `robust`
   `trigonometry.hpp` (`atan2`)
 
 ## File
@@ -92,7 +93,8 @@ toccano, parallele, cerchio e linea, arco e linea, raggio 0) e `CIRCLE` *Ttr* m 
 n (due linee con raggio 8, cerchio e linea con raggio 6) di
 `autocad-raccordi.dxf`:
 
-- registra in `sorgenti.json`, con la copia in `esterni/`, il DXF del
+- registra in `sorgenti.json` (e, con la decisione 3 della sezione 5 del
+  piano, copia in `esterni/`) il DXF del
   repository [Matleyx78/dxf-test-file](https://github.com/Matleyx78/dxf-test-file)
   (licenza CC0, commit `4ad9fff8a88e65561f3998a56a95adf921b58792`, SHA-256
   `aecc6725a0d5b0b76c11eef4c9f93613e7beda91c0a2a225496ea8899118e842`) e lo
@@ -123,8 +125,8 @@ Per gli archi vale la regola del README («Gli archi»).
   virgola mobile, quindi segue la regola anche lei.
 - La scelta del lato viene da `side()` (ADR 0011, punto 4): nessuna regola
   propria.
-- Le intestazioni interne di P6, P7, P9 e P10 si usano senza cambiarle; a quella
-  di P15 (`tangency_internal.hpp`) puoi solo aggiungere. Se serve altro,
+- Le intestazioni interne di P6, P7, P9, P10 e P12 si usano senza cambiarle; a
+  quella di P15 (`tangency_internal.hpp`) puoi solo aggiungere. Se serve altro,
   fermati e scrivilo nella issue.
 - File comuni: solo `tests/corpus/in-attesa.txt`, dove togli i blocchi dei tuoi
   riferimenti e nient'altro (piano, sezione 6). Nessun `CMakeLists.txt`: sorgenti
