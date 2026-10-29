@@ -1,6 +1,6 @@
 # ADR 0008: Il componente `geom2d`
 
-- **Stato:** Proposto
+- **Stato:** Accettato
 - **Data:** 2026-10-29
 - **Estende:** [ADR 0002](0002-componenti-e-dipendenze.md), senza sostituirlo
 

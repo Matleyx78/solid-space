@@ -1,6 +1,6 @@
 # ADR 0009: Una regola unica per coincidenze e tolleranze del piano
 
-- **Stato:** Proposto
+- **Stato:** Accettato
 - **Data:** 2026-10-29
 - **Richiesta:** #23 — da Tecnigrafo: tappa 0.7, Matleyx78/tecnigrafo#329
 - **Esito:** 3 pezzo nostro

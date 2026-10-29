@@ -134,7 +134,8 @@ Decisioni del responsabile che cambiano le regole o le tappe, in ordine di data.
 - **2026-10-29: architettura del piano.** Le decisioni e le costruzioni
   geometriche del piano stanno in un componente nuovo, `geom2d`, sopra
   `robust`, che tiene predicati esatti, calcolo deterministico e politica delle
-  tolleranze ([ADR 0008](adr/0008-componente-geom2d.md), proposto). Le richieste
-  #20, #21, #22 e #23 hanno esito 3, serve un pezzo nostro; le valutazioni di
-  #23 e #20 sono gli [ADR 0009](adr/0009-regola-delle-tolleranze-del-piano.md) e
-  [0010](adr/0010-posizione-e-intersezioni-nel-piano.md).
+  tolleranze ([ADR 0008](adr/0008-componente-geom2d.md), accettato). Le
+  richieste #20, #21, #22 e #23 hanno esito 3, serve un pezzo nostro; le
+  valutazioni di #23 e #20 sono gli [ADR 0009](adr/0009-regola-delle-tolleranze-del-piano.md) e
+  [0010](adr/0010-posizione-e-intersezioni-nel-piano.md), accettati con il loro
+  contratto: le intestazioni pubbliche di `robust` e `geom2d` che dichiarano.

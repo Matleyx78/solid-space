@@ -22,8 +22,8 @@ operazioni di `kernel` passano a `naming` la genealogia che emettono.
 | `robust` | `solid_space::robust` | tipi di base (`Point2`, `Result`), predicati esatti (2D, poi 3D), trigonometria deterministica, politica delle tolleranze | solo libreria standard |
 | `geom2d` | `solid_space::geom2d` | curve del piano (segmento, arco, cerchio, segmento di polilinea, polilinea), intersezioni e lato, tangenze e raccordi, curva parallela, regola delle tolleranze sulle curve | `robust` |
 | `naming` | `solid_space::naming` | `StableId`, grafo di genealogia, serializzazione | solo libreria standard |
-| `solver` | `solid_space::solver` | interfaccia del solver, motore su libslvs, diagnosi dei conflitti | `robust`, libslvs (privato) |
-| `kernel` | `solid_space::kernel` | forme opache, primitive, estrusione e rivoluzione, booleane, raccordi, controllo di validità, strategie di ripiego, STEP | `robust`, `naming`, OCCT (privato) |
+| `solver` | `solid_space::solver` | interfaccia del solver, motore su libslvs, diagnosi dei conflitti | `robust`, `geom2d` (quando serve), libslvs (privato) |
+| `kernel` | `solid_space::kernel` | forme opache, primitive, estrusione e rivoluzione, booleane, raccordi, controllo di validità, strategie di ripiego, STEP | `robust`, `naming`, `geom2d` (quando serve), OCCT (privato) |
 | `features` | `solid_space::features` | grafo delle feature, rigenerazione, risoluzione dei riferimenti | `kernel`, `naming`, `solver` |
 
 Ogni componente è un target CMake con alias `solid_space::<nome>` e si compila da
@@ -97,6 +97,6 @@ intestazioni del contratto con Tecnigrafo, in bozza e non ancora realizzate
 | [0005](adr/0005-formato-dei-casi-di-verifica.md) | Formato dei casi di verifica e strumenti di controllo | Accettato |
 | [0006](adr/0006-build-ci-e-sottomoduli.md) | Build, CI e sottomoduli | Accettato |
 | [0007](adr/0007-tappe-su-richiesta.md) | Le tappe nascono dalle richieste di Tecnigrafo | Accettato |
-| [0008](adr/0008-componente-geom2d.md) | Il componente `geom2d` | Proposto |
-| [0009](adr/0009-regola-delle-tolleranze-del-piano.md) | Una regola unica per coincidenze e tolleranze del piano (richiesta #23, esito 3) | Proposto |
-| [0010](adr/0010-posizione-e-intersezioni-nel-piano.md) | Posizione reciproca e intersezioni di linee, archi e cerchi del piano (richiesta #20, esito 3) | Proposto |
+| [0008](adr/0008-componente-geom2d.md) | Il componente `geom2d` | Accettato |
+| [0009](adr/0009-regola-delle-tolleranze-del-piano.md) | Una regola unica per coincidenze e tolleranze del piano (richiesta #23, esito 3) | Accettato |
+| [0010](adr/0010-posizione-e-intersezioni-nel-piano.md) | Posizione reciproca e intersezioni di linee, archi e cerchi del piano (richiesta #20, esito 3) | Accettato |

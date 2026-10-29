@@ -38,8 +38,10 @@ public:
         return std::get<0>(m_content);
     }
 
-    /// The value, moved out. Precondition: hasValue().
-    [[nodiscard]] T&& value() && {
+    /// The value, moved out of a temporary result and returned by value, so
+    /// that it does not dangle when the result is gone. Precondition:
+    /// hasValue().
+    [[nodiscard]] T value() && {
         assert(hasValue());
         return std::get<0>(std::move(m_content));
     }

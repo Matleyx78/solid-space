@@ -39,9 +39,9 @@ misure dimostrano che serve.
 |---|---|---|
 | `robust` | predicati geometrici robusti, trigonometria deterministica e politica delle tolleranze | solo libreria standard |
 | `geom2d` | curve del piano: intersezioni, lato, tangenze, curva parallela | `robust` |
-| `solver` | interfaccia del solver di vincoli e motore (libslvs, poi altro) | `robust` |
+| `solver` | interfaccia del solver di vincoli e motore (libslvs, poi altro) | `robust`, `geom2d` (quando serve) |
 | `naming` | identificativi stabili e grafo di genealogia | solo libreria standard |
-| `kernel` | facciata su OCCT: forme, operazioni, STEP | `robust`, `naming`, OCCT |
+| `kernel` | facciata su OCCT: forme, operazioni, STEP | `robust`, `naming`, `geom2d` (quando serve), OCCT |
 | `features` | albero delle feature e rigenerazione, senza interfaccia grafica | `kernel`, `naming`, `solver` |
 
 Ogni componente si compila da solo: il CAD 2D di Tecnigrafo userà `robust`,

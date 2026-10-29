@@ -1,6 +1,6 @@
 # ADR 0010: Posizione reciproca e intersezioni di linee, archi e cerchi del piano
 
-- **Stato:** Proposto
+- **Stato:** Accettato
 - **Data:** 2026-10-29
 - **Richiesta:** #20 — da Tecnigrafo: tappa 0.7, Matleyx78/tecnigrafo#326
 - **Esito:** 3 pezzo nostro
