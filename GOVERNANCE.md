@@ -46,7 +46,8 @@ regole di lavoro, e si compila e si prova senza Tecnigrafo.
 
 - I due progetti hanno lo stesso responsabile. Le priorità di solid-space le
   dettano le richieste di Tecnigrafo ([ADR 0007](docs/adr/0007-tappe-su-richiesta.md)):
-  una tappa nasce da una richiesta, non da un calendario.
+  una tappa nasce dalle richieste di una tappa di Tecnigrafo, non da un
+  calendario, e avanza insieme a quella (punti 10–12).
 - Le interfacce tra i due si decidono insieme, con un ADR per parte quando serve.
 - **Ognuno scrive solo a casa sua.** Chi lavora a solid-space (persone o agenti)
   scrive codice e documenti solo in solid-space. In Tecnigrafo può leggere e, su
@@ -57,8 +58,9 @@ regole di lavoro, e si compila e si prova senza Tecnigrafo.
 
 ## Come si decide
 
-- **Tappe:** nascono da una richiesta di Tecnigrafo e dall'ADR che la valuta
-  ([ADR 0007](docs/adr/0007-tappe-su-richiesta.md)); poi il responsabile scrive la
+- **Tappe:** nascono dalle richieste di una tappa di Tecnigrafo, ciascuna con
+  l'ADR che la valuta ([ADR 0007](docs/adr/0007-tappe-su-richiesta.md), punti
+  10–12); poi il responsabile scrive la
   scheda e il piano dettagliato con i pacchetti di lavoro, apre la tappa e la chiude
   quando i criteri sono verificati (regole in [docs/ROADMAP.md](docs/ROADMAP.md)).
   Il piano si può discutere pubblicamente prima dell'apertura.
