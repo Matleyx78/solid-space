@@ -1,0 +1,65 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 The solid-space authors
+name: Tecnigrafo core
+
+on:
+  pull_request:
+    paths:
+      - 'robust/**'
+      - 'geom2d/**'
+      - 'CMakeLists.txt'
+      - 'cmake/**'
+      - '.github/workflows/tecnigrafo-core.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tecnigrafo-core-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  tecnigrafo-core:
+    name: Tecnigrafo core (Linux)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out Tecnigrafo main
+        uses: actions/checkout@v4
+        with:
+          repository: Matleyx78/tecnigrafo
+          ref: main
+          path: tecnigrafo
+          submodules: false
+          persist-credentials: false
+
+      # Replace the uninitialised submodule with the exact PR revision.
+      - name: Check out solid-space from this pull request
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: tecnigrafo/third_party/solid-space
+          submodules: false
+          persist-credentials: false
+
+      - name: Install build tools
+        run: sudo apt-get update && sudo apt-get install -y ninja-build libgtest-dev
+
+      # The "ci" preset of Tecnigrafo is the configuration its own CI guarantees
+      # (Debug, warnings as errors): Release with -Werror is not guaranteed.
+      - name: Configure Tecnigrafo without the desktop application
+        working-directory: tecnigrafo
+        run: cmake --preset ci -DTG_BUILD_APP=OFF
+
+      - name: Build Tecnigrafo
+        working-directory: tecnigrafo
+        run: cmake --build --preset ci --parallel 2
+
+      - name: Test Tecnigrafo
+        working-directory: tecnigrafo
+        run: ctest --preset ci --no-tests=error
