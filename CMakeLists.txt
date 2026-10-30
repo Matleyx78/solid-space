@@ -18,6 +18,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Included by path, not through CMAKE_MODULE_PATH, so that a project embedding
 # this one does not see its module directory.
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/SolidSpaceWarnings.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/SolidSpaceDeterminism.cmake")
 
 # One target per component, in dependency order (ADR 0002): a component only
 # links the ones defined before it, so the graph cannot have cycles.

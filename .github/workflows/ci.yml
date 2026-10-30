@@ -119,6 +119,47 @@ jobs:
       - run: sudo apt-get update && sudo apt-get install -y ninja-build libgtest-dev clang-format-18 clang-tidy-18
       - run: scripts/controlla.sh --tidy 2>&1 | scripts/ci-annota.sh
 
+      - name: Verify determinism guards and automatic source discovery
+        run: |
+          trial=$(mktemp -d)
+          trap 'rm -rf "$trial"' EXIT
+          git clone --quiet --no-local . "$trial/repo"
+          cd "$trial/repo"
+          for flag in -ffast-math -Ofast -funsafe-math-optimizations /fp:fast /fp:contract; do
+            if cmake -S . -B "$trial/forbidden" -DBUILD_TESTING=OFF "-DCMAKE_CXX_FLAGS=$flag" -DCMAKE_CXX_COMPILER_WORKS=TRUE > "$trial/log" 2>&1; then
+              echo "Accepted forbidden flag: $flag" >&2
+              exit 1
+            fi
+            cat "$trial/log"
+            grep -q 'ADR 0008' "$trial/log"
+            rm -rf "$trial/forbidden"
+          done
+          for component in robust geom2d; do
+            sed -i '/^ss_configure_determinism(/d' "$component/CMakeLists.txt"
+            if cmake -S . -B "$trial/missing-$component" > "$trial/log" 2>&1; then
+              echo "Accepted missing determinism options: $component" >&2
+              exit 1
+            fi
+            cat "$trial/log"
+            grep -q 'ADR 0008' "$trial/log"
+            git restore "$component/CMakeLists.txt"
+          done
+          cmake -S . -B "$trial/glob" -G Ninja
+          printf 'int ssGlobProbe() { return 0; }\n' > robust/src/discovery_probe.cpp
+          printf '#include <gtest/gtest.h>\nTEST(DiscoveryProbe, AddedAfterConfigure) { EXPECT_TRUE(true); }\n' > tests/geom2d/discovery_probe_test.cpp
+          cmake --build "$trial/glob" --parallel 2 --verbose > "$trial/log" 2>&1
+          cat "$trial/log"
+          grep -q 'discovery_probe.cpp' "$trial/log"
+          grep -q 'discovery_probe_test.cpp' "$trial/log"
+          ctest --test-dir "$trial/glob" -R DiscoveryProbe --output-on-failure --no-tests=error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: risultati-linux
+          path: |
+            build/release/corpus/risultati.txt
+            build/release/corpus/obbligatori.txt
+          if-no-files-found: error
+
   windows:
     name: Windows (MSVC)
     needs: references
@@ -137,6 +178,14 @@ jobs:
           scripts/controlla.sh --solo compila 2>&1 | scripts/ci-annota.sh
           scripts/controlla.sh --solo test 2>&1 | scripts/ci-annota.sh
 
+      - uses: actions/upload-artifact@v4
+        with:
+          name: risultati-windows
+          path: |
+            build/release/corpus/risultati.txt
+            build/release/corpus/obbligatori.txt
+          if-no-files-found: error
+
   macos:
     name: macOS (Apple Clang)
     needs: references
@@ -150,6 +199,14 @@ jobs:
           scripts/controlla.sh --solo configura 2>&1 | scripts/ci-annota.sh
           scripts/controlla.sh --solo compila 2>&1 | scripts/ci-annota.sh
           scripts/controlla.sh --solo test 2>&1 | scripts/ci-annota.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: risultati-macos
+          path: |
+            build/release/corpus/risultati.txt
+            build/release/corpus/obbligatori.txt
+          if-no-files-found: error
 
   sanitizers:
     name: Linux (ASan, UBSan)
@@ -166,3 +223,20 @@ jobs:
           submodules: false
       - run: sudo apt-get update && sudo apt-get install -y ninja-build libgtest-dev clang-format-18
       - run: scripts/controlla.sh 2>&1 | scripts/ci-annota.sh
+
+  determinism:
+    name: Determinism (ADR 0008)
+    needs: [references, linux, windows, macos]
+    if: needs.references.outputs.build == 'true'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: risultati-*
+          path: risultati
+      - run: >-
+          python3 scripts/confronta_risultati.py
+          risultati/risultati-linux risultati/risultati-windows risultati/risultati-macos
