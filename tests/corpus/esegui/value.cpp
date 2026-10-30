@@ -220,8 +220,10 @@ void compareAt(const Value& expected, const Value& actual, const std::string& pa
         }
     }
     if (!equal) {
-        differences.push_back((path.empty() ? "(root)" : path) + ": expected " +
-                              canonicalText(expected) + ", actual " + canonicalText(actual));
+        std::string message = path.empty() ? "(root)" : path;
+        message += ": expected " + canonicalText(expected);
+        message += ", actual " + canonicalText(actual);
+        differences.push_back(std::move(message));
     }
 }
 
@@ -242,9 +244,11 @@ std::string canonicalText(const Value& actual) {
             return hexNumber(actual.asNumber());
         case Kind::exact:
             return "exact(" + quoted(actual.asString()) + ")";
-        case Kind::approximate:
-            return "approx(" + hexNumber(actual.asNumber()) + "," + hexNumber(actual.tolerance()) +
-                   ")";
+        case Kind::approximate: {
+            const auto value = hexNumber(actual.asNumber());
+            const auto tolerance = hexNumber(actual.tolerance());
+            return "approx(" + value + "," + tolerance + ")";
+        }
         case Kind::name:
             return "name(" + quoted(actual.asString()) + ")";
         case Kind::text:

@@ -117,6 +117,7 @@ TEST(CorpusInfrastructure, UniqueOperations) {
 #ifndef SS_CORPUS_TESTING
 int main(int argc, char** argv) {
     using namespace solid_space::corpus;
+    using testing::RegisterTest;
     std::vector<std::string_view> arguments;
     bool results = false;
     for (int i = 1; i < argc; ++i) {
@@ -134,8 +135,7 @@ int main(int argc, char** argv) {
         const auto factory = [entry = &testCase]() -> CorpusTest* {
             return std::make_unique<CorpusTest>(entry).release();
         };
-        testing::RegisterTest("Corpus", name.c_str(), nullptr, nullptr, __FILE__, __LINE__,
-                              factory);
+        RegisterTest("Corpus", name.c_str(), nullptr, nullptr, __FILE__, __LINE__, factory);
     }
     return RUN_ALL_TESTS();
 }

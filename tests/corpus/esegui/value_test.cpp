@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 The solid-space authors
 
+#include "value.hpp"
+
 #include "operations.hpp"
 #include "plane_data.hpp"
-#include "value.hpp"
 
 #include <gtest/gtest.h>
 
@@ -18,41 +19,23 @@
 namespace solid_space::corpus {
 namespace {
 
+void expectScalar(const Value& expected, const Value& equal, const Value& different) {
+    EXPECT_TRUE(compare(expected, equal).empty());
+    const auto expectedGroup = Value::group({{"result", expected}});
+    const auto actualGroup = Value::group({{"result", different}});
+    const auto differences = compare(expectedGroup, actualGroup);
+    ASSERT_EQ(differences.size(), 1U);
+    EXPECT_TRUE(differences.front().starts_with("result:")) << differences.front();
+}
+
 TEST(CorpusValue, ComparesScalarsAndReportsPaths) {
-    const std::array expected = {
-        Value::boolean(true),
-        Value::number(2),
-        Value::exact("1/2", 0.5),
-        Value::approximate(1, 0.125),
-        Value::name("left"),
-        Value::text("text"),
-        Value::exact("1/3"),
-    };
-    const std::array equal = {
-        Value::boolean(true),
-        Value::number(2),
-        Value::number(0.5),
-        Value::number(1.125),
-        Value::name("left"),
-        Value::text("text"),
-        Value::exact("1/3"),
-    };
-    const std::array different = {
-        Value::boolean(false),
-        Value::number(3),
-        Value::number(0.25),
-        Value::number(1.25),
-        Value::name("right"),
-        Value::text("other"),
-        Value::number(1.0 / 3.0),
-    };
-    for (std::size_t i = 0; i < expected.size(); ++i) {
-        EXPECT_TRUE(compare(expected[i], equal[i]).empty()) << i;
-        const auto differences = compare(Value::group({{"result", expected[i]}}),
-                                        Value::group({{"result", different[i]}}));
-        ASSERT_EQ(differences.size(), 1U) << i;
-        EXPECT_TRUE(differences.front().starts_with("result:")) << differences.front();
-    }
+    expectScalar(Value::boolean(true), Value::boolean(true), Value::boolean(false));
+    expectScalar(Value::number(2), Value::number(2), Value::number(3));
+    expectScalar(Value::exact("1/2", 0.5), Value::number(0.5), Value::number(0.25));
+    expectScalar(Value::approximate(1, 0.125), Value::number(1.125), Value::number(1.25));
+    expectScalar(Value::name("left"), Value::name("left"), Value::name("right"));
+    expectScalar(Value::text("text"), Value::text("text"), Value::text("other"));
+    expectScalar(Value::exact("1/3"), Value::exact("1/3"), Value::number(1.0 / 3.0));
     EXPECT_TRUE(compare(Value::exact("0", 0.0), Value::number(-0.0)).empty());
     EXPECT_FALSE(compare(Value::exact("1/2", 0.5), Value::exact("2/4", 0.5)).empty());
     EXPECT_FALSE(compare(Value::name("left"), Value::text("left")).empty());
@@ -98,8 +81,9 @@ TEST(CorpusValue, CanonicalNumbersIncludeSpecialValuesAndEscapeText) {
     EXPECT_EQ(canonicalText(Value::number(std::numeric_limits<double>::infinity())), "inf");
     EXPECT_EQ(canonicalText(Value::number(-std::numeric_limits<double>::infinity())), "-inf");
     EXPECT_EQ(canonicalText(Value::number(std::numeric_limits<double>::quiet_NaN())), "nan");
-    const auto items = Value::list({Value::boolean(true), Value::integer(3), Value::name("left"),
-                                   Value::text("\n\"\\")});
+    const auto escaped = Value::text("\n\"\\");
+    const auto left = Value::name("left");
+    const auto items = Value::list({Value::boolean(true), Value::integer(3), left, escaped});
     EXPECT_EQ(canonicalText(Value::group({{"a", items}})),
               "{\"a\":[true,exact(\"3\"),name(\"left\"),\"\\x0a\\x22\\x5c\"]}");
     EXPECT_EQ(canonicalText(Value::approximate(1, 0.5)),
@@ -215,8 +199,9 @@ const Registration kMalformedOperation("malformedFixture", malformedOperation);
 TEST_F(CorpusResults, SortsRowsSkipsPendingAndIgnoresExpectedMismatch) {
     const std::array table = {fixture("z"), fixture("pending", 35, "unregistered"), fixture("a")};
     EXPECT_EQ(writeResults(table, m_file), 0);
-    const std::string expected = "# casi: 2\nrobust/a -0x0.0000000000000p+0\n"
-                                 "robust/z -0x0.0000000000000p+0\n";
+    std::string expected = "# casi: 2\n";
+    expected += "robust/a -0x0.0000000000000p+0\n";
+    expected += "robust/z -0x0.0000000000000p+0\n";
     EXPECT_EQ(contents(m_file), expected);
     EXPECT_FALSE(std::filesystem::exists(m_file.string() + ".tmp"));
     EXPECT_EQ(writeResults(table, m_file), 0);

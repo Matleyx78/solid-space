@@ -15,16 +15,7 @@ namespace solid_space::corpus {
 /// Test values deliberately keep exact text separate from floating-point data.
 class Value {
 public:
-    enum class Kind : std::uint8_t {
-        boolean,
-        number,
-        exact,
-        approximate,
-        name,
-        text,
-        list,
-        group
-    };
+    enum class Kind : std::uint8_t { boolean, number, exact, approximate, name, text, list, group };
     using List = std::vector<Value>;
     using Group = std::vector<std::pair<std::string, Value>>;
 

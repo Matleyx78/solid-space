@@ -55,9 +55,11 @@ double readNumber(const Value& value, std::string_view path) {
     if (text == "nan") {
         return std::numeric_limits<double>::quiet_NaN();
     }
-    if (text == "inf" || text == "-inf") {
-        return text == "inf" ? std::numeric_limits<double>::infinity()
-                            : -std::numeric_limits<double>::infinity();
+    if (text == "inf") {
+        return std::numeric_limits<double>::infinity();
+    }
+    if (text == "-inf") {
+        return -std::numeric_limits<double>::infinity();
     }
     auto digits = text;
     const bool negative = digits.starts_with("-");
@@ -72,8 +74,8 @@ double readNumber(const Value& value, std::string_view path) {
         malformed(path, "hexadecimal double requires an exponent");
     }
     double result = 0.0;
-    const auto parsed = std::from_chars(digits.data(), digits.data() + digits.size(), result,
-                                       std::chars_format::hex);
+    const auto* end = digits.data() + digits.size();
+    const auto parsed = std::from_chars(digits.data(), end, result, std::chars_format::hex);
     if (parsed.ec != std::errc{} || parsed.ptr != digits.data() + digits.size()) {
         malformed(path, "invalid hexadecimal double");
     }
@@ -106,7 +108,7 @@ geom2d::Curve readCurve(const Value& value, std::string_view path) {
     }
     if (kind == "arco") {
         return geom2d::Arc{point("centro"), number("raggio"), number("angolo_iniziale"),
-                          number("ampiezza")};
+                           number("ampiezza")};
     }
     if (kind == "cerchio") {
         return geom2d::Circle{point("centro"), number("raggio")};
@@ -131,8 +133,9 @@ geom2d::Polyline readPolyline(const Value& value, std::string_view path) {
         if (coordinates.size() != 3) {
             malformed(prefix, "expected x, y and bulge");
         }
-        const robust::Point2 point = {readNumber(coordinates[0], prefix + "[0]"),
-                                      readNumber(coordinates[1], prefix + "[1]")};
+        const auto x = readNumber(coordinates[0], prefix + "[0]");
+        const auto y = readNumber(coordinates[1], prefix + "[1]");
+        const robust::Point2 point = {x, y};
         result.vertices.push_back({point, readNumber(coordinates[2], prefix + "[2]")});
     }
     return result;
@@ -187,7 +190,7 @@ Value writeCurve(const geom2d::Curve& curve) {
 
 Value writePosition(const geom2d::CurvePosition& position) {
     return Value::group({{"posizione", writeName(position.location)},
-                        {"stazione", Value::number(position.station)}});
+                         {"stazione", Value::number(position.station)}});
 }
 
 Value writeDiagnosis(const robust::Diagnosis& diagnosis) {
@@ -196,7 +199,7 @@ Value writeDiagnosis(const robust::Diagnosis& diagnosis) {
 
 Value writeDiagnosis(const geom2d::Diagnosis& diagnosis) {
     auto fields = Value::group({{"codice", writeName(diagnosis.code)},
-                               {"dato", Value::exact(std::to_string(diagnosis.input))}});
+                                {"dato", Value::exact(std::to_string(diagnosis.input))}});
     return Value::group({{"diagnosi", std::move(fields)}});
 }
 
