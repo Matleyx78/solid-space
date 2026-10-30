@@ -284,9 +284,8 @@ Natural floorSquareRoot(const Natural& x) {
     if (x.isZero()) {
         return root;
     }
-    std::int64_t position = bitLength(x) - 1;
-    position -= position % 2;
-    while (true) {
+    const std::int64_t top = bitLength(x) - 1;
+    for (std::int64_t position = top - top % 2; position >= 0; position -= 2) {
         const Natural bit = powerOfTwo(position);
         const Natural trial = add(root, bit);
         if (compareNaturals(remainder, trial) != Sign::negative) {
@@ -295,10 +294,6 @@ Natural floorSquareRoot(const Natural& x) {
         } else {
             root = shiftRight(root, 1);
         }
-        if (position == 0) {
-            break;
-        }
-        position -= 2;
     }
     return root;
 }

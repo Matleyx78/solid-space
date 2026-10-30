@@ -455,12 +455,8 @@ Bracket sqrtBracket(const Dyadic& value, int steps) {
     while (compare(high * high, value) != Sign::positive) {
         high = high.timesPowerOfTwo(1);
     }
-    while (true) {
-        const Dyadic half = high.timesPowerOfTwo(-1);
-        if (compare(half * half, value) != Sign::positive) {
-            break;
-        }
-        high = half;
+    while (compare(high * high.timesPowerOfTwo(-2), value) == Sign::positive) {
+        high = high.timesPowerOfTwo(-1);
     }
     Dyadic low = high.timesPowerOfTwo(-1);
     for (int i = 0; i < steps; ++i) {
