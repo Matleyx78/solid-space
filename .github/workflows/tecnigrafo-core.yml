@@ -1,0 +1,65 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 The solid-space authors
+name: Tecnigrafo core
+
+on:
+  pull_request:
+    paths:
+      - 'robust/include/**'
+      - 'geom2d/include/**'
+      - 'robust/CMakeLists.txt'
+      - 'geom2d/CMakeLists.txt'
+      - '.github/workflows/tecnigrafo-core.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tecnigrafo-core-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  tecnigrafo-core:
+    name: Tecnigrafo core (Linux)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out Tecnigrafo main
+        uses: actions/checkout@v4
+        with:
+          repository: Matleyx78/tecnigrafo
+          ref: main
+          path: tecnigrafo
+          submodules: false
+          persist-credentials: false
+
+      # Replace the uninitialised submodule with the exact PR revision.
+      - name: Check out solid-space from this pull request
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: tecnigrafo/third_party/solid-space
+          submodules: false
+          persist-credentials: false
+
+      - name: Install build tools
+        run: sudo apt-get update && sudo apt-get install -y ninja-build libgtest-dev
+
+      - name: Configure Tecnigrafo without the desktop application
+        run: >-
+          cmake -S tecnigrafo -B build/tecnigrafo -G Ninja
+          -DCMAKE_BUILD_TYPE=Release
+          -DTG_BUILD_APP=OFF
+          -DTG_BUILD_TESTS=ON
+          -DTG_WARNINGS_AS_ERRORS=ON
+
+      - name: Build Tecnigrafo
+        run: cmake --build build/tecnigrafo --parallel 2
+
+      - name: Test Tecnigrafo
+        run: ctest --test-dir build/tecnigrafo --output-on-failure --no-tests=error
