@@ -1,0 +1,33 @@
+{
+  "versione": 1,
+  "id": "stesso-cerchio-richiesta-mm",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #23, caso 3, in millimetri vicino all'origine: due archi di raggio 5 con i centri a 1e-11 l'uno dall'altro sono sullo stesso cerchio.",
+  "ingresso": {
+    "operazione": "onSameCircle",
+    "prima": {
+      "arco": {
+        "centro": [0, 0],
+        "raggio": 5,
+        "angolo_iniziale": 0,
+        "ampiezza": 1.5
+      }
+    },
+    "seconda": {
+      "arco": {
+        "centro": [1e-11, 0],
+        "raggio": 5,
+        "angolo_iniziale": 2,
+        "ampiezza": 1.5
+      }
+    },
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "risposta": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "unita_in_metri = 0.001: il pavimento è il double più vicino al quoziente esatto 1e-9 / 0.001 (dei due double), cioè 0x1.0c6f7a0b5ed8dp-20 = 1e-06. M = 5 (il raggio), 2^-42 · 5 < pavimento, quindi epsilon = 1e-06. La distanza dei centri (0, 0) e (1e-11, 0) è il double di 1e-11, 1e-5 volte epsilon: vero. I raggi sono lo stesso double 5: differenza 0 ≤ epsilon. Gli archi (ampiezza 1.5 rad, lontana da 0 e dalle soglie di Arc) non sono ridotti a un punto per nessun D0 e D1 entro 2 ulp, e la risposta dipende solo da centri e raggi. Ogni double è un razionale (fractions.Fraction di Python) e il confronto è tra la grandezza esatta al quadrato e epsilon al quadrato; epsilon = max(pavimento, 2^-42 · M), con 2^-42 · M esatto. Nessun valore viene da solid-space."
+  }
+}

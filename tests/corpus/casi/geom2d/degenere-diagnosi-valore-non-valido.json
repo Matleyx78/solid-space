@@ -1,0 +1,26 @@
+{
+  "versione": 1,
+  "id": "degenere-diagnosi-valore-non-valido",
+  "componente": "geom2d",
+  "descrizione": "Diagnosi di isDegenerate (richiesta #23): un segmento con una coordinata NaN dà invalidValue sulla curva 0.",
+  "ingresso": {
+    "operazione": "isDegenerate",
+    "curva": {
+      "segmento": {
+        "inizio": ["nan", 0],
+        "fine": [1, 0]
+      }
+    },
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "invalidValue",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Regola dell'intestazione: ogni funzione controlla ogni curva, nell'ordine di curves.hpp («Checking the data»): invalidValue, outOfDomain, degenerateCurve; dato 0 per la prima curva (o l'unica), 1 per la seconda. La x dell'inizio è NaN: invalidValue, dato 0. Calcolo a mano."
+  }
+}

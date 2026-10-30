@@ -1,0 +1,29 @@
+{
+  "versione": 1,
+  "id": "allineate-esatte-minuscole",
+  "componente": "geom2d",
+  "descrizione": "Dati esattamente allineati (ADR 0009, punto 5, richiesta #23): due segmenti obliqui sulla retta x = 3y, con coordinate dell'ordine di 1e-300, sono allineati.",
+  "ingresso": {
+    "operazione": "areAligned",
+    "prima": {
+      "segmento": {
+        "inizio": [0, 0],
+        "fine": ["0x1.8p-999", "0x1p-1000"]
+      }
+    },
+    "seconda": {
+      "segmento": {
+        "inizio": ["0x1.8p-998", "0x1p-999"],
+        "fine": ["0x1.2p-997", "0x1.8p-999"]
+      }
+    },
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "risposta": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "unita_in_metri = 0.001: il pavimento è il double più vicino al quoziente esatto 1e-9 / 0.001 (dei due double), cioè 0x1.0c6f7a0b5ed8dp-20 = 1e-06. Con t = 2^-1000 i punti sono (0, 0), (3t, t), (6t, 2t) e (9t, 3t), tutti double esatti (0x1.8p-999 = 3t, 0x1.8p-998 = 6t, 0x1.2p-997 = 9t), tutti sulla retta x = 3y: ogni distanza esatta è 0. M = 9t, epsilon = pavimento = 1e-06; 0 ≤ epsilon: vero. Un calcolo che non fosse esatto potrebbe perdere i prodotti di coordinate così piccole sotto i subnormali. Ogni double è un razionale (fractions.Fraction di Python) e il confronto è tra la grandezza esatta al quadrato e epsilon al quadrato; epsilon = max(pavimento, 2^-42 · M), con 2^-42 · M esatto. Nessun valore viene da solid-space."
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "versione": 1,
+  "id": "degenere-richiesta-km",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #23, casi 5 e 4: un pezzo lungo 1e-14 in un disegno in chilometri con coordinate di 1e5. In double l'estremo arrotonda a 100000: il segmento è esattamente un punto, ed è degenere anche per la regola.",
+  "ingresso": {
+    "operazione": "isDegenerate",
+    "curva": {
+      "segmento": {
+        "inizio": [100000, 100000],
+        "fine": [100000.00000000000001, 100000]
+      }
+    },
+    "unita_in_metri": 1000.0
+  },
+  "atteso": {
+    "risposta": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "unita_in_metri = 1000: il pavimento è il double più vicino al quoziente esatto 1e-9 / 1000 (dei due double), cioè 0x1.19799812dea11p-40 ≈ 1e-12. Il double più vicino a 100000.00000000000001 è 100000 (1e-14 è meno di un millesimo dell'ulp di 1e5, 2^-36), quindi inizio e fine sono lo stesso punto e la lunghezza esatta è 0. M = 100000, epsilon = 2^-42 · 100000 ≈ 2.27e-8; 0 ≤ epsilon: vero (ADR 0009, punto 5: dati esattamente degeneri lo sono anche per la regola; isDegenerate accetta le curve ridotte a un punto). Ogni double è un razionale (fractions.Fraction di Python) e il confronto è tra la grandezza esatta al quadrato e epsilon al quadrato; epsilon = max(pavimento, 2^-42 · M), con 2^-42 · M esatto. Nessun valore viene da solid-space."
+  }
+}

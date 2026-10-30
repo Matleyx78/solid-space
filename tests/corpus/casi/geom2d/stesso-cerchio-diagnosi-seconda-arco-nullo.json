@@ -1,0 +1,36 @@
+{
+  "versione": 1,
+  "id": "stesso-cerchio-diagnosi-seconda-arco-nullo",
+  "componente": "geom2d",
+  "descrizione": "Diagnosi di onSameCircle (richiesta #23): un arco di ampiezza 0 è ridotto a un punto e dà degenerateCurve sulla curva 1.",
+  "ingresso": {
+    "operazione": "onSameCircle",
+    "prima": {
+      "arco": {
+        "centro": [0, 0],
+        "raggio": 5,
+        "angolo_iniziale": 0,
+        "ampiezza": 1.5
+      }
+    },
+    "seconda": {
+      "arco": {
+        "centro": [0, 0],
+        "raggio": 5,
+        "angolo_iniziale": 0.5,
+        "ampiezza": 0
+      }
+    },
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "degenerateCurve",
+      "dato": "1"
+    }
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Regola dell'intestazione: ogni funzione controlla ogni curva, nell'ordine di curves.hpp («Checking the data»): invalidValue, outOfDomain, degenerateCurve; dato 0 per la prima curva (o l'unica), 1 per la seconda. Il primo arco è valido e non degenere (ampiezza 1.5 rad). Il secondo ha ampiezza 0: angolo_iniziale + ampiezza = 0.5 è lo stesso double di angolo_iniziale, quindi D1 = D0 qualunque sia l'errore di sinCos, alpha = 0 e l'arco è il punto nella direzione D0 (curves.hpp, Arc): degenerateCurve, dato 1. Calcolo a mano."
+  }
+}

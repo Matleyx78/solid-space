@@ -1,0 +1,29 @@
+{
+  "versione": 1,
+  "id": "allineate-richiesta-mm",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #23, caso 2, in millimetri vicino all'origine: due linee lunghe 10 che si seguono e divergono di 1e-12 rad (la seconda sale di 1e-11 su 10) sono allineate.",
+  "ingresso": {
+    "operazione": "areAligned",
+    "prima": {
+      "segmento": {
+        "inizio": [0, 0],
+        "fine": [10, 0]
+      }
+    },
+    "seconda": {
+      "segmento": {
+        "inizio": [10, 0],
+        "fine": [20, 1e-11]
+      }
+    },
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "risposta": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "unita_in_metri = 0.001: il pavimento è il double più vicino al quoziente esatto 1e-9 / 0.001 (dei due double), cioè 0x1.0c6f7a0b5ed8dp-20 = 1e-06. M = 20 (la coordinata più grande), 2^-42 · 20 ≈ 4.5e-12 < pavimento, quindi epsilon = 1e-06. Distanze degli estremi dalla retta dell'altro segmento: gli estremi della seconda distano 0 e y = 1e-11 (il double di 1e-11) dalla retta y = 0; per gli estremi della prima, con d = (10, y) la direzione della seconda, la distanza al quadrato è (d × (p - (10, 0)))^2 / |d|^2, cioè 0 per (10, 0) e (10 y)^2 / (100 + y^2) ≈ (1e-11)^2 per (0, 0). Il massimo, circa 1e-11, è 1e-5 volte epsilon: vero. Ogni double è un razionale (fractions.Fraction di Python) e il confronto è tra la grandezza esatta al quadrato e epsilon al quadrato; epsilon = max(pavimento, 2^-42 · M), con 2^-42 · M esatto. Nessun valore viene da solid-space."
+  }
+}

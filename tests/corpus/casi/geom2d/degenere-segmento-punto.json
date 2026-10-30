@@ -1,0 +1,23 @@
+{
+  "versione": 1,
+  "id": "degenere-segmento-punto",
+  "componente": "geom2d",
+  "descrizione": "Dati esattamente degeneri (ADR 0009, punto 5, richiesta #23, caso 5): un segmento il cui inizio e fine sono lo stesso punto è degenere; isDegenerate lo accetta senza diagnosi.",
+  "ingresso": {
+    "operazione": "isDegenerate",
+    "curva": {
+      "segmento": {
+        "inizio": [123456.789, -98765.4321],
+        "fine": [123456.789, -98765.4321]
+      }
+    },
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "risposta": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "unita_in_metri = 0.001: il pavimento è il double più vicino al quoziente esatto 1e-9 / 0.001 (dei due double), cioè 0x1.0c6f7a0b5ed8dp-20 = 1e-06. Inizio e fine sono gli stessi double: la lunghezza esatta è 0. M = 123456.789, 2^-42 · M ≈ 2.8e-8 < pavimento, epsilon = 1e-06; 0 ≤ epsilon: vero. L'intestazione dice che isDegenerate accetta le curve esattamente ridotte a un punto."
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "versione": 1,
+  "id": "dritto-freccia-grande",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #23 (quando un bulge vale zero), in millimetri: un segmento di polilinea lungo 10 con bulge 0.001 si allontana dalla corda di circa 5e-3 e non è dritto.",
+  "ingresso": {
+    "operazione": "isStraight",
+    "curva": {
+      "pezzo": {
+        "inizio": [0, 0],
+        "fine": [10, 0],
+        "bulge": 0.001
+      }
+    },
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "risposta": false
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "unita_in_metri = 0.001: il pavimento è il double più vicino al quoziente esatto 1e-9 / 0.001 (dei due double), cioè 0x1.0c6f7a0b5ed8dp-20 = 1e-06. Il punto m del pezzo è (5, -0.005) (circa), quindi M = 10 e epsilon = pavimento = 1e-06. La freccia è |bulge| · corda / 2 = 0.001 · 10 / 2 ≈ 5e-3 (con il double di 0.001), 5000 volte epsilon: falso. Il confronto esatto è bulge^2 · corda^2 / 4 contro epsilon^2. Ogni double è un razionale (fractions.Fraction di Python) e il confronto è tra la grandezza esatta al quadrato e epsilon al quadrato; epsilon = max(pavimento, 2^-42 · M), con 2^-42 · M esatto. Nessun valore viene da solid-space."
+  }
+}

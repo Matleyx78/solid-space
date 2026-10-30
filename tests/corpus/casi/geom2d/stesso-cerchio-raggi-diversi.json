@@ -1,0 +1,33 @@
+{
+  "versione": 1,
+  "id": "stesso-cerchio-raggi-diversi",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #23, caso 3, con raggi diversi: due archi con lo stesso centro e raggi 5 e 5.00001, in millimetri, sono concentrici ma non stanno sullo stesso cerchio.",
+  "ingresso": {
+    "operazione": "onSameCircle",
+    "prima": {
+      "arco": {
+        "centro": [3, 4],
+        "raggio": 5,
+        "angolo_iniziale": 0,
+        "ampiezza": 1.5
+      }
+    },
+    "seconda": {
+      "arco": {
+        "centro": [3, 4],
+        "raggio": 5.00001,
+        "angolo_iniziale": 2,
+        "ampiezza": 1.5
+      }
+    },
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "risposta": false
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "unita_in_metri = 0.001: il pavimento è il double più vicino al quoziente esatto 1e-9 / 0.001 (dei due double), cioè 0x1.0c6f7a0b5ed8dp-20 = 1e-06. M = 5.00001 (il raggio più grande), 2^-42 · M < pavimento, quindi epsilon = 1e-06. I centri coincidono (distanza 0). La differenza dei raggi è il double di 5.00001 meno 5, circa 9.9999999996e-06, circa 10 volte epsilon: falso. Gli archi hanno ampiezza 1.5 rad, lontana da 0 e dalle soglie di Arc, per ogni D0 e D1 entro 2 ulp. Ogni double è un razionale (fractions.Fraction di Python) e il confronto è tra la grandezza esatta al quadrato e epsilon al quadrato; epsilon = max(pavimento, 2^-42 · M), con 2^-42 · M esatto. Nessun valore viene da solid-space."
+  }
+}

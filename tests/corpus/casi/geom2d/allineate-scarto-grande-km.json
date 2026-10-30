@@ -1,0 +1,29 @@
+{
+  "versione": 1,
+  "id": "allineate-scarto-grande-km",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #23, caso 4, con uno scarto più grande: in chilometri con coordinate di 1e5 una salita di 1e-7 su 10 supera epsilon (circa 2.27e-8) e le linee non sono allineate, mentre in millimetri vicino all'origine lo sarebbero (epsilon 1e-06).",
+  "ingresso": {
+    "operazione": "areAligned",
+    "prima": {
+      "segmento": {
+        "inizio": [100000, 100000],
+        "fine": [100010, 100000]
+      }
+    },
+    "seconda": {
+      "segmento": {
+        "inizio": [100010, 100000],
+        "fine": [100020, 100000.0000001]
+      }
+    },
+    "unita_in_metri": 1000.0
+  },
+  "atteso": {
+    "risposta": false
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "unita_in_metri = 1000: il pavimento è il double più vicino al quoziente esatto 1e-9 / 1000 (dei due double), cioè 0x1.19799812dea11p-40 ≈ 1e-12. Il double di 100000.0000001 è 100000 + h con h ≈ 1.0000076e-7 (multiplo di 2^-36). M = 100020, epsilon = 2^-42 · 100020 ≈ 2.274e-8. L'estremo (100020, 100000 + h) dista h dalla retta y = 100000, cioè 4.4 volte epsilon: falso (basta un estremo). Ogni double è un razionale (fractions.Fraction di Python) e il confronto è tra la grandezza esatta al quadrato e epsilon al quadrato; epsilon = max(pavimento, 2^-42 · M), con 2^-42 · M esatto. Nessun valore viene da solid-space."
+  }
+}
