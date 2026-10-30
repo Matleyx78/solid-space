@@ -62,3 +62,44 @@ add_test(NAME corpus_validate
 add_test(NAME corpus_validator_tests
   COMMAND ${Python3_EXECUTABLE} -B ${CMAKE_CURRENT_SOURCE_DIR}/corpus/test_valida_corpus.py)
 set_tests_properties(corpus_validate corpus_validator_tests PROPERTIES LABELS corpus)
+
+# Compile the corpus into an immutable table, including pending cases. Watch
+# directories as well as files so adding/removing a case reruns generation.
+set(ss_corpus_dir ${CMAKE_CURRENT_SOURCE_DIR}/corpus)
+set(ss_corpus_output ${CMAKE_BINARY_DIR}/corpus)
+file(GLOB_RECURSE ss_corpus_cases CONFIGURE_DEPENDS ${ss_corpus_dir}/casi/*.json)
+add_custom_command(
+  OUTPUT ${ss_corpus_output}/casi.cpp ${ss_corpus_output}/obbligatori.txt
+  COMMAND ${Python3_EXECUTABLE} -B ${ss_corpus_dir}/genera_casi.py
+          ${ss_corpus_dir} ${ss_corpus_output} --componenti robust geom2d
+  DEPENDS ${ss_corpus_cases} ${ss_corpus_dir}/in-attesa.txt
+          ${ss_corpus_dir}/sorgenti.json ${ss_corpus_dir}/genera_casi.py
+          ${ss_corpus_dir}/valida_corpus.py
+  VERBATIM)
+file(GLOB ss_corpus_operations CONFIGURE_DEPENDS ${ss_corpus_dir}/esegui/op_*.cpp)
+set(ss_corpus_support
+  corpus/esegui/value.cpp corpus/esegui/operations.cpp corpus/esegui/plane_data.cpp)
+add_executable(solid_space_corpus_test corpus/esegui/main.cpp
+  ${ss_corpus_support} ${ss_corpus_operations} ${ss_corpus_output}/casi.cpp)
+target_include_directories(solid_space_corpus_test PRIVATE ${ss_corpus_dir}/esegui)
+target_link_libraries(solid_space_corpus_test PRIVATE
+  solid_space::robust solid_space::geom2d GTest::gtest)
+ss_configure_target(solid_space_corpus_test)
+gtest_discover_tests(solid_space_corpus_test DISCOVERY_MODE PRE_TEST PROPERTIES LABELS corpus)
+add_test(NAME corpus_results COMMAND solid_space_corpus_test
+  --ss-results=${ss_corpus_output}/risultati.txt)
+set_tests_properties(corpus_results PROPERTIES LABELS "corpus;determinismo")
+
+# A separate process/table exercises the runner without polluting the archive
+# or registering fake operations in the real corpus executable.
+add_executable(solid_space_corpus_value_test corpus/esegui/value_test.cpp
+  corpus/esegui/main.cpp ${ss_corpus_support})
+target_compile_definitions(solid_space_corpus_value_test PRIVATE SS_CORPUS_TESTING)
+target_link_libraries(solid_space_corpus_value_test PRIVATE
+  solid_space::robust solid_space::geom2d GTest::gtest_main)
+ss_configure_target(solid_space_corpus_value_test)
+gtest_discover_tests(solid_space_corpus_value_test DISCOVERY_MODE PRE_TEST PROPERTIES LABELS corpus)
+add_test(NAME corpus_generator_tests
+  COMMAND ${Python3_EXECUTABLE} -B ${ss_corpus_dir}/test_genera_casi.py
+          $<TARGET_FILE:solid_space_corpus_test>)
+set_tests_properties(corpus_generator_tests PROPERTIES LABELS corpus)

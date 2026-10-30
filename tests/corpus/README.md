@@ -283,3 +283,66 @@ lo segnala al responsabile.
 Il formato è un contratto (ADR 0005): un campo si aggiunge, non si cambia; per
 cambiarlo serve un nuovo ADR. Se un punto di questa specifica non torna, ci si ferma
 e lo si scrive nella issue: la decisione è del responsabile.
+
+## Esecuzione
+
+Dalla tappa 0.2 i casi di `robust` e `geom2d` diventano test eseguibili.
+`genera_casi.py` importa il lettore e il validatore dell'archivio e genera
+`${CMAKE_BINARY_DIR}/corpus/casi.cpp` e `obbligatori.txt` durante la compilazione.
+Non c'è un lettore JSON nel C++: la tabella contiene alberi di `Value`, i numeri
+in ingresso sono letterali esadecimali e le frazioni attese conservano il testo
+esatto (e il `double` solo quando le rappresenta esattamente). Un caso non valido
+ferma la generazione con la diagnosi del validatore. Gli altri componenti restano
+validati ma non eseguiti: entreranno nell'opzione `--componenti` quando avranno
+codice da provare; `kernel/cubo-lato-1` resta una prova del formato.
+
+`solid_space_corpus_test` registra un test `Corpus.<componente>_<id>` per caso
+(trattini sostituiti da `_`), scoperto da `ctest` con l'etichetta `corpus`.
+Un caso in attesa viene saltato con il numero della issue, prima di cercare
+l'operazione. Un caso obbligatorio senza operazione fallisce. Il modo normale
+non scrive file di risultati, anche con `ctest` in parallelo.
+
+Il confronto con `atteso` segue queste regole:
+
+- esatto contro numero: il numero deve essere proprio il `double` esatto della
+  frazione; se quel `double` non esiste, il confronto fallisce. Gli zeri con
+  segno sono uguali (quando conta, si controlla una chiave booleana);
+- esatto contro esatto: stesso testo; approssimato contro numero: differenza
+  assoluta entro la tolleranza inclusa; NaN e infiniti non soddisfano un atteso
+  approssimato;
+- booleani, nomi e testo: stesso valore e tipo; elenchi: stessa lunghezza e
+  stessi elementi nell'ordine; gruppi: si confrontano solo le chiavi scritte in
+  `atteso`, tutte obbligatorie nel risultato. Ogni differenza indica il percorso,
+  per esempio `punti[1].punto[0]`.
+
+Per aggiungere un'operazione basta un file `esegui/op_<area>.cpp`: CMake raccoglie
+questi file automaticamente. Il file include `operations.hpp` e `plane_data.hpp`,
+definisce una funzione `Value(const Value&)` e una `Registration` statica con il
+nome della chiave `operazione`. Un nome registrato due volte fallisce i test.
+`plane_data.hpp` legge il vocabolario del piano e scrive punti, curve, posizioni,
+diagnosi e i nomi degli enumeratori comuni; un dato malformato solleva nel banco
+un errore con la chiave interessata. Queste eccezioni appartengono solo al banco
+di prova, non all'interfaccia della libreria.
+
+Il test `corpus_results` (etichette `corpus` e `determinismo`) esegue una volta:
+
+```sh
+solid_space_corpus_test --ss-results=<cartella-build>/corpus/risultati.txt
+```
+
+Questo modo non usa il runner GoogleTest e non accetta altre opzioni. Esegue tutti
+e soli i casi obbligatori in un unico processo, ordinati per `<componente>/<id>`.
+Scrive `# casi: N`, poi una riga `<componente>/<id> <risultato canonico>` per caso,
+anche se diverso dall'atteso. La forma canonica preserva l'ordine di chiavi ed
+elenchi, usa esadecimali per i `double` (zero negativo compreso), `nan`, `inf`,
+`-inf` e testo escapato su una sola riga. Scrive prima `risultati.txt.tmp` e
+pubblica `risultati.txt` solo a esecuzione completa e riuscita. Un'operazione
+assente o un ingresso malformato produce `ERRORE` nel temporaneo e su stderr,
+esito 1 e nessun nuovo risultato pubblicato; opzioni incompatibili danno esito 2.
+
+`obbligatori.txt`, generato insieme alla tabella, elenca gli stessi identificativi
+nello stesso ordine, uno per riga. Il programma non lo legge. Il job di P3
+confronta la completezza dei risultati con questo elenco e poi confronta i file
+dei tre sistemi byte per byte. `corpus_generator_tests` prova il generatore;
+`solid_space_corpus_value_test` prova valori, dati del piano e modo risultati
+con una tabella artificiale, senza modificare i riferimenti dell'archivio.
