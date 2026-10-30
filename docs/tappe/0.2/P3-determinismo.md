@@ -1,13 +1,13 @@
 # [0.2-P3] Determinismo e compilazione della tappa
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
-- **Issue:** #…
+- **Issue:** #36
 - **Difficoltà:** media
 - **Agente:** claude-2
 - **Modello e impegno:** medio; impegno medio
 - **Riferimenti:** non servono: opzioni di compilazione, raccolta dei sorgenti e
   CI, che non cambiano il comportamento della libreria
-- **Dipende da:** P2
+- **Dipende da:** P2 (#35)
 - **Sblocca in Tecnigrafo:** niente direttamente; serve a ogni pacchetto che
   calcola
 - **Componente:** build e CI (più i target `robust` e `geom2d`)

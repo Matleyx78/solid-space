@@ -1,14 +1,14 @@
 # [0.2-P9] `geom2d`: lato e incontri di rette e cerchi
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
-- **Issue:** #…
+- **Issue:** #51
 - **Difficoltà:** impegnativa
 - **Agente:** claude
 - **Modello e impegno:** forte; impegno alto
-- **Riferimenti:** issue `[0.2-R9]` (#…), agente codex (calcoli delicati). I suoi
+- **Riferimenti:** issue `[0.2-R9]` (#50), agente codex (calcoli delicati). I suoi
   casi servono anche a Matleyx78/tecnigrafo#356. Gli incontri interni si provano
   con i test di unità qui e con i casi di R10a e R10b attraverso `intersect`
-- **Dipende da:** P4, P7, R9
+- **Dipende da:** P4 (#39), P7 (#46), R9 (#50)
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#357 (con P4–P8, P10, P11)
 - **Componente:** `geom2d`
 - **Da leggere:** [ADR 0010](../../adr/0010-posizione-e-intersezioni-nel-piano.md)

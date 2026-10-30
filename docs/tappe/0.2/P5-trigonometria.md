@@ -1,13 +1,13 @@
 # [0.2-P5] `robust`: trigonometria deterministica
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
-- **Issue:** #…
+- **Issue:** #42
 - **Difficoltà:** impegnativa
 - **Agente:** claude-2
 - **Modello e impegno:** forte; impegno alto
-- **Riferimenti:** issue `[0.2-R5a]` (#…, `sinCos`) e `[0.2-R5b]` (#…,
+- **Riferimenti:** issue `[0.2-R5a]` (#40, `sinCos`) e `[0.2-R5b]` (#41,
   `atan2`), agente codex (calcoli delicati)
-- **Dipende da:** P2, P3, R5a, R5b
+- **Dipende da:** P2 (#35), P3 (#36), R5a (#40), R5b (#41)
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#357 (con P4, P6–P11) e #373
   (con P4, P6–P8): gli archi passano dalla trigonometria
 - **Componente:** `robust`

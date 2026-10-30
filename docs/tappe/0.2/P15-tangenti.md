@@ -1,14 +1,14 @@
 # [0.2-P15] `geom2d`: tangenti e cerchi tangenti
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
-- **Issue:** #…
+- **Issue:** #66
 - **Difficoltà:** impegnativa
 - **Agente:** claude-2
 - **Modello e impegno:** forte; impegno alto
-- **Riferimenti:** issue `[0.2-R15a]` (#…, `tangentsFrom`) e `[0.2-R15b]` (#…,
+- **Riferimenti:** issue `[0.2-R15a]` (#64, `tangentsFrom`) e `[0.2-R15b]` (#65,
   `tangentCircles`), agente codex (calcoli delicati: radici annidate). I loro
   casi servono anche a Matleyx78/tecnigrafo#366
-- **Dipende da:** P10, P12, R15a, R15b
+- **Dipende da:** P10 (#54), P12 (#57), R15a (#64), R15b (#65)
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#367 (con P4–P10, P12, P16)
 - **Componente:** `geom2d`
 - **Da leggere:** [ADR 0011](../../adr/0011-raccordi-e-tangenze-nel-piano.md)

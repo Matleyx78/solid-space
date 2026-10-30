@@ -1,13 +1,13 @@
 # [0.2-P11] `geom2d`: intersezioni lungo una curva
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
-- **Issue:** #…
+- **Issue:** #56
 - **Difficoltà:** impegnativa
 - **Agente:** claude
 - **Modello e impegno:** forte; impegno alto
-- **Riferimenti:** issue `[0.2-R11]` (#…), agente codex (calcoli delicati: due
+- **Riferimenti:** issue `[0.2-R11]` (#55), agente codex (calcoli delicati: due
   radici diverse). I suoi casi servono anche a Matleyx78/tecnigrafo#356
-- **Dipende da:** P10, R11
+- **Dipende da:** P10 (#54), R11 (#55)
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#357 (con P4–P10): di norma è
   l'ultimo pacchetto della facciata delle intersezioni
 - **Componente:** `geom2d`

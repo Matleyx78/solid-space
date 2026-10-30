@@ -1,14 +1,14 @@
 # [0.2-P8] `geom2d`: coincidenze
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
-- **Issue:** #…
+- **Issue:** #49
 - **Difficoltà:** media
 - **Agente:** codex
 - **Modello e impegno:** medio; impegno alto
-- **Riferimenti:** issue `[0.2-R8a]` (#…, casi della richiesta e diagnosi) e
-  `[0.2-R8b]` (#…, bordi), agente claude (calcoli delicati: i bordi
+- **Riferimenti:** issue `[0.2-R8a]` (#47, casi della richiesta e diagnosi) e
+  `[0.2-R8b]` (#48, bordi), agente claude (calcoli delicati: i bordi
   della tolleranza). I suoi casi servono anche a Matleyx78/tecnigrafo#356 e #372
-- **Dipende da:** P4, P7, R8a, R8b
+- **Dipende da:** P4 (#39), P7 (#46), R8a (#47), R8b (#48)
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#373 (con P4–P7: di norma è
   l'ultimo) e #357 (con P4–P7, P9–P11)
 - **Componente:** `geom2d`

@@ -1,7 +1,7 @@
 # [0.2-P1] Archivio: `geom2d`, nomi e dati del piano
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
-- **Issue:** #…
+- **Issue:** #34
 - **Difficoltà:** media
 - **Agente:** codex
 - **Modello e impegno:** medio; impegno medio

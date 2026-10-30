@@ -1,13 +1,13 @@
 # [0.2-P2] Esecuzione dei casi
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
-- **Issue:** #…
+- **Issue:** #35
 - **Difficoltà:** media
 - **Agente:** codex
 - **Modello e impegno:** medio; impegno medio
 - **Riferimenti:** non servono: infrastruttura di prova, che non cambia il
   comportamento della libreria; la provano i suoi test
-- **Dipende da:** P1
+- **Dipende da:** P1 (#34)
 - **Sblocca in Tecnigrafo:** niente direttamente; serve a ogni pacchetto di
   lavoro della tappa
 - **Componente:** nessuno (`tests/corpus/` e `tests/`)

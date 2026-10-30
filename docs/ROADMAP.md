@@ -17,7 +17,7 @@ lavora **solo** sui pacchetti della tappa aperta.
 | Tappa | Versione | Per la tappa di Tecnigrafo | Componente | Obiettivo | Nata da | Stato |
 |---|---|---|---|---|---|---|
 | 1 | 0.1 | — | tutti | Fondamenta: documenti, ADR, scheletro CMake, CI, sistema di verifica | fondamenta ([ADR 0001](adr/0001-scopo-e-confini.md)) | **chiusa** ([scheda](tappe/0.1-fondamenta.md), [note di rilascio](rilasci/0.1.md), [milestone v0.1](https://github.com/Matleyx78/solid-space/milestone/1), issue #4–#7 chiuse) |
-| 2 | 0.2 | 0.7, comandi di modifica | `robust`, `geom2d` ([ADR 0008](adr/0008-componente-geom2d.md)) | Le decisioni e le costruzioni geometriche del piano che chiede la tappa 0.7 di Tecnigrafo | richieste #20, #21, #22 e #23 | **in preparazione** ([scheda e piano](tappe/0.2-geometria-del-piano.md)) |
+| 2 | 0.2 | 0.7, comandi di modifica | `robust`, `geom2d` ([ADR 0008](adr/0008-componente-geom2d.md)) | Le decisioni e le costruzioni geometriche del piano che chiede la tappa 0.7 di Tecnigrafo | richieste #20, #21, #22 e #23 | **aperta** dal 2026-10-30 ([scheda e piano](tappe/0.2-geometria-del-piano.md), [milestone v0.2](https://github.com/Matleyx78/solid-space/milestone/2), issue #34–#72) |
 
 Lo stato delle singole richieste (in valutazione, in lavoro, soddisfatte) non si
 scrive qui: si legge nel Project «Tecnigrafo» del responsabile, che raccoglie

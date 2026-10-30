@@ -1,15 +1,15 @@
 # [0.2-P16] `geom2d`: cerchio tangente vicino ai punti e raccordo
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
-- **Issue:** #…
+- **Issue:** #70
 - **Difficoltà:** impegnativa
 - **Agente:** claude-2
 - **Modello e impegno:** forte; impegno alto
-- **Riferimenti:** issue `[0.2-R16a]` (#…, casi della richiesta) e `[0.2-R16c]`
-  (#…, regole di `fillet`), agente codex (calcoli delicati); `[0.2-R16b]` (#…,
+- **Riferimenti:** issue `[0.2-R16a]` (#67, casi della richiesta) e `[0.2-R16c]`
+  (#69, regole di `fillet`), agente codex (calcoli delicati); `[0.2-R16b]` (#68,
   casi di AutoCAD), agente gemini. I loro casi servono anche
   a Matleyx78/tecnigrafo#366
-- **Dipende da:** P15, R16a, R16b, R16c
+- **Dipende da:** P15 (#66), R16a (#67), R16b (#68), R16c (#69)
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#367 (con P4–P10, P12, P15): di
   norma è l'ultimo
 - **Componente:** `geom2d`

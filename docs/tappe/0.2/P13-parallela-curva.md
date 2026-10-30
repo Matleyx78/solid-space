@@ -1,13 +1,13 @@
 # [0.2-P13] `geom2d`: curva parallela di una curva
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
-- **Issue:** #…
+- **Issue:** #59
 - **Difficoltà:** media
 - **Agente:** codex
 - **Modello e impegno:** medio; impegno alto
-- **Riferimenti:** issue `[0.2-R13]` (#…), agente gemini (con i casi a, b e c di
+- **Riferimenti:** issue `[0.2-R13]` (#58), agente gemini (con i casi a, b e c di
   `autocad-offset.dxf`). I suoi casi servono anche a Matleyx78/tecnigrafo#362
-- **Dipende da:** P7, R13
+- **Dipende da:** P7 (#46), R13 (#58)
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#363 (con P4–P10, P12, P14)
 - **Componente:** `geom2d`
 - **Da leggere:** [ADR 0012](../../adr/0012-curva-parallela-nel-piano.md) punti

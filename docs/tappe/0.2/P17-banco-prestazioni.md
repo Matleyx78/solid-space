@@ -1,12 +1,12 @@
 # [0.2-P17] Banco delle prestazioni
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
-- **Issue:** #…
+- **Issue:** #71
 - **Difficoltà:** media
 - **Agente:** codex
 - **Modello e impegno:** medio; impegno medio
 - **Riferimenti:** non servono: il banco misura, non cambia il comportamento
-- **Dipende da:** P11, P14, P16
+- **Dipende da:** P11 (#56), P14 (#63), P16 (#70)
 - **Sblocca in Tecnigrafo:** niente
 - **Componente:** nessuno (`tests/prestazioni/`)
 - **Da leggere:** [ADR 0010](../../adr/0010-posizione-e-intersezioni-nel-piano.md)

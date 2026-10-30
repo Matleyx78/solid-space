@@ -1,14 +1,14 @@
 # [0.2-P4] `robust`: predicati esatti e regola delle tolleranze
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
-- **Issue:** #…
+- **Issue:** #39
 - **Difficoltà:** impegnativa
 - **Agente:** claude
 - **Modello e impegno:** forte; impegno alto
-- **Riferimenti:** issue `[0.2-R4a]` (#…, `orient2d`) e `[0.2-R4b]` (#…, regola
+- **Riferimenti:** issue `[0.2-R4a]` (#37, `orient2d`) e `[0.2-R4b]` (#38, regola
   delle tolleranze), agente codex (calcoli delicati). I casi di R4b servono anche
   a Matleyx78/tecnigrafo#356 e #372
-- **Dipende da:** P2, P3, R4a, R4b
+- **Dipende da:** P2 (#35), P3 (#36), R4a (#37), R4b (#38)
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#357 (con P5–P11) e #373 (con
   P5–P8): nella pull request, «Sblocca:» li cita se con questo pacchetto sono uniti
   tutti gli altri della loro riga (piano, sezione 6)
