@@ -3,11 +3,10 @@
 
 #pragma once
 
-#include "value.hpp"
-
 #include "solid_space/geom2d/intersection.hpp"
 #include "solid_space/geom2d/side.hpp"
 #include "solid_space/robust/diagnosis.hpp"
+#include "value.hpp"
 
 namespace solid_space::corpus {
 
@@ -16,9 +15,10 @@ namespace solid_space::corpus {
 [[nodiscard]] double readNumber(const Value& value, std::string_view path = "numero");
 [[nodiscard]] robust::Point2 readPoint(const Value& value, std::string_view path = "punto");
 [[nodiscard]] geom2d::Curve readCurve(const Value& value, std::string_view path = "curva");
-[[nodiscard]] geom2d::Polyline readPolyline(const Value& value, std::string_view path = "polilinea");
+[[nodiscard]] geom2d::Polyline readPolyline(const Value& value,
+                                            std::string_view path = "polilinea");
 [[nodiscard]] geom2d::Extension readExtension(const Value& value,
-                                            std::string_view path = "prolungamento");
+                                           std::string_view path = "prolungamento");
 
 [[nodiscard]] Value writePoint(robust::Point2 point);
 [[nodiscard]] Value writeCurve(const geom2d::Curve& curve);

@@ -36,8 +36,10 @@ Value Value::integer(std::int64_t value) {
     const auto number = static_cast<double>(value);
     // Binary64 has 53 significant bits. Large integers need enough trailing
     // zero bits; do not convert a rounded double back to int64 (it may overflow).
-    const auto magnitude = value < 0 ? std::uint64_t{0} - static_cast<std::uint64_t>(value)
-                                     : static_cast<std::uint64_t>(value);
+    auto magnitude = static_cast<std::uint64_t>(value);
+    if (value < 0) {
+        magnitude = std::uint64_t{0} - magnitude;
+    }
     const auto width = std::bit_width(magnitude);
     const bool fits = width <= 53 || std::countr_zero(magnitude) >= static_cast<int>(width - 53);
     return exact(std::to_string(value), fits ? std::optional<double>(number) : std::nullopt);
@@ -141,8 +143,10 @@ std::string hexNumber(double number) {
     for (int shift = 48; shift >= 0; shift -= 4) {
         result += kDigits[static_cast<std::size_t>((fraction >> shift) & 0xf)];
     }
-    const int power = exponent == 0 ? (fraction == 0 ? 0 : -1022)
-                                    : static_cast<int>(exponent) - 1023;
+    int power = static_cast<int>(exponent) - 1023;
+    if (exponent == 0) {
+        power = fraction == 0 ? 0 : -1022;
+    }
     result += "p";
     if (power >= 0) {
         result += "+";
@@ -171,8 +175,8 @@ void compareAt(const Value& expected, const Value& actual, const std::string& pa
     using Kind = Value::Kind;
     bool equal = false;
     if (expected.kind() == Kind::exact && actual.kind() == Kind::number) {
-        equal = expected.representable().has_value() &&
-                *expected.representable() == actual.asNumber();
+        const auto number = expected.representable();
+        equal = number.has_value() && *number == actual.asNumber();
     } else if (expected.kind() == Kind::approximate && actual.kind() == Kind::number) {
         equal = std::isfinite(actual.asNumber()) &&
                 std::abs(actual.asNumber() - expected.asNumber()) <= expected.tolerance();
@@ -193,14 +197,15 @@ void compareAt(const Value& expected, const Value& actual, const std::string& pa
                 equal = expected.asNumber() == actual.asNumber() &&
                         expected.tolerance() == actual.tolerance();
                 break;
-            case Kind::list:
+            case Kind::list: {
                 equal = expected.asList().size() == actual.asList().size();
-                for (std::size_t i = 0; i < std::min(expected.asList().size(), actual.asList().size());
-                     ++i) {
+                const auto count = std::min(expected.asList().size(), actual.asList().size());
+                for (std::size_t i = 0; i < count; ++i) {
                     compareAt(expected.asList()[i], actual.asList()[i],
                               path + "[" + std::to_string(i) + "]", differences);
                 }
                 break;
+            }
             case Kind::group:
                 for (const auto& [key, value] : expected.asGroup()) {
                     const auto* found = actual.find(key);

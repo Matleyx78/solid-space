@@ -41,7 +41,8 @@ int writeResults(std::span<const Case> table, const std::filesystem::path& file)
         } catch (const std::runtime_error& error) {
             const auto message = canonicalText(Value::text(error.what()));
             output << "ERRORE " << message << '\n';
-            std::cerr << testCase->component << '/' << testCase->id << " ERRORE " << message << '\n';
+            std::cerr << testCase->component << '/' << testCase->id << " ERRORE " << message
+                      << '\n';
             success = false;
         }
     }
@@ -130,8 +131,11 @@ int main(int argc, char** argv) {
     for (const auto& testCase : cases()) {
         auto name = testCase.component + "_" + testCase.id;
         std::ranges::replace(name, '-', '_');
+        const auto factory = [entry = &testCase]() -> CorpusTest* {
+            return std::make_unique<CorpusTest>(entry).release();
+        };
         testing::RegisterTest("Corpus", name.c_str(), nullptr, nullptr, __FILE__, __LINE__,
-                              [entry = &testCase]() -> CorpusTest* { return std::make_unique<CorpusTest>(entry).release(); });
+                              factory);
     }
     return RUN_ALL_TESTS();
 }

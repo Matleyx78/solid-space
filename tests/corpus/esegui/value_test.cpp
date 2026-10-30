@@ -19,38 +19,59 @@ namespace solid_space::corpus {
 namespace {
 
 TEST(CorpusValue, ComparesScalarsAndReportsPaths) {
-    const std::array expected = {Value::boolean(true), Value::number(2), Value::exact("1/2", 0.5),
-                                 Value::approximate(1, 0.125), Value::name("left"),
-                                 Value::text("text"), Value::exact("1/3")};
-    const std::array equal = {Value::boolean(true), Value::number(2), Value::number(0.5),
-                              Value::number(1.125), Value::name("left"), Value::text("text"),
-                              Value::exact("1/3")};
-    const std::array different = {Value::boolean(false), Value::number(3), Value::number(0.25),
-                                  Value::number(1.25), Value::name("right"), Value::text("other"),
-                                  Value::number(1.0 / 3.0)};
+    const std::array expected = {
+        Value::boolean(true),
+        Value::number(2),
+        Value::exact("1/2", 0.5),
+        Value::approximate(1, 0.125),
+        Value::name("left"),
+        Value::text("text"),
+        Value::exact("1/3"),
+    };
+    const std::array equal = {
+        Value::boolean(true),
+        Value::number(2),
+        Value::number(0.5),
+        Value::number(1.125),
+        Value::name("left"),
+        Value::text("text"),
+        Value::exact("1/3"),
+    };
+    const std::array different = {
+        Value::boolean(false),
+        Value::number(3),
+        Value::number(0.25),
+        Value::number(1.25),
+        Value::name("right"),
+        Value::text("other"),
+        Value::number(1.0 / 3.0),
+    };
     for (std::size_t i = 0; i < expected.size(); ++i) {
         EXPECT_TRUE(compare(expected[i], equal[i]).empty()) << i;
         const auto differences = compare(Value::group({{"result", expected[i]}}),
-                                         Value::group({{"result", different[i]}}));
+                                        Value::group({{"result", different[i]}}));
         ASSERT_EQ(differences.size(), 1U) << i;
         EXPECT_TRUE(differences.front().starts_with("result:")) << differences.front();
     }
     EXPECT_TRUE(compare(Value::exact("0", 0.0), Value::number(-0.0)).empty());
     EXPECT_FALSE(compare(Value::exact("1/2", 0.5), Value::exact("2/4", 0.5)).empty());
     EXPECT_FALSE(compare(Value::name("left"), Value::text("left")).empty());
-    EXPECT_FALSE(compare(Value::approximate(1, 0.1),
-                         Value::number(std::numeric_limits<double>::infinity())).empty());
-    EXPECT_FALSE(compare(Value::approximate(1, 0.1),
-                         Value::number(std::numeric_limits<double>::quiet_NaN())).empty());
+    const auto infinite = Value::number(std::numeric_limits<double>::infinity());
+    const auto nan = Value::number(std::numeric_limits<double>::quiet_NaN());
+    EXPECT_FALSE(compare(Value::approximate(1, 0.1), infinite).empty());
+    EXPECT_FALSE(compare(Value::approximate(1, 0.1), nan).empty());
 }
 
 TEST(CorpusValue, ComparesNestedListsAndPartialGroups) {
-    const auto expected = Value::group({{"punti", Value::list({Value::boolean(true),
-        Value::group({{"punto", Value::list({Value::integer(2), Value::integer(3)})}})})}});
+    const auto expectedPoint = Value::list({Value::integer(2), Value::integer(3)});
+    const auto expectedItem = Value::group({{"punto", expectedPoint}});
+    const auto expectedList = Value::list({Value::boolean(true), expectedItem});
+    const auto expected = Value::group({{"punti", expectedList}});
     EXPECT_TRUE(compare(expected, expected).empty());
-    const auto actual = Value::group({{"extra", Value::text("ignored")},
-        {"punti", Value::list({Value::boolean(true), Value::group({
-            {"punto", Value::list({Value::number(9), Value::number(3)})}})})}});
+    const auto actualPoint = Value::list({Value::number(9), Value::number(3)});
+    const auto actualItem = Value::group({{"punto", actualPoint}});
+    const auto actualList = Value::list({Value::boolean(true), actualItem});
+    const auto actual = Value::group({{"extra", Value::text("ignored")}, {"punti", actualList}});
     const auto differences = compare(expected, actual);
     ASSERT_EQ(differences.size(), 1U);
     EXPECT_TRUE(differences[0].starts_with("punti[1].punto[0]:"));
@@ -63,8 +84,10 @@ TEST(CorpusValue, IntegerRepresentabilityDoesNotRoundExpectedIntegers) {
     EXPECT_TRUE(compare(Value::integer(3), Value::number(3)).empty());
     EXPECT_FALSE(Value::integer(9007199254740993LL).representable().has_value());
     EXPECT_TRUE(Value::integer(9007199254740994LL).representable().has_value());
-    EXPECT_TRUE(Value::integer(std::numeric_limits<std::int64_t>::min()).representable().has_value());
-    EXPECT_FALSE(Value::integer(std::numeric_limits<std::int64_t>::max()).representable().has_value());
+    const auto minimum = Value::integer(std::numeric_limits<std::int64_t>::min());
+    const auto maximum = Value::integer(std::numeric_limits<std::int64_t>::max());
+    EXPECT_TRUE(minimum.representable().has_value());
+    EXPECT_FALSE(maximum.representable().has_value());
 }
 
 TEST(CorpusValue, CanonicalNumbersIncludeSpecialValuesAndEscapeText) {
@@ -75,8 +98,9 @@ TEST(CorpusValue, CanonicalNumbersIncludeSpecialValuesAndEscapeText) {
     EXPECT_EQ(canonicalText(Value::number(std::numeric_limits<double>::infinity())), "inf");
     EXPECT_EQ(canonicalText(Value::number(-std::numeric_limits<double>::infinity())), "-inf");
     EXPECT_EQ(canonicalText(Value::number(std::numeric_limits<double>::quiet_NaN())), "nan");
-    EXPECT_EQ(canonicalText(Value::group({{"a", Value::list({Value::boolean(true),
-               Value::integer(3), Value::name("left"), Value::text("\n\"\\")})}})),
+    const auto items = Value::list({Value::boolean(true), Value::integer(3), Value::name("left"),
+                                   Value::text("\n\"\\")});
+    EXPECT_EQ(canonicalText(Value::group({{"a", items}})),
               "{\"a\":[true,exact(\"3\"),name(\"left\"),\"\\x0a\\x22\\x5c\"]}");
     EXPECT_EQ(canonicalText(Value::approximate(1, 0.5)),
               "approx(0x1.0000000000000p+0,0x1.0000000000000p-1)");
@@ -100,15 +124,19 @@ TEST(CorpusPlaneData, ReadsNumbersAndNamesWithoutGeometryFunctions) {
 
 TEST(CorpusPlaneData, RoundTripsEveryCurveAndReadsPolyline) {
     const std::array<geom2d::Curve, 4> curves = {
-        geom2d::Segment{{1, 2}, {3, 4}}, geom2d::Arc{{1, 2}, 3, 4, 5},
-        geom2d::Circle{{1, 2}, 3}, geom2d::PolylineSegment{{1, 2}, {3, 4}, 0.5}};
+        geom2d::Segment{{1, 2}, {3, 4}},
+        geom2d::Arc{{1, 2}, 3, 4, 5},
+        geom2d::Circle{{1, 2}, 3},
+        geom2d::PolylineSegment{{1, 2}, {3, 4}, 0.5},
+    };
     for (const auto& curve : curves) {
         const auto value = writeCurve(curve);
         EXPECT_TRUE(compare(value, writeCurve(readCurve(value))).empty());
     }
-    const auto polyline = readPolyline(Value::group({
-        {"vertici", Value::list({Value::list({Value::number(1), Value::number(2), Value::number(0.5)})})},
-        {"chiusa", Value::boolean(true)}}));
+    const auto vertex = Value::list({Value::number(1), Value::number(2), Value::number(0.5)});
+    const auto vertices = Value::list({vertex});
+    const auto data = Value::group({{"vertici", vertices}, {"chiusa", Value::boolean(true)}});
+    const auto polyline = readPolyline(data);
     ASSERT_EQ(polyline.vertices.size(), 1U);
     EXPECT_EQ(polyline.vertices[0].position.x, 1);
     EXPECT_EQ(polyline.vertices[0].position.y, 2);
@@ -117,9 +145,10 @@ TEST(CorpusPlaneData, RoundTripsEveryCurveAndReadsPolyline) {
 }
 
 TEST(CorpusPlaneData, ReportsMalformedDataWithKeyPaths) {
+    const auto center = writePoint({0, 0});
+    const auto data = Value::group({{"centro", center}, {"raggio", Value::text("oops")}});
     try {
-        static_cast<void>(readCurve(Value::group({{"cerchio", Value::group({
-            {"centro", writePoint({0, 0})}, {"raggio", Value::text("oops")}})}})));
+        static_cast<void>(readCurve(Value::group({{"cerchio", data}})));
         FAIL() << "Malformed radius accepted";
     } catch (const std::runtime_error& error) {
         EXPECT_NE(std::string(error.what()).find("curva.cerchio.raggio"), std::string::npos);
@@ -134,7 +163,8 @@ TEST(CorpusPlaneData, WritesPositionsDiagnosesAndEnumeratorNames) {
     const auto position = writePosition({geom2d::Location::atStart, 0});
     EXPECT_EQ(position.find("posizione")->asString(), "atStart");
     EXPECT_EQ(position.find("stazione")->asNumber(), 0);
-    const auto diagnosis = writeDiagnosis(geom2d::Diagnosis{geom2d::DiagnosisCode::outOfDomain, 2, "x"});
+    const geom2d::Diagnosis source = {geom2d::DiagnosisCode::outOfDomain, 2, "x"};
+    const auto diagnosis = writeDiagnosis(source);
     EXPECT_EQ(diagnosis.find("diagnosi")->find("codice")->asString(), "outOfDomain");
     EXPECT_EQ(diagnosis.find("diagnosi")->find("dato")->asString(), "2");
     const auto robustDiagnosis = writeDiagnosis(robust::Diagnosis{});
@@ -148,18 +178,17 @@ protected:
     void SetUp() override {
         // A unique directory also separates independently running ctest processes.
         const auto nonce = std::chrono::steady_clock::now().time_since_epoch().count();
-        m_directory = std::filesystem::temp_directory_path() / ("ss-corpus-" + std::to_string(nonce));
+        const auto name = "ss-corpus-" + std::to_string(nonce);
+        m_directory = std::filesystem::temp_directory_path() / name;
         std::filesystem::create_directory(m_directory);
         m_file = m_directory / "results.txt";
     }
 
-    void TearDown() override {
-        std::filesystem::remove_all(m_directory);
-    }
+    void TearDown() override { std::filesystem::remove_all(m_directory); }
 
     static Case fixture(std::string id, int pending = 0, std::string operation = "fixture") {
-        return {std::move(id), "robust", pending,
-                Value::group({{"operazione", Value::text(std::move(operation))}}), Value::group({})};
+        auto input = Value::group({{"operazione", Value::text(std::move(operation))}});
+        return {std::move(id), "robust", pending, std::move(input), Value::group({})};
     }
 
     static std::string contents(const std::filesystem::path& file) {
@@ -186,8 +215,9 @@ const Registration kMalformedOperation("malformedFixture", malformedOperation);
 TEST_F(CorpusResults, SortsRowsSkipsPendingAndIgnoresExpectedMismatch) {
     const std::array table = {fixture("z"), fixture("pending", 35, "unregistered"), fixture("a")};
     EXPECT_EQ(writeResults(table, m_file), 0);
-    EXPECT_EQ(contents(m_file), "# casi: 2\nrobust/a -0x0.0000000000000p+0\n"
-                                "robust/z -0x0.0000000000000p+0\n");
+    const std::string expected = "# casi: 2\nrobust/a -0x0.0000000000000p+0\n"
+                                 "robust/z -0x0.0000000000000p+0\n";
+    EXPECT_EQ(contents(m_file), expected);
     EXPECT_FALSE(std::filesystem::exists(m_file.string() + ".tmp"));
     EXPECT_EQ(writeResults(table, m_file), 0);
 }
@@ -222,10 +252,12 @@ TEST_F(CorpusResults, RejectsOtherOptionsAndEmptyFileName) {
 TEST(CorpusRegistration, DuplicateOperationIsReported) {
     // Run in a child process so the intentional duplicate cannot affect any
     // other test, regardless of GoogleTest ordering or ctest parallelism.
-    EXPECT_EXIT({
-        const Registration duplicate("fixture", fixtureOperation);
-        std::_Exit(registrationErrors().empty() ? 1 : 0);
-    }, testing::ExitedWithCode(0), "");
+    EXPECT_EXIT(
+        {
+            const Registration duplicate("fixture", fixtureOperation);
+            std::_Exit(registrationErrors().empty() ? 1 : 0);
+        },
+        testing::ExitedWithCode(0), "");
 }
 
 }  // namespace
