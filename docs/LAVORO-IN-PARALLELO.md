@@ -139,16 +139,19 @@ impegnativo; uno che si divide dà spesso due pacchetti medi.
 All'apertura si creano, nel milestone `vX.Y`:
 
 - una issue `[X.Y-PN]` per ogni pacchetto, con le etichette `tappa-X.Y`,
-  `pacchetto` e `agente:…` secondo il piano;
+  `pacchetto`, `agente:…` e `difficoltà:…` secondo il piano;
 - una issue `[X.Y-RN]` per ogni pacchetto che ha riferimenti, con le etichette
-  `tappa-X.Y`, `riferimenti` e `agente:…` di chi li scrive. La issue del lavoro
-  la cita nella riga "Dipende da".
+  `tappa-X.Y`, `riferimenti`, `agente:…` di chi li scrive e `difficoltà:…`
+  secondo il piano. La issue del lavoro la cita nella riga "Dipende da".
 
 Il testo di ogni issue cita la scheda del pacchetto (`docs/tappe/X.Y/PN-<nome>.md`)
-e ne riporta modello e impegno, così l'agente parte da lì.
+e ne riporta modello e impegno, così l'agente parte da lì. Ogni dipendenza della
+riga "Dipende da" si segna anche come dipendenza di GitHub («bloccata da»), così
+la issue mostra da sola che cosa la blocca.
 
 Le etichette del progetto sono `idea`, `pacchetto`, `riferimenti`, `tappa-X.Y`,
-`agente:claude`, `agente:claude-2`, `agente:codex`, `agente:gemini` e
+`agente:claude`, `agente:claude-2`, `agente:codex`, `agente:gemini`,
+`difficoltà:facile`, `difficoltà:media`, `difficoltà:impegnativa` e
 `AA-Presa in carico` (sezione 5).
 
 Le issue le può creare Claude, partendo dal piano, quando il responsabile glielo
