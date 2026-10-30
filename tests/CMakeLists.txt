@@ -1,6 +1,18 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Copyright (C) 2026 The solid-space authors
 
+# Verify the actual target options, independently of the helper's invocation.
+foreach(component robust geom2d)
+  get_target_property(ss_options solid_space_${component} COMPILE_OPTIONS)
+  if(MSVC)
+    if(NOT "/fp:precise" IN_LIST ss_options OR "/fp:contract" IN_LIST ss_options)
+      message(FATAL_ERROR "ADR 0008: ${component} must use /fp:precise without /fp:contract")
+    endif()
+  elseif(NOT "-ffp-contract=off" IN_LIST ss_options)
+    message(FATAL_ERROR "ADR 0008: ${component} must use -ffp-contract=off")
+  endif()
+endforeach()
+
 # GoogleTest: the system package if there is one, otherwise a pinned download
 # verified by its hash (ADR 0006, point 4). Only the download needs the network.
 find_package(GTest CONFIG QUIET)
@@ -50,6 +62,22 @@ target_link_libraries(solid_space_contract_test PRIVATE
   solid_space::robust solid_space::geom2d GTest::gtest_main)
 ss_configure_target(solid_space_contract_test)
 gtest_discover_tests(solid_space_contract_test DISCOVERY_MODE PRE_TEST)
+
+# Globs keep parallel stage packages from editing shared CMake files.
+foreach(component robust geom2d)
+  file(GLOB ss_unit_sources CONFIGURE_DEPENDS ${component}/*_test.cpp)
+  list(FILTER ss_unit_sources EXCLUDE REGEX "/contract_test\\.cpp$")
+  if(ss_unit_sources)
+    set(ss_unit_target solid_space_${component}_unit_test)
+    add_executable(${ss_unit_target} ${ss_unit_sources})
+    target_include_directories(${ss_unit_target} PRIVATE
+      ${PROJECT_SOURCE_DIR}/robust/src ${PROJECT_SOURCE_DIR}/geom2d/src)
+    target_link_libraries(${ss_unit_target} PRIVATE
+      solid_space::${component} GTest::gtest_main)
+    ss_configure_target(${ss_unit_target})
+    gtest_discover_tests(${ss_unit_target} DISCOVERY_MODE PRE_TEST)
+  endif()
+endforeach()
 
 # Verification corpus (ADR 0005): the structural validator and its own tests,
 # under ctest with the label "corpus". Python is a development tool, not a
@@ -103,3 +131,7 @@ add_test(NAME corpus_generator_tests
   COMMAND ${Python3_EXECUTABLE} -B ${ss_corpus_dir}/test_genera_casi.py
           $<TARGET_FILE:solid_space_corpus_test>)
 set_tests_properties(corpus_generator_tests PROPERTIES LABELS corpus)
+
+add_test(NAME determinism_comparison_tests
+  COMMAND ${Python3_EXECUTABLE} -B ${PROJECT_SOURCE_DIR}/scripts/test_confronta_risultati.py)
+set_tests_properties(determinism_comparison_tests PROPERTIES LABELS determinismo)
