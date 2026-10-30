@@ -18,7 +18,7 @@ namespace solid_space::corpus {
 [[nodiscard]] geom2d::Polyline readPolyline(const Value& value,
                                             std::string_view path = "polilinea");
 [[nodiscard]] geom2d::Extension readExtension(const Value& value,
-                                           std::string_view path = "prolungamento");
+                                              std::string_view path = "prolungamento");
 
 [[nodiscard]] Value writePoint(robust::Point2 point);
 [[nodiscard]] Value writeCurve(const geom2d::Curve& curve);
