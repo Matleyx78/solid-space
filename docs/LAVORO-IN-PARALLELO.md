@@ -54,7 +54,7 @@ responsabile glielo chiede indicando la issue o la pull request, scrivere un
 commento: nient'altro. La regola completa è in [AGENTS.md](../AGENTS.md), "Dove
 puoi scrivere"; come farla rispettare, nella guida del responsabile, in
 Tecnigrafo:
-[GUIDA-RESPONSABILE.md, A7](https://github.com/Matleyx78/tecnigrafo/blob/main/docs/GUIDA-RESPONSABILE.md#a7-il-confine-tra-i-due-repository).
+[GUIDA-RESPONSABILE.md](https://github.com/Matleyx78/tecnigrafo/blob/main/docs/GUIDA-RESPONSABILE.md), sezione A1.
 
 ## 1. Preparare il piano
 
@@ -197,7 +197,7 @@ lotti", e alla fine scrivimi un solo riepilogo.
 
 Perché Gemini lavori senza chiedere conferma a ogni comando, Antigravity CLI va
 configurato una volta: istruzioni in
-[AMBIENTE-SVILUPPO.md](AMBIENTE-SVILUPPO.md), sezione 3.
+[AMBIENTE-SVILUPPO.md di Tecnigrafo](https://github.com/Matleyx78/tecnigrafo/blob/main/docs/AMBIENTE-SVILUPPO.md), sezione 6.
 
 Se serve far partire un pacchetto preciso, si indicano issue e ramo:
 
