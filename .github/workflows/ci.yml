@@ -42,8 +42,10 @@ jobs:
 
           def classify(paths):
               reference = any(p.startswith('tests/corpus/casi/') or
+                              p.startswith('tests/corpus/esterni/') or
                               p == 'tests/corpus/sorgenti.json' for p in paths)
-              work = any(not (p.startswith('tests/corpus/casi/') or p in {
+              work = any(not (p.startswith('tests/corpus/casi/') or
+                              p.startswith('tests/corpus/esterni/') or p in {
                   'tests/corpus/sorgenti.json', 'tests/corpus/in-attesa.txt'
               }) for p in paths)
               return reference and work
@@ -53,6 +55,11 @@ jobs:
           assert classify(['tests/corpus/sorgenti.json', 'README.md'])
           assert not classify(['tests/corpus/in-attesa.txt'])
           assert not classify(['tests/corpus/casi/robust/a.json', 'tests/corpus/in-attesa.txt'])
+          assert not classify(['tests/corpus/casi/geom2d/a.json',
+                               'tests/corpus/sorgenti.json', 'tests/corpus/esterni/a.dxf'])
+          assert classify(['tests/corpus/esterni/a.dxf', 'geom2d/src/a.cpp'])
+          # --no-renames includes both paths when a copy is moved out.
+          assert classify(['tests/corpus/esterni/a.dxf', 'other/a.dxf'])
           base = os.environ['BASE_SHA']
           if not base or set(base) == {'0'}:
               base = subprocess.check_output(['git', 'hash-object', '-t', 'tree', '/dev/null']).decode().strip()

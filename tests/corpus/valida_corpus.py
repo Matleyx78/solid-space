@@ -3,8 +3,8 @@
 """Structural validator for the verification corpus (ADR 0005, point 5).
 
 It checks the shape of the cases, of sorgenti.json and of in-attesa.txt, and the
-SHA-256 of external files that are already present locally. It never downloads
-anything and never runs a case against the code. Standard library only.
+presence and SHA-256 of the mandatory local copies of external files. It never
+downloads anything and never runs a case against the code. Standard library only.
 
 Usage: python3 valida_corpus.py [CORPUS_DIR]   (default: the directory of this file)
 Exit status: 0 valid, 1 problems found (printed on stderr), 2 usage error.
@@ -22,7 +22,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 FORMAT_VERSION = 1
-COMPONENTS = ("robust", "naming", "solver", "kernel", "features")
+COMPONENTS = ("robust", "geom2d", "naming", "solver", "kernel", "features")
 CASE_FIELDS = ("versione", "id", "componente", "descrizione", "ingresso", "atteso",
                "provenienza")
 SOURCE_FIELDS = ("nome", "indirizzo", "versione", "sha256", "licenza")
@@ -36,6 +36,7 @@ _WORDS = r"[a-z0-9]+(?:-[a-z0-9]+)*"
 NAME_RE = re.compile(_WORDS)
 PENDING_RE = re.compile(rf"({_WORDS})/({_WORDS}) #([1-9][0-9]*)")
 FRACTION_RE = re.compile(r"-?(?:0|[1-9][0-9]*)(?:/[1-9][0-9]*)?")
+ENUM_NAME_RE = re.compile(r"[a-z][A-Za-z0-9]*")
 ZERO_DENOMINATOR_RE = re.compile(r"-?[0-9]+/0+")
 SHA256_RE = re.compile(r"[0-9a-f]{64}")
 FILE_NAME_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*")
@@ -146,9 +147,10 @@ def _walk(value, field, name, strict, out):
                                '("1/3") or an approximate one as {"valore": ..., '
                                '"tolleranza": ...}'))
     elif isinstance(value, str):
-        if strict and not FRACTION_RE.fullmatch(value):
+        if strict and not (FRACTION_RE.fullmatch(value) or ENUM_NAME_RE.fullmatch(value)):
             reason = ("denominator is zero" if ZERO_DENOMINATOR_RE.fullmatch(value) else
-                      'not an exact value: expected a fraction string such as "1/3" or "6"')
+                      'expected a fraction string such as "1/3" or "6", or an ASCII name '
+                      'matching [a-z][A-Za-z0-9]*')
             out.append(Problem(name, field, reason))
     elif isinstance(value, list):
         for index, item in enumerate(value):
@@ -244,7 +246,8 @@ def validate_case_file(path, name: str | None = None, expected_component: str | 
 
 def check_sources(data, name: str, base_dir=None) -> list[Problem]:
     """Validate the parsed sorgenti.json. If `base_dir` is given, a local copy at
-    <base_dir>/esterni/<nome> must match the declared SHA-256 (absent is fine)."""
+    <base_dir>/esterni/<nome> is required and must match the declared SHA-256.
+    Every file under esterni/ must also have a source entry."""
     if not isinstance(data, dict):
         return [Problem(name, "(file)", f"expected an object, found {_kind(data)}")]
     out: list[Problem] = []
@@ -283,6 +286,15 @@ def check_sources(data, name: str, base_dir=None) -> list[Problem]:
                     and SHA256_RE.fullmatch(declared):
                 _check_local_copy(Path(base_dir) / "esterni" / file_name, declared,
                                   f"{field}.sha256", name, out)
+    if base_dir is not None:
+        external_dir = Path(base_dir) / "esterni"
+        if external_dir.is_dir():
+            for local in sorted(external_dir.rglob("*")):
+                if local.is_file():
+                    relative = local.relative_to(external_dir).as_posix()
+                    if relative not in names_seen:
+                        out.append(Problem(name, "sorgenti",
+                                           f"esterni/{relative} has no entry in sorgenti.json"))
     return out
 
 
@@ -309,7 +321,8 @@ def _check_source_values(entry, field, name, out):
 
 def _check_local_copy(local: Path, declared: str, field: str, name: str, out):
     if not local.exists():
-        return  # Not downloaded: tests never depend on the network.
+        out.append(Problem(name, field, f"esterni/{local.name} is missing"))
+        return
     if not local.is_file():
         out.append(Problem(name, field, f"{local.name} in esterni/ is not a regular file"))
         return
