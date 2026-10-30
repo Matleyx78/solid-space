@@ -17,7 +17,7 @@ lavora **solo** sui pacchetti della tappa aperta.
 | Tappa | Versione | Per la tappa di Tecnigrafo | Componente | Obiettivo | Nata da | Stato |
 |---|---|---|---|---|---|---|
 | 1 | 0.1 | — | tutti | Fondamenta: documenti, ADR, scheletro CMake, CI, sistema di verifica | fondamenta ([ADR 0001](adr/0001-scopo-e-confini.md)) | **chiusa** ([scheda](tappe/0.1-fondamenta.md), [note di rilascio](rilasci/0.1.md), [milestone v0.1](https://github.com/Matleyx78/solid-space/milestone/1), issue #4–#7 chiuse) |
-| 2 | 0.2 | 0.7, comandi di modifica | `robust`, `geom2d` ([ADR 0008](adr/0008-componente-geom2d.md)) | Le decisioni e le costruzioni geometriche del piano che chiede la tappa 0.7 di Tecnigrafo | richieste #20, #21, #22 e #23 | **in preparazione** |
+| 2 | 0.2 | 0.7, comandi di modifica | `robust`, `geom2d` ([ADR 0008](adr/0008-componente-geom2d.md)) | Le decisioni e le costruzioni geometriche del piano che chiede la tappa 0.7 di Tecnigrafo | richieste #20, #21, #22 e #23 | **in preparazione** ([scheda e piano](tappe/0.2-geometria-del-piano.md)) |
 
 Lo stato delle singole richieste (in valutazione, in lavoro, soddisfatte) non si
 scrive qui: si legge nel Project «Tecnigrafo» del responsabile, che raccoglie
@@ -143,3 +143,15 @@ Decisioni del responsabile che cambiano le regole o le tappe, in ordine di data.
   [ADR 0011](adr/0011-raccordi-e-tangenze-nel-piano.md) e
   [0012](adr/0012-curva-parallela-nel-piano.md), accettati con il loro
   contratto: le intestazioni `tangency.hpp` e `offset.hpp` di `geom2d`.
+- **2026-10-29: decisioni per la tappa 0.2.** Preparando il piano, il
+  responsabile decide: `atan2` segue lo standard C anche per gli zeri, cioè
+  `atan2(±0, −0)` vale ±π (il commento di `trigonometry.hpp` si allinea con il
+  pacchetto P5, issue `contratto` #31); `std::bad_alloc` è l'unica eccezione
+  che può attraversare un'interfaccia pubblica ([ADR 0003](adr/0003-convenzioni.md),
+  corretto); le copie dei file esterni in `tests/corpus/esterni/` sono
+  obbligatorie e sono riferimenti, come in Tecnigrafo
+  ([ADR 0005](adr/0005-formato-dei-casi-di-verifica.md), corretto); l'elenco dei
+  casi in attesa è l'unica eccezione alla regola che lega con "Dipende da" i
+  pacchetti che toccano gli stessi file
+  ([LAVORO-IN-PARALLELO.md](LAVORO-IN-PARALLELO.md), "Preparare il piano"), come
+  già si fa in Tecnigrafo.
