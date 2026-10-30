@@ -1,0 +1,29 @@
+{
+  "versione": 1,
+  "id": "bordo-stesso-cerchio-entrambi",
+  "componente": "geom2d",
+  "descrizione": "onSameCircle di due cerchi con i centri esattamente a epsilon = 2^-22 e i raggi 3 e 3 + 2^-22 (metri): ogni condizione è al bordo, separatamente: vero. #23, ADR 0009: bordo esatto della tolleranza.",
+  "ingresso": {
+    "operazione": "onSameCircle",
+    "prima": {
+      "cerchio": {
+        "centro": [1048576, 0],
+        "raggio": 3
+      }
+    },
+    "seconda": {
+      "cerchio": {
+        "centro": [1048576, "0x1.0000000000000p-22"],
+        "raggio": "0x1.8000020000000p+1"
+      }
+    },
+    "unita_in_metri": 1
+  },
+  "atteso": {
+    "risposta": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Regola dell'ADR 0009 (punti 2-4) e di robust/tolerance.hpp: epsilon(M) = max(f, 2^-42 * M), con f = 1e-9 / unita_in_metri arrotondato al double più vicino (divisione IEEE dei due double) e M il massimo valore assoluto tra coordinate, centri e raggi in gioco (geom2d/curves.hpp, magnitude). Aritmetica razionale esatta con fractions di Python: ogni double è un razionale e il confronto è tra quadrati esatti. Unità: metri (unita_in_metri = 1); f = 0x1.12e0be826d695p-30 (divisione corretta, ricontrollata con Fraction(1e-9) / Fraction(u)). M = 1048576; 2^-42 * M = 0x1.0000000000000p-22; epsilon = 0x1.0000000000000p-22, dato dalla parte relativa 2^-42 * M. M = 2^20, epsilon = 2^-22. Distanza dei centri 2^-22 <= epsilon e differenza dei raggi 2^-22 <= epsilon (3 + 2^-22 è un double: un ulp di 3 vale 2^-51). Le due condizioni si controllano separatamente (intestazione: concentrici, e raggi entro epsilon): vero. Nessun valore è stato ottenuto eseguendo solid-space."
+  }
+}

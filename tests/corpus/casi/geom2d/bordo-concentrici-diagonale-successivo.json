@@ -1,0 +1,29 @@
+{
+  "versione": 1,
+  "id": "bordo-concentrici-diagonale-successivo",
+  "componente": "geom2d",
+  "descrizione": "areConcentric con lo spostamento in x aumentato di un ulp (2^-32): falso, anche se ogni componente resta sotto epsilon. #23, ADR 0009: bordo esatto della tolleranza.",
+  "ingresso": {
+    "operazione": "areConcentric",
+    "prima": {
+      "cerchio": {
+        "centro": [1310720, 0],
+        "raggio": 1
+      }
+    },
+    "seconda": {
+      "cerchio": {
+        "centro": ["0x1.3fffffffffcffp+20", "0x1.0000000000000p-22"],
+        "raggio": 2
+      }
+    },
+    "unita_in_metri": 1
+  },
+  "atteso": {
+    "risposta": false
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Regola dell'ADR 0009 (punti 2-4) e di robust/tolerance.hpp: epsilon(M) = max(f, 2^-42 * M), con f = 1e-9 / unita_in_metri arrotondato al double più vicino (divisione IEEE dei due double) e M il massimo valore assoluto tra coordinate, centri e raggi in gioco (geom2d/curves.hpp, magnitude). Aritmetica razionale esatta con fractions di Python: ogni double è un razionale e il confronto è tra quadrati esatti. Unità: metri (unita_in_metri = 1); f = 0x1.12e0be826d695p-30 (divisione corretta, ricontrollata con Fraction(1e-9) / Fraction(u)). M = 1310720; 2^-42 * M = 0x1.4000000000000p-22; epsilon = 0x1.4000000000000p-22, dato dalla parte relativa 2^-42 * M. Spostamento in x 3 * 2^-24 + 2^-32 (un ulp di 5 * 2^18): distanza al quadrato maggiore di 25 * 2^-48: falso, mentre il massimo delle due componenti (4 * 2^-24) è sotto epsilon. Nessun valore è stato ottenuto eseguendo solid-space."
+  }
+}

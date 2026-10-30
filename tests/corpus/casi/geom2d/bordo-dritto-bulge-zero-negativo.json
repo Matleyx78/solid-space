@@ -1,0 +1,24 @@
+{
+  "versione": 1,
+  "id": "bordo-dritto-bulge-zero-negativo",
+  "componente": "geom2d",
+  "descrizione": "isStraight di un pezzo lungo 1000 m con bulge -0 (zero negativo): sempre vero. #23, ADR 0009: bordo esatto della tolleranza.",
+  "ingresso": {
+    "operazione": "isStraight",
+    "curva": {
+      "pezzo": {
+        "inizio": [0, 0],
+        "fine": [1000, 0],
+        "bulge": "-0x0p+0"
+      }
+    },
+    "unita_in_metri": 1
+  },
+  "atteso": {
+    "risposta": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Regola dell'ADR 0009 (punti 2-4) e di robust/tolerance.hpp: epsilon(M) = max(f, 2^-42 * M), con f = 1e-9 / unita_in_metri arrotondato al double più vicino (divisione IEEE dei due double) e M il massimo valore assoluto tra coordinate, centri e raggi in gioco (geom2d/curves.hpp, magnitude). Aritmetica razionale esatta con fractions di Python: ogni double è un razionale e il confronto è tra quadrati esatti. Unità: metri (unita_in_metri = 1); f = 0x1.12e0be826d695p-30 (divisione corretta, ricontrollata con Fraction(1e-9) / Fraction(u)). M = 1000; 2^-42 * M = 0x1.f400000000000p-33; epsilon = 0x1.12e0be826d695p-30, dato dal pavimento f. Il bulge -0 è uguale a 0 come double, e l'intestazione dice «Always true when bulge == 0»: il pezzo è il segmento da (0, 0) a (1000, 0), freccia 0: vero. Nessun valore è stato ottenuto eseguendo solid-space."
+  }
+}
