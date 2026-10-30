@@ -1,14 +1,14 @@
 # [0.2-P10] `geom2d`: intersezioni di due curve
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
-- **Issue:** #…
+- **Issue:** #54
 - **Difficoltà:** impegnativa
 - **Agente:** claude
 - **Modello e impegno:** forte; impegno alto
-- **Riferimenti:** issue `[0.2-R10a]` (#…, casi della richiesta) e `[0.2-R10b]`
-  (#…, casi limite), agente codex (calcoli delicati). I loro casi servono anche a
+- **Riferimenti:** issue `[0.2-R10a]` (#52, casi della richiesta) e `[0.2-R10b]`
+  (#53, casi limite), agente codex (calcoli delicati). I loro casi servono anche a
   Matleyx78/tecnigrafo#356
-- **Dipende da:** P9, R10a, R10b
+- **Dipende da:** P9 (#51), R10a (#52), R10b (#53)
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#357 (con P4–P9, P11)
 - **Componente:** `geom2d`
 - **Da leggere:** [ADR 0010](../../adr/0010-posizione-e-intersezioni-nel-piano.md)

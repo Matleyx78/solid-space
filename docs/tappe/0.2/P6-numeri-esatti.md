@@ -1,14 +1,14 @@
 # [0.2-P6] `geom2d`: numeri esatti
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
-- **Issue:** #…
+- **Issue:** #43
 - **Difficoltà:** impegnativa
 - **Agente:** claude
 - **Modello e impegno:** forte; impegno alto
 - **Riferimenti:** non servono: il pacchetto non ha funzioni pubbliche; si prova
   con i suoi test di unità e, attraverso le funzioni pubbliche, con i casi di
   R7a–R16c
-- **Dipende da:** P3
+- **Dipende da:** P3 (#36)
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#357 (con P4, P5, P7–P11) e
   #373 (con P4, P5, P7, P8)
 - **Componente:** `geom2d` (interno)

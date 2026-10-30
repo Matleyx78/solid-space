@@ -1,14 +1,14 @@
 # [0.2-P7] `geom2d`: curve
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
-- **Issue:** #…
+- **Issue:** #46
 - **Difficoltà:** impegnativa
 - **Agente:** claude-2
 - **Modello e impegno:** forte; impegno alto
-- **Riferimenti:** issue `[0.2-R7a]` (#…, dati e curve ridotte a un punto) e
-  `[0.2-R7b]` (#…, pezzi, grandezza, estremi, lunghezze), agente codex (calcoli
+- **Riferimenti:** issue `[0.2-R7a]` (#44, dati e curve ridotte a un punto) e
+  `[0.2-R7b]` (#45, pezzi, grandezza, estremi, lunghezze), agente codex (calcoli
   delicati: archi al limite degli arrotondamenti)
-- **Dipende da:** P5, P6, R7a, R7b
+- **Dipende da:** P5 (#42), P6 (#43), R7a (#44), R7b (#45)
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#357 (con P4–P6, P8–P11) e #373
   (con P4–P6, P8)
 - **Componente:** `geom2d`

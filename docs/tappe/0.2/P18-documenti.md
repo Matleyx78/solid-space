@@ -1,15 +1,15 @@
 # [0.2-P18] Documenti: determinismo e stato del contratto
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
-- **Issue:** #…
+- **Issue:** #72
 - **Difficoltà:** facile
 - **Agente:** gemini
 - **Modello e impegno:** leggero; impegno basso
 - **Riferimenti:** non servono: documentazione e commenti, nessun cambiamento di
   comportamento
-- **Dipende da:** P8, P11, P14, P16, P17: i primi quattro chiudono le catene che
-  realizzano le intestazioni del contratto, P17 è l'ultimo altro pacchetto che
-  tocca `tests/CMakeLists.txt`
+- **Dipende da:** P8 (#49), P11 (#56), P14 (#63), P16 (#70), P17 (#71): i primi
+  quattro chiudono le catene che realizzano le intestazioni del contratto, P17 è
+  l'ultimo altro pacchetto che tocca `tests/CMakeLists.txt`
 - **Sblocca in Tecnigrafo:** niente
 - **Componente:** documenti (più i commenti iniziali delle intestazioni del
   contratto)

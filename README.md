@@ -18,7 +18,7 @@ misure dimostrano che serve.
 > La prova manuale del responsabile è registrata nelle
 > [note di rilascio](docs/rilasci/0.1.md) per Linux (Debian, 2026-10-28) e resta
 > da eseguire su Windows nativo. Nessun algoritmo geometrico ancora.
-> **Tappa 0.2 in preparazione:** nasce dalle richieste #20–#23 della tappa 0.7
+> **Tappa 0.2 aperta il 2026-10-30:** nasce dalle richieste #20–#23 della tappa 0.7
 > di Tecnigrafo ([ADR 0007](docs/adr/0007-tappe-su-richiesta.md), corretto il
 > 2026-10-29). Il piano è in [docs/ROADMAP.md](docs/ROADMAP.md).
 

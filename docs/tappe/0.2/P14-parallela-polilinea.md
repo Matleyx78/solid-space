@@ -1,15 +1,16 @@
 # [0.2-P14] `geom2d`: curva parallela di una polilinea
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
-- **Issue:** #…
+- **Issue:** #63
 - **Difficoltà:** impegnativa
 - **Agente:** claude
 - **Modello e impegno:** forte; impegno alto
-- **Riferimenti:** issue `[0.2-R14a]` (#…, casi della richiesta e caso g) e
-  `[0.2-R14c]` (#…, casi limite), agente codex (calcoli delicati); `[0.2-R14b]`
-  (#…, casi di AutoCAD), agente gemini. I loro casi servono anche
+- **Riferimenti:** issue `[0.2-R14a]` (#60, casi della richiesta e caso g) e
+  `[0.2-R14c]` (#62, casi limite), agente codex (calcoli delicati); `[0.2-R14b]`
+  (#61, casi di AutoCAD), agente gemini. I loro casi servono anche
   a Matleyx78/tecnigrafo#362
-- **Dipende da:** P10, P12, P13, R14a, R14b, R14c
+- **Dipende da:** P10 (#54), P12 (#57), P13 (#59), R14a (#60), R14b (#61),
+  R14c (#62)
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#363 (con P4–P10, P12, P13): di
   norma è l'ultimo
 - **Componente:** `geom2d`

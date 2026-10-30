@@ -1,7 +1,7 @@
 # [0.2-P12] `geom2d`: incontri esatti di rette e cerchi spostati
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
-- **Issue:** #…
+- **Issue:** #57
 - **Difficoltà:** impegnativa
 - **Agente:** claude-2
 - **Modello e impegno:** forte; impegno alto
@@ -9,7 +9,7 @@
   con i suoi test di unità, che verificano ogni risultato con l'aritmetica
   esatta, e, attraverso le funzioni pubbliche, con i casi di R14a, R14c, R15b,
   R16a e R16c
-- **Dipende da:** P9
+- **Dipende da:** P9 (#51)
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#363 (con P4–P10, P13, P14) e
   #367 (con P4–P10, P15, P16)
 - **Componente:** `geom2d` (interno)
