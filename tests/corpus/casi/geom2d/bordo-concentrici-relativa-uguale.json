@@ -1,0 +1,32 @@
+{
+  "versione": 1,
+  "id": "bordo-concentrici-relativa-uguale",
+  "componente": "geom2d",
+  "descrizione": "areConcentric di un arco di centro (2^20, 0) e di un pezzo con bulge -1 di centro (2^20, 2^-22), in metri: centri esattamente a epsilon = 2^-22: vero. #23, ADR 0009: bordo esatto della tolleranza.",
+  "ingresso": {
+    "operazione": "areConcentric",
+    "prima": {
+      "arco": {
+        "centro": [1048576, 0],
+        "raggio": 1,
+        "angolo_iniziale": 0,
+        "ampiezza": 1
+      }
+    },
+    "seconda": {
+      "pezzo": {
+        "inizio": [1048576, "-0x1.fffff80000000p-1"],
+        "fine": [1048576, "0x1.0000040000000p+0"],
+        "bulge": -1
+      }
+    },
+    "unita_in_metri": 1
+  },
+  "atteso": {
+    "risposta": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Regola dell'ADR 0009 (punti 2-4) e di robust/tolerance.hpp: epsilon(M) = max(f, 2^-42 * M), con f = 1e-9 / unita_in_metri arrotondato al double più vicino (divisione IEEE dei due double) e M il massimo valore assoluto tra coordinate, centri e raggi in gioco (geom2d/curves.hpp, magnitude). Aritmetica razionale esatta con fractions di Python: ogni double è un razionale e il confronto è tra quadrati esatti. Unità: metri (unita_in_metri = 1); f = 0x1.12e0be826d695p-30 (divisione corretta, ricontrollata con Fraction(1e-9) / Fraction(u)). M = 1048576; 2^-42 * M = 0x1.0000000000000p-22; epsilon = 0x1.0000000000000p-22, dato dalla parte relativa 2^-42 * M. Arco di raggio 1, angolo iniziale 0, ampiezza 1: il centro è un dato e non dipende da D0 e D1. Pezzo da (2^20, 2^-22 - 1) a (2^20, 2^-22 + 1) con bulge -1: mezzo giro, centro nel punto medio (2^20, 2^-22); m = (2^20 - 1, 2^-22). M = 2^20, epsilon = 2^-22, distanza dei centri 2^-22: vero. Nessun valore è stato ottenuto eseguendo solid-space."
+  }
+}

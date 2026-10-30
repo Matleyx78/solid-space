@@ -1,0 +1,25 @@
+{
+  "versione": 1,
+  "id": "bordo-degenere-arco-giro-intero-pavimento-uguale",
+  "componente": "geom2d",
+  "descrizione": "isDegenerate di un arco di ampiezza -kFullTurn (giro intero orario) di centro (1, 1) con diametro esattamente epsilon = f (metri): vero. #23, ADR 0009: bordo esatto della tolleranza.",
+  "ingresso": {
+    "operazione": "isDegenerate",
+    "curva": {
+      "arco": {
+        "centro": [1, 1],
+        "raggio": "0x1.12e0be826d695p-31",
+        "angolo_iniziale": 1,
+        "ampiezza": "-0x1.921fb54442d18p+2"
+      }
+    },
+    "unita_in_metri": 1
+  },
+  "atteso": {
+    "risposta": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Regola dell'ADR 0009 (punti 2-4) e di robust/tolerance.hpp: epsilon(M) = max(f, 2^-42 * M), con f = 1e-9 / unita_in_metri arrotondato al double più vicino (divisione IEEE dei due double) e M il massimo valore assoluto tra coordinate, centri e raggi in gioco (geom2d/curves.hpp, magnitude). Aritmetica razionale esatta con fractions di Python: ogni double è un razionale e il confronto è tra quadrati esatti. Unità: metri (unita_in_metri = 1); f = 0x1.12e0be826d695p-30 (divisione corretta, ricontrollata con Fraction(1e-9) / Fraction(u)). M = 1; 2^-42 * M = 0x1.0000000000000p-42; epsilon = 0x1.12e0be826d695p-30, dato dal pavimento f. Ampiezza -6.283185307179586 = -kFullTurn: |ampiezza| >= kFullTurn, quindi l'arco è il cerchio intero (curves.hpp), senza trigonometria; conta il diametro 2 * f / 2 = f = epsilon (M = 1): vero. Nessun valore è stato ottenuto eseguendo solid-space."
+  }
+}

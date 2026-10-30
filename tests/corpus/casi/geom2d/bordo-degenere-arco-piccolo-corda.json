@@ -1,0 +1,25 @@
+{
+  "versione": 1,
+  "id": "bordo-degenere-arco-piccolo-corda",
+  "componente": "geom2d",
+  "descrizione": "isDegenerate di un arco di ampiezza 0.01 rad e raggio 2^-29 m: la corda (circa 1.9e-11) è sotto epsilon = f, il diametro (circa 3.7e-9) sopra: vero. #23, ADR 0009: bordo esatto della tolleranza.",
+  "ingresso": {
+    "operazione": "isDegenerate",
+    "curva": {
+      "arco": {
+        "centro": [0, 0],
+        "raggio": "0x1.0000000000000p-29",
+        "angolo_iniziale": 0,
+        "ampiezza": "0x1.47ae147ae147bp-7"
+      }
+    },
+    "unita_in_metri": 1
+  },
+  "atteso": {
+    "risposta": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Regola dell'ADR 0009 (punti 2-4) e di robust/tolerance.hpp: epsilon(M) = max(f, 2^-42 * M), con f = 1e-9 / unita_in_metri arrotondato al double più vicino (divisione IEEE dei due double) e M il massimo valore assoluto tra coordinate, centri e raggi in gioco (geom2d/curves.hpp, magnitude). Aritmetica razionale esatta con fractions di Python: ogni double è un razionale e il confronto è tra quadrati esatti. Unità: metri (unita_in_metri = 1); f = 0x1.12e0be826d695p-30 (divisione corretta, ricontrollata con Fraction(1e-9) / Fraction(u)). M = 0x1.0000000000000p-29; 2^-42 * M = 0x1.0000000000000p-71; epsilon = 0x1.12e0be826d695p-30, dato dal pavimento f. Arco fino a mezzo giro: conta la corda 2r sin(0.005), circa 1.86e-9 * 0.01 = 1.9e-11, lontana da epsilon = f = 1e-9 (M = 2^-29) di un fattore 50, quindi la risposta non dipende dall'errore di D0 e D1 (regola «Gli archi»): vero. Il diametro 2^-28, circa 3.7e-9, darebbe falso. Nessun valore è stato ottenuto eseguendo solid-space."
+  }
+}

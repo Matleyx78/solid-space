@@ -1,0 +1,29 @@
+{
+  "versione": 1,
+  "id": "bordo-concentrici-diagonale-uguale",
+  "componente": "geom2d",
+  "descrizione": "areConcentric di due cerchi con i centri spostati di (-3 * 2^-24, 4 * 2^-24): distanza euclidea esattamente epsilon = 5 * 2^-24 (metri, M = 5 * 2^18): vero. #23, ADR 0009: bordo esatto della tolleranza.",
+  "ingresso": {
+    "operazione": "areConcentric",
+    "prima": {
+      "cerchio": {
+        "centro": [1310720, 0],
+        "raggio": 1
+      }
+    },
+    "seconda": {
+      "cerchio": {
+        "centro": ["0x1.3fffffffffd00p+20", "0x1.0000000000000p-22"],
+        "raggio": 2
+      }
+    },
+    "unita_in_metri": 1
+  },
+  "atteso": {
+    "risposta": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Regola dell'ADR 0009 (punti 2-4) e di robust/tolerance.hpp: epsilon(M) = max(f, 2^-42 * M), con f = 1e-9 / unita_in_metri arrotondato al double più vicino (divisione IEEE dei due double) e M il massimo valore assoluto tra coordinate, centri e raggi in gioco (geom2d/curves.hpp, magnitude). Aritmetica razionale esatta con fractions di Python: ogni double è un razionale e il confronto è tra quadrati esatti. Unità: metri (unita_in_metri = 1); f = 0x1.12e0be826d695p-30 (divisione corretta, ricontrollata con Fraction(1e-9) / Fraction(u)). M = 1310720; 2^-42 * M = 0x1.4000000000000p-22; epsilon = 0x1.4000000000000p-22, dato dalla parte relativa 2^-42 * M. M = 5 * 2^18 = 1310720, epsilon = 5 * 2^-24. Distanza al quadrato (3 * 2^-24)^2 + (4 * 2^-24)^2 = 25 * 2^-48 = epsilon^2: vero (terna pitagorica 3, 4, 5). Nessun valore è stato ottenuto eseguendo solid-space."
+  }
+}

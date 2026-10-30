@@ -1,0 +1,29 @@
+{
+  "versione": 1,
+  "id": "bordo-stesso-cerchio-centri-relativa-successivo",
+  "componente": "geom2d",
+  "descrizione": "onSameCircle con il secondo centro al double successivo a 2^-22: falso. #23, ADR 0009: bordo esatto della tolleranza.",
+  "ingresso": {
+    "operazione": "onSameCircle",
+    "prima": {
+      "cerchio": {
+        "centro": [1048576, 0],
+        "raggio": 3
+      }
+    },
+    "seconda": {
+      "cerchio": {
+        "centro": [1048576, "0x1.0000000000001p-22"],
+        "raggio": 3
+      }
+    },
+    "unita_in_metri": 1
+  },
+  "atteso": {
+    "risposta": false
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Regola dell'ADR 0009 (punti 2-4) e di robust/tolerance.hpp: epsilon(M) = max(f, 2^-42 * M), con f = 1e-9 / unita_in_metri arrotondato al double più vicino (divisione IEEE dei due double) e M il massimo valore assoluto tra coordinate, centri e raggi in gioco (geom2d/curves.hpp, magnitude). Aritmetica razionale esatta con fractions di Python: ogni double è un razionale e il confronto è tra quadrati esatti. Unità: metri (unita_in_metri = 1); f = 0x1.12e0be826d695p-30 (divisione corretta, ricontrollata con Fraction(1e-9) / Fraction(u)). M = 1048576; 2^-42 * M = 0x1.0000000000000p-22; epsilon = 0x1.0000000000000p-22, dato dalla parte relativa 2^-42 * M. Centri a 2^-22 * (1 + 2^-52): non concentrici, quindi falso anche con i raggi uguali. Nessun valore è stato ottenuto eseguendo solid-space."
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "versione": 1,
+  "id": "bordo-allineati-pavimento-successivo",
+  "componente": "geom2d",
+  "descrizione": "areAligned con la fine della seconda al double successivo a f: falso. #23, ADR 0009: bordo esatto della tolleranza.",
+  "ingresso": {
+    "operazione": "areAligned",
+    "prima": {
+      "segmento": {
+        "inizio": [0, 0],
+        "fine": [10, 0]
+      }
+    },
+    "seconda": {
+      "segmento": {
+        "inizio": [0, 0],
+        "fine": [10, "0x1.0c6f7a0b5ed8ep-20"]
+      }
+    },
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "risposta": false
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Regola dell'ADR 0009 (punti 2-4) e di robust/tolerance.hpp: epsilon(M) = max(f, 2^-42 * M), con f = 1e-9 / unita_in_metri arrotondato al double più vicino (divisione IEEE dei due double) e M il massimo valore assoluto tra coordinate, centri e raggi in gioco (geom2d/curves.hpp, magnitude). Aritmetica razionale esatta con fractions di Python: ogni double è un razionale e il confronto è tra quadrati esatti. Unità: millimetri (unita_in_metri = 0.001); f = 0x1.0c6f7a0b5ed8dp-20 (divisione corretta, ricontrollata con Fraction(1e-9) / Fraction(u)). M = 10; 2^-42 * M = 0x1.4000000000000p-39; epsilon = 0x1.0c6f7a0b5ed8dp-20, dato dal pavimento f. Fine della seconda (10, 0x1.0c6f7a0b5ed8ep-20): dista dalla retta della prima più di epsilon. Con il double successivo la grandezza confrontata supera epsilon (il suo quadrato è maggiore di epsilon al quadrato), quindi falso. Nessun valore è stato ottenuto eseguendo solid-space."
+  }
+}
