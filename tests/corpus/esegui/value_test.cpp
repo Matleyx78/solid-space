@@ -12,8 +12,8 @@
 #include <bit>
 #include <chrono>
 #include <fstream>
-#include <iterator>
 #include <limits>
+#include <sstream>
 #include <stdexcept>
 
 namespace solid_space::corpus {
@@ -176,15 +176,22 @@ protected:
     }
 
     static std::string contents(const std::filesystem::path& file) {
-        std::ifstream stream(file, std::ios::binary);
-        return {std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>()};
+        // Copy through rdbuf: GCC 13 at -O3 reports a false -Wnull-dereference
+        // inside libstdc++ when building a string from istreambuf_iterator.
+        const std::ifstream stream(file, std::ios::binary);
+        std::ostringstream buffer;
+        buffer << stream.rdbuf();
+        return std::move(buffer).str();
     }
 
+    [[nodiscard]] const std::filesystem::path& resultsFile() const { return m_file; }
+
+private:
     std::filesystem::path m_directory;
     std::filesystem::path m_file;
 };
 
-Value fixtureOperation(const Value&) {
+Value fixtureOperation(const Value& /*input*/) {
     return Value::number(-0.0);
 }
 
@@ -198,40 +205,42 @@ const Registration kMalformedOperation("malformedFixture", malformedOperation);
 
 TEST_F(CorpusResults, SortsRowsSkipsPendingAndIgnoresExpectedMismatch) {
     const std::array table = {fixture("z"), fixture("pending", 35, "unregistered"), fixture("a")};
-    EXPECT_EQ(writeResults(table, m_file), 0);
+    EXPECT_EQ(writeResults(table, resultsFile()), 0);
     std::string expected = "# casi: 2\n";
     expected += "robust/a -0x0.0000000000000p+0\n";
     expected += "robust/z -0x0.0000000000000p+0\n";
-    EXPECT_EQ(contents(m_file), expected);
-    EXPECT_FALSE(std::filesystem::exists(m_file.string() + ".tmp"));
-    EXPECT_EQ(writeResults(table, m_file), 0);
+    EXPECT_EQ(contents(resultsFile()), expected);
+    EXPECT_FALSE(std::filesystem::exists(resultsFile().string() + ".tmp"));
+    EXPECT_EQ(writeResults(table, resultsFile()), 0);
 }
 
 TEST_F(CorpusResults, MissingOperationProducesErrorAndNoPublishedFile) {
     const std::array table = {fixture("missing", 0, "unregistered")};
-    EXPECT_EQ(writeResults(table, m_file), 1);
-    EXPECT_FALSE(std::filesystem::exists(m_file));
-    EXPECT_NE(contents(m_file.string() + ".tmp").find("robust/missing ERRORE"), std::string::npos);
+    EXPECT_EQ(writeResults(table, resultsFile()), 1);
+    EXPECT_FALSE(std::filesystem::exists(resultsFile()));
+    EXPECT_NE(contents(resultsFile().string() + ".tmp").find("robust/missing ERRORE"),
+              std::string::npos);
 }
 
 TEST_F(CorpusResults, MalformedInputProducesErrorAndPreservesPreviousCompleteFile) {
-    EXPECT_EQ(writeResults({}, m_file), 0);
+    EXPECT_EQ(writeResults({}, resultsFile()), 0);
     const std::array table = {fixture("bad", 0, "malformedFixture")};
-    EXPECT_EQ(writeResults(table, m_file), 1);
-    EXPECT_EQ(contents(m_file), "# casi: 0\n");
-    EXPECT_NE(contents(m_file.string() + ".tmp").find("ingresso.missing"), std::string::npos);
+    EXPECT_EQ(writeResults(table, resultsFile()), 1);
+    EXPECT_EQ(contents(resultsFile()), "# casi: 0\n");
+    EXPECT_NE(contents(resultsFile().string() + ".tmp").find("ingresso.missing"),
+              std::string::npos);
 }
 
 TEST_F(CorpusResults, RejectsOtherOptionsAndEmptyFileName) {
-    const auto option = "--ss-results=" + m_file.string();
+    const auto option = "--ss-results=" + resultsFile().string();
     const std::array<std::string_view, 2> arguments = {option, "--gtest_filter=*"};
     EXPECT_EQ(runResults({}, arguments), 2);
     const std::array<std::string_view, 1> empty = {"--ss-results="};
     EXPECT_EQ(runResults({}, empty), 2);
-    EXPECT_FALSE(std::filesystem::exists(m_file));
+    EXPECT_FALSE(std::filesystem::exists(resultsFile()));
     const std::array<std::string_view, 1> valid = {option};
     EXPECT_EQ(runResults({}, valid), 0);
-    EXPECT_EQ(contents(m_file), "# casi: 0\n");
+    EXPECT_EQ(contents(resultsFile()), "# casi: 0\n");
 }
 
 TEST(CorpusRegistration, DuplicateOperationIsReported) {

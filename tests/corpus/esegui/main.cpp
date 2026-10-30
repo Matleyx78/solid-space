@@ -115,6 +115,11 @@ TEST(CorpusInfrastructure, UniqueOperations) {
 }  // namespace solid_space::corpus
 
 #ifndef SS_CORPUS_TESTING
+// GoogleTest owns the factory that RegisterTest allocates, but clang-analyzer
+// cannot see that through the library and reports a leak inside gtest.h. The
+// report is attached to the first note of its path in this file, which can be
+// any line of main, so the suppression has to cover the whole function.
+// NOLINTBEGIN(clang-analyzer-cplusplus.NewDeleteLeaks)
 int main(int argc, char** argv) {
     using namespace solid_space::corpus;
     using testing::RegisterTest;
@@ -139,4 +144,6 @@ int main(int argc, char** argv) {
     }
     return RUN_ALL_TESTS();
 }
+
+// NOLINTEND(clang-analyzer-cplusplus.NewDeleteLeaks)
 #endif

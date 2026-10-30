@@ -170,6 +170,8 @@ std::string quoted(std::string_view text) {
     return result + "\"";
 }
 
+// Recursion follows the nesting of a case's JSON, which is a few levels deep.
+// NOLINTNEXTLINE(misc-no-recursion)
 void compareAt(const Value& expected, const Value& actual, const std::string& path,
                std::vector<std::string>& differences) {
     using Kind = Value::Kind;
@@ -209,7 +211,11 @@ void compareAt(const Value& expected, const Value& actual, const std::string& pa
             case Kind::group:
                 for (const auto& [key, value] : expected.asGroup()) {
                     const auto* found = actual.find(key);
-                    const auto child = path.empty() ? key : path + "." + key;
+                    auto child = path;
+                    if (!child.empty()) {
+                        child += '.';
+                    }
+                    child += key;
                     if (found != nullptr) {
                         compareAt(value, *found, child, differences);
                     } else {
@@ -235,6 +241,8 @@ std::vector<std::string> compare(const Value& expected, const Value& actual) {
     return differences;
 }
 
+// Recursion follows the nesting of a result, which is a few levels deep.
+// NOLINTNEXTLINE(misc-no-recursion)
 std::string canonicalText(const Value& actual) {
     using Kind = Value::Kind;
     switch (actual.kind()) {

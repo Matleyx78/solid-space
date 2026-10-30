@@ -95,7 +95,11 @@ geom2d::Curve readCurve(const Value& value, std::string_view path) {
     if (value.kind() != Value::Kind::group || value.asGroup().size() != 1) {
         malformed(path, "expected exactly one curve key");
     }
-    const auto& [kind, data] = value.asGroup().front();
+    // Plain references, not a structured binding: clang-analyzer 18 loses track
+    // of structured bindings captured by the lambdas below.
+    const auto& entry = value.asGroup().front();
+    const auto& kind = entry.first;
+    const auto& data = entry.second;
     const auto prefix = std::string(path) + "." + kind;
     const auto point = [&](std::string_view key) {
         return readPoint(member(data, key, prefix), prefix + "." + std::string(key));
