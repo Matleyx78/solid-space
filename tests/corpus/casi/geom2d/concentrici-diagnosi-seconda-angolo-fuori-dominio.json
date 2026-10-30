@@ -1,0 +1,34 @@
+{
+  "versione": 1,
+  "id": "concentrici-diagnosi-seconda-angolo-fuori-dominio",
+  "componente": "geom2d",
+  "descrizione": "Diagnosi di areConcentric (richiesta #23): un arco con l'angolo iniziale oltre kMaxTrigArgument dà outOfDomain sulla curva 1.",
+  "ingresso": {
+    "operazione": "areConcentric",
+    "prima": {
+      "cerchio": {
+        "centro": [0, 0],
+        "raggio": 5
+      }
+    },
+    "seconda": {
+      "arco": {
+        "centro": [0, 0],
+        "raggio": 5,
+        "angolo_iniziale": 2097152,
+        "ampiezza": 1.5
+      }
+    },
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "outOfDomain",
+      "dato": "1"
+    }
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Regola dell'intestazione: ogni funzione controlla ogni curva, nell'ordine di curves.hpp («Checking the data»): invalidValue, outOfDomain, degenerateCurve; dato 0 per la prima curva (o l'unica), 1 per la seconda. Il cerchio è valido. L'arco ha angolo iniziale 2^21 = 2097152, di grandezza maggiore di kMaxTrigArgument = 2^20: outOfDomain (curves.hpp), dato 1. Calcolo a mano."
+  }
+}

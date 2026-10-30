@@ -1,0 +1,25 @@
+{
+  "versione": 1,
+  "id": "degenere-arco-diametro",
+  "componente": "geom2d",
+  "descrizione": "Regola di isDegenerate per un arco più grande di mezzo giro (richiesta #23): conta il diametro. Un arco di raggio 6e-7 mm e ampiezza 4.5 rad ha corda di circa 9.3e-7 ≤ epsilon (1e-06), ma diametro 1.2e-6 > epsilon: non è degenere.",
+  "ingresso": {
+    "operazione": "isDegenerate",
+    "curva": {
+      "arco": {
+        "centro": [0, 0],
+        "raggio": 6e-07,
+        "angolo_iniziale": 0,
+        "ampiezza": 4.5
+      }
+    },
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "risposta": false
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "unita_in_metri = 0.001: il pavimento è il double più vicino al quoziente esatto 1e-9 / 0.001 (dei due double), cioè 0x1.0c6f7a0b5ed8dp-20 = 1e-06. M = 6e-07 (il raggio), quindi epsilon = pavimento = 1e-06. L'ampiezza 4.5 rad è minore di kThreeQuarterTurn (circa 4.712), quindi l'arco gira di alpha, che resta circa 4.5 > pi per ogni D0 e D1 entro 2 ulp: l'arco è più grande di mezzo giro e conta il diametro, 2 · 6e-7 = 1.2e-6 (con il double di 6e-7), 1.2 volte epsilon: falso. La corda, 2 · 6e-7 · sin(2.25) ≈ 9.33e-7, darebbe vero: il caso distingue le due misure."
+  }
+}

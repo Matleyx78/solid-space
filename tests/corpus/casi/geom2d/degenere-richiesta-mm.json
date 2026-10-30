@@ -1,0 +1,23 @@
+{
+  "versione": 1,
+  "id": "degenere-richiesta-mm",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #23, caso 5, in millimetri vicino all'origine: un segmento lungo 1e-14 rimasto dopo un taglio è degenere.",
+  "ingresso": {
+    "operazione": "isDegenerate",
+    "curva": {
+      "segmento": {
+        "inizio": [0, 0],
+        "fine": [1e-14, 0]
+      }
+    },
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "risposta": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "unita_in_metri = 0.001: il pavimento è il double più vicino al quoziente esatto 1e-9 / 0.001 (dei due double), cioè 0x1.0c6f7a0b5ed8dp-20 = 1e-06. M = 1e-14, quindi epsilon = pavimento = 1e-06. La lunghezza è il double di 1e-14, 1e-8 volte epsilon: vero. Ogni double è un razionale (fractions.Fraction di Python) e il confronto è tra la grandezza esatta al quadrato e epsilon al quadrato; epsilon = max(pavimento, 2^-42 · M), con 2^-42 · M esatto. Nessun valore viene da solid-space."
+  }
+}

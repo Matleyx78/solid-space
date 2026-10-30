@@ -1,0 +1,25 @@
+{
+  "versione": 1,
+  "id": "degenere-arco-corda",
+  "componente": "geom2d",
+  "descrizione": "Regola di isDegenerate per un arco fino a mezzo giro (richiesta #23): conta la corda. Un arco di raggio 6e-7 mm e ampiezza 1.5 rad ha corda di circa 8.2e-7 ≤ epsilon (1e-06) ed è degenere, anche se il suo diametro (1.2e-6) supera epsilon.",
+  "ingresso": {
+    "operazione": "isDegenerate",
+    "curva": {
+      "arco": {
+        "centro": [0, 0],
+        "raggio": 6e-07,
+        "angolo_iniziale": 0,
+        "ampiezza": 1.5
+      }
+    },
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "risposta": true
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "unita_in_metri = 0.001: il pavimento è il double più vicino al quoziente esatto 1e-9 / 0.001 (dei due double), cioè 0x1.0c6f7a0b5ed8dp-20 = 1e-06. M = 6e-07 (il raggio), quindi epsilon = pavimento = 1e-06. L'ampiezza 1.5 rad è minore di pi e di kQuarterTurn, e alpha, decisa da D0 e D1, resta circa 1.5 (lontana da 0, da pi e da 3 pi / 2) per ogni D0 e D1 entro 2 ulp: l'arco è fino a mezzo giro e conta la corda, 2 · 6e-7 · sin(0.75) ≈ 8.1797e-7, cioè 0.818 volte epsilon: vero. Gli errori di D0 e D1 (circa 2^-52 relativi) cambiano la corda di circa 1e-22, molto meno dello scarto da epsilon (circa 1.8e-7)."
+  }
+}

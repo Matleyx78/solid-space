@@ -1,0 +1,30 @@
+{
+  "versione": 1,
+  "id": "stesso-cerchio-pezzo-esatto-km",
+  "componente": "geom2d",
+  "descrizione": "Dati esattamente sullo stesso cerchio (ADR 0009, punto 5, richiesta #23, caso 4): in chilometri con coordinate di 1e5, un segmento di polilinea curvo e il cerchio su cui sta esattamente.",
+  "ingresso": {
+    "operazione": "onSameCircle",
+    "prima": {
+      "pezzo": {
+        "inizio": [100000, 100000],
+        "fine": [100010, 100000],
+        "bulge": 0.5
+      }
+    },
+    "seconda": {
+      "cerchio": {
+        "centro": [100005, 100003.75],
+        "raggio": 6.25
+      }
+    },
+    "unita_in_metri": 1000.0
+  },
+  "atteso": {
+    "risposta": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "unita_in_metri = 1000: il pavimento è il double più vicino al quoziente esatto 1e-9 / 1000 (dei due double), cioè 0x1.19799812dea11p-40 ≈ 1e-12. Il pezzo va da (100000, 100000) a (100010, 100000) con bulge 0.5: m = (100005, 100000) + 0.25 · (0, -10) = (100005, 99997.5). Il cerchio per inizio, m e fine ha centro (100005, 100003.75) (sull'asse x = 100005, equidistante: 5^2 + 3.75^2 = 6.25^2) e raggio 6.25, esattamente quelli del cerchio dato. Centri a distanza 0, raggi uguali: vero. M = 100010, epsilon = 2^-42 · 100010 ≈ 2.27e-8. Il centro del pezzo è razionale e va confrontato senza arrotondarlo (in coordinate omogenee). Ogni double è un razionale (fractions.Fraction di Python) e il confronto è tra la grandezza esatta al quadrato e epsilon al quadrato; epsilon = max(pavimento, 2^-42 · M), con 2^-42 · M esatto. Nessun valore viene da solid-space."
+  }
+}

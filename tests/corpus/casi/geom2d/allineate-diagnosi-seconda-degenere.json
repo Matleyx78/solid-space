@@ -1,0 +1,32 @@
+{
+  "versione": 1,
+  "id": "allineate-diagnosi-seconda-degenere",
+  "componente": "geom2d",
+  "descrizione": "Diagnosi di areAligned (richiesta #23): se il secondo segmento è esattamente un punto, la retta non esiste e la risposta è degenerateCurve sulla curva 1.",
+  "ingresso": {
+    "operazione": "areAligned",
+    "prima": {
+      "segmento": {
+        "inizio": [0, 0],
+        "fine": [10, 0]
+      }
+    },
+    "seconda": {
+      "segmento": {
+        "inizio": [3, 4],
+        "fine": [3, 4]
+      }
+    },
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "degenerateCurve",
+      "dato": "1"
+    }
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Regola dell'intestazione: ogni funzione controlla ogni curva, nell'ordine di curves.hpp («Checking the data»): invalidValue, outOfDomain, degenerateCurve; dato 0 per la prima curva (o l'unica), 1 per la seconda. Il primo segmento è valido e non degenere; il secondo ha inizio uguale alla fine (3, 4): degenerateCurve (coincidence.hpp: «Diagnosis degenerateCurve if either segment is exactly a point»), dato 1. Calcolo a mano."
+  }
+}

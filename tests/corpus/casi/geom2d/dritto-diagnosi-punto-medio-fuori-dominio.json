@@ -1,0 +1,27 @@
+{
+  "versione": 1,
+  "id": "dritto-diagnosi-punto-medio-fuori-dominio",
+  "componente": "geom2d",
+  "descrizione": "Diagnosi di isStraight (richiesta #23): un segmento di polilinea con gli estremi nel dominio ma il punto m fuori dà outOfDomain sulla curva 0.",
+  "ingresso": {
+    "operazione": "isStraight",
+    "curva": {
+      "pezzo": {
+        "inizio": [0, 0],
+        "fine": [1125899906842624, 0],
+        "bulge": 4
+      }
+    },
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "outOfDomain",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Regola dell'intestazione: ogni funzione controlla ogni curva, nell'ordine di curves.hpp («Checking the data»): invalidValue, outOfDomain, degenerateCurve; dato 0 per la prima curva (o l'unica), 1 per la seconda. Gli estremi (0, 0) e (2^50, 0) hanno grandezza al più kMaxCoordinate = 2^50. Con bulge 4: m = (2^49, 0) + 2 · (0, -2^50) = (2^49, -2^51), e |-2^51| > 2^50: outOfDomain (curves.hpp: anche il punto m di un pezzo curvo), dato 0. Calcolo a mano esatto: sono potenze di due."
+  }
+}
