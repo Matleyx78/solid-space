@@ -139,20 +139,55 @@ impegnativo; uno che si divide dà spesso due pacchetti medi.
 All'apertura si creano, nel milestone `vX.Y`:
 
 - una issue `[X.Y-PN]` per ogni pacchetto, con le etichette `tappa-X.Y`,
-  `pacchetto` e `agente:…` secondo il piano;
+  `pacchetto`, la difficoltà e `agente:…` secondo il piano;
 - una issue `[X.Y-RN]` per ogni pacchetto che ha riferimenti, con le etichette
-  `tappa-X.Y`, `riferimenti` e `agente:…` di chi li scrive. La issue del lavoro
-  la cita nella riga "Dipende da".
+  `tappa-X.Y`, `riferimenti`, la difficoltà e `agente:…` di chi li scrive. La
+  issue del lavoro la cita nella riga "Dipende da".
+
+La difficoltà (`facile`, `media` o `impegnativa`) è quella della colonna
+*Difficoltà* del piano: chi apre la tappa la copia, non la decide. Serve a
+scegliere l'agente quando ce n'è più d'uno disponibile. Tecnigrafo usa le
+stesse etichette.
 
 Il testo di ogni issue cita la scheda del pacchetto (`docs/tappe/X.Y/PN-<nome>.md`)
 e ne riporta modello e impegno, così l'agente parte da lì.
 
 Le etichette del progetto sono `idea`, `pacchetto`, `riferimenti`, `tappa-X.Y`,
-`agente:claude`, `agente:claude-2`, `agente:codex`, `agente:gemini` e
-`AA-Presa in carico` (sezione 5).
+`facile`, `media`, `impegnativa`, `agente:claude`, `agente:claude-2`,
+`agente:codex`, `agente:gemini` e `AA-Presa in carico` (sezione 5).
 
 Le issue le può creare Claude, partendo dal piano, quando il responsabile glielo
 chiede.
+
+### Le dipendenze
+
+Le dipendenze di una issue si segnano in due modi, che dicono la stessa cosa:
+
+- la riga «Dipende da» del testo, che fa fede per gli agenti
+  ([AGENTS.md](../AGENTS.md), "Se ti chiedono di prendere il prossimo
+  pacchetto");
+- la relazione nativa «bloccata da» di GitHub, che le mostra nelle liste e nel
+  Project.
+
+Servono i numeri delle issue, quindi chi apre la tappa procede in quest'ordine:
+
+1. crea tutte le issue, nell'ordine del piano (in cui ogni dipendenza viene
+   prima di chi la richiede);
+2. riscrive il testo di ognuna con i numeri nella riga «Dipende da»;
+3. per ogni dipendenza segna «bloccata da», **solo tra issue di solid-space**:
+
+   ```sh
+   gh api repos/Matleyx78/solid-space/issues/<m>/dependencies/blocked_by \
+     -F issue_id=<id>
+   gh api repos/Matleyx78/solid-space/issues/<n> --jq .id   # l'<id> di una issue
+   ```
+
+   `<m>` è la issue che aspetta e `<id>` l'id numerico della issue che la
+   blocca, che non coincide con il suo numero `<n>`.
+
+Se GitHub rifiuta una dipendenza non si ferma nulla: resta la riga «Dipende
+da» e chi apre la tappa lo scrive al responsabile. Quando si aggiungono
+pacchetti a tappa aperta, le dipendenze si segnano solo per le issue nuove.
 
 ## 3. Riferimenti
 
