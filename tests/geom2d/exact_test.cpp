@@ -15,6 +15,7 @@
 #include <cmath>
 #include <cstdint>
 #include <limits>
+#include <numbers>
 #include <vector>
 
 namespace {
@@ -110,7 +111,7 @@ TEST(Dyadic, EveryFiniteDoubleComesBack) {
     for (std::uint64_t field = 0; field <= 2046; ++field) {
         for (int i = 0; i < 8; ++i) {
             const std::uint64_t bits = (generator.next() & 0x800FFFFFFFFFFFFFULL) | (field << 52U);
-            const double value = std::bit_cast<double>(bits);
+            const auto value = std::bit_cast<double>(bits);
             ASSERT_TRUE(sameDouble(d(value).toDouble(), value)) << std::hexfloat << value;
         }
     }
@@ -308,10 +309,11 @@ TEST(Dyadic, FloorSqrtIsALowerBound) {
 // --- signOf with one radical --------------------------------------------------
 
 // The double nearest to sqrt(2) = 1.41421356237309504880... is
-// 1.4142135623730951454746..., above it; its predecessor,
-// 1.4142135623730949234300..., is below it.
-constexpr double kSqrt2Above = 0x1.6a09e667f3bcdp0;
-constexpr double kSqrt2Below = 0x1.6a09e667f3bccp0;
+// 1.4142135623730951454746... (0x1.6a09e667f3bcdp0), above it; its
+// predecessor, 1.4142135623730949234300..., is below it.
+constexpr double kSqrt2Above = std::numbers::sqrt2;
+constexpr double kSqrt2Below = std::bit_cast<double>(std::bit_cast<std::uint64_t>(kSqrt2Above) - 1);
+static_assert(std::bit_cast<std::uint64_t>(kSqrt2Above) == 0x3FF6A09E667F3BCDULL);
 
 TEST(SignOfOneRadical, PerfectSquaresAndZeros) {
     EXPECT_EQ(exact::signOf(d(3.0), d(-1.0), d(9.0)), Sign::zero);
@@ -426,8 +428,12 @@ TEST(SignOfTwoRadicals, MatchesSquaredFormForRandomData) {
         const Dyadic squares = x.a * x.a + x.b * x.b * x.d - e * (y.a * y.a + y.b * y.b * x.d);
         const Dyadic cross = (x.a * x.b - e * y.a * y.b).timesPowerOfTwo(1);
         const Sign magnitude = exact::signOf(squares, cross, x.d);
-        const Sign expected =
-            magnitude == Sign::zero ? Sign::zero : (magnitude == Sign::positive ? sx : sy);
+        Sign expected = Sign::zero;
+        if (magnitude == Sign::positive) {
+            expected = sx;
+        } else if (magnitude == Sign::negative) {
+            expected = sy;
+        }
         ASSERT_EQ(result, expected);
     }
 }
