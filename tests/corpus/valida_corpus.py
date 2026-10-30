@@ -341,7 +341,7 @@ def validate_sources_file(path, name: str | None = None) -> list[Problem]:
 
 # --- in-attesa.txt -----------------------------------------------------------
 
-def validate_pending_file(path, known_cases, name: str | None = None) -> list[Problem]:
+def load_pending_file(path, known_cases, name: str | None = None):
     """Each line is "<componente>/<id> #<issue>"; `known_cases` holds the
     "<componente>/<id>" of the cases that exist. Blank lines and "#" comments are ignored."""
     path = Path(path)
@@ -349,9 +349,9 @@ def validate_pending_file(path, known_cases, name: str | None = None) -> list[Pr
     try:
         text = path.read_text(encoding="utf-8-sig")
     except (OSError, ValueError) as err:
-        return [Problem(name, "(file)", f"cannot read file: {err}")]
+        return {}, [Problem(name, "(file)", f"cannot read file: {err}")]
     out: list[Problem] = []
-    seen = set()
+    seen = {}
     for number, raw in enumerate(text.splitlines(), start=1):
         line = raw.strip()
         if not line or line.startswith("#"):
@@ -368,8 +368,12 @@ def validate_pending_file(path, known_cases, name: str | None = None) -> list[Pr
             out.append(Problem(name, field, f"case {case} does not exist under casi/"))
         if case in seen:
             out.append(Problem(name, field, f"case {case} is listed twice"))
-        seen.add(case)
-    return out
+        seen[case] = int(match.group(3))
+    return seen, out
+
+
+def validate_pending_file(path, known_cases, name: str | None = None) -> list[Problem]:
+    return load_pending_file(path, known_cases, name)[1]
 
 
 # --- the whole corpus --------------------------------------------------------
