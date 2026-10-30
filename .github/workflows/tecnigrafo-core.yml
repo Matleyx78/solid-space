@@ -5,10 +5,10 @@ name: Tecnigrafo core
 on:
   pull_request:
     paths:
-      - 'robust/include/**'
-      - 'geom2d/include/**'
-      - 'robust/CMakeLists.txt'
-      - 'geom2d/CMakeLists.txt'
+      - 'robust/**'
+      - 'geom2d/**'
+      - 'CMakeLists.txt'
+      - 'cmake/**'
       - '.github/workflows/tecnigrafo-core.yml'
 
 permissions:
@@ -50,16 +50,16 @@ jobs:
       - name: Install build tools
         run: sudo apt-get update && sudo apt-get install -y ninja-build libgtest-dev
 
+      # The "ci" preset of Tecnigrafo is the configuration its own CI guarantees
+      # (Debug, warnings as errors): Release with -Werror is not guaranteed.
       - name: Configure Tecnigrafo without the desktop application
-        run: >-
-          cmake -S tecnigrafo -B build/tecnigrafo -G Ninja
-          -DCMAKE_BUILD_TYPE=Release
-          -DTG_BUILD_APP=OFF
-          -DTG_BUILD_TESTS=ON
-          -DTG_WARNINGS_AS_ERRORS=ON
+        working-directory: tecnigrafo
+        run: cmake --preset ci -DTG_BUILD_APP=OFF
 
       - name: Build Tecnigrafo
-        run: cmake --build build/tecnigrafo --parallel 2
+        working-directory: tecnigrafo
+        run: cmake --build --preset ci --parallel 2
 
       - name: Test Tecnigrafo
-        run: ctest --test-dir build/tecnigrafo --output-on-failure --no-tests=error
+        working-directory: tecnigrafo
+        run: ctest --preset ci --no-tests=error
