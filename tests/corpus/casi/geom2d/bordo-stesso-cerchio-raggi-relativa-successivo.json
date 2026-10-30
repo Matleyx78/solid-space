@@ -1,0 +1,31 @@
+{
+  "versione": 1,
+  "id": "bordo-stesso-cerchio-raggi-relativa-successivo",
+  "componente": "geom2d",
+  "descrizione": "onSameCircle con il raggio dell'arco un ulp (2^-30) più piccolo: falso. #23, ADR 0009: bordo esatto della tolleranza.",
+  "ingresso": {
+    "operazione": "onSameCircle",
+    "prima": {
+      "cerchio": {
+        "centro": [0, 0],
+        "raggio": 8388608
+      }
+    },
+    "seconda": {
+      "arco": {
+        "centro": [0, 0],
+        "raggio": "0x1.ffffffffff7ffp+22",
+        "angolo_iniziale": "0x1.0000000000000p-1",
+        "ampiezza": -2
+      }
+    },
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "risposta": false
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Regola dell'ADR 0009 (punti 2-4) e di robust/tolerance.hpp: epsilon(M) = max(f, 2^-42 * M), con f = 1e-9 / unita_in_metri arrotondato al double più vicino (divisione IEEE dei due double) e M il massimo valore assoluto tra coordinate, centri e raggi in gioco (geom2d/curves.hpp, magnitude). Aritmetica razionale esatta con fractions di Python: ogni double è un razionale e il confronto è tra quadrati esatti. Unità: millimetri (unita_in_metri = 0.001); f = 0x1.0c6f7a0b5ed8dp-20 (divisione corretta, ricontrollata con Fraction(1e-9) / Fraction(u)). M = 8388608; 2^-42 * M = 0x1.0000000000000p-19; epsilon = 0x1.0000000000000p-19, dato dalla parte relativa 2^-42 * M. Raggio dell'arco 2^23 - 2^-19 - 2^-30: differenza 2^-19 + 2^-30. Con il double successivo la grandezza confrontata supera epsilon (il suo quadrato è maggiore di epsilon al quadrato), quindi falso. Nessun valore è stato ottenuto eseguendo solid-space."
+  }
+}

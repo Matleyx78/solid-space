@@ -1,0 +1,24 @@
+{
+  "versione": 1,
+  "id": "bordo-dritto-pavimento-uguale",
+  "componente": "geom2d",
+  "descrizione": "isStraight di un pezzo da (1, 2^-10) a (1, 0) con freccia |bulge| * corda / 2 esattamente epsilon = f (metri): vero. #23, ADR 0009: bordo esatto della tolleranza.",
+  "ingresso": {
+    "operazione": "isStraight",
+    "curva": {
+      "pezzo": {
+        "inizio": [1, "0x1.0000000000000p-10"],
+        "fine": [1, 0],
+        "bulge": "0x1.12e0be826d695p-19"
+      }
+    },
+    "unita_in_metri": 1
+  },
+  "atteso": {
+    "risposta": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Regola dell'ADR 0009 (punti 2-4) e di robust/tolerance.hpp: epsilon(M) = max(f, 2^-42 * M), con f = 1e-9 / unita_in_metri arrotondato al double più vicino (divisione IEEE dei due double) e M il massimo valore assoluto tra coordinate, centri e raggi in gioco (geom2d/curves.hpp, magnitude). Aritmetica razionale esatta con fractions di Python: ogni double è un razionale e il confronto è tra quadrati esatti. Unità: metri (unita_in_metri = 1); f = 0x1.12e0be826d695p-30 (divisione corretta, ricontrollata con Fraction(1e-9) / Fraction(u)). M = 1; 2^-42 * M = 0x1.0000000000000p-42; epsilon = 0x1.12e0be826d695p-30, dato dal pavimento f. Bulge b = f * 2^11 = 0x1.12e0be826d695p-19 (esatto: moltiplicare per una potenza di 2), corda 2^-10, freccia b * 2^-10 / 2 = f = epsilon (M = 1): vero. m = (1 - f, 2^-11) non maggiore di 1. Nessun valore è stato ottenuto eseguendo solid-space."
+  }
+}

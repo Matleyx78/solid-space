@@ -1,0 +1,29 @@
+{
+  "versione": 1,
+  "id": "bordo-allineati-pavimento-uguale",
+  "componente": "geom2d",
+  "descrizione": "areAligned di (0, 0)-(10, 0) e (0, 0)-(10, f) in millimetri: lo scarto massimo è esattamente epsilon = f: vero. #23, ADR 0009: bordo esatto della tolleranza.",
+  "ingresso": {
+    "operazione": "areAligned",
+    "prima": {
+      "segmento": {
+        "inizio": [0, 0],
+        "fine": [10, 0]
+      }
+    },
+    "seconda": {
+      "segmento": {
+        "inizio": [0, 0],
+        "fine": [10, "0x1.0c6f7a0b5ed8dp-20"]
+      }
+    },
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "risposta": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Regola dell'ADR 0009 (punti 2-4) e di robust/tolerance.hpp: epsilon(M) = max(f, 2^-42 * M), con f = 1e-9 / unita_in_metri arrotondato al double più vicino (divisione IEEE dei due double) e M il massimo valore assoluto tra coordinate, centri e raggi in gioco (geom2d/curves.hpp, magnitude). Aritmetica razionale esatta con fractions di Python: ogni double è un razionale e il confronto è tra quadrati esatti. Unità: millimetri (unita_in_metri = 0.001); f = 0x1.0c6f7a0b5ed8dp-20 (divisione corretta, ricontrollata con Fraction(1e-9) / Fraction(u)). M = 10; 2^-42 * M = 0x1.4000000000000p-39; epsilon = 0x1.0c6f7a0b5ed8dp-20, dato dal pavimento f. M = 10, epsilon = f. Estremi della seconda dalla retta della prima (y = 0): 0 e f. Estremi della prima dalla retta della seconda: 0 e 10 f / sqrt(100 + f^2) < f (prodotto vettoriale al quadrato 100 f^2 contro epsilon^2 * (100 + f^2)). Il massimo è f = epsilon: vero. Nessun valore è stato ottenuto eseguendo solid-space."
+  }
+}

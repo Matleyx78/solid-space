@@ -1,0 +1,29 @@
+{
+  "versione": 1,
+  "id": "bordo-allineati-relativa-uguale",
+  "componente": "geom2d",
+  "descrizione": "areAligned di (-2^20, 0)-(2^20, 0) e di un segmento parallelo a distanza esattamente epsilon = 2^-22 (metri), più corto e nel verso opposto: vero. #23, ADR 0009: bordo esatto della tolleranza.",
+  "ingresso": {
+    "operazione": "areAligned",
+    "prima": {
+      "segmento": {
+        "inizio": [-1048576, 0],
+        "fine": [1048576, 0]
+      }
+    },
+    "seconda": {
+      "segmento": {
+        "inizio": [524288, "0x1.0000000000000p-22"],
+        "fine": [-524288, "0x1.0000000000000p-22"]
+      }
+    },
+    "unita_in_metri": 1
+  },
+  "atteso": {
+    "risposta": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Regola dell'ADR 0009 (punti 2-4) e di robust/tolerance.hpp: epsilon(M) = max(f, 2^-42 * M), con f = 1e-9 / unita_in_metri arrotondato al double più vicino (divisione IEEE dei due double) e M il massimo valore assoluto tra coordinate, centri e raggi in gioco (geom2d/curves.hpp, magnitude). Aritmetica razionale esatta con fractions di Python: ogni double è un razionale e il confronto è tra quadrati esatti. Unità: metri (unita_in_metri = 1); f = 0x1.12e0be826d695p-30 (divisione corretta, ricontrollata con Fraction(1e-9) / Fraction(u)). M = 1048576; 2^-42 * M = 0x1.0000000000000p-22; epsilon = 0x1.0000000000000p-22, dato dalla parte relativa 2^-42 * M. M = 2^20, epsilon = 2^-22. La seconda va da (2^19, 2^-22) a (-2^19, 2^-22): i suoi estremi distano 2^-22 dalla retta y = 0, e gli estremi della prima distano 2^-22 dalla retta y = 2^-22. Tutte le distanze sono epsilon: vero. Nessun valore è stato ottenuto eseguendo solid-space."
+  }
+}

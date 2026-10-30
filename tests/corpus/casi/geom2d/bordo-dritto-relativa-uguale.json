@@ -1,0 +1,24 @@
+{
+  "versione": 1,
+  "id": "bordo-dritto-relativa-uguale",
+  "componente": "geom2d",
+  "descrizione": "isStraight di un pezzo da (2^23, 0) a (2^23, 1) con bulge -2^-18: freccia esattamente epsilon = 2^-19 (millimetri, sopra il pavimento): vero. #23, ADR 0009: bordo esatto della tolleranza.",
+  "ingresso": {
+    "operazione": "isStraight",
+    "curva": {
+      "pezzo": {
+        "inizio": [8388608, 0],
+        "fine": [8388608, 1],
+        "bulge": "-0x1.0000000000000p-18"
+      }
+    },
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "risposta": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Regola dell'ADR 0009 (punti 2-4) e di robust/tolerance.hpp: epsilon(M) = max(f, 2^-42 * M), con f = 1e-9 / unita_in_metri arrotondato al double più vicino (divisione IEEE dei due double) e M il massimo valore assoluto tra coordinate, centri e raggi in gioco (geom2d/curves.hpp, magnitude). Aritmetica razionale esatta con fractions di Python: ogni double è un razionale e il confronto è tra quadrati esatti. Unità: millimetri (unita_in_metri = 0.001); f = 0x1.0c6f7a0b5ed8dp-20 (divisione corretta, ricontrollata con Fraction(1e-9) / Fraction(u)). M = 8388608; 2^-42 * M = 0x1.0000000000000p-19; epsilon = 0x1.0000000000000p-19, dato dalla parte relativa 2^-42 * M. Freccia |bulge| * corda / 2 = 2^-18 * 1 / 2 = 2^-19 = epsilon (M = 2^23): vero. Il bulge negativo conta in valore assoluto. m = (2^23 - 2^-19, 1/2), non maggiore di 2^23. Nessun valore è stato ottenuto eseguendo solid-space."
+  }
+}

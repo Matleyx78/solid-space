@@ -1,0 +1,30 @@
+{
+  "versione": 1,
+  "id": "bordo-concentrici-pavimento-uguale",
+  "componente": "geom2d",
+  "descrizione": "areConcentric di un pezzo da (-1, 0) a (1, 0) con bulge 0.5 (centro razionale (0, 3/4)) e di un cerchio di centro (f, 3/4), in millimetri: centri esattamente a epsilon = f: vero. #23, ADR 0009: bordo esatto della tolleranza.",
+  "ingresso": {
+    "operazione": "areConcentric",
+    "prima": {
+      "pezzo": {
+        "inizio": [-1, 0],
+        "fine": [1, 0],
+        "bulge": "0x1.0000000000000p-1"
+      }
+    },
+    "seconda": {
+      "cerchio": {
+        "centro": ["0x1.0c6f7a0b5ed8dp-20", "0x1.8000000000000p-1"],
+        "raggio": 1
+      }
+    },
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "risposta": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Regola dell'ADR 0009 (punti 2-4) e di robust/tolerance.hpp: epsilon(M) = max(f, 2^-42 * M), con f = 1e-9 / unita_in_metri arrotondato al double più vicino (divisione IEEE dei due double) e M il massimo valore assoluto tra coordinate, centri e raggi in gioco (geom2d/curves.hpp, magnitude). Aritmetica razionale esatta con fractions di Python: ogni double è un razionale e il confronto è tra quadrati esatti. Unità: millimetri (unita_in_metri = 0.001); f = 0x1.0c6f7a0b5ed8dp-20 (divisione corretta, ricontrollata con Fraction(1e-9) / Fraction(u)). M = 1; 2^-42 * M = 0x1.0000000000000p-42; epsilon = 0x1.0c6f7a0b5ed8dp-20, dato dal pavimento f. Centro del pezzo: punto medio + ((1 - b^2) / (4b)) * (-dy, dx) = (0, 0) + (3/8) * (0, 2) = (0, 3/4); controllo: dista 5/4 = raggio da (-1, 0), da (1, 0) e da m = (0, -1/2). M = 1 (raggio del cerchio e coordinate del pezzo; m non lo supera). Distanza dei centri f = epsilon: vero. Nessun valore è stato ottenuto eseguendo solid-space."
+  }
+}
