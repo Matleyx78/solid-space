@@ -87,6 +87,19 @@ class AcceptedTest(CorpusTestCase):
         path.write_text("# comment\n\nkernel/cubo-lato-1 #12\n", encoding="utf-8")
         self.assertEqual(vc.validate_pending_file(path, {"kernel/cubo-lato-1"}), [])
 
+    def test_geom2d_case_with_nested_names_and_pending_block(self):
+        case = dict(sample(), id="x", componente="geom2d",
+                    atteso={"esito": "crossing", "punti": [
+                        {"posizione": "atStart", "lato": "left", "esito": "done"}]})
+        root = self.corpus(case, "geom2d/x.json")
+        (root / "in-attesa.txt").write_text("# [0.2-R4a]\ngeom2d/x #35\n", encoding="utf-8")
+        self.assertEqual(vc.validate_corpus(root), [])
+
+    def test_name_grammar(self):
+        for value in ("a", "atStart", "aZ09", "crossing", "left", "done"):
+            with self.subTest(value):
+                self.assertEqual(check(dict(sample(), atteso={"nome": value})), [])
+
     def test_sources_with_matching_local_copy(self):
         root = self.tmp()
         (root / "esterni").mkdir()
@@ -115,19 +128,47 @@ class RejectedFilesTest(CorpusTestCase):
 
     def test_incomplete_source(self):
         name = "sorgenti-voce-incompleta.json"
-        self.assertOnly(vc.validate_sources_file(PROVE / name), name, f"{KEY}.licenza")
+        data, problems = vc.load_json(PROVE / name, name)
+        self.assertEqual(problems, [])
+        self.assertOnly(vc.check_sources(data, name), name, f"{KEY}.licenza")
 
     def test_wrong_hash_of_local_copy(self):
         name = "sorgenti-hash-errato.json"
         root = self.tmp()
         shutil.copy(PROVE / name, root / name)
-        # Without a local copy there is nothing to compare: not an error.
-        self.assertEqual(vc.validate_sources_file(root / name), [])
+        self.assertOnly(vc.validate_sources_file(root / name), name, f"{KEY}.sha256")
         (root / "esterni").mkdir()
         (root / "esterni" / "dati-prova.bin").write_bytes(PAYLOAD)
         problems = vc.validate_sources_file(root / name)
         self.assertOnly(problems, name, f"{KEY}.sha256")
         self.assertIn(hashlib.sha256(PAYLOAD).hexdigest(), problems[0].message)
+
+    def test_invalid_names(self):
+        name = "caso-nome-non-valido.json"
+        self.assertOnly(vc.validate_case_file(PROVE / name, expected_component="geom2d"),
+                        name, "atteso.risultati[0].posizione")
+        for value in ("At start", "_x", "1a", "a_b", "a-b", "à", "aé", ""):
+            with self.subTest(value):
+                self.assertOnly(check(dict(sample(), atteso={"nome": value})),
+                                "caso.json", "atteso.nome")
+
+    def test_external_copy_without_entry(self):
+        problems = vc.validate_corpus(PROVE / "esterni-senza-voce")
+        self.assertOnly(problems, "sorgenti.json", "sorgenti")
+        self.assertIn("esterni/dati-prova.txt", problems[0].message)
+
+    def test_source_without_copy(self):
+        problems = vc.validate_corpus(PROVE / "voce-senza-copia")
+        self.assertOnly(problems, "sorgenti.json", f"{KEY}.sha256")
+        self.assertIn("esterni/dati-prova.bin", problems[0].message)
+
+    def test_nested_external_copy_without_entry(self):
+        root = self.corpus()
+        (root / "esterni" / "nested").mkdir(parents=True)
+        (root / "esterni" / "nested" / "x.bin").write_bytes(PAYLOAD)
+        problems = vc.validate_corpus(root)
+        self.assertOnly(problems, "sorgenti.json", "sorgenti")
+        self.assertIn("esterni/nested/x.bin", problems[0].message)
 
     def test_pending_line_for_missing_case(self):
         name = "in-attesa-caso-inesistente.txt"
@@ -156,7 +197,7 @@ CASE_DEFECTS = [
      "atteso.baricentro[1]"),
     ("zero denominator", set_atteso("volume", "1/0"), "atteso.volume"),
     ("decimal string", set_atteso("volume", "0.5"), "atteso.volume"),
-    ("text value", set_atteso("volume", "uno"), "atteso.volume"),
+    ("invalid name", set_atteso("volume", "At start"), "atteso.volume"),
     ("null value", set_atteso("valido", None), "atteso.valido"),
     ("zero tolerance", set_atteso("volume", {"valore": 1.0, "tolleranza": 0}),
      "atteso.volume.tolleranza"),

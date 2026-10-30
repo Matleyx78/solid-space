@@ -23,13 +23,16 @@ tests/corpus/
   casi/<componente>/<id>.json     un caso per file
   sorgenti.json                   i file presi dall'esterno
   in-attesa.txt                   i casi non ancora obbligatori
-  esterni/<nome>                  copie locali dei file esterni (facoltative)
+  esterni/<nome>                  copie obbligatorie dei file esterni (riferimenti)
   valida_corpus.py                il validatore
   test_valida_corpus.py           i test del validatore
   prove/                          file sbagliati di proposito, per i test del validatore
 ```
 
-`<componente>` è uno tra `robust`, `naming`, `solver`, `kernel`, `features`.
+`<componente>` è uno tra `robust`, `geom2d`, `naming`, `solver`, `kernel`, `features`.
+
+Le copie in `esterni/`, come i casi e `sorgenti.json`, sono riferimenti:
+si aggiungono o modificano solo in una pull request di riferimenti.
 
 ## Un caso
 
@@ -63,15 +66,16 @@ Ogni valore ha una di queste forme:
 |---|---|---|
 | Esatto | stringa con una frazione `p/q` (`q` diverso da zero) o un intero; niente decimali né zeri iniziali | `"6"`, `"1/2"`, `"-7/3"` |
 | Approssimato | oggetto con esattamente `valore` (numero) e `tolleranza` (numero maggiore di zero, **assoluta**: il risultato è giusto se differisce da `valore` per al più `tolleranza`) | `{ "valore": 1.7320508075688772, "tolleranza": 1e-12 }` |
+| Nome | stringa ASCII che rispetta `[a-z][A-Za-z0-9]*`, nome di un enumeratore del contratto | `"crossing"`, `"atStart"`, `"left"`, `"done"` |
 | Booleano | `true` o `false` | `"valido": true` |
 | Elenco o gruppo | array o oggetto con valori delle stesse forme, a qualsiasi profondità | `["1/2", "1/2", "1/2"]` |
 
 - Un **numero nudo** (`"volume": 1.0`) non è ammesso: non dice se è esatto o
   approssimato. Un conteggio è un valore esatto: `"6"`, non `6`.
 - `valore` e `tolleranza` sono chiavi riservate. `null` non è ammesso.
-- Testo che non sia una frazione non è ancora previsto. Quando un caso ne avrà
-  bisogno (per esempio gli `StableId` della genealogia, con la tappa che porta il naming) si aggiunge un
-  campo al formato, come dice l'ADR 0005.
+- Una stringa deve essere una frazione oppure un nome: le forme non si
+  confondono, perché una frazione comincia con una cifra o con `-`. Altro testo
+  (`"At start"`, `"_x"`, `"1a"`) non è ammesso.
 - Che cosa si confronta per ciascuna chiave (volume, area, numero di facce,
   validità, genealogia) lo stabiliscono i pacchetti che eseguono i casi, dalla
   prima tappa con codice geometrico da provare. Qui contano solo la forma e la
@@ -90,6 +94,57 @@ Oggetto con `tipo` e la chiave che lo documenta:
 `procedimento` non può essere vuoto; con `file-pubblico` è facoltativo e può
 dire quale parte del file si è usata. `sorgente` è ammessa solo con
 `file-pubblico`. Altre chiavi non sono ammesse.
+
+## Dati del piano (`robust` e `geom2d`)
+
+In `ingresso`:
+
+| Dato | Forma |
+|---|---|
+| operazione | `"operazione"`: il nome C++ della funzione del contratto (`orient2d`, `intersect`, `offsetPolyline`) |
+| numero | un numero JSON, cioè il `double` più vicino a ciò che è scritto; oppure una stringa con il `double` in esadecimale C (`"0x1.0000000000001p+0"`, `"-0x1p-1074"`) quando serve un valore preciso al bit, e sempre per lo zero negativo (`"-0x0p+0"`: il JSON non lo distingue da 0); oppure `"nan"`, `"inf"`, `"-inf"`, che il JSON non ammette |
+| punto | `[x, y]`, due numeri |
+| curva | un oggetto con una sola chiave: `{"segmento": {"inizio": punto, "fine": punto}}`; `{"arco": {"centro": punto, "raggio": n, "angolo_iniziale": n, "ampiezza": n}}`; `{"cerchio": {"centro": punto, "raggio": n}}`; `{"pezzo": {"inizio": punto, "fine": punto, "bulge": n}}` (un segmento di polilinea) |
+| polilinea | `{"vertici": [[x, y, bulge], …], "chiusa": true}`; il bulge è quello del segmento che parte dal vertice |
+| prolungamento | `"none"` oppure `"extended"` |
+| unità del disegno | `"unita_in_metri"`: numero (0.001 per i millimetri) |
+
+In `atteso`, oltre alle forme di sempre:
+
+| Dato | Forma |
+|---|---|
+| nome | il nome dell'enumeratore, come nel C++ (`"atStart"`) |
+| punto | `[x, y]`, ogni coordinata esatta o approssimata |
+| posizione su una curva | `{"posizione": nome di Location, "stazione": approssimato}` |
+| diagnosi | `{"diagnosi": {"codice": nome di DiagnosisCode, "dato": intero esatto}}` per `geom2d`; `{"diagnosi": {"codice": nome}}` per `robust`, la cui diagnosi non dice il dato. Quando la funzione intera dà una diagnosi, `atteso` ha solo questa chiave; una diagnosi dentro un elemento (per esempio un tagliente scartato da `intersectAlong`) ha la stessa forma, accanto alle altre chiavi dell'elemento |
+| conteggi e indici | interi esatti (`"0"`, `"3"`) |
+
+Regole per chi scrive i casi:
+
+- **Le chiavi e le operazioni** di ogni funzione sono nella scheda del pacchetto
+  che la realizza ([schede della tappa 0.2](../../docs/tappe/0.2/)), sezione "Casi di verifica"; dopo il
+  merge, anche nel file `tests/corpus/esegui/op_<area>.cpp` di quel pacchetto.
+  Un caso può scrivere solo una parte delle chiavi di un risultato: si confronta
+  ciò che è scritto.
+- **I file esterni** (i DXF e gli script di Tecnigrafo) hanno la loro copia in
+  `esterni/`, obbligatoria (ADR 0005, punto 3), e il validatore ne controlla
+  l'hash senza scaricare nulla.
+- **Le tolleranze di un valore costruito** sono l'errore che la funzione
+  dichiara nella sua intestazione (per esempio `kRelativePointError · max(M,
+  |p|)`), calcolato da chi scrive il caso sul valore esatto e arrotondato per
+  eccesso; `provenienza` dice come. Un valore che il contratto garantisce
+  esatto (una decisione, un conteggio, un dato copiato) si scrive esatto.
+- **Gli archi.** Il significato di un arco dipende dalle direzioni D0 e D1 di
+  `robust::sinCos`, che ha un errore fino a 2 ulp (`geom2d/curves.hpp`). Un caso
+  con un arco vale solo se la risposta non cambia per nessun D0 e D1 entro quella
+  distanza dai valori esatti. I casi al limite si scrivono con i segmenti di
+  polilinea, che non usano la trigonometria, o con dati in cui D0 e D1 sono lo
+  stesso `double`.
+- **Le scale.** I casi delle richieste di Tecnigrafo si scrivono con i dati in
+  `double` come Tecnigrafo li darebbe; quelli «traslati di 1e6» o «in
+  chilometri» sono casi a sé, con i loro valori.
+- **La descrizione** cita la richiesta (`#20`) e, se c'è, il caso della richiesta
+  o il file e le entità da cui nasce.
 
 ## `sorgenti.json`
 
@@ -113,11 +168,13 @@ e **tutti e soli** questi campi:
 - Solo licenze **compatibili con la GPLv3** e che permettono la ridistribuzione.
   Nel dubbio il file non si usa e lo si scrive nella pull request. Il validatore
   controlla la forma della licenza, non la compatibilità: la verifica chi rivede.
-- Una copia locale del file sta in `esterni/<nome>`. Se c'è, il validatore ne
-  controlla l'hash; se manca non è un errore, perché i test non dipendono dalla
-  rete e **il validatore non scarica nulla**. Una copia entra nel repository solo
-  se la licenza lo permette. Il download verificato lo introduce il primo pacchetto
-  che usa un file esterno, in un passo separato della CI.
+- Ogni voce ha una copia obbligatoria in `esterni/<nome>`, e ogni file in
+  `esterni/` ha una voce con lo stesso `nome`. Il validatore rifiuta entrambe le
+  mancanze e controlla l'hash dei byte, senza scaricare nulla. Le copie sono
+  riferimenti e si aggiungono solo con una pull request di riferimenti, se la
+  licenza permette la ridistribuzione. Git ne conserva i byte anche su Windows
+  (`.gitattributes`). Il download verificato si introduce solo per il primo file
+  esterno che non conviene copiare, in un passo separato della CI.
 
 ## `in-attesa.txt`
 
@@ -133,6 +190,17 @@ obbligatorio con il pacchetto di lavoro della issue 42. **Chi fa quel pacchetto
 toglie la riga**: da quel momento il caso è obbligatorio. Le righe vuote e quelle
 che cominciano con `#` sono ignorate. Ogni riga deve puntare a un caso esistente e
 nessun caso compare due volte.
+
+In una tappa ogni pacchetto di riferimenti aggiunge un blocco preceduto dal
+commento `# [X.Y-RN]`, nell'ordine dei pacchetti nel piano. Il pacchetto di
+lavoro toglie i blocchi dei propri riferimenti, commento compreso; ognuno tocca
+solo i propri blocchi e chi arriva dopo si aggiorna (LAVORO-IN-PARALLELO,
+"Preparare il piano"). Per esempio:
+
+```text
+# [0.2-R4a]
+robust/orientamento-collineare #40
+```
 
 ## Il validatore
 

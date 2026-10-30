@@ -1,0 +1,30 @@
+{
+  "versione": 1,
+  "id": "caso-nome-non-valido",
+  "componente": "geom2d",
+  "descrizione": "Cubo di spigolo 1 con un vertice nell'origine e le facce parallele ai piani coordinati: validità, volume, area totale, numero di facce, spigoli e vertici, baricentro e lunghezza della diagonale spaziale. Caso di prova del formato: il vocabolario di \"ingresso\" è indicativo e lo fisserà la tappa 0.5, quando il kernel avrà le sue primitive.",
+  "ingresso": {
+    "operazione": "parallelepipedo",
+    "origine": [
+      0,
+      0,
+      0
+    ],
+    "dimensioni": [
+      1,
+      1,
+      1
+    ]
+  },
+  "atteso": {
+    "risultati": [
+      {
+        "posizione": "At start"
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Calcolo a mano su un cubo di spigolo 1. Volume: 1 x 1 x 1 = 1. Area: 6 facce quadrate di area 1 x 1 = 1, quindi 6. Facce: 6, una per ciascuna delle 3 coppie di piani paralleli. Vertici: 2 x 2 x 2 = 8, un vertice per ogni terna di coordinate scelte tra 0 e 1. Spigoli: 12, quattro per ciascuna delle 3 direzioni degli assi. Controllo con la formula di Eulero per i poliedri convessi: vertici - spigoli + facce = 8 - 12 + 6 = 2. Baricentro: per simmetria è il centro del cubo, (1/2, 1/2, 1/2). Diagonale spaziale: radice di (1^2 + 1^2 + 1^2) = radice di 3 = 1.7320508075688772..., irrazionale, perciò non è una frazione e si scrive come numero con tolleranza; 1e-12 è molto più grande dell'errore di arrotondamento di un double (circa 2e-16). Nessun valore è stato ottenuto eseguendo solid-space."
+  }
+}
