@@ -13,6 +13,12 @@
   file esterno che non conviene copiare (alternative). Lo decide il responsabile preparando la tappa 0.2, i
   cui riferimenti portano i primi file esterni (i DXF di AutoCAD della tappa 0.7
   di Tecnigrafo).
+- **Corretto:** 2026-10-31 — l'elenco dei casi in attesa non è più un file ma la
+  cartella `tests/corpus/in-attesa/`, con un file per blocco di riferimenti
+  (punti 1, 4, 5 e 7): con un file solo, 11 pull request di riferimenti su 13
+  aperte andavano in conflitto una dopo l'altra. Il pacchetto di riferimenti
+  aggiunge il suo file e quello di lavoro lo cancella, quindi nessun file è
+  condiviso tra pacchetti in parallelo. Lo decide il responsabile.
 
 ## Contesto
 
@@ -31,7 +37,8 @@ prima tappa che porta codice geometrico da provare.
 1. **Disposizione.** Sotto `tests/corpus/`:
    - `casi/<componente>/<nome>.json`: un caso per file;
    - `sorgenti.json`: i file presi dall'esterno;
-   - `in-attesa.txt`: i casi non ancora obbligatori;
+   - `in-attesa/<X.Y>-R<N>.txt`: i casi non ancora obbligatori, un file per
+     blocco di riferimenti;
    - `esterni/<nome>`: le copie dei file elencati in `sorgenti.json`;
    - `README.md`: la specifica completa del formato (la scrive P4).
 2. **Un caso** è un oggetto JSON con questi campi: `versione` del formato (1),
@@ -47,13 +54,14 @@ prima tappa che porta codice geometrico da provare.
    con la GPLv3 e che permettono la ridistribuzione; se non è così, il file non
    entra nel repository. Ogni file elencato ha la sua copia in `esterni/<nome>`,
    e il validatore ne controlla l'hash.
-4. **Casi in attesa.** `in-attesa.txt` ha un caso per riga, con il numero della
-   issue del pacchetto di lavoro che lo renderà obbligatorio. Un caso in attesa
-   non fa fallire i test. Chi fa il lavoro toglie le righe del proprio pacchetto:
-   da quel momento il caso è obbligatorio.
+4. **Casi in attesa.** Stanno nella cartella `in-attesa/`, un file per blocco di
+   riferimenti (`0.2-R4a.txt`), con un caso per riga e il numero della issue del
+   pacchetto di lavoro che lo renderà obbligatorio. Un caso in attesa non fa
+   fallire i test. Chi fa il lavoro cancella i file dei propri riferimenti: da
+   quel momento i casi sono obbligatori.
 5. **In 0.1 il validatore controlla solo la struttura:** campi presenti e di tipo
    giusto, provenienza dichiarata, voci di `sorgenti.json` complete, hash dei file
-   scaricati già presenti in locale, righe di `in-attesa.txt` che puntano a casi
+   scaricati già presenti in locale, righe dei file di `in-attesa/` che puntano a casi
    esistenti. Non scarica nulla: i test non dipendono dalla rete. L'esecuzione dei
    casi contro il codice entra con la prima tappa che porta codice geometrico da
    provare.
@@ -63,7 +71,7 @@ prima tappa che porta codice geometrico da provare.
 7. **Un pacchetto scrive riferimenti oppure fa il lavoro, mai entrambi.** Sono
    riferimenti `tests/corpus/casi/`, `tests/corpus/sorgenti.json` e
    `tests/corpus/esterni/`;
-   `in-attesa.txt` può cambiare in entrambi i tipi di pacchetto. Lo controlla un
+   `in-attesa/` può cambiare in entrambi i tipi di pacchetto. Lo controlla un
    job della CI (pacchetto P3 della tappa 0.1).
 
 ## Alternative considerate

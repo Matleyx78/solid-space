@@ -28,7 +28,7 @@
 - `tests/robust/predicates_test.cpp`, `tests/robust/tolerance_test.cpp`,
   `tests/robust/exact_sum_test.cpp` (nuovi)
 - `tests/corpus/esegui/op_robust.cpp` (nuovo)
-- `tests/corpus/in-attesa.txt` (togliere i blocchi di R4a e R4b)
+- `tests/corpus/in-attesa/` (cancellare `0.2-R4a.txt` e `0.2-R4b.txt`)
 
 ## Cosa fare
 
@@ -103,8 +103,8 @@ il procedimento è in `provenienza`.
   `negligible` ed `epsilon`.
 - Le precondizioni violate sono `assert` (ADR 0003); nessuna eccezione esce.
 - Le operazioni dei casi stanno in `op_robust.cpp`; P5 ha il suo file.
-- File comuni: solo `tests/corpus/in-attesa.txt`, dove togli i blocchi dei tuoi
-  riferimenti e nient'altro (piano, sezione 6). Nessun `CMakeLists.txt`: sorgenti
+- File comuni: nessuno; cancelli solo i file dei tuoi riferimenti in
+  `tests/corpus/in-attesa/` (piano, sezione 6). Nessun `CMakeLists.txt`: sorgenti
   e test li raccoglie la compilazione preparata da P3 (i test di unità in
   `tests/<componente>/`, le operazioni dei casi in `tests/corpus/esegui/`).
 
@@ -122,7 +122,6 @@ il procedimento è in `provenienza`.
 
 - `orient2d` e `TolerancePolicy` sono realizzate come dichiarano le intestazioni,
   senza cambiarle.
-- I casi di `[0.2-R4a]` e `[0.2-R4b]` passano e i loro
-  blocchi sono tolti da `in-attesa.txt`.
+- I casi di `[0.2-R4a]` e `[0.2-R4b]` passano e i loro file sono cancellati da `in-attesa/`.
 - Il job del determinismo è verde.
 - La CI è verde.

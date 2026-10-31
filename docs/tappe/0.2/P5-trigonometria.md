@@ -24,7 +24,7 @@
 - `robust/src/trigonometry_constants.hpp` (nuovo, privato, se serve)
 - `tests/robust/trigonometry_test.cpp` (nuovo)
 - `tests/corpus/esegui/op_trigonometry.cpp` (nuovo)
-- `tests/corpus/in-attesa.txt` (togliere i blocchi di R5a e R5b)
+- `tests/corpus/in-attesa/` (cancellare `0.2-R5a.txt` e `0.2-R5b.txt`)
 
 ## Cosa fare
 
@@ -88,8 +88,8 @@ di Python ad alta precisione; `provenienza` dice quante cifre e come.
   dei target le ha messe P3 e non si toccano.
 - Le precondizioni violate sono `assert`; nessuna eccezione esce.
 - Non toccare `robust/src/robust.cpp`: il segnaposto lo toglie P4.
-- File comuni: solo `tests/corpus/in-attesa.txt`, dove togli i blocchi dei tuoi
-  riferimenti e nient'altro (piano, sezione 6). Nessun `CMakeLists.txt`: sorgenti
+- File comuni: nessuno; cancelli solo i file dei tuoi riferimenti in
+  `tests/corpus/in-attesa/` (piano, sezione 6). Nessun `CMakeLists.txt`: sorgenti
   e test li raccoglie la compilazione preparata da P3 (i test di unità in
   `tests/<componente>/`, le operazioni dei casi in `tests/corpus/esegui/`).
 
@@ -107,7 +107,6 @@ di Python ad alta precisione; `provenienza` dice quante cifre e come.
   funzioni trigonometriche della libreria standard e senza codice copiato.
 - Il commento di `atan2` dice gli zeri come la issue #31, e il resto
   dell'intestazione non è cambiato.
-- I casi di `[0.2-R5a]` e `[0.2-R5b]` passano e i loro
-  blocchi sono tolti da `in-attesa.txt`.
+- I casi di `[0.2-R5a]` e `[0.2-R5b]` passano e i loro file sono cancellati da `in-attesa/`.
 - Il job del determinismo è verde.
 - La CI è verde.

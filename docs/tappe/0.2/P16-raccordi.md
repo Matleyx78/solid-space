@@ -28,7 +28,7 @@
 - `geom2d/src/tangency_internal.hpp` (di P15: solo aggiunte, se servono)
 - `tests/geom2d/fillet_test.cpp` (nuovo)
 - `tests/corpus/esegui/op_fillet.cpp` (nuovo)
-- `tests/corpus/in-attesa.txt` (togliere i blocchi di R16a, R16b e R16c)
+- `tests/corpus/in-attesa/` (cancellare `0.2-R16a.txt`, `0.2-R16b.txt` e `0.2-R16c.txt`)
 
 ## Cosa fare
 
@@ -128,8 +128,8 @@ Per gli archi vale la regola del README («Gli archi»).
 - Le intestazioni interne di P6, P7, P9, P10 e P12 si usano senza cambiarle; a
   quella di P15 (`tangency_internal.hpp`) puoi solo aggiungere. Se serve altro,
   fermati e scrivilo nella issue.
-- File comuni: solo `tests/corpus/in-attesa.txt`, dove togli i blocchi dei tuoi
-  riferimenti e nient'altro (piano, sezione 6). Nessun `CMakeLists.txt`: sorgenti
+- File comuni: nessuno; cancelli solo i file dei tuoi riferimenti in
+  `tests/corpus/in-attesa/` (piano, sezione 6). Nessun `CMakeLists.txt`: sorgenti
   e test li raccoglie la compilazione preparata da P3 (i test di unità in
   `tests/<componente>/`, le operazioni dei casi in `tests/corpus/esegui/`).
 
@@ -147,7 +147,6 @@ Per gli archi vale la regola del README («Gli archi»).
 ## Fatto quando
 
 - `tangentCircleNear` e `fillet` sono realizzate come dichiara `tangency.hpp`.
-- I casi di `[0.2-R16a]`, `[0.2-R16b]` e `[0.2-R16c]` passano e i loro
-  blocchi sono tolti da `in-attesa.txt`.
+- I casi di `[0.2-R16a]`, `[0.2-R16b]` e `[0.2-R16c]` passano e i loro file sono cancellati da `in-attesa/`.
 - Il job del determinismo è verde.
 - La CI è verde.

@@ -10,8 +10,8 @@ from pathlib import Path
 import re
 import sys
 
-from valida_corpus import (COMPONENTS, FRACTION_RE, load_json, load_pending_file,
-                           validate_corpus)
+from valida_corpus import (COMPONENTS, FRACTION_RE, PENDING_DIR, load_json,
+                           load_pending_dir, validate_corpus)
 
 HEX_RE = re.compile(r"[+-]?0[xX](?:[0-9a-fA-F]+(?:\.[0-9a-fA-F]*)?|\.[0-9a-fA-F]+)[pP][+-]?[0-9]+")
 
@@ -65,7 +65,7 @@ def generate(root, output, components):
         raise ValueError("\n".join(map(str, problems)))
     paths = sorted((root / "casi").glob("*/*.json"))
     known = {f"{p.parent.name}/{p.stem}" for p in paths}
-    pending, problems = load_pending_file(root / "in-attesa.txt", known)
+    pending, problems = load_pending_dir(root / PENDING_DIR, known)
     if problems:
         raise ValueError("\n".join(map(str, problems)))
     cases = [load_json(p, str(p))[0] for p in paths if p.parent.name in components]

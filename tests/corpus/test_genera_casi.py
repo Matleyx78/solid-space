@@ -22,7 +22,7 @@ class GeneratorTest(unittest.TestCase):
         (self.root / 'casi' / 'robust').mkdir(parents=True)
         (self.root / 'casi' / 'geom2d').mkdir()
         (self.root / 'sorgenti.json').write_text('{"versione": 1, "sorgenti": {}}')
-        (self.root / 'in-attesa.txt').write_text('')
+        (self.root / 'in-attesa').mkdir()
         self.output = self.root / 'generated'
 
     def case(self, name='example', component='robust', **changes):
@@ -55,7 +55,7 @@ class GeneratorTest(unittest.TestCase):
         self.case('z-last')
         self.case('b-pending')
         self.case('a-first', component='geom2d')
-        (self.root / 'in-attesa.txt').write_text('# comment\nrobust/b-pending #35\n')
+        (self.root / 'in-attesa' / '0.2-R4a.txt').write_text('# comment\nrobust/b-pending #35\n')
         first = self.run_generator()
         self.assertIn('"b-pending", "robust", 35', first)
         self.assertLess(first.index('"a-first"'), first.index('"z-last"'))
@@ -63,6 +63,28 @@ class GeneratorTest(unittest.TestCase):
                          b'geom2d/a-first\nrobust/z-last\n')
         self.assertEqual(first, self.run_generator())
         self.assertLess(first.index('"operazione"'), first.index('"n"'))
+
+    def test_pending_cases_come_from_every_file_of_the_directory(self):
+        self.case('a-first', component='geom2d')
+        self.case('b-pending')
+        self.case('c-pending')
+        self.case('z-last')
+        directory = self.root / 'in-attesa'
+        (directory / '.gitkeep').write_text('')
+        (directory / '0.2-R10a.txt').write_text('robust/c-pending #36\n')
+        (directory / '0.2-R4a.txt').write_text('robust/b-pending #35\n')
+        generated = self.run_generator()
+        self.assertIn('"b-pending", "robust", 35', generated)
+        self.assertIn('"c-pending", "robust", 36', generated)
+        self.assertEqual((self.output / 'obbligatori.txt').read_bytes(),
+                         b'geom2d/a-first\nrobust/z-last\n')
+
+    def test_old_single_pending_list_stops_the_generator(self):
+        self.case()
+        (self.root / 'in-attesa.txt').write_text('')
+        with self.assertRaisesRegex(ValueError, 'in-attesa.txt: .*in-attesa/'):
+            self.run_generator()
+        self.assertFalse(self.output.exists())
 
     def test_invalid_case_uses_validator_diagnostic(self):
         self.case(atteso={'n': 1})

@@ -25,7 +25,7 @@
   se servono)
 - `tests/geom2d/intersect_along_test.cpp` (nuovo)
 - `tests/corpus/esegui/op_intersect_along.cpp` (nuovo)
-- `tests/corpus/in-attesa.txt` (togliere il blocco di R11)
+- `tests/corpus/in-attesa/` (cancellare `0.2-R11.txt`)
 
 ## Cosa fare
 
@@ -95,8 +95,8 @@ due radici (elevamenti al quadrato, scritti in `provenienza`); coordinate con
 - Le intestazioni interne di P6, P7 e P9 si usano senza cambiarle; a quella di
   P10 (`positions.hpp`) puoi solo aggiungere. Se serve altro, fermati e scrivilo
   nella issue.
-- File comuni: solo `tests/corpus/in-attesa.txt`, dove togli i blocchi dei tuoi
-  riferimenti e nient'altro (piano, sezione 6). Nessun `CMakeLists.txt`: sorgenti
+- File comuni: nessuno; cancelli solo i file dei tuoi riferimenti in
+  `tests/corpus/in-attesa/` (piano, sezione 6). Nessun `CMakeLists.txt`: sorgenti
   e test li raccoglie la compilazione preparata da P3 (i test di unità in
   `tests/<componente>/`, le operazioni dei casi in `tests/corpus/esegui/`).
 
@@ -112,7 +112,6 @@ due radici (elevamenti al quadrato, scritti in `provenienza`); coordinate con
 ## Fatto quando
 
 - `intersectAlong` è realizzata come dichiara `intersection.hpp`.
-- I casi di `[0.2-R11]` passano e il loro blocco è tolto da
-  `in-attesa.txt`.
+- I casi di `[0.2-R11]` passano e il loro file è cancellato da `in-attesa/`.
 - Il job del determinismo è verde.
 - La CI è verde.

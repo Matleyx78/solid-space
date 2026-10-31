@@ -2,8 +2,8 @@
 # Copyright (C) 2026 The solid-space authors
 """Structural validator for the verification corpus (ADR 0005, point 5).
 
-It checks the shape of the cases, of sorgenti.json and of in-attesa.txt, and the
-presence and SHA-256 of the mandatory local copies of external files. It never
+It checks the shape of the cases, of sorgenti.json and of the files in in-attesa/,
+and the presence and SHA-256 of the mandatory local copies of external files. It never
 downloads anything and never runs a case against the code. Standard library only.
 
 Usage: python3 valida_corpus.py [CORPUS_DIR]   (default: the directory of this file)
@@ -35,6 +35,9 @@ UNKNOWN_LICENSES = {"NOASSERTION", "NONE"}
 _WORDS = r"[a-z0-9]+(?:-[a-z0-9]+)*"
 NAME_RE = re.compile(_WORDS)
 PENDING_RE = re.compile(rf"({_WORDS})/({_WORDS}) #([1-9][0-9]*)")
+PENDING_DIR = "in-attesa"
+# One file per block of references, named after the tag of its package: 0.2-R4a.txt.
+PENDING_FILE_RE = re.compile(r"[0-9]+\.[0-9]+-R[0-9]+[a-z]?\.txt")
 FRACTION_RE = re.compile(r"-?(?:0|[1-9][0-9]*)(?:/[1-9][0-9]*)?")
 ENUM_NAME_RE = re.compile(r"[a-z][A-Za-z0-9]*")
 ZERO_DENOMINATOR_RE = re.compile(r"-?[0-9]+/0+")
@@ -339,11 +342,12 @@ def validate_sources_file(path, name: str | None = None) -> list[Problem]:
     return problems or check_sources(data, name, path.parent)
 
 
-# --- in-attesa.txt -----------------------------------------------------------
+# --- in-attesa/ --------------------------------------------------------------
 
 def load_pending_file(path, known_cases, name: str | None = None):
-    """Each line is "<componente>/<id> #<issue>"; `known_cases` holds the
-    "<componente>/<id>" of the cases that exist. Blank lines and "#" comments are ignored."""
+    """One file of the pending list. Each line is "<componente>/<id> #<issue>";
+    `known_cases` holds the "<componente>/<id>" of the cases that exist. Blank lines
+    and "#" comments are ignored."""
     path = Path(path)
     name = name or path.name
     try:
@@ -374,6 +378,46 @@ def load_pending_file(path, known_cases, name: str | None = None):
 
 def validate_pending_file(path, known_cases, name: str | None = None) -> list[Problem]:
     return load_pending_file(path, known_cases, name)[1]
+
+
+def load_pending_dir(directory, known_cases, name: str = PENDING_DIR):
+    """The pending list: one file per block of references, named after its tag
+    ("0.2-R4a.txt"), each with the lines of `load_pending_file`. A case is listed in
+    one file only, and a file with no case is a leftover to delete. Names that start
+    with "." (the .gitkeep that keeps the directory in git) are ignored. Two packages
+    never touch the same file, so the list needs no merge."""
+    directory = Path(directory)
+    try:
+        entries = sorted(p for p in directory.iterdir() if not p.name.startswith("."))
+    except OSError as err:
+        return {}, [Problem(name, "(file)", f"cannot read directory: {err}")]
+    pending: dict[str, int] = {}
+    owner: dict[str, str] = {}
+    out: list[Problem] = []
+    for path in entries:
+        file_name = f"{name}/{path.name}"
+        if not path.is_file() or not PENDING_FILE_RE.fullmatch(path.name):
+            out.append(Problem(file_name, "(file)",
+                               'expected a file named "<X.Y>-R<N>[a-z].txt", after the tag '
+                               "of its block of references"))
+            continue
+        seen, problems = load_pending_file(path, known_cases, file_name)
+        out += problems
+        if not seen and not problems:
+            out.append(Problem(file_name, "(file)",
+                               "lists no case: delete the file when its cases become mandatory"))
+        for case, issue in seen.items():
+            if case in pending:
+                out.append(Problem(file_name, "(file)",
+                                   f"case {case} is also listed in {owner[case]}"))
+            else:
+                pending[case] = issue
+                owner[case] = file_name
+    return pending, out
+
+
+def validate_pending_dir(directory, known_cases, name: str = PENDING_DIR) -> list[Problem]:
+    return load_pending_dir(directory, known_cases, name)[1]
 
 
 # --- the whole corpus --------------------------------------------------------
@@ -408,10 +452,14 @@ def validate_corpus(root) -> list[Problem]:
     else:
         out.append(Problem("casi", "(file)", "directory is missing"))
 
-    if (root / "in-attesa.txt").is_file():
-        out += validate_pending_file(root / "in-attesa.txt", known, "in-attesa.txt")
+    if (root / "in-attesa.txt").exists():
+        out.append(Problem("in-attesa.txt", "(file)",
+                           "the single list was replaced by the directory in-attesa/: "
+                           "move each block to a file named after its tag"))
+    if (root / PENDING_DIR).is_dir():
+        out += validate_pending_dir(root / PENDING_DIR, known)
     else:
-        out.append(Problem("in-attesa.txt", "(file)", "file is missing"))
+        out.append(Problem(PENDING_DIR, "(file)", "directory is missing"))
     return out
 
 

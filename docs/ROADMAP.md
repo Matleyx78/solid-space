@@ -155,3 +155,12 @@ Decisioni del responsabile che cambiano le regole o le tappe, in ordine di data.
   pacchetti che toccano gli stessi file
   ([LAVORO-IN-PARALLELO.md](LAVORO-IN-PARALLELO.md), "Preparare il piano"), come
   già si fa in Tecnigrafo.
+- **2026-10-31: la lista dei casi in attesa diventa una cartella.** Il
+  responsabile sostituisce `tests/corpus/in-attesa.txt` con
+  `tests/corpus/in-attesa/`, un file per blocco di riferimenti (`0.2-R4a.txt`):
+  il pacchetto di riferimenti aggiunge il suo file e quello di lavoro lo
+  cancella, quindi nessun file è condiviso e cade l'eccezione alla regola
+  "Dipende da" decisa il 2026-10-29, perché con un file solo 11 delle 13 pull
+  request di riferimenti aperte andavano in conflitto. L'[ADR 0005](adr/0005-formato-dei-casi-di-verifica.md),
+  punti 1, 4, 5 e 7, è corretto, [LAVORO-IN-PARALLELO.md](LAVORO-IN-PARALLELO.md)
+  è aggiornato e la scheda della tappa 0.2 lo registra in "Modifiche al piano".

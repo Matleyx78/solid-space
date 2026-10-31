@@ -22,7 +22,8 @@ tests/corpus/
   README.md                       questa specifica
   casi/<componente>/<id>.json     un caso per file
   sorgenti.json                   i file presi dall'esterno
-  in-attesa.txt                   i casi non ancora obbligatori
+  in-attesa/                      i casi non ancora obbligatori, un file per blocco
+    <X.Y>-R<N>[a-z].txt           i casi di un pacchetto di riferimenti
   esterni/<nome>                  copie obbligatorie dei file esterni (riferimenti)
   valida_corpus.py                il validatore
   test_valida_corpus.py           i test del validatore
@@ -176,10 +177,12 @@ e **tutti e soli** questi campi:
   (`.gitattributes`). Il download verificato si introduce solo per il primo file
   esterno che non conviene copiare, in un passo separato della CI.
 
-## `in-attesa.txt`
+## `in-attesa/`
 
 Elenca i casi già scritti ma non ancora obbligatori. Un caso in attesa non fa
-fallire i test. Una riga per caso:
+fallire i test. Ogni pacchetto di riferimenti scrive **un file** nella cartella,
+con il nome del suo blocco, `<X.Y>-R<N>[lettera].txt` (per `[0.2-R4a]`:
+`in-attesa/0.2-R4a.txt`), e in ogni file una riga per caso:
 
 ```text
 <componente>/<id> #<numero della issue>
@@ -187,20 +190,17 @@ fallire i test. Una riga per caso:
 
 Per esempio `kernel/cubo-lato-1 #42`: il caso `casi/kernel/cubo-lato-1.json` diventa
 obbligatorio con il pacchetto di lavoro della issue 42. **Chi fa quel pacchetto
-toglie la riga**: da quel momento il caso è obbligatorio. Le righe vuote e quelle
-che cominciano con `#` sono ignorate. Ogni riga deve puntare a un caso esistente e
-nessun caso compare due volte.
+cancella i file dei propri riferimenti**: da quel momento i casi sono
+obbligatori. Le righe vuote e quelle che cominciano con `#` sono ignorate. Ogni
+riga deve puntare a un caso esistente, un caso compare in un solo file, e un file
+senza casi va cancellato. I file che cominciano con `.` sono ignorati: il
+`.gitkeep` tiene viva la cartella quando l'ultimo file è stato cancellato.
 
-In una tappa ogni pacchetto di riferimenti aggiunge un blocco preceduto dal
-commento `# [X.Y-RN]`, nell'ordine dei pacchetti nel piano. Il pacchetto di
-lavoro toglie i blocchi dei propri riferimenti, commento compreso; ognuno tocca
-solo i propri blocchi e chi arriva dopo si aggiorna (LAVORO-IN-PARALLELO,
-"Preparare il piano"). Per esempio:
-
-```text
-# [0.2-R4a]
-robust/orientamento-collineare #40
-```
+Un pacchetto di riferimenti aggiunge il suo file e un pacchetto di lavoro lo
+cancella: due pacchetti non toccano mai lo stesso file, quindi la lista non causa
+conflitti tra pull request in parallelo (LAVORO-IN-PARALLELO, "Preparare il
+piano"). Il vecchio file unico `in-attesa.txt` non esiste più e il validatore lo
+rifiuta.
 
 ## Il validatore
 
@@ -214,9 +214,9 @@ sviluppo, non una dipendenza della libreria. In `ctest` il controllo dell'archiv
 `corpus_validate` e i test del validatore sono `corpus_validator_tests`, entrambi
 con l'etichetta `corpus`.
 
-Controlla la **struttura**: i campi dei casi, di `sorgenti.json` e di
-`in-attesa.txt`, il loro tipo, la provenienza, l'hash delle copie locali e i
-riferimenti (la `sorgente` di un caso, i casi di `in-attesa.txt`). Ogni errore è
+Controlla la **struttura**: i campi dei casi, di `sorgenti.json` e dei
+file di `in-attesa/`, il loro tipo, la provenienza, l'hash delle copie locali e i
+riferimenti (la `sorgente` di un caso, i casi di `in-attesa/`). Ogni errore è
 una riga `file: campo: motivo` su stderr e l'esito è 1; con l'archivio valido l'esito
 è 0. **Non** esegue i casi contro il codice (entra con la prima tappa con codice
 geometrico da provare), non scarica file e non giudica se i valori attesi siano giusti.
@@ -232,7 +232,8 @@ validatore e il validatore non li guarda.
 3. Scrivi in `provenienza` il procedimento, in modo che un'altra persona lo ripeta.
 4. Aggiungi i casi limite: valori nulli, punti coincidenti o quasi allineati, facce
    tangenti, spessori minimi.
-5. Se il codice che lo supera non c'è ancora, aggiungi la riga in `in-attesa.txt`.
+5. Se il codice che lo supera non c'è ancora, aggiungi la riga nel file del tuo blocco,
+   `in-attesa/<X.Y>-R<N>.txt`.
 6. Esegui il validatore. Una pull request di riferimenti tocca solo
    `tests/corpus/` (ADR 0005, punto 7).
 

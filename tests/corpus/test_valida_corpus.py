@@ -62,7 +62,7 @@ class CorpusTestCase(unittest.TestCase):
     def corpus(self, case=None, where="kernel/x.json"):
         root = self.tmp()
         (root / "sorgenti.json").write_text('{"versione": 1, "sorgenti": {}}', encoding="utf-8")
-        (root / "in-attesa.txt").write_text("", encoding="utf-8")
+        (root / "in-attesa").mkdir()
         (root / "casi").mkdir()
         if case is not None:
             path = root / "casi" / where
@@ -83,7 +83,7 @@ class AcceptedTest(CorpusTestCase):
         self.assertEqual(vc.validate_sources_file(HERE / "sorgenti.json"), [])
 
     def test_pending_line_for_existing_case(self):
-        path = self.tmp() / "in-attesa.txt"
+        path = self.tmp() / "0.2-R4a.txt"
         path.write_text("# comment\n\nkernel/cubo-lato-1 #12\n", encoding="utf-8")
         self.assertEqual(vc.validate_pending_file(path, {"kernel/cubo-lato-1"}), [])
 
@@ -92,7 +92,7 @@ class AcceptedTest(CorpusTestCase):
                     atteso={"esito": "crossing", "punti": [
                         {"posizione": "atStart", "lato": "left", "esito": "done"}]})
         root = self.corpus(case, "geom2d/x.json")
-        (root / "in-attesa.txt").write_text("# [0.2-R4a]\ngeom2d/x #35\n", encoding="utf-8")
+        (root / "in-attesa" / "0.2-R4a.txt").write_text("geom2d/x #35\n", encoding="utf-8")
         self.assertEqual(vc.validate_corpus(root), [])
 
     def test_name_grammar(self):
@@ -295,18 +295,101 @@ class CorpusLayoutTest(CorpusTestCase):
         (root / "casi" / "occt").mkdir()
         (root / "casi" / "robust").mkdir()
         shutil.copy(root / "casi" / "kernel" / "x.json", root / "casi" / "robust" / "x.json")
-        (root / "in-attesa.txt").unlink()
+        (root / "in-attesa").rmdir()
         problems = {(p.file, p.field) for p in vc.validate_corpus(root)}
         self.assertEqual(problems, {("casi/kernel/notes.txt", "(file)"),
                                     ("casi/occt", "(file)"),
                                     ("casi/robust/x.json", "componente"),
-                                    ("in-attesa.txt", "(file)")})
+                                    ("in-attesa", "(file)")})
 
     def test_case_pointing_to_a_missing_source(self):
         case = dict(sample(), id="x", provenienza={"tipo": "file-pubblico", "sorgente": "manca"})
         problems = vc.validate_corpus(self.corpus(case))
         self.assertEqual([(p.file, p.field) for p in problems],
                          [("casi/kernel/x.json", "provenienza.sorgente")])
+
+    def test_old_single_pending_list_is_rejected(self):
+        root = self.corpus()
+        (root / "in-attesa.txt").write_text("", encoding="utf-8")
+        problems = vc.validate_corpus(root)
+        self.assertOnly(problems, "in-attesa.txt", "(file)")
+        self.assertIn("in-attesa/", problems[0].message)
+
+
+class PendingDirectoryTest(CorpusTestCase):
+    """The pending list is a directory with one file per block of references."""
+
+    KNOWN = {"kernel/a", "kernel/b", "kernel/c"}
+
+    def write(self, directory, name, text):
+        (directory / name).write_text(text, encoding="utf-8")
+
+    def test_blocks_are_read_together_and_dot_files_are_ignored(self):
+        directory = self.tmp() / "in-attesa"
+        directory.mkdir()
+        self.write(directory, ".gitkeep", "")
+        self.write(directory, "0.2-R4a.txt", "# comment\nkernel/a #12\n")
+        self.write(directory, "0.2-R10b.txt", "kernel/b #13\nkernel/c #13\n")
+        pending, problems = vc.load_pending_dir(directory, self.KNOWN)
+        self.assertEqual(problems, [])
+        self.assertEqual(pending, {"kernel/a": 12, "kernel/b": 13, "kernel/c": 13})
+
+    def test_empty_directory_is_valid(self):
+        directory = self.tmp() / "in-attesa"
+        directory.mkdir()
+        self.assertEqual(vc.load_pending_dir(directory, self.KNOWN), ({}, []))
+
+    def test_file_name_must_be_the_tag_of_its_block(self):
+        directory = self.tmp() / "in-attesa"
+        directory.mkdir()
+        for name in ("notes.txt", "0.2-r4a.txt", "R4a.txt", "0.2-R4.md", "0.2-R4aa.txt",
+                     "0.2-R4a.txt.bak"):
+            self.write(directory, name, "kernel/a #1\n")
+        (directory / "0.2-R9.txt").mkdir()
+        problems = vc.validate_pending_dir(directory, self.KNOWN)
+        self.assertEqual(sorted(p.file for p in problems),
+                         sorted(f"in-attesa/{n}" for n in (
+                             "notes.txt", "0.2-r4a.txt", "R4a.txt", "0.2-R4.md",
+                             "0.2-R4aa.txt", "0.2-R4a.txt.bak", "0.2-R9.txt")))
+        self.assertEqual({p.field for p in problems}, {"(file)"})
+
+    def test_file_names_with_and_without_a_letter_are_accepted(self):
+        directory = self.tmp() / "in-attesa"
+        directory.mkdir()
+        for index, name in enumerate(("0.2-R9.txt", "0.2-R10a.txt", "1.0-R1c.txt")):
+            self.write(directory, name, f"kernel/{'abc'[index]} #{index + 1}\n")
+        self.assertEqual(vc.validate_pending_dir(directory, self.KNOWN), [])
+
+    def test_file_without_cases_is_a_leftover(self):
+        directory = self.tmp() / "in-attesa"
+        directory.mkdir()
+        self.write(directory, "0.2-R4a.txt", "# only a comment\n\n")
+        problems = vc.validate_pending_dir(directory, self.KNOWN)
+        self.assertOnly(problems, "in-attesa/0.2-R4a.txt", "(file)")
+        self.assertIn("delete the file", problems[0].message)
+
+    def test_case_listed_in_two_files(self):
+        directory = self.tmp() / "in-attesa"
+        directory.mkdir()
+        self.write(directory, "0.2-R4a.txt", "kernel/a #1\n")
+        self.write(directory, "0.2-R4b.txt", "kernel/b #2\nkernel/a #3\n")
+        problems = vc.validate_pending_dir(directory, self.KNOWN)
+        self.assertOnly(problems, "in-attesa/0.2-R4b.txt", "(file)")
+        self.assertIn("in-attesa/0.2-R4a.txt", problems[0].message)
+
+    def test_line_problems_name_the_file_and_the_line(self):
+        directory = self.tmp() / "in-attesa"
+        directory.mkdir()
+        self.write(directory, "0.2-R4a.txt", "kernel/a #1\nkernel/non-esiste #2\n")
+        problems = vc.validate_pending_dir(directory, self.KNOWN)
+        self.assertOnly(problems, "in-attesa/0.2-R4a.txt", "line 2")
+        self.assertIn("kernel/non-esiste", problems[0].message)
+
+    def test_a_pending_file_in_the_corpus_must_point_to_an_existing_case(self):
+        root = self.corpus(dict(sample(), id="x"))
+        (root / "in-attesa" / "0.2-R4a.txt").write_text("kernel/y #1\n", encoding="utf-8")
+        problems = vc.validate_corpus(root)
+        self.assertOnly(problems, "in-attesa/0.2-R4a.txt", "line 1")
 
 
 class CommandLineTest(CorpusTestCase):

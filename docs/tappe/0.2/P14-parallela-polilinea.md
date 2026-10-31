@@ -29,7 +29,7 @@
   interni, se servono a tenere il file principale leggibile)
 - `tests/geom2d/offset_polyline_test.cpp` (nuovo)
 - `tests/corpus/esegui/op_offset_polyline.cpp` (nuovo)
-- `tests/corpus/in-attesa.txt` (togliere i blocchi di R14a, R14b e R14c)
+- `tests/corpus/in-attesa/` (cancellare `0.2-R14a.txt`, `0.2-R14b.txt` e `0.2-R14c.txt`)
 
 ## Cosa fare
 
@@ -130,8 +130,8 @@ Per gli archi vale la regola del README («Gli archi»).
   (ADR 0012, punto 5; alternative): non nei passi.
 - Le intestazioni interne di P6, P7, P9, P10 e P12 si usano senza cambiarle; se
   serve altro, fermati e scrivilo nella issue.
-- File comuni: solo `tests/corpus/in-attesa.txt`, dove togli i blocchi dei tuoi
-  riferimenti e nient'altro (piano, sezione 6). Nessun `CMakeLists.txt`: sorgenti
+- File comuni: nessuno; cancelli solo i file dei tuoi riferimenti in
+  `tests/corpus/in-attesa/` (piano, sezione 6). Nessun `CMakeLists.txt`: sorgenti
   e test li raccoglie la compilazione preparata da P3 (i test di unità in
   `tests/<componente>/`, le operazioni dei casi in `tests/corpus/esegui/`).
 
@@ -153,7 +153,6 @@ E i casi di R14a, R14b e R14c.
 
 - `offsetPolyline` è realizzata come dichiara `offset.hpp`, con il controllo
   finale.
-- I casi di `[0.2-R14a]`, `[0.2-R14b]` e `[0.2-R14c]` passano e i loro
-  blocchi sono tolti da `in-attesa.txt`.
+- I casi di `[0.2-R14a]`, `[0.2-R14b]` e `[0.2-R14c]` passano e i loro file sono cancellati da `in-attesa/`.
 - Il job del determinismo è verde.
 - La CI è verde.
