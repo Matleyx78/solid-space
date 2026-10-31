@@ -1,0 +1,49 @@
+{
+  "versione": 1,
+  "id": "raccordo-regola-stessa-retta",
+  "componente": "geom2d",
+  "descrizione": "Regole del contratto fillet: stessa-retta.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          1,
+          0
+        ]
+      }
+    },
+    "punto_prima": [
+      0,
+      0
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          2,
+          0
+        ],
+        "fine": [
+          3,
+          0
+        ]
+      }
+    },
+    "punto_seconda": [
+      3,
+      0
+    ],
+    "raggio": 1
+  },
+  "atteso": {
+    "esito": "infinitelyMany"
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Regola1: rette portanti identiche y=0, quindi infinitelyMany prima di ogni selezione del lato."
+  }
+}

@@ -86,6 +86,26 @@ class GeneratorTest(unittest.TestCase):
             self.run_generator()
         self.assertFalse(self.output.exists())
 
+    def test_one_function_per_case_and_table_function_without_case_data(self):
+        for name in ('a-case', 'b-case', 'c-case'):
+            self.case(name)
+        code = self.run_generator()
+        self.assertEqual(code.count('Case makeCase'), 3)
+        self.assertEqual(code.count('&makeCase'), 3)
+        self.assertLess(code.index('&makeCase0'), code.index('&makeCase1'))
+        self.assertLess(code.index('&makeCase1'), code.index('&makeCase2'))
+        # The function that builds the table holds no case data, so its stack frame
+        # does not grow with the number of cases (Windows has 1 MiB by default).
+        table = code[code.index('std::span<const Case> cases()'):]
+        self.assertNotIn('Value::', table)
+        self.assertIn('constexpr std::size_t count = 3;', table)
+
+    def test_empty_archive_still_has_a_table(self):
+        code = self.run_generator()
+        self.assertNotIn('Case makeCase', code)
+        self.assertIn('constexpr std::size_t count = 0;', code)
+        self.assertIn('nullptr}', code)
+
     def test_invalid_case_uses_validator_diagnostic(self):
         self.case(atteso={'n': 1})
         with self.assertRaisesRegex(ValueError, 'atteso.n: bare number'):

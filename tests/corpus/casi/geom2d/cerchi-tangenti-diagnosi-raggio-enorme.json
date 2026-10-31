@@ -1,0 +1,44 @@
+{
+  "versione": 1,
+  "id": "cerchi-tangenti-diagnosi-raggio-enorme",
+  "componente": "geom2d",
+  "descrizione": "cerchi tangenti diagnosi raggio enorme.",
+  "ingresso": {
+    "operazione": "tangentCircles",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          1,
+          0
+        ]
+      }
+    },
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          0,
+          1
+        ]
+      }
+    },
+    "raggio": 2251799813685248
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "outOfDomain",
+      "dato": "2"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Raggio di tangentCircles: zero degenere, negativo/non finito invalidValue, oltre2^50 outOfDomain; dato2."
+  }
+}

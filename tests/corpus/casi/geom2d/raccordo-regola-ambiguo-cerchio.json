@@ -1,0 +1,46 @@
+{
+  "versione": 1,
+  "id": "raccordo-regola-ambiguo-cerchio",
+  "componente": "geom2d",
+  "descrizione": "Regole del contratto fillet: ambiguo-cerchio.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          -10,
+          0
+        ],
+        "fine": [
+          10,
+          0
+        ]
+      }
+    },
+    "punto_prima": [
+      5,
+      0
+    ],
+    "seconda": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 5
+      }
+    },
+    "punto_seconda": [
+      0,
+      5
+    ],
+    "raggio": 1
+  },
+  "atteso": {
+    "esito": "ambiguousPick"
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Regola3: pickFirst=(5,0) sta esattamente sul cerchio di raggio5, side=on."
+  }
+}

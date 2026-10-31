@@ -1,0 +1,46 @@
+{
+  "versione": 1,
+  "id": "raccordo-regola-nessun-raccordo",
+  "componente": "geom2d",
+  "descrizione": "Regole del contratto fillet: nessun-raccordo.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          -10,
+          3
+        ],
+        "fine": [
+          10,
+          3
+        ]
+      }
+    },
+    "punto_prima": [
+      0,
+      3
+    ],
+    "seconda": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 1
+      }
+    },
+    "punto_seconda": [
+      0,
+      1
+    ],
+    "raggio": 0.5
+  },
+  "atteso": {
+    "esito": "none"
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Regola3: i lati chiedono il raccordo fra retta e cerchio; il vuoto è2, maggiore di2r=1; nessun candidato sui loci spostati."
+  }
+}

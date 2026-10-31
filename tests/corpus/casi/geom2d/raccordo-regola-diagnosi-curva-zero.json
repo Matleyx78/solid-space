@@ -1,0 +1,49 @@
+{
+  "versione": 1,
+  "id": "raccordo-regola-diagnosi-curva-zero",
+  "componente": "geom2d",
+  "descrizione": "Regole del contratto fillet: diagnosi-curva-zero.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 0
+      }
+    },
+    "punto_prima": [
+      0,
+      0
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          0,
+          1
+        ]
+      }
+    },
+    "punto_seconda": [
+      0,
+      1
+    ],
+    "raggio": 1
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "degenerateCurve",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Controllo dati di fillet: curve0/1, raggio2, pickFirst3, pickSecond4. Il difetto indicato dà degenerateCurve senza scegliere un raccordo."
+  }
+}

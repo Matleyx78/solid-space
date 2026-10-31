@@ -1,0 +1,46 @@
+{
+  "versione": 1,
+  "id": "raccordo-regola-vicino-nessuno",
+  "componente": "geom2d",
+  "descrizione": "Regole del contratto fillet: vicino-nessuno.",
+  "ingresso": {
+    "operazione": "tangentCircleNear",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          -10,
+          3
+        ],
+        "fine": [
+          10,
+          3
+        ]
+      }
+    },
+    "vicino_prima": [
+      0,
+      3
+    ],
+    "seconda": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 1
+      }
+    },
+    "vicino_seconda": [
+      0,
+      1
+    ],
+    "raggio": 0.5
+  },
+  "atteso": {
+    "esito": "none"
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Nessun cerchio r=1/2 tocca entrambe le curve, distanza minima2>2r, anche senza filtro dei lati."
+  }
+}

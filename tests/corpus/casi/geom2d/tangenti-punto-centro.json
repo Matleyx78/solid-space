@@ -1,0 +1,31 @@
+{
+  "versione": 1,
+  "id": "tangenti-punto-centro",
+  "componente": "geom2d",
+  "descrizione": "tangenti punto centro.",
+  "ingresso": {
+    "operazione": "tangentsFrom",
+    "punto": [
+      0,
+      0
+    ],
+    "curva": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 5
+      }
+    },
+    "prolunga": "none"
+  },
+  "atteso": {
+    "collocazione": "inside",
+    "punti": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Confronto Fraction: |P-C|²-R² decide Placement. Con on il punto è copiato esattamente. Con outside, per P-C=(d,0), T-C=(R²/d, ±R*sqrt(d²-R²)/d). Coordinate e angoli Decimal180; punti entro2^-48 e stazioni entro2^-46 per max(M,|valore|), arrotondati per eccesso. Nessuna esecuzione di solid-space."
+  }
+}

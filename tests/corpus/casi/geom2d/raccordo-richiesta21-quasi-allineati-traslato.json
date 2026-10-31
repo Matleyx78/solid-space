@@ -1,0 +1,118 @@
+{
+  "versione": 1,
+  "id": "raccordo-richiesta21-quasi-allineati-traslato",
+  "componente": "geom2d",
+  "descrizione": "raccordo richiesta21 quasi allineati traslato.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          999990.0,
+          1000000.0
+        ],
+        "fine": [
+          1000000.0,
+          1000000.0
+        ]
+      }
+    },
+    "punto_prima": [
+      999995.0,
+      1000000.0
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          1000000.0,
+          1000000.0
+        ],
+        "fine": [
+          1000010.0,
+          1000000.00000001
+        ]
+      }
+    },
+    "punto_seconda": [
+      1000005.0,
+      1000000.000000005
+    ],
+    "raggio": 1e-09
+  },
+  "atteso": {
+    "esito": "found",
+    "centro": [
+      {
+        "valore": 1000000.0,
+        "tolleranza": 3.5527492059372893e-09
+      },
+      {
+        "valore": 1000000.000000001,
+        "tolleranza": 3.5527492059372893e-09
+      }
+    ],
+    "raggio": "4835703278458517/4835703278458516698824704",
+    "sulla_prima": {
+      "punto": [
+        {
+          "valore": 1000000.0,
+          "tolleranza": 3.5527492059372893e-09
+        },
+        {
+          "valore": 1000000.0,
+          "tolleranza": 3.5527492059372893e-09
+        }
+      ],
+      "sulla_curva": {
+        "posizione": "inside"
+      }
+    },
+    "sulla_seconda": {
+      "punto": [
+        {
+          "valore": 1000000.0,
+          "tolleranza": 3.5527492059372893e-09
+        },
+        {
+          "valore": 1000000.0,
+          "tolleranza": 3.5527492059372893e-09
+        }
+      ],
+      "sulla_curva": {
+        "posizione": "inside"
+      }
+    },
+    "semicerchio": false,
+    "arco": {
+      "arco": {
+        "centro": [
+          {
+            "valore": 1000000.0,
+            "tolleranza": 3.5527492059372893e-09
+          },
+          {
+            "valore": 1000000.000000001,
+            "tolleranza": 3.5527492059372893e-09
+          }
+        ],
+        "raggio": "4835703278458517/4835703278458516698824704",
+        "angolo_iniziale": {
+          "valore": -1.5707963267948966,
+          "tolleranza": 14.210996823749158
+        },
+        "ampiezza": {
+          "valore": 1.0011717677116394e-09,
+          "tolleranza": 14.210996823749158
+        }
+      }
+    },
+    "bulge": {
+      "valore": 2.5029294192790984e-10,
+      "tolleranza": 28388728651.889538
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Richiesta #21 caso4 e7: svolta con pendenza t=Fraction(dy)/10 dai double effettivi; q=sqrt(1+t²), centro relativo(-r*t/(1+q),r). Piede sulla seconda retta=(cx+r*t/q, r-r/q). t>0 deciso esattamente: tangenti inside su entrambi. La traslazione può arrotondare insieme i punti costruiti ma non cambia le decisioni. Coordinate/radicali con Fraction e Decimal180. Punti: limite2^-48*max(M,|p|) per eccesso. Angoli con atan2 a serie; E=2^-46*M, tolleranza angolare E/r; bulge: freccia=corda*|bulge|/2, dunque tolleranza2E/corda. Il raggio chiesto è esatto; per diametro, sweep antioraria pi. M effettiva dei dati e dei clic=0x1.e849400000000p+19; tolleranze ridotte alla M effettiva e arrotondate per eccesso."
+  }
+}

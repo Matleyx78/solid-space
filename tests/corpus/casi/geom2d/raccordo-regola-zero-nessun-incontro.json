@@ -1,0 +1,46 @@
+{
+  "versione": 1,
+  "id": "raccordo-regola-zero-nessun-incontro",
+  "componente": "geom2d",
+  "descrizione": "Regole del contratto fillet: zero-nessun-incontro.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          -1,
+          3
+        ],
+        "fine": [
+          1,
+          3
+        ]
+      }
+    },
+    "punto_prima": [
+      0,
+      3
+    ],
+    "seconda": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 1
+      }
+    },
+    "punto_seconda": [
+      0,
+      1
+    ],
+    "raggio": 0
+  },
+  "atteso": {
+    "esito": "none"
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Regola2: la retta y=3 non interseca il cerchio unitario, discriminante1-9<0."
+  }
+}

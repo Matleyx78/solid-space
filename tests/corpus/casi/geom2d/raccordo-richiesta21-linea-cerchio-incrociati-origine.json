@@ -1,0 +1,115 @@
+{
+  "versione": 1,
+  "id": "raccordo-richiesta21-linea-cerchio-incrociati-origine",
+  "componente": "geom2d",
+  "descrizione": "raccordo richiesta21 linea cerchio incrociati origine.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          -10.0,
+          0.0
+        ],
+        "fine": [
+          10.0,
+          0.0
+        ]
+      }
+    },
+    "punto_prima": [
+      6.0,
+      0.0
+    ],
+    "seconda": {
+      "cerchio": {
+        "centro": [
+          0.0,
+          0.0
+        ],
+        "raggio": 5
+      }
+    },
+    "punto_seconda": [
+      5.0,
+      1.0
+    ],
+    "raggio": 1
+  },
+  "atteso": {
+    "esito": "found",
+    "centro": [
+      {
+        "valore": 5.916079783099616,
+        "tolleranza": 3.5527136788005016e-14
+      },
+      {
+        "valore": 1.0,
+        "tolleranza": 3.5527136788005016e-14
+      }
+    ],
+    "raggio": "1",
+    "sulla_prima": {
+      "punto": [
+        {
+          "valore": 5.916079783099616,
+          "tolleranza": 3.5527136788005016e-14
+        },
+        {
+          "valore": 0.0,
+          "tolleranza": 3.5527136788005016e-14
+        }
+      ],
+      "sulla_curva": {
+        "posizione": "inside"
+      }
+    },
+    "sulla_seconda": {
+      "punto": [
+        {
+          "valore": 4.930066485916346,
+          "tolleranza": 3.5527136788005016e-14
+        },
+        {
+          "valore": 0.8333333333333334,
+          "tolleranza": 3.5527136788005016e-14
+        }
+      ],
+      "sulla_curva": {
+        "posizione": "inside"
+      }
+    },
+    "semicerchio": false,
+    "arco": {
+      "arco": {
+        "centro": [
+          {
+            "valore": 5.916079783099616,
+            "tolleranza": 3.5527136788005016e-14
+          },
+          {
+            "valore": 1.0,
+            "tolleranza": 3.5527136788005016e-14
+          }
+        ],
+        "raggio": "1",
+        "angolo_iniziale": {
+          "valore": -1.5707963267948966,
+          "tolleranza": 1.4210854715202006e-13
+        },
+        "ampiezza": {
+          "valore": -1.4033482475752073,
+          "tolleranza": 1.4210854715202006e-13
+        }
+      }
+    },
+    "bulge": {
+      "valore": -0.3659773818630435,
+      "tolleranza": 2.2015361458940205e-13
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Richiesta #21 caso2a e7: centro sulla parallela y=1 e cerchio di raggio6: x²=35. I clic scelgono il candidato positivo, lato left della retta e right del cerchio; distanze ai clic nettamente minori del candidato negativo. Coordinate/radicali con Fraction e Decimal180. Punti: limite2^-48*max(M,|p|) per eccesso. Angoli con atan2 a serie; E=2^-46*M, tolleranza angolare E/r; bulge: freccia=corda*|bulge|/2, dunque tolleranza2E/corda. Il raggio chiesto è esatto; per diametro, sweep antioraria pi. M effettiva dei dati e dei clic=0x1.4000000000000p+3; tolleranze ridotte alla M effettiva e arrotondate per eccesso."
+  }
+}

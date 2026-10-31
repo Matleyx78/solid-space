@@ -1,0 +1,39 @@
+{
+  "versione": 1,
+  "id": "cerchi-tangenti-entra-un-ulp-meno",
+  "componente": "geom2d",
+  "descrizione": "cerchi tangenti entra un ulp meno.",
+  "ingresso": {
+    "operazione": "tangentCircles",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          -10,
+          3
+        ],
+        "fine": [
+          10,
+          3
+        ]
+      }
+    },
+    "seconda": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 1
+      }
+    },
+    "raggio": "0x1.fffffffffffffp-1"
+  },
+  "atteso": {
+    "infiniti": false,
+    "cerchi": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Retta y=3, R=1. Loco sotto la retta: y=3-r, distanza al centro=1+r; x²=(1+r)²-(3-r)²=8(r-1), con Fraction. Per r<1 nessuno, r=1 uno, r>1 due. L’altro loco y=3+r non può intersecare; |1-r| è troppo piccolo. Punto sul cerchio=(x,y)/(1+r); entrambi i lati right. Decimal180 e limiti pubblici per eccesso."
+  }
+}
