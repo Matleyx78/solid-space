@@ -27,7 +27,7 @@ constexpr int kSubnormalExponent = -1074;
 // product of two subnormals: the exponent q1 + q2 becomes a shift of
 // q1 + q2 + 2148 bits, between 0 and 1942 + 2148 = 4090.
 constexpr int kProductExponentOffset = 2148;
-constexpr int kMaxShift = 4090;
+[[maybe_unused]] constexpr int kMaxShift = 4090;  // only in assertions
 
 struct Decomposed {
     bool negative = false;
