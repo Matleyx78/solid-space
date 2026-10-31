@@ -1,0 +1,86 @@
+{
+  "versione": 1,
+  "id": "cerchi-tangenti-coppia-segmento-arco",
+  "componente": "geom2d",
+  "descrizione": "cerchi tangenti coppia segmento arco.",
+  "ingresso": {
+    "operazione": "tangentCircles",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          -10,
+          3
+        ],
+        "fine": [
+          10,
+          3
+        ]
+      }
+    },
+    "seconda": {
+      "arco": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 1,
+        "angolo_iniziale": 0,
+        "ampiezza": 1
+      }
+    },
+    "raggio": 1
+  },
+  "atteso": {
+    "infiniti": false,
+    "cerchi": [
+      {
+        "centro": [
+          {
+            "valore": 0.0,
+            "tolleranza": 3.552713678800501e-14
+          },
+          {
+            "valore": 2.0,
+            "tolleranza": 3.552713678800501e-14
+          }
+        ],
+        "sulla_prima": {
+          "punto": [
+            {
+              "valore": 0.0,
+              "tolleranza": 3.552713678800501e-14
+            },
+            {
+              "valore": 3.0,
+              "tolleranza": 3.552713678800501e-14
+            }
+          ],
+          "sulla_curva": {
+            "posizione": "inside"
+          }
+        },
+        "sulla_seconda": {
+          "punto": [
+            {
+              "valore": 0.0,
+              "tolleranza": 3.552713678800501e-14
+            },
+            {
+              "valore": 1.0,
+              "tolleranza": 3.552713678800501e-14
+            }
+          ],
+          "sulla_curva": {
+            "posizione": "afterEnd"
+          }
+        },
+        "lato_prima": "right",
+        "lato_seconda": "right"
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Cerchi tangenti: centro comune delle rette spostate di ±r e dei cerchi di raggio R+r o |R-r|. Esistenza e lato confrontati con Fraction; coordinate radicali Decimal180, tolleranze pubbliche arrotondate per eccesso. Estensioni intere come tangency.hpp. Retta y=3, cerchio di raggio1 centrato0, r=1: unico centro(0,2), tangente alle due curve in(0,3) e(0,1). Sta sotto la retta e fuori dal cerchio. Sull’arco0→1 e sul semicerchio inferiore il secondo punto è afterEnd."
+  }
+}

@@ -1,0 +1,188 @@
+{
+  "versione": 1,
+  "id": "cerchi-tangenti-curve-gia-tangenti",
+  "componente": "geom2d",
+  "descrizione": "cerchi tangenti curve gia tangenti.",
+  "ingresso": {
+    "operazione": "tangentCircles",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          -10,
+          1
+        ],
+        "fine": [
+          10,
+          1
+        ]
+      }
+    },
+    "seconda": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 1
+      }
+    },
+    "raggio": 0.5
+  },
+  "atteso": {
+    "infiniti": false,
+    "cerchi": [
+      {
+        "centro": [
+          {
+            "valore": -1.4142135623730951,
+            "tolleranza": 3.552713678800501e-14
+          },
+          {
+            "valore": 0.5,
+            "tolleranza": 3.552713678800501e-14
+          }
+        ],
+        "sulla_prima": {
+          "punto": [
+            {
+              "valore": -1.4142135623730951,
+              "tolleranza": 3.552713678800501e-14
+            },
+            {
+              "valore": 1.0,
+              "tolleranza": 3.552713678800501e-14
+            }
+          ],
+          "sulla_curva": {
+            "posizione": "inside"
+          }
+        },
+        "sulla_seconda": {
+          "punto": [
+            {
+              "valore": -0.9428090415820634,
+              "tolleranza": 3.552713678800501e-14
+            },
+            {
+              "valore": 0.3333333333333333,
+              "tolleranza": 3.552713678800501e-14
+            }
+          ],
+          "sulla_curva": {
+            "posizione": "inside"
+          }
+        }
+      },
+      {
+        "sulla_prima": {
+          "punto": [
+            {
+              "valore": 0.0,
+              "tolleranza": 3.552713678800501e-14
+            },
+            {
+              "valore": 1.0,
+              "tolleranza": 3.552713678800501e-14
+            }
+          ],
+          "sulla_curva": {
+            "posizione": "inside"
+          }
+        },
+        "sulla_seconda": {
+          "punto": [
+            {
+              "valore": 0.0,
+              "tolleranza": 3.552713678800501e-14
+            },
+            {
+              "valore": 1.0,
+              "tolleranza": 3.552713678800501e-14
+            }
+          ],
+          "sulla_curva": {
+            "posizione": "inside"
+          }
+        }
+      },
+      {
+        "sulla_prima": {
+          "punto": [
+            {
+              "valore": 0.0,
+              "tolleranza": 3.552713678800501e-14
+            },
+            {
+              "valore": 1.0,
+              "tolleranza": 3.552713678800501e-14
+            }
+          ],
+          "sulla_curva": {
+            "posizione": "inside"
+          }
+        },
+        "sulla_seconda": {
+          "punto": [
+            {
+              "valore": 0.0,
+              "tolleranza": 3.552713678800501e-14
+            },
+            {
+              "valore": 1.0,
+              "tolleranza": 3.552713678800501e-14
+            }
+          ],
+          "sulla_curva": {
+            "posizione": "inside"
+          }
+        }
+      },
+      {
+        "centro": [
+          {
+            "valore": 1.4142135623730951,
+            "tolleranza": 3.552713678800501e-14
+          },
+          {
+            "valore": 0.5,
+            "tolleranza": 3.552713678800501e-14
+          }
+        ],
+        "sulla_prima": {
+          "punto": [
+            {
+              "valore": 1.4142135623730951,
+              "tolleranza": 3.552713678800501e-14
+            },
+            {
+              "valore": 1.0,
+              "tolleranza": 3.552713678800501e-14
+            }
+          ],
+          "sulla_curva": {
+            "posizione": "inside"
+          }
+        },
+        "sulla_seconda": {
+          "punto": [
+            {
+              "valore": 0.9428090415820634,
+              "tolleranza": 3.552713678800501e-14
+            },
+            {
+              "valore": 0.3333333333333333,
+              "tolleranza": 3.552713678800501e-14
+            }
+          ],
+          "sulla_curva": {
+            "posizione": "inside"
+          }
+        }
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Retta y=1 già tangente al cerchio unitario. Con r=1/2: centri sui loci y=1/2 o3/2 e rho=3/2 o1/2. Soluzioni(-sqrt2,1/2),(0,1/2),(0,3/2),(sqrt2,1/2). I due centri con x=0 hanno gli stessi punti di tangenza(0,1) su entrambe le curve: il contratto non ordina ulteriormente questo pareggio, quindi i due elementi verificano solo tali punti e il conteggio. Coordinate Decimal180 e tolleranza pubblica per eccesso."
+  }
+}

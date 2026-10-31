@@ -1,0 +1,40 @@
+{
+  "versione": 1,
+  "id": "cerchi-tangenti-concentrici-somma-origine",
+  "componente": "geom2d",
+  "descrizione": "cerchi tangenti concentrici somma origine.",
+  "ingresso": {
+    "operazione": "tangentCircles",
+    "prima": {
+      "arco": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 3,
+        "angolo_iniziale": 0,
+        "ampiezza": 1
+      }
+    },
+    "seconda": {
+      "arco": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 5,
+        "angolo_iniziale": 0,
+        "ampiezza": -1
+      }
+    },
+    "raggio": 4
+  },
+  "atteso": {
+    "infiniti": true,
+    "cerchi": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Richiesta #21 caso3 e7: stesso centro, R1=3,R2=5. Loci dei centri tangenti hanno raggi R1+r,|R1-r| e R2+r,|R2-r|. Coincidono per 2r=5-3 o 2r=5+3: infiniti; con r=2 gli insiemi{5,1} e{7,3} sono disgiunti: nessuno. La traslazione intera conserva i dati esatti."
+  }
+}

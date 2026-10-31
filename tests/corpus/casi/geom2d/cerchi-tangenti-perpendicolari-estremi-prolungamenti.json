@@ -1,0 +1,219 @@
+{
+  "versione": 1,
+  "id": "cerchi-tangenti-perpendicolari-estremi-prolungamenti",
+  "componente": "geom2d",
+  "descrizione": "cerchi tangenti perpendicolari estremi prolungamenti.",
+  "ingresso": {
+    "operazione": "tangentCircles",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          1,
+          0
+        ]
+      }
+    },
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          0,
+          1
+        ]
+      }
+    },
+    "raggio": 1
+  },
+  "atteso": {
+    "infiniti": false,
+    "cerchi": [
+      {
+        "centro": [
+          {
+            "valore": -1.0,
+            "tolleranza": 7.105427357601002e-15
+          },
+          {
+            "valore": -1.0,
+            "tolleranza": 7.105427357601002e-15
+          }
+        ],
+        "sulla_prima": {
+          "punto": [
+            {
+              "valore": -1.0,
+              "tolleranza": 7.105427357601002e-15
+            },
+            {
+              "valore": 0.0,
+              "tolleranza": 7.105427357601002e-15
+            }
+          ],
+          "sulla_curva": {
+            "posizione": "beforeStart"
+          }
+        },
+        "sulla_seconda": {
+          "punto": [
+            {
+              "valore": 0.0,
+              "tolleranza": 7.105427357601002e-15
+            },
+            {
+              "valore": -1.0,
+              "tolleranza": 7.105427357601002e-15
+            }
+          ],
+          "sulla_curva": {
+            "posizione": "beforeStart"
+          }
+        },
+        "lato_prima": "right",
+        "lato_seconda": "left"
+      },
+      {
+        "centro": [
+          {
+            "valore": -1.0,
+            "tolleranza": 7.105427357601002e-15
+          },
+          {
+            "valore": 1.0,
+            "tolleranza": 7.105427357601002e-15
+          }
+        ],
+        "sulla_prima": {
+          "punto": [
+            {
+              "valore": -1.0,
+              "tolleranza": 7.105427357601002e-15
+            },
+            {
+              "valore": 0.0,
+              "tolleranza": 7.105427357601002e-15
+            }
+          ],
+          "sulla_curva": {
+            "posizione": "beforeStart"
+          }
+        },
+        "sulla_seconda": {
+          "punto": [
+            {
+              "valore": 0.0,
+              "tolleranza": 7.105427357601002e-15
+            },
+            {
+              "valore": 1.0,
+              "tolleranza": 7.105427357601002e-15
+            }
+          ],
+          "sulla_curva": {
+            "posizione": "atEnd"
+          }
+        },
+        "lato_prima": "left",
+        "lato_seconda": "left"
+      },
+      {
+        "centro": [
+          {
+            "valore": 1.0,
+            "tolleranza": 7.105427357601002e-15
+          },
+          {
+            "valore": -1.0,
+            "tolleranza": 7.105427357601002e-15
+          }
+        ],
+        "sulla_prima": {
+          "punto": [
+            {
+              "valore": 1.0,
+              "tolleranza": 7.105427357601002e-15
+            },
+            {
+              "valore": 0.0,
+              "tolleranza": 7.105427357601002e-15
+            }
+          ],
+          "sulla_curva": {
+            "posizione": "atEnd"
+          }
+        },
+        "sulla_seconda": {
+          "punto": [
+            {
+              "valore": 0.0,
+              "tolleranza": 7.105427357601002e-15
+            },
+            {
+              "valore": -1.0,
+              "tolleranza": 7.105427357601002e-15
+            }
+          ],
+          "sulla_curva": {
+            "posizione": "beforeStart"
+          }
+        },
+        "lato_prima": "right",
+        "lato_seconda": "right"
+      },
+      {
+        "centro": [
+          {
+            "valore": 1.0,
+            "tolleranza": 7.105427357601002e-15
+          },
+          {
+            "valore": 1.0,
+            "tolleranza": 7.105427357601002e-15
+          }
+        ],
+        "sulla_prima": {
+          "punto": [
+            {
+              "valore": 1.0,
+              "tolleranza": 7.105427357601002e-15
+            },
+            {
+              "valore": 0.0,
+              "tolleranza": 7.105427357601002e-15
+            }
+          ],
+          "sulla_curva": {
+            "posizione": "atEnd"
+          }
+        },
+        "sulla_seconda": {
+          "punto": [
+            {
+              "valore": 0.0,
+              "tolleranza": 7.105427357601002e-15
+            },
+            {
+              "valore": 1.0,
+              "tolleranza": 7.105427357601002e-15
+            }
+          ],
+          "sulla_curva": {
+            "posizione": "atEnd"
+          }
+        },
+        "lato_prima": "left",
+        "lato_seconda": "right"
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Cerchi tangenti: centro comune delle rette spostate di ±r e dei cerchi di raggio R+r o |R-r|. Esistenza e lato confrontati con Fraction; coordinate radicali Decimal180, tolleranze pubbliche arrotondate per eccesso. Estensioni intere come tangency.hpp."
+  }
+}
