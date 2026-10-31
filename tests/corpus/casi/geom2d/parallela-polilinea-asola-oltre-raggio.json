@@ -1,0 +1,45 @@
+{
+  "versione": 1,
+  "id": "parallela-polilinea-asola-oltre-raggio",
+  "componente": "geom2d",
+  "descrizione": "#22, caso 2: asola tangente, raggio 5.",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          0,
+          -5,
+          0
+        ],
+        [
+          20,
+          -5,
+          1
+        ],
+        [
+          20,
+          5,
+          0
+        ],
+        [
+          0,
+          5,
+          1
+        ]
+      ],
+      "chiusa": true
+    },
+    "distanza": 6,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "failed",
+    "motivo": "openJoint",
+    "semplice": false
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Centri (0,0) e (20,0), raggi 5-d. Per d<5 gli estremi spostati coincidono esattamente e non servono giunzioni: restano quattro pezzi tangenti, disgiunti dall’ingresso. Per d=5 i due semicerchi spariscono; i due segmenti opposti su y=0 hanno già gli estremi comuni, quindi il passo 2 non crea giunzioni; il controllo finale trova sovrapposizione oltre i vertici: selfIntersection. Per d=6 i semicerchi spariscono e le rette y=1 e y=-1 non si incontrano: sorgenti non consecutive, openJoint. Le coordinate costruite hanno tolleranza 2^-48*max(M,|x|,|y|), qui esattamente rappresentabile; M include estremi, punti medi degli archi e |d|. I bulge 0 e 1 non modificati sono dati esatti."
+  }
+}

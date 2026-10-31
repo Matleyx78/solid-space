@@ -1,0 +1,45 @@
+{
+  "versione": 1,
+  "id": "parallela-polilinea-u-stretta",
+  "componente": "geom2d",
+  "descrizione": "#22, caso 5: U larga 6 con d=4 maggiore della semilarghezza.",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          0,
+          20,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          0,
+          0
+        ],
+        [
+          6,
+          20,
+          0
+        ]
+      ],
+      "chiusa": false
+    },
+    "distanza": 4,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "failed",
+    "motivo": "openJoint",
+    "semplice": false
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "I sostegni spostati sono x=4, y=4, x=2. Le giunzioni (4,4) e (2,4) girano il fondo verso sinistra, contrario al verso iniziale: il pezzo 1 viene rimosso. I vicini 0 e 2 hanno rette parallele distinte; non essendo consecutivi nella sorgente danno openJoint. Nessuna tolleranza decide queste operazioni. Le coordinate costruite hanno tolleranza 2^-48*max(M,|x|,|y|), qui esattamente rappresentabile; M include estremi, punti medi degli archi e |d|. I bulge 0 e 1 non modificati sono dati esatti."
+  }
+}

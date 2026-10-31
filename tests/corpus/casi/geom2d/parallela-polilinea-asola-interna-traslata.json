@@ -1,0 +1,112 @@
+{
+  "versione": 1,
+  "id": "parallela-polilinea-asola-interna-traslata",
+  "componente": "geom2d",
+  "descrizione": "#22, caso 2: asola tangente, raggio 5. Coordinate traslate di 1e6 (#22, caso 6).",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          1000000,
+          999995,
+          0
+        ],
+        [
+          1000020,
+          999995,
+          1
+        ],
+        [
+          1000020,
+          1000005,
+          0
+        ],
+        [
+          1000000,
+          1000005,
+          1
+        ]
+      ],
+      "chiusa": true
+    },
+    "distanza": 2,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "done",
+    "motivo": "none",
+    "semplice": true,
+    "polilinea": {
+      "vertici": [
+        [
+          {
+            "valore": 1000000.0,
+            "tolleranza": 3.552802496642471e-09
+          },
+          {
+            "valore": 999997.0,
+            "tolleranza": 3.552802496642471e-09
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 1000020.0,
+            "tolleranza": 3.552802496642471e-09
+          },
+          {
+            "valore": 999997.0,
+            "tolleranza": 3.552802496642471e-09
+          },
+          "1"
+        ],
+        [
+          {
+            "valore": 1000020.0,
+            "tolleranza": 3.552802496642471e-09
+          },
+          {
+            "valore": 1000003.0,
+            "tolleranza": 3.552802496642471e-09
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 1000000.0,
+            "tolleranza": 3.552802496642471e-09
+          },
+          {
+            "valore": 1000003.0,
+            "tolleranza": 3.552802496642471e-09
+          },
+          "1"
+        ]
+      ],
+      "chiusa": true
+    },
+    "origini": [
+      {
+        "origine": "source",
+        "indice": "0"
+      },
+      {
+        "origine": "source",
+        "indice": "1"
+      },
+      {
+        "origine": "source",
+        "indice": "2"
+      },
+      {
+        "origine": "source",
+        "indice": "3"
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Centri (0,0) e (20,0), raggi 5-d. Per d<5 gli estremi spostati coincidono esattamente e non servono giunzioni: restano quattro pezzi tangenti, disgiunti dall’ingresso. Per d=5 i due semicerchi spariscono; i due segmenti opposti su y=0 hanno già gli estremi comuni, quindi il passo 2 non crea giunzioni; il controllo finale trova sovrapposizione oltre i vertici: selfIntersection. Per d=6 i semicerchi spariscono e le rette y=1 e y=-1 non si incontrano: sorgenti non consecutive, openJoint. Traslazione esatta di entrambi gli assi di 1000000: tutti i dati interi restano rappresentabili; le decisioni e le origini sono invariate. Le coordinate costruite hanno tolleranza 2^-48*max(M,|x|,|y|), qui esattamente rappresentabile; M include estremi, punti medi degli archi e |d|. I bulge 0 e 1 non modificati sono dati esatti."
+  }
+}

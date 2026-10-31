@@ -1,0 +1,93 @@
+{
+  "versione": 1,
+  "id": "parallela-polilinea-conca-arco-sparito-incontro",
+  "componente": "geom2d",
+  "descrizione": "#22, caso 4: arco interno semicircolare di raggio 3 minore di d=5 con vicini perpendicolari che si incontrano.",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          20,
+          0,
+          1
+        ],
+        [
+          26,
+          0,
+          0
+        ],
+        [
+          26,
+          30,
+          0
+        ]
+      ],
+      "chiusa": false
+    },
+    "distanza": 5,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "done",
+    "motivo": "none",
+    "semplice": false,
+    "polilinea": {
+      "vertici": [
+        [
+          {
+            "valore": 0.0,
+            "tolleranza": 1.0658141036401503e-13
+          },
+          {
+            "valore": 5.0,
+            "tolleranza": 1.0658141036401503e-13
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 21.0,
+            "tolleranza": 1.0658141036401503e-13
+          },
+          {
+            "valore": 5.0,
+            "tolleranza": 1.0658141036401503e-13
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 21.0,
+            "tolleranza": 1.0658141036401503e-13
+          },
+          {
+            "valore": 30.0,
+            "tolleranza": 1.0658141036401503e-13
+          },
+          "0"
+        ]
+      ],
+      "chiusa": false
+    },
+    "origini": [
+      {
+        "origine": "source",
+        "indice": "0"
+      },
+      {
+        "origine": "source",
+        "indice": "2"
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Polilinea aperta di tre pezzi: segmento, arco con bulge 1 (semicerchio di centro (23,0) e raggio 3), segmento perpendicolare. Con distanza 5 dal lato del centro dell'arco, l'arco sparisce al passo 1 (R-d = 3-5 = -2 <= 0). I segmenti spostati stanno sulle rette y=5 e x=21 e si incontrano nell'unico punto comune (21,5). Al passo 3, il segmento 0 si estende a (21,5) e il segmento 2 si taglia a (21,5); entrambi conservano la direzione originaria (+x e +y). Nessun pezzo gira al contrario; simple è falso perché un pezzo è sparito. I pezzi del risultato sono consecutivi e si incontrano solo nella giunzione comune; il risultato non tocca la polilinea di partenza. M=30 (comprensivo del punto m=(23,-3) e del vertice (26,30)); le coordinate costruite hanno tolleranza 2^-48*max(M,|p|) = 30*2^-48 = 1.0658141036401503e-13. I bulge 0 dei segmenti sono esatti. Nessun valore ricavato eseguendo solid-space."
+  }
+}
