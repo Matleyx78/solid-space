@@ -235,6 +235,33 @@ geom2d/bordo-stesso-cerchio-raggi-pavimento-successivo #49
 geom2d/bordo-stesso-cerchio-raggi-pavimento-uguale #49
 geom2d/bordo-stesso-cerchio-raggi-relativa-successivo #49
 geom2d/bordo-stesso-cerchio-raggi-relativa-uguale #49
+
+# [0.2-R10a]
+geom2d/intersezione-richiesta-x-origine #54
+geom2d/intersezione-richiesta-cerchio-tangente-origine #54
+geom2d/intersezione-richiesta-cerchio-esterna-origine #54
+geom2d/intersezione-richiesta-cerchio-interna-origine #54
+geom2d/intersezione-richiesta-t-origine #54
+geom2d/intersezione-richiesta-prolungata-origine #54
+geom2d/intersezione-richiesta-non-prolungata-origine #54
+geom2d/intersezione-richiesta-sovrapposizione30-origine #54
+geom2d/intersezione-richiesta-x-traslato #54
+geom2d/intersezione-richiesta-cerchio-tangente-traslato #54
+geom2d/intersezione-richiesta-cerchio-esterna-traslato #54
+geom2d/intersezione-richiesta-cerchio-interna-traslato #54
+geom2d/intersezione-richiesta-t-traslato #54
+geom2d/intersezione-richiesta-prolungata-traslato #54
+geom2d/intersezione-richiesta-non-prolungata-traslato #54
+geom2d/intersezione-richiesta-sovrapposizione30-traslato #54
+geom2d/intersezione-richiesta-x-scalato #54
+geom2d/intersezione-richiesta-cerchio-tangente-scalato #54
+geom2d/intersezione-richiesta-cerchio-esterna-scalato #54
+geom2d/intersezione-richiesta-cerchio-interna-scalato #54
+geom2d/intersezione-richiesta-t-scalato #54
+geom2d/intersezione-richiesta-prolungata-scalato #54
+geom2d/intersezione-richiesta-non-prolungata-scalato #54
+geom2d/intersezione-richiesta-sovrapposizione30-scalato #54
+
 # [0.2-R9]
 geom2d/lato-richiesta20-caso7-origine-sopra #51
 geom2d/lato-richiesta20-caso7-origine-sotto #51
