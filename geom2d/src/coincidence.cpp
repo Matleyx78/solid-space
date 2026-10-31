@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <optional>
 #include <variant>
 
 namespace solid_space::geom2d {
@@ -58,31 +59,32 @@ bool nearRadii(const CircleSupport& a, const CircleSupport& b, const Dyadic& eps
     return exact::signOf(first + second - limit, Dyadic(-2.0), first * second) != Sign::positive;
 }
 
-Result<detail::CurveMeaning> circularMeaning(const Curve& curve, std::size_t input) {
-    auto result = detail::checkedMeaning(curve, input);
-    if (!result.hasValue()) {
-        return result.diagnosis();
+std::optional<Diagnosis> circularDiagnosis(const Curve& curve, std::size_t input) {
+    if (const auto diagnosis = detail::check(curve, input)) {
+        return diagnosis;
     }
-    if (std::holds_alternative<detail::LineMeaning>(result.value().support)) {
+    const auto* piece = std::get_if<PolylineSegment>(&curve);
+    if (std::holds_alternative<Segment>(curve) ||
+        (piece != nullptr && Dyadic(piece->bulge).isZero())) {
         return Diagnosis{DiagnosisCode::notCircular, input, "the curve is straight"};
     }
-    return result;
+    return std::nullopt;
 }
 
 Result<bool> compareCircles(const Curve& first, const Curve& second,
                             const robust::TolerancePolicy& policy, bool compareRadii) {
-    const auto a = circularMeaning(first, 0);
-    if (!a.hasValue()) {
-        return a.diagnosis();
+    if (const auto diagnosis = circularDiagnosis(first, 0)) {
+        return *diagnosis;
     }
-    const auto b = circularMeaning(second, 1);
-    if (!b.hasValue()) {
-        return b.diagnosis();
+    if (const auto diagnosis = circularDiagnosis(second, 1)) {
+        return *diagnosis;
     }
-    const double size = std::max(a.value().magnitude, b.value().magnitude);
+    const auto a = detail::meaningOf(first);
+    const auto b = detail::meaningOf(second);
+    const double size = std::max(a.magnitude, b.magnitude);
     const auto epsilonSquared = squared(Dyadic(policy.epsilon(size)));
-    const auto& circleA = std::get<ArcMeaning>(a.value().support).circle;
-    const auto& circleB = std::get<ArcMeaning>(b.value().support).circle;
+    const auto& circleA = std::get<ArcMeaning>(a.support).circle;
+    const auto& circleB = std::get<ArcMeaning>(b.support).circle;
     return nearCenters(circleA, circleB, epsilonSquared) &&
            (!compareRadii || nearRadii(circleA, circleB, epsilonSquared));
 }
