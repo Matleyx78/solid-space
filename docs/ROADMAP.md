@@ -174,3 +174,16 @@ Decisioni del responsabile che cambiano le regole o le tappe, in ordine di data.
   servirà a Tecnigrafo, nascerà da una richiesta. Correggono l'[ADR
   0012](adr/0012-curva-parallela-nel-piano.md) (riga **Corretto:**), i commenti
   di `offset.hpp` e la scheda di P14.
+- **2026-10-31: estremo libero e inversione di 180° nella curva parallela.** I
+  pacchetti di riferimenti R14a e R14c (issue #60 e #62), ripresi dopo la
+  correzione precedente, si sono fermati di nuovo su due punti in cui il
+  contratto non determinava il risultato, e il responsabile decide: togliere un
+  pezzo che le giunzioni girano al contrario non ripristina l'estremo del suo
+  vicino, e l'estremo rimasto libero di una polilinea aperta conserva il taglio
+  (la L `[(0,0),(4,0),(4,20)]` con distanza 5 dà il solo lato lungo, da (−1, 5) a
+  (−1, 20)); con tangenti esattamente opposte l'arco di giunzione è la
+  semicirconferenza che continua in tangenza i pezzi spostati, oraria per
+  distanza positiva e antioraria per negativa, perché l'altra ripercorre la
+  polilinea di partenza e di norma dà `meetsOriginal`. Correggono l'[ADR
+  0012](adr/0012-curva-parallela-nel-piano.md) (riga **Corretto:**), i commenti
+  di `offset.hpp` e la scheda di P14.

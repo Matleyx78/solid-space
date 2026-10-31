@@ -142,12 +142,19 @@ struct PolylineOffset {
 ///      start there.
 ///    - Otherwise, if their source pieces are consecutive, by an arc of radius
 ///      |distance| centred on V, from the end of A to the start of B, turning
-///      as the input turns at V. Both ends lie exactly at |distance| from V.
+///      as the input turns at V (by the tangents of the two source pieces
+///      there). Both ends lie exactly at |distance| from V. When those
+///      tangents are exactly opposite the turn has no sign: the arc is then the
+///      half circle that continues the offset pieces tangentially, clockwise
+///      for a positive distance and counterclockwise for a negative one.
 ///    - Otherwise the offset fails with openJoint: no such arc ends on both.
 /// 3. A piece that its joints turn backwards (its new end lies before its new
 ///    start along it, or an arc whose sweep would change sign) is removed, and
-///    its neighbours are joined again as in step 2. Steps 2 and 3 repeat until
-///    no piece is removed.
+///    its neighbours are joined again as in step 2. Removing a piece never
+///    restores the end that a joint gave to its neighbour: an end left without
+///    a neighbour, the free end of an open polyline, keeps its cut, and only an
+///    end that was never cut stays where step 1 put it. Steps 2 and 3 repeat
+///    until no piece is removed.
 /// 4. Pieces of the result that are exactly a single point are dropped.
 ///
 /// The result is checked on its own doubles before it is returned, so that

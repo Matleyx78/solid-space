@@ -7,6 +7,12 @@
   in cui il contratto non tornava: la distanza zero (punto 2) e le curve
   sovrapposte nelle giunzioni (punto 4), che decide il caso g di
   `autocad-offset.dxf` con distanza 5 (valutazione, «Su che cosa si basa»).
+- **Corretto:** 2026-10-31 — altri due chiarimenti, decisi dal responsabile quando
+  gli stessi pacchetti di riferimenti, ripresi dopo il primo, si sono fermati di
+  nuovo (issue #60 e #62) su due punti in cui il contratto non determinava il
+  risultato: l'estremo che resta libero quando si toglie un pezzo e il verso
+  dell'arco di giunzione a tangenti esattamente opposte (punto 4; tabella, caso 3;
+  «Verifica»).
 - **Richiesta:** #22 — da Tecnigrafo: tappa 0.7, Matleyx78/tecnigrafo#328
 - **Esito:** 3 pezzo nostro
 - **Tappa:** 0.2 (scheda da scrivere all'apertura)
@@ -66,7 +72,7 @@ per scriverlo al suo utente. Il testo completo è nella issue #22.
 |---|---|
 | 1. Rettangolo chiuso 100×50, `d` = 10, verso l'interno e l'esterno | semplici: il rettangolo 80×30 dentro e 120×70 fuori, con gli spigoli vivi, perché due lati consecutivi prolungati si incontrano sempre |
 | 2. Asola (due segmenti paralleli e due semicerchi tangenti), verso l'interno e l'esterno | semplici se `d` è minore del raggio R dei semicerchi verso l'interno, e sempre verso l'esterno: l'asola con semicerchi di raggio R − `d` o R + `d`. Nei punti di tangenza i pezzi spostati hanno lo stesso estremo esatto, quindi non serve una giunzione. Verso l'interno con `d` ≥ R i semicerchi si annullano e le due rette spostate non si incontrano o coincidono: `failed` |
-| 3. Polilinea a L con un lato più corto di `d`, verso l'interno dell'angolo | non semplice: il lato corto, tagliato dalla giunzione, gira al contrario e si toglie (passo 3); il risultato è quello dei passi, senza autointersezioni, oppure `failed` |
+| 3. Polilinea a L con un lato più corto di `d`, verso l'interno dell'angolo | non semplice: il lato corto, tagliato dalla giunzione, gira al contrario e si toglie (passo 3); il risultato è quello dei passi, senza autointersezioni, oppure `failed`. Il vicino resta tagliato dalla giunzione (punto 4): la L `[(0,0),(4,0),(4,20)]` con `d` = 5 dà il solo lato lungo, da (−1, 5) a (−1, 20) |
 | 4. Polilinea con un arco interno di raggio minore di `d` | non semplice: l'arco si annulla (passo 1, confronto esatto tra raggio e distanza) e i vicini si uniscono nel loro punto comune; se non si incontrano, `failed` con `openJoint` |
 | 5. Polilinea a U stretta, `d` maggiore di metà larghezza | il fondo gira al contrario e si toglie, i due lati spostati sono paralleli e non si incontrano: `failed` con `openJoint`. AutoCAD non crea nulla (caso f di `autocad-offset.dxf`) |
 | 6. Gli stessi casi a coordinate dell'ordine di 1e6 | le stesse risposte per i dati traslati, che sono già arrotondati; gli errori sono relativi a M = 1e6 (circa 3.6e-9 per i vertici, 1.4e-8 per le curve) |
@@ -133,7 +139,15 @@ per scriverlo al suo utente. Il testo completo è nella issue #22.
    se un pezzo gira al contrario) sono esatte. Due curve prolungate si
    incontrano solo se hanno punti comuni isolati: due curve sovrapposte (la
    stessa retta o lo stesso cerchio) non si incontrano, quindi la giunzione tra
-   pezzi non consecutivi dà `openJoint`.
+   pezzi non consecutivi dà `openJoint`. Togliere un pezzo non ripristina
+   l'estremo che una giunzione ha dato al suo vicino: un estremo rimasto senza
+   vicino, il capo libero di una polilinea aperta, conserva il taglio; solo un
+   estremo mai tagliato resta lo spostamento del passo 1. L'arco di giunzione
+   gira come gira l'ingresso nel vertice, secondo le tangenti dei due pezzi di
+   partenza; se le tangenti sono esattamente opposte il giro non ha segno, e
+   l'arco è la semicirconferenza che continua in tangenza i pezzi spostati:
+   oraria per `d` positiva, antioraria per `d` negativa. L'altra ripercorrerebbe
+   la polilinea di partenza, e di norma darebbe `meetsOriginal`.
 5. **Mai un risultato sbagliato in silenzio.** Prima di restituire `done`,
    `offsetPolyline` controlla sui `double` del risultato che due pezzi non
    consecutivi non abbiano punti comuni (esatto, come `intersect()`), che due
@@ -216,9 +230,11 @@ realizzato.
     disegna due archi (valutazione, «Su che cosa si basa»);
   - i casi limite: distanza esattamente uguale al raggio (`vanished`) e un ulp
     sotto; pezzi tangenti nei vertici, aperti e chiusi; vertici ripetuti;
-    inversione di 180° (giunzione ad arco); polilinea di un solo pezzo; distanza
-    zero (`failed` con `meetsOriginal`); giunzione oltre il dominio; un caso
-    `failed` per ciascun motivo.
+    inversione di 180° (giunzione ad arco, con il verso del punto 4:
+    `[(0,0),(10,0),(0,0)]` con `d` = 1 dà la semicirconferenza oraria, bulge −1,
+    e con `d` = −1 quella antioraria); polilinea di un solo pezzo; distanza zero
+    (`failed` con `meetsOriginal`); giunzione oltre il dominio; un caso `failed`
+    per ciascun motivo.
 - **Valori attesi** da aritmetica esatta: le decisioni con `fractions` di Python
   e confronti tra numeri algebrici; vertici e curve con il modulo `decimal` ad
   alta precisione, con la tolleranza del caso pari all'errore dichiarato. Per i

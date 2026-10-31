@@ -44,8 +44,12 @@ lettera il commento dell'intestazione:
    al vertice (confronto esatto, a parità il primo lungo A; prolungamenti
    sovrapposti, la stessa retta o lo stesso cerchio, non si incontrano), oppure
    con un arco di raggio |d| centrato nel vertice se i pezzi di partenza sono
-   consecutivi, altrimenti `failed` con `openJoint`; pezzi girati al contrario tolti, con le
-   giunzioni rifatte finché nessun pezzo si toglie; pezzi del risultato ridotti a
+   consecutivi (con le tangenti nel vertice esattamente opposte, la
+   semicirconferenza che continua in tangenza i pezzi spostati: oraria per d
+   positiva, antioraria per d negativa), altrimenti `failed` con `openJoint`;
+   pezzi girati al contrario tolti, con le giunzioni rifatte finché nessun pezzo
+   si toglie (un estremo rimasto senza vicino conserva il taglio; solo un estremo
+   mai tagliato resta lo spostamento del passo 1); pezzi del risultato ridotti a
    un punto tolti;
 3. **il controllo finale sui `double` del risultato**, prima di dare `done`: due
    pezzi non consecutivi senza punti comuni (esatto, come `intersect`); due pezzi
@@ -80,7 +84,10 @@ la tolleranza che corrisponde, per la sua corda, a uno scostamento della curva d
 - **#22, casi 1–6:** il rettangolo 100×50 con d = 10 dentro e fuori (80×30 e
   120×70, spigoli vivi); l'asola dentro con d minore del raggio, dentro con d
   uguale o maggiore (`failed`), fuori; la L con un lato più corto di d verso
-  l'interno; la polilinea con un arco interno di raggio minore di d; la U stretta
+  l'interno (`[(0,0),(4,0),(4,20)]` con d = 5 dà `done`, `semplice` falso,
+  `[(-1,5,0),(-1,20,0)]` e origine source 1: l'estremo libero conserva il
+  taglio, ADR 0012 punto 4); la polilinea con un arco interno di raggio minore
+  di d; la U stretta
   con d maggiore di metà larghezza (`failed`, `openJoint`); e gli stessi a
   coordinate di 1e6, con le risposte della tabella dell'ADR 0012;
 - **il caso g di `autocad-offset.dxf`** (la conca con un arco di raggio 3, con
@@ -100,7 +107,11 @@ la tolleranza che corrisponde, per la sua corda, a uno scostamento della curva d
 
 - distanza esattamente uguale al raggio di un pezzo (sparisce) e un ulp sotto;
   pezzi tangenti nei vertici, aperti e chiusi (nessuna giunzione: stesso estremo
-  esatto); vertici ripetuti; inversione di 180° (giunzione ad arco); polilinea di
+  esatto); vertici ripetuti; inversione di 180° (giunzione ad arco, con il verso
+  del punto 4 dell'ADR 0012: `[(0,0),(10,0),(0,0)]` con d = 1 dà `done`,
+  `semplice` vero, `[(0,1,0),(10,1,-1),(10,-1,0),(0,-1,0)]` e origini source 0,
+  gap 1, source 1; con d = −1 la semicirconferenza antioraria,
+  `[(0,-1,0),(10,-1,1),(10,1,0),(0,1,0)]`); polilinea di
   un solo pezzo (come `offsetCurve`); distanza zero (`failed` con
   `meetsOriginal`, decisione del responsabile del 2026-10-31, issue #62);
 - un caso `failed` per ciascun motivo (`openJoint`, `beyondDomain`,
