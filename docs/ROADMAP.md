@@ -155,3 +155,13 @@ Decisioni del responsabile che cambiano le regole o le tappe, in ordine di data.
   pacchetti che toccano gli stessi file
   ([LAVORO-IN-PARALLELO.md](LAVORO-IN-PARALLELO.md), "Preparare il piano"), come
   già si fa in Tecnigrafo.
+- **2026-10-31: due chiarimenti alla curva parallela.** I pacchetti di
+  riferimenti R14a e R14c (issue #60 e #62) si sono fermati su due punti in cui
+  il contratto non tornava, e il responsabile decide: con distanza zero
+  `offsetCurve` dà la curva stessa e `offsetPolyline` dà `failed` con
+  `meetsOriginal`; due curve sovrapposte non si incontrano, quindi il caso g di
+  `autocad-offset.dxf` con distanza 5, dove AutoCAD chiude la giunzione con due
+  archi, dà `failed` con `openJoint`. Chiudere la giunzione come AutoCAD, se
+  servirà a Tecnigrafo, nascerà da una richiesta. Correggono l'[ADR
+  0012](adr/0012-curva-parallela-nel-piano.md) (riga **Corretto:**), i commenti
+  di `offset.hpp` e la scheda di P14.

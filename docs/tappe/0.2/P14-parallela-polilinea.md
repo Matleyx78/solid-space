@@ -41,9 +41,10 @@ lettera il commento dell'intestazione:
    spariti;
 2. **i quattro passi sui valori esatti**: spostamento dei pezzi come
    `offsetCurve` (P13); giunzioni nel punto comune dei prolungamenti più vicino
-   al vertice (confronto esatto, a parità il primo lungo A), oppure con un arco di
-   raggio |d| centrato nel vertice se i pezzi di partenza sono consecutivi,
-   altrimenti `failed` con `openJoint`; pezzi girati al contrario tolti, con le
+   al vertice (confronto esatto, a parità il primo lungo A; prolungamenti
+   sovrapposti, la stessa retta o lo stesso cerchio, non si incontrano), oppure
+   con un arco di raggio |d| centrato nel vertice se i pezzi di partenza sono
+   consecutivi, altrimenti `failed` con `openJoint`; pezzi girati al contrario tolti, con le
    giunzioni rifatte finché nessun pezzo si toglie; pezzi del risultato ridotti a
    un punto tolti;
 3. **il controllo finale sui `double` del risultato**, prima di dare `done`: due
@@ -84,18 +85,24 @@ la tolleranza che corrisponde, per la sua corda, a uno scostamento della curva d
   coordinate di 1e6, con le risposte della tabella dell'ADR 0012;
 - **il caso g di `autocad-offset.dxf`** (la conca con un arco di raggio 3, con
   d = 2 e d = 5): i valori attesi si calcolano con i quattro passi di
-  `offset.hpp`, e si confrontano con ciò che AutoCAD ha disegnato. Se
-  differiscono (l'ADR 0012 lo teme per d = 5), il caso non si scrive: R14a si
-  ferma su quel caso e lo scrive nella issue, e decide il responsabile con
-  l'etichetta `contratto`. R14a non registra il DXF in `sorgenti.json`: i valori
-  vengono dal calcolo, e la descrizione cita il file e il caso.
+  `offset.hpp`. Con d = 5 AutoCAD disegna due archi di raggio 5, centrati negli
+  estremi dell'arco sparito, che si incontrano in (473, 4); i passi, con la
+  regola dell'ADR 0012 (punto 4: le curve sovrapposte non si incontrano), danno
+  invece `failed` con `openJoint` e `semplice` falso, ed è questo l'atteso. La
+  descrizione del caso dice che AutoCAD fa diversamente e come (decisione del
+  responsabile del 2026-10-31, issue #60). Con d = 2 si confronta con ciò che
+  AutoCAD ha disegnato; se differisce, R14a si ferma su quel caso e decide il
+  responsabile con l'etichetta `contratto`. R14a non registra il DXF in
+  `sorgenti.json`: i valori vengono dal calcolo, e la descrizione cita il file e
+  il caso.
 
 **R14c** (codex) copre i casi limite della «Verifica» dell'ADR 0012:
 
 - distanza esattamente uguale al raggio di un pezzo (sparisce) e un ulp sotto;
   pezzi tangenti nei vertici, aperti e chiusi (nessuna giunzione: stesso estremo
   esatto); vertici ripetuti; inversione di 180° (giunzione ad arco); polilinea di
-  un solo pezzo (come `offsetCurve`); distanza zero;
+  un solo pezzo (come `offsetCurve`); distanza zero (`failed` con
+  `meetsOriginal`, decisione del responsabile del 2026-10-31, issue #62);
 - un caso `failed` per ciascun motivo (`openJoint`, `beyondDomain`,
   `selfIntersection`, `meetsOriginal`);
 - diagnosi della polilinea (`dato` 0) e della distanza (`dato` 1).
