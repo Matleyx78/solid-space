@@ -10,6 +10,13 @@ Questo file lo leggono Gemini CLI e Antigravity CLI. Di norma Gemini lavora ai
 Fa anche le revisioni delle pull request, la pull request di chiusura della
 tappa e i pacchetti facili, come la documentazione.
 
+Se sei **Gemini 4 Argon**, il responsabile te lo dice nel messaggio: la tua
+etichetta è `agente:gemini-argon`, non `agente:gemini`, e la tua cartella di
+build è `build-gemini-argon` (`SS_BUILD_SUFFIX=-gemini-argon`). Prendi solo le
+issue con la tua etichetta: quelle di `agente:gemini` sono di Gemini 3.8 Flash,
+che lavora sullo stesso PC. Il piano non ti assegna niente: l'etichetta la
+mette il responsabile sulle issue che ti passa, quando hai quota disponibile.
+
 Riferimenti e revisioni si fanno **a lotti**: una sessione prende di fila tutto
 il lavoro pronto, con una pull request per pacchetto (AGENTS.md, "Lavoro a
 lotti").
