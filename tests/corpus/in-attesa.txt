@@ -2,6 +2,28 @@
 # Il numero è la issue del pacchetto di lavoro che renderà il caso obbligatorio.
 # Chi fa quel pacchetto toglie la riga. La regola completa è in README.md.
 
+# [0.2-R4b]
+robust/tolleranza-unita-mm #39
+robust/tolleranza-unita-km #39
+robust/tolleranza-unita-zero #39
+robust/tolleranza-unita-negativa #39
+robust/tolleranza-unita-infinita #39
+robust/tolleranza-unita-nan #39
+robust/tolleranza-unita-pavimento-enorme #39
+robust/tolleranza-epsilon-zero #39
+robust/tolleranza-epsilon-pavimento #39
+robust/tolleranza-epsilon-relativa #39
+robust/tolleranza-coincidenza-richiesta-mm #39
+robust/tolleranza-coincidenza-richiesta-km #39
+robust/tolleranza-coincidenza-uguale #39
+robust/tolleranza-coincidenza-successivo #39
+robust/tolleranza-coincidenza-identici #39
+robust/tolleranza-coincidenza-diagonale-oltre #39
+robust/tolleranza-trascurabile-uguale #39
+robust/tolleranza-trascurabile-successivo #39
+robust/tolleranza-trascurabile-richiesta-mm #39
+robust/tolleranza-trascurabile-richiesta-km #39
+
 # [0.2-R4a]
 robust/orientamento-collineare #39
 robust/orientamento-coincidenti #39
