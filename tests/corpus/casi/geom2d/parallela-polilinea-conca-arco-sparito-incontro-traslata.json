@@ -1,0 +1,93 @@
+{
+  "versione": 1,
+  "id": "parallela-polilinea-conca-arco-sparito-incontro-traslata",
+  "componente": "geom2d",
+  "descrizione": "#22, caso 4: arco interno semicircolare di raggio 3 minore di d=5 con vicini perpendicolari che si incontrano. Coordinate traslate di 1e6 (#22, caso 6).",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          1000000,
+          1000000,
+          0
+        ],
+        [
+          1000020,
+          1000000,
+          1
+        ],
+        [
+          1000026,
+          1000000,
+          0
+        ],
+        [
+          1000026,
+          1000030,
+          0
+        ]
+      ],
+      "chiusa": false
+    },
+    "distanza": 5,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "done",
+    "motivo": "none",
+    "semplice": false,
+    "polilinea": {
+      "vertici": [
+        [
+          {
+            "valore": 1000000.0,
+            "tolleranza": 3.552820260210865e-09
+          },
+          {
+            "valore": 1000005.0,
+            "tolleranza": 3.552820260210865e-09
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 1000021.0,
+            "tolleranza": 3.552820260210865e-09
+          },
+          {
+            "valore": 1000005.0,
+            "tolleranza": 3.552820260210865e-09
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 1000021.0,
+            "tolleranza": 3.552820260210865e-09
+          },
+          {
+            "valore": 1000030.0,
+            "tolleranza": 3.552820260210865e-09
+          },
+          "0"
+        ]
+      ],
+      "chiusa": false
+    },
+    "origini": [
+      {
+        "origine": "source",
+        "indice": "0"
+      },
+      {
+        "origine": "source",
+        "indice": "2"
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Polilinea aperta di tre pezzi: segmento, arco con bulge 1 (semicerchio di raggio 3), segmento perpendicolare; coordinate traslate di 1e6 su entrambi gli assi. Con distanza 5 dal lato del centro dell'arco, l'arco sparisce al passo 1 (R-d = 3-5 = -2 <= 0). I sostegni spostati si incontrano nell'unico punto comune (1000021, 1000005). Al passo 3, nessun pezzo gira al contrario; simple è falso perché un pezzo è sparito. I pezzi del risultato sono consecutivi e si incontrano solo nella giunzione comune; il risultato non tocca la polilinea di partenza. M=1000030; le coordinate costruite hanno tolleranza 2^-48*max(M,|p|) = 1000030*2^-48 = 3.552820260210865e-09. I bulge 0 dei segmenti sono esatti. Nessun valore ricavato eseguendo solid-space."
+  }
+}
