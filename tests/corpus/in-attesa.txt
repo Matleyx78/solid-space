@@ -78,3 +78,22 @@ geom2d/bordo-stesso-cerchio-raggi-pavimento-successivo #49
 geom2d/bordo-stesso-cerchio-raggi-pavimento-uguale #49
 geom2d/bordo-stesso-cerchio-raggi-relativa-successivo #49
 geom2d/bordo-stesso-cerchio-raggi-relativa-uguale #49
+# [0.2-R16a]
+geom2d/raccordo-richiesta21-angolo-origine #70
+geom2d/raccordo-richiesta21-parallele-origine-r1 #70
+geom2d/raccordo-richiesta21-parallele-origine-r100 #70
+geom2d/raccordo-richiesta21-linea-cerchio-incrociati-origine #70
+geom2d/raccordo-richiesta21-distanti-non-entra-origine #70
+geom2d/raccordo-richiesta21-distanti-esatto-origine #70
+geom2d/raccordo-richiesta21-distanti-entra-origine #70
+geom2d/raccordo-richiesta21-quasi-allineati-origine #70
+geom2d/raccordo-richiesta21-angolo-traslato #70
+geom2d/raccordo-richiesta21-parallele-traslato-r1 #70
+geom2d/raccordo-richiesta21-linea-cerchio-incrociati-traslato #70
+geom2d/raccordo-richiesta21-distanti-non-entra-traslato #70
+geom2d/raccordo-richiesta21-distanti-esatto-traslato #70
+geom2d/raccordo-richiesta21-distanti-entra-traslato #70
+geom2d/raccordo-richiesta21-quasi-allineati-traslato #70
+geom2d/cerchio-vicino-vicino #70
+geom2d/cerchio-vicino-parita #70
+

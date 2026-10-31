@@ -1,0 +1,115 @@
+{
+  "versione": 1,
+  "id": "raccordo-richiesta21-distanti-esatto-traslato",
+  "componente": "geom2d",
+  "descrizione": "raccordo richiesta21 distanti esatto traslato.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          999990.0,
+          1000008.0
+        ],
+        "fine": [
+          1000010.0,
+          1000008.0
+        ]
+      }
+    },
+    "punto_prima": [
+      1000004.0,
+      1000008.0
+    ],
+    "seconda": {
+      "cerchio": {
+        "centro": [
+          1000000.0,
+          1000000.0
+        ],
+        "raggio": 5
+      }
+    },
+    "punto_seconda": [
+      1000003.0,
+      1000004.0
+    ],
+    "raggio": 1.5
+  },
+  "atteso": {
+    "esito": "found",
+    "centro": [
+      {
+        "valore": 1000000.0,
+        "tolleranza": 3.5527492059372893e-09
+      },
+      {
+        "valore": 1000006.5,
+        "tolleranza": 3.5527492059372893e-09
+      }
+    ],
+    "raggio": "3/2",
+    "sulla_prima": {
+      "punto": [
+        {
+          "valore": 1000000.0,
+          "tolleranza": 3.5527492059372893e-09
+        },
+        {
+          "valore": 1000008.0,
+          "tolleranza": 3.5527492059372893e-09
+        }
+      ],
+      "sulla_curva": {
+        "posizione": "inside"
+      }
+    },
+    "sulla_seconda": {
+      "punto": [
+        {
+          "valore": 1000000.0,
+          "tolleranza": 3.5527492059372893e-09
+        },
+        {
+          "valore": 1000005.0,
+          "tolleranza": 3.5527492059372893e-09
+        }
+      ],
+      "sulla_curva": {
+        "posizione": "inside"
+      }
+    },
+    "semicerchio": false,
+    "arco": {
+      "arco": {
+        "centro": [
+          {
+            "valore": 1000000.0,
+            "tolleranza": 3.5527492059372893e-09
+          },
+          {
+            "valore": 1000006.5,
+            "tolleranza": 3.5527492059372893e-09
+          }
+        ],
+        "raggio": "3/2",
+        "angolo_iniziale": {
+          "valore": 1.5707963267948966,
+          "tolleranza": 9.47399788249944e-09
+        },
+        "ampiezza": {
+          "valore": 3.141592653589793,
+          "tolleranza": 9.47399788249944e-09
+        }
+      }
+    },
+    "bulge": {
+      "valore": 0.9999999999999999,
+      "tolleranza": 9.47399788249944e-09
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Richiesta #21 caso2b e7: distanza3; centro y=8-r, x²=(5+r)²-(8-r)². A r=1.5 unico centro, tangenti diametralmente opposte; a r=2 il clic sceglie x positivo. Coordinate/radicali con Fraction e Decimal180. Punti: limite2^-48*max(M,|p|) per eccesso. Angoli con atan2 a serie; E=2^-46*M, tolleranza angolare E/r; bulge: freccia=corda*|bulge|/2, dunque tolleranza2E/corda. Il raggio chiesto è esatto; per diametro, sweep antioraria pi. M effettiva dei dati e dei clic=0x1.e849400000000p+19; tolleranze ridotte alla M effettiva e arrotondate per eccesso."
+  }
+}

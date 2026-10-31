@@ -1,0 +1,93 @@
+{
+  "versione": 1,
+  "id": "cerchio-vicino-parita",
+  "componente": "geom2d",
+  "descrizione": "cerchio vicino parita.",
+  "ingresso": {
+    "operazione": "tangentCircleNear",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          10,
+          0
+        ]
+      }
+    },
+    "vicino_prima": [
+      0,
+      0
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          0,
+          10
+        ]
+      }
+    },
+    "vicino_seconda": [
+      0,
+      0
+    ],
+    "raggio": 1
+  },
+  "atteso": {
+    "esito": "found",
+    "cerchio": {
+      "centro": [
+        {
+          "valore": -1.0,
+          "tolleranza": 3.552713678800501e-14
+        },
+        {
+          "valore": -1.0,
+          "tolleranza": 3.552713678800501e-14
+        }
+      ],
+      "sulla_prima": {
+        "punto": [
+          {
+            "valore": -1.0,
+            "tolleranza": 3.552713678800501e-14
+          },
+          {
+            "valore": 0.0,
+            "tolleranza": 3.552713678800501e-14
+          }
+        ],
+        "sulla_curva": {
+          "posizione": "beforeStart"
+        }
+      },
+      "sulla_seconda": {
+        "punto": [
+          {
+            "valore": 0.0,
+            "tolleranza": 3.552713678800501e-14
+          },
+          {
+            "valore": -1.0,
+            "tolleranza": 3.552713678800501e-14
+          }
+        ],
+        "sulla_curva": {
+          "posizione": "beforeStart"
+        }
+      },
+      "lato_prima": "right",
+      "lato_seconda": "left"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Quattro candidati(±1,±1), punti di tangenza(±1,0),(0,±1). Clic(2,0),(0,2) scelgono(1,1). Clic entrambi(0,0): quattro somme esatte2, quindi primo nell’ordine dei punti sulla prima e poi sulla seconda: (-1,-1). Nessun errore di arrotondamento influenza il pareggio su questi interi."
+  }
+}
