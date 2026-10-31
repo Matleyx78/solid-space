@@ -8,12 +8,12 @@
     "prima": {
       "segmento": {
         "inizio": [
-          0.0,
-          0.0
+          0,
+          0
         ],
         "fine": [
-          1.0,
-          0.0
+          1,
+          0
         ]
       }
     },
@@ -21,10 +21,10 @@
     "seconda": {
       "cerchio": {
         "centro": [
-          10.0,
-          0.0
+          10,
+          0
         ],
-        "raggio": 2.0
+        "raggio": 2
       }
     },
     "prolunga_seconda": "none"

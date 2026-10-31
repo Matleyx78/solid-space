@@ -8,12 +8,12 @@
     "prima": {
       "segmento": {
         "inizio": [
-          0.0,
-          0.0
+          0,
+          0
         ],
         "fine": [
-          1.0,
-          0.0
+          1,
+          0
         ]
       }
     },
@@ -21,10 +21,10 @@
     "seconda": {
       "cerchio": {
         "centro": [
-          10.0,
-          0.0
+          10,
+          0
         ],
-        "raggio": 2.0
+        "raggio": 2
       }
     },
     "prolunga_seconda": "none"
@@ -34,11 +34,11 @@
       {
         "punto": [
           {
-            "valore": 8.0,
+            "valore": 8,
             "tolleranza": 3.552713678800501e-14
           },
           {
-            "valore": 0.0,
+            "valore": 0,
             "tolleranza": 3.552713678800501e-14
           }
         ],
@@ -46,7 +46,7 @@
         "sulla_prima": {
           "posizione": "afterEnd",
           "stazione": {
-            "valore": 8.0,
+            "valore": 8,
             "tolleranza": 1.4210854715202004e-13
           }
         },
@@ -61,11 +61,11 @@
       {
         "punto": [
           {
-            "valore": 12.0,
+            "valore": 12,
             "tolleranza": 4.263256414560601e-14
           },
           {
-            "valore": 0.0,
+            "valore": 0,
             "tolleranza": 3.552713678800501e-14
           }
         ],
@@ -73,14 +73,14 @@
         "sulla_prima": {
           "posizione": "afterEnd",
           "stazione": {
-            "valore": 12.0,
+            "valore": 12,
             "tolleranza": 1.7053025658242404e-13
           }
         },
         "sulla_seconda": {
           "posizione": "inside",
           "stazione": {
-            "valore": 0.0,
+            "valore": 0,
             "tolleranza": 1.4210854715202004e-13
           }
         }

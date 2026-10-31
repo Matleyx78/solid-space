@@ -8,12 +8,12 @@
     "prima": {
       "segmento": {
         "inizio": [
-          999990.0,
-          1000005.0
+          999990,
+          1000005
         ],
         "fine": [
-          1000010.0,
-          1000005.0
+          1000010,
+          1000005
         ]
       }
     },
@@ -21,10 +21,10 @@
     "seconda": {
       "cerchio": {
         "centro": [
-          1000000.0,
-          1000000.0
+          1000000,
+          1000000
         ],
-        "raggio": 5.0
+        "raggio": 5
       }
     },
     "prolunga_seconda": "none"
@@ -34,27 +34,27 @@
       {
         "punto": [
           {
-            "valore": 1000000.0,
-            "tolleranza": 3.552749205937289e-09
+            "valore": 1000000,
+            "tolleranza": 3.552749205937289e-9
           },
           {
-            "valore": 1000005.0,
-            "tolleranza": 3.552749205937289e-09
+            "valore": 1000005,
+            "tolleranza": 3.552749205937289e-9
           }
         ],
         "contatto": "touching",
         "sulla_prima": {
           "posizione": "inside",
           "stazione": {
-            "valore": 10.0,
-            "tolleranza": 1.4210996823749156e-08
+            "valore": 10,
+            "tolleranza": 1.4210996823749156e-8
           }
         },
         "sulla_seconda": {
           "posizione": "inside",
           "stazione": {
             "valore": 7.853981633974483,
-            "tolleranza": 1.4210996823749156e-08
+            "tolleranza": 1.4210996823749156e-8
           }
         }
       }

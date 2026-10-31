@@ -8,12 +8,12 @@
     "prima": {
       "segmento": {
         "inizio": [
-          -10.0,
-          5.0
+          -10,
+          5
         ],
         "fine": [
-          10.0,
-          5.0
+          10,
+          5
         ]
       }
     },
@@ -21,10 +21,10 @@
     "seconda": {
       "cerchio": {
         "centro": [
-          0.0,
-          0.0
+          0,
+          0
         ],
-        "raggio": 5.0
+        "raggio": 5
       }
     },
     "prolunga_seconda": "none"
@@ -34,11 +34,11 @@
       {
         "punto": [
           {
-            "valore": 0.0,
+            "valore": 0,
             "tolleranza": 3.552713678800501e-14
           },
           {
-            "valore": 5.0,
+            "valore": 5,
             "tolleranza": 3.552713678800501e-14
           }
         ],
@@ -46,7 +46,7 @@
         "sulla_prima": {
           "posizione": "inside",
           "stazione": {
-            "valore": 10.0,
+            "valore": 10,
             "tolleranza": 1.4210854715202004e-13
           }
         },

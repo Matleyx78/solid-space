@@ -8,12 +8,12 @@
     "prima": {
       "segmento": {
         "inizio": [
-          0.0,
-          0.0
+          0,
+          0
         ],
         "fine": [
           0.001,
-          0.0
+          0
         ]
       }
     },
@@ -22,7 +22,7 @@
       "cerchio": {
         "centro": [
           0.01,
-          0.0
+          0
         ],
         "raggio": 0.002
       }
@@ -38,7 +38,7 @@
             "tolleranza": 3.552713678800501e-17
           },
           {
-            "valore": 0.0,
+            "valore": 0,
             "tolleranza": 3.552713678800501e-17
           }
         ],
@@ -65,7 +65,7 @@
             "tolleranza": 4.263256414560601e-17
           },
           {
-            "valore": 0.0,
+            "valore": 0,
             "tolleranza": 3.552713678800501e-17
           }
         ],
@@ -80,7 +80,7 @@
         "sulla_seconda": {
           "posizione": "inside",
           "stazione": {
-            "valore": 0.0,
+            "valore": 0,
             "tolleranza": 1.4210854715202004e-16
           }
         }

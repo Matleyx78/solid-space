@@ -21,8 +21,8 @@
     "seconda": {
       "cerchio": {
         "centro": [
-          0.0,
-          0.0
+          0,
+          0
         ],
         "raggio": 0.005
       }

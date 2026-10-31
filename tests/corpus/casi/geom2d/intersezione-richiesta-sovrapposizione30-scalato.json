@@ -8,8 +8,8 @@
     "prima": {
       "arco": {
         "centro": [
-          0.0,
-          0.0
+          0,
+          0
         ],
         "raggio": 0.005,
         "angolo_iniziale": 0,
@@ -20,8 +20,8 @@
     "seconda": {
       "arco": {
         "centro": [
-          0.0,
-          0.0
+          0,
+          0
         ],
         "raggio": 0.005,
         "angolo_iniziale": "0x1.0c152382d7366p-1",
@@ -39,25 +39,25 @@
           "punto": [
             {
               "valore": 0.004330127018922193,
-              "tolleranza": 3.552713678800501e-17
+              "tolleranza": 1.7763568394002508e-17
             },
             {
               "valore": 0.0025000000000000005,
-              "tolleranza": 3.552713678800501e-17
+              "tolleranza": 1.7763568394002508e-17
             }
           ],
           "sulla_prima": {
             "posizione": "inside",
             "stazione": {
               "valore": 0.0026179938779914945,
-              "tolleranza": 1.4210854715202004e-16
+              "tolleranza": 7.105427357601003e-17
             }
           },
           "sulla_seconda": {
             "posizione": "atStart",
             "stazione": {
-              "valore": 0.0,
-              "tolleranza": 1.4210854715202004e-16
+              "valore": 0,
+              "tolleranza": 7.105427357601003e-17
             }
           }
         },
@@ -65,25 +65,25 @@
           "punto": [
             {
               "valore": 0.0024999999999999996,
-              "tolleranza": 3.552713678800501e-17
+              "tolleranza": 1.7763568394002508e-17
             },
             {
               "valore": 0.004330127018922193,
-              "tolleranza": 3.552713678800501e-17
+              "tolleranza": 1.7763568394002508e-17
             }
           ],
           "sulla_prima": {
             "posizione": "atEnd",
             "stazione": {
               "valore": 0.005235987755982989,
-              "tolleranza": 1.4210854715202004e-16
+              "tolleranza": 7.440786129085083e-17
             }
           },
           "sulla_seconda": {
             "posizione": "inside",
             "stazione": {
               "valore": 0.0026179938779914945,
-              "tolleranza": 1.4210854715202004e-16
+              "tolleranza": 7.105427357601003e-17
             }
           }
         }
@@ -93,6 +93,6 @@
   },
   "provenienza": {
     "tipo": "aritmetica-esatta",
-    "procedimento": "Oracolo indipendente Python decimal a 180 cifre: pi=16*atan(1/5)-4*atan(1/239), atan(t)=somma (-1)^k*t^(2k+1)/(2k+1) fino a stabilità. Ingresso Decimal.from_float sul double esadecimale. Richiesta #20 caso3 e8: archi 0→60 e30→90 gradi (angoli double). Le direzioni sono separate da30 gradi, quindi per ogni arrotondamento sinCos entro2ulp si sovrappongono da D0 del secondo a D1 del primo. Coordinate con serie decimal180; stazioni=r*angolo. Limiti pubblici arrotondati per eccesso."
+    "procedimento": "Oracolo indipendente Python decimal a 180 cifre: pi=16*atan(1/5)-4*atan(1/239), atan(t)=somma (-1)^k*t^(2k+1)/(2k+1) fino a stabilità. Ingresso Decimal.from_float sul double esadecimale. Richiesta #20 caso3 e8: archi 0→60 e30→90 gradi (angoli double). Le direzioni sono separate da30 gradi, quindi per ogni arrotondamento sinCos entro2ulp si sovrappongono da D0 del secondo a D1 del primo. Coordinate con serie decimal180; stazioni=r*angolo. Limiti pubblici arrotondati per eccesso. Verifica finale del limite: M effettiva=0.005 dai soli dati geometrici (angoli e bulge esclusi, punto medio incluso); ogni tolleranza non supera il limite pubblico arrotondato per eccesso sulla M effettiva."
   }
 }

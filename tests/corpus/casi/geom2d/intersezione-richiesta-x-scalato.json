@@ -8,8 +8,8 @@
     "prima": {
       "segmento": {
         "inizio": [
-          0.0,
-          0.0
+          0,
+          0
         ],
         "fine": [
           0.01,
@@ -21,12 +21,12 @@
     "seconda": {
       "segmento": {
         "inizio": [
-          0.0,
+          0,
           0.01
         ],
         "fine": [
           0.01,
-          0.0
+          0
         ]
       }
     },
