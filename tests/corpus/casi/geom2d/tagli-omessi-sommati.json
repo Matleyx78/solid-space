@@ -1,0 +1,59 @@
+{
+  "versione": 1,
+  "id": "tagli-omessi-sommati",
+  "componente": "geom2d",
+  "descrizione": "tagli omessi sommati.",
+  "ingresso": {
+    "operazione": "intersectAlong",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          1,
+          0
+        ]
+      }
+    },
+    "prolunga": "extended",
+    "taglienti": [
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            1
+          ],
+          "fine": [
+            1,
+            "0x1.ffffffffffffep-1"
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            2
+          ],
+          "fine": [
+            1,
+            "0x1.ffffffffffffep+0"
+          ]
+        }
+      }
+    ],
+    "prolunga_taglienti": "extended"
+  },
+  "atteso": {
+    "tagli": [],
+    "sovrapposizioni": [],
+    "scartati": [],
+    "omessi_fuori_dominio": "2"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Entrambi i taglienti hanno l’unico incrocio x=2^52>2^50 con y=0. Ogni coppia omette un punto; intersectAlong somma due, senza raggruppare gli omessi."
+  }
+}
