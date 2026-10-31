@@ -1,0 +1,33 @@
+{
+  "versione": 1,
+  "id": "lato-pezzo-dritto-outside",
+  "componente": "geom2d",
+  "descrizione": "lato pezzo dritto outside.",
+  "ingresso": {
+    "operazione": "side",
+    "curva": {
+      "pezzo": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          1,
+          0
+        ],
+        "bulge": 0
+      }
+    },
+    "punto": [
+      2,
+      "-0x0.0000000000001p-1022"
+    ]
+  },
+  "atteso": {
+    "lato": "right"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Confronti esatti Fraction sui double di ingresso. Retta: D=(bx-ax)*(py-ay)-(by-ay)*(px-ax), left se positivo. Cerchio: Q=(px-cx)^2+(py-cy)^2-r^2, on se zero, dentro a sinistra per antiorario e a destra per orario. Nessuna tolleranza. La retta è interrogata oltre la fine; per l’arco (3,4) è sul resto del cerchio (angolo >1), quindi si verifica il sostegno intero."
+  }
+}

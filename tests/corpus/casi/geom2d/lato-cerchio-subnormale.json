@@ -1,0 +1,29 @@
+{
+  "versione": 1,
+  "id": "lato-cerchio-subnormale",
+  "componente": "geom2d",
+  "descrizione": "lato cerchio subnormale.",
+  "ingresso": {
+    "operazione": "side",
+    "curva": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": "0x0.0000000000001p-1022"
+      }
+    },
+    "punto": [
+      0,
+      0
+    ]
+  },
+  "atteso": {
+    "lato": "left"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Confronti esatti Fraction sui double di ingresso. Retta: D=(bx-ax)*(py-ay)-(by-ay)*(px-ax), left se positivo. Cerchio: Q=(px-cx)^2+(py-cy)^2-r^2, on se zero, dentro a sinistra per antiorario e a destra per orario. Nessuna tolleranza. Q=-(2^-1074)^2<0 anche se il quadrato non è un double rappresentabile."
+  }
+}
