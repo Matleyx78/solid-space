@@ -2,6 +2,28 @@
 # Il numero è la issue del pacchetto di lavoro che renderà il caso obbligatorio.
 # Chi fa quel pacchetto toglie la riga. La regola completa è in README.md.
 
+# [0.2-R5a]
+robust/sincos-griglia-m8 #42
+robust/sincos-griglia-m6 #42
+robust/sincos-griglia-m4 #42
+robust/sincos-griglia-m3 #42
+robust/sincos-griglia-m2 #42
+robust/sincos-griglia-m1 #42
+robust/sincos-griglia-p0 #42
+robust/sincos-griglia-p1 #42
+robust/sincos-griglia-p2 #42
+robust/sincos-griglia-p3 #42
+robust/sincos-griglia-p4 #42
+robust/sincos-griglia-p6 #42
+robust/sincos-griglia-p8 #42
+robust/sincos-massimo-positivo #42
+robust/sincos-massimo-negativo #42
+robust/sincos-vicino-massimo #42
+robust/sincos-vicino-minimo #42
+robust/sincos-zero-negativo #42
+robust/sincos-minuscolo #42
+robust/sincos-subnormale-negativo #42
+
 # [0.2-R4b]
 robust/tolleranza-unita-mm #39
 robust/tolleranza-unita-km #39
