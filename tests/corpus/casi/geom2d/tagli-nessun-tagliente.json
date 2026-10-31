@@ -1,0 +1,34 @@
+{
+  "versione": 1,
+  "id": "tagli-nessun-tagliente",
+  "componente": "geom2d",
+  "descrizione": "tagli nessun tagliente.",
+  "ingresso": {
+    "operazione": "intersectAlong",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          -2,
+          0
+        ],
+        "fine": [
+          2,
+          0
+        ]
+      }
+    },
+    "prolunga": "none",
+    "taglienti": [],
+    "prolunga_taglienti": "none"
+  },
+  "atteso": {
+    "tagli": [],
+    "sovrapposizioni": [],
+    "scartati": [],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Fraction sui double: intersezione delle rette con prodotti vettoriali esatti, parametri t=cross(c-a,d-c)/cross(b-a,d-c), u=cross(c-a,b-a)/denominatore; 0<=t,u<=1. Raggruppamento per coordinate razionali uguali, ordine per t; Location da t/u esatti. Stazioni Decimal180; tolleranze pubbliche arrotondate per eccesso."
+  }
+}

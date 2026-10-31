@@ -1,0 +1,96 @@
+{
+  "versione": 1,
+  "id": "tagli-tangenza-e-retta-stesso-punto",
+  "componente": "geom2d",
+  "descrizione": "tagli tangenza e retta stesso punto.",
+  "ingresso": {
+    "operazione": "intersectAlong",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          -2,
+          1
+        ],
+        "fine": [
+          2,
+          1
+        ]
+      }
+    },
+    "prolunga": "none",
+    "taglienti": [
+      {
+        "cerchio": {
+          "centro": [
+            0,
+            0
+          ],
+          "raggio": 1
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            0
+          ],
+          "fine": [
+            0,
+            2
+          ]
+        }
+      }
+    ],
+    "prolunga_taglienti": "none"
+  },
+  "atteso": {
+    "tagli": [
+      {
+        "punto": [
+          {
+            "valore": 0.0,
+            "tolleranza": 7.105427357601002e-15
+          },
+          {
+            "valore": 1.0,
+            "tolleranza": 7.105427357601002e-15
+          }
+        ],
+        "sull_ospite": {
+          "posizione": "inside",
+          "stazione": {
+            "valore": 2.0,
+            "tolleranza": 2.842170943040401e-14
+          }
+        },
+        "taglienti": [
+          {
+            "indice": "0",
+            "contatto": "touching",
+            "sul_tagliente": {
+              "posizione": "inside"
+            }
+          },
+          {
+            "indice": "1",
+            "contatto": "crossing",
+            "sul_tagliente": {
+              "posizione": "inside",
+              "stazione": {
+                "valore": 1.0,
+                "tolleranza": 2.842170943040401e-14
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "sovrapposizioni": [],
+    "scartati": [],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Fraction sui double: intersezione delle rette con prodotti vettoriali esatti, parametri t=cross(c-a,d-c)/cross(b-a,d-c), u=cross(c-a,b-a)/denominatore; 0<=t,u<=1. Raggruppamento per coordinate razionali uguali, ordine per t; Location da t/u esatti. Stazioni Decimal180; tolleranze pubbliche arrotondate per eccesso."
+  }
+}
