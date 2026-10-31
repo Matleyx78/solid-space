@@ -47,7 +47,10 @@ altro e prima di qualunque modifica:
    toccarla e avvisa l'utente.
 2. Una issue deve portare la **tua** etichetta `agente:…` (o il tuo nome come
    assegnatario); altrimenti non iniziare e avvisa l'utente
-   ([docs/LAVORO-IN-PARALLELO.md](docs/LAVORO-IN-PARALLELO.md)). Se è il
+   ([docs/LAVORO-IN-PARALLELO.md](docs/LAVORO-IN-PARALLELO.md)). Per ogni
+   sessione di Claude sono sue sia `agente:claude` sia `agente:claude-2`, che
+   resta solo sulle issue aperte prima della tappa che corrisponde alla 0.8 di
+   Tecnigrafo; Gemini 4 Argon ha `agente:gemini-argon`. Se è il
    responsabile ad assegnartela nella chat, aggiungi tu l'etichetta con un
    commento "Assegnato a <nome dell'agente> dal responsabile".
 3. Aggiungi `AA-Presa in carico` e scrivi il commento "Presa in carico da <nome
@@ -195,7 +198,10 @@ SS_PRESET=asan scripts/controlla.sh      # AddressSanitizer e UBSan
 ```
 
 Servono gli strumenti di [AMBIENTE-SVILUPPO.md](docs/AMBIENTE-SVILUPPO.md).
-`SS_PRESET` vale `release` se omesso; `SS_BUILD_SUFFIX` separa le cartelle di build.
+`SS_PRESET` vale `release` se omesso; `SS_BUILD_SUFFIX` separa le cartelle di build,
+così più agenti sullo stesso PC non si bloccano a vicenda: usa la tua (`-claude`,
+`-codex`, `-gemini`, `-gemini-argon`; una seconda sessione di Claude sullo stesso
+PC usa `-claude-2`).
 `--solo` presuppone che i passi precedenti siano già stati eseguiti.
 Per l'analisi dei file modificati il riferimento è `origin/main`; si può scegliere
 un altro commit con `SS_BASE_REF`. Se cambia la configurazione dell'analisi, si

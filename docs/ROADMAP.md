@@ -187,3 +187,22 @@ Decisioni del responsabile che cambiano le regole o le tappe, in ordine di data.
   polilinea di partenza e di norma dà `meetsOriginal`. Correggono l'[ADR
   0012](adr/0012-curva-parallela-nel-piano.md) (riga **Corretto:**), i commenti
   di `offset.hpp` e la scheda di P14.
+- **2026-10-31: Claude Max, Copilot Pro e la quota di Gemini 4 Argon.** Il
+  responsabile ha il piano Max di Claude e Copilot Pro, e la quota settimanale
+  di Gemini 4 Argon basta a uno o due pacchetti di riferimenti. Decide, dalla
+  tappa che corrisponde alla 0.8 di Tecnigrafo (la 0.2 resta com'è), come in
+  Tecnigrafo (Matleyx78/tecnigrafo#427):
+  - Claude prende tutti i pacchetti impegnativi e la maggior parte dei medi, con
+    Opus anche per i medi; può lavorare in più sessioni nello stesso momento con
+    la sola etichetta `agente:claude` (`agente:claude-2` resta solo sulle issue
+    già aperte, che prende qualunque sessione di Claude);
+  - Codex scrive i riferimenti con calcoli delicati dei pacchetti di Claude, in
+    fascia forte, e fa i pacchetti facili e medi che il piano non dà a Claude;
+  - Gemini 4 Argon non ha pacchetti nel piano: se ha quota, il responsabile gli
+    passa un pacchetto di Codex cambiandone l'etichetta;
+  - Copilot serve solo come revisione mirata delle pull request impegnative,
+    chiesta dal responsabile; non prende pacchetti e non apre pull request.
+
+  Regole in [LAVORO-IN-PARALLELO.md](LAVORO-IN-PARALLELO.md) ("Chi fa cosa",
+  "Modello e impegno", sezioni 2 e 6) e in [AGENTS.md](../AGENTS.md) (la tua
+  etichetta, cartelle di build).
