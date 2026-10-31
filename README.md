@@ -75,7 +75,8 @@ agenti in parallelo in [docs/LAVORO-IN-PARALLELO.md](docs/LAVORO-IN-PARALLELO.md
 
 - [docs/VISIONE.md](docs/VISIONE.md): scopo, principi e appendice "Non ora"
 - [docs/ARCHITETTURA.md](docs/ARCHITETTURA.md): componenti, dipendenze e regole
-- [docs/ROADMAP.md](docs/ROADMAP.md): tappe e decisioni del responsabile
+- [docs/ROADMAP.md](docs/ROADMAP.md): tappe e loro regole
+- [docs/DECISIONI.md](docs/DECISIONI.md): decisioni del responsabile
 - [docs/tappe/](docs/tappe/): schede delle tappe e modelli di piano e di pacchetto
 - [docs/richieste/](docs/richieste/): modello della richiesta di Tecnigrafo a solid-space
 - [docs/adr/](docs/adr/): decisioni architetturali
