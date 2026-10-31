@@ -1,0 +1,28 @@
+{
+  "versione": 1,
+  "id": "orientamento-massimo",
+  "componente": "robust",
+  "descrizione": "Orientamento esatto: massimo.",
+  "ingresso": {
+    "operazione": "orient2d",
+    "a": [
+      "-0x1.0000000000000p+50",
+      "-0x1.0000000000000p+50"
+    ],
+    "b": [
+      "0x1.0000000000000p+50",
+      "-0x1.0000000000000p+50"
+    ],
+    "c": [
+      "-0x1.0000000000000p+50",
+      "0x1.0000000000000p+50"
+    ]
+  },
+  "atteso": {
+    "segno": "positive"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Python fractions.Fraction(float.fromhex(x)) su tutte le coordinate esadecimali di ingresso. D=(bx-ax)*(cy-ay)-(by-ay)*(cx-ax), senza arrotondamenti intermedi. D ha segno positive; numeratore 5070602400912917605986812821504, denominatore 2^0. Nessuna soglia né esecuzione di solid-space."
+  }
+}

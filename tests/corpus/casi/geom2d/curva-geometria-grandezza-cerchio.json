@@ -1,0 +1,25 @@
+{
+  "versione": 1,
+  "id": "curva-geometria-grandezza-cerchio",
+  "componente": "geom2d",
+  "descrizione": "curva geometria grandezza cerchio.",
+  "ingresso": {
+    "operazione": "magnitude",
+    "curva": {
+      "cerchio": {
+        "centro": [
+          -3,
+          4
+        ],
+        "raggio": 9
+      }
+    }
+  },
+  "atteso": {
+    "grandezza": "9"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente Python decimal a 180 cifre: pi=16*atan(1/5)-4*atan(1/239), atan(t)=somma (-1)^k*t^(2k+1)/(2k+1) fino a stabilità. Ingresso Decimal.from_float sul double esadecimale. Per archi D0 e D1 stanno nei quadranti separati dalle frontiere: nessuna classificazione dipende dai 2 ulp di sinCos. Valori costruiti con serie decimal; tolleranza 2^-48 per coordinate e 2^-46 per lunghezze, moltiplicata per max(M,abs(valore esatto)), arrotondata verso +infinito. Per il pezzo m=(1,-4), quindi M=4 fuori dal rettangolo degli estremi."
+  }
+}

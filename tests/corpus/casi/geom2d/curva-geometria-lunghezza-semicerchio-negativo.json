@@ -1,0 +1,32 @@
+{
+  "versione": 1,
+  "id": "curva-geometria-lunghezza-semicerchio-negativo",
+  "componente": "geom2d",
+  "descrizione": "curva geometria lunghezza semicerchio negativo.",
+  "ingresso": {
+    "operazione": "length",
+    "curva": {
+      "pezzo": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          2,
+          0
+        ],
+        "bulge": -1
+      }
+    }
+  },
+  "atteso": {
+    "lunghezza": {
+      "valore": 3.141592653589793,
+      "tolleranza": 4.464471677451049e-14
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente Python decimal a 180 cifre: pi=16*atan(1/5)-4*atan(1/239), atan(t)=somma (-1)^k*t^(2k+1)/(2k+1) fino a stabilità. Ingresso Decimal.from_float sul double esadecimale. Per archi D0 e D1 stanno nei quadranti separati dalle frontiere: nessuna classificazione dipende dai 2 ulp di sinCos. Valori costruiti con serie decimal; tolleranza 2^-48 per coordinate e 2^-46 per lunghezze, moltiplicata per max(M,abs(valore esatto)), arrotondata verso +infinito."
+  }
+}

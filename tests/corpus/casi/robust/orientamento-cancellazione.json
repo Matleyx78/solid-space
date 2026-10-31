@@ -1,0 +1,28 @@
+{
+  "versione": 1,
+  "id": "orientamento-cancellazione",
+  "componente": "robust",
+  "descrizione": "Orientamento esatto: cancellazione.",
+  "ingresso": {
+    "operazione": "orient2d",
+    "a": [
+      "0x1.0000000000000p+50",
+      "0x1.0000000000000p+50"
+    ],
+    "b": [
+      "0x1.ffffffffffff8p+49",
+      "0x1.ffffffffffff0p+49"
+    ],
+    "c": [
+      "0x1.ffffffffffff0p+49",
+      "0x1.fffffffffffdfp+49"
+    ]
+  },
+  "atteso": {
+    "segno": "positive"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Python fractions.Fraction(float.fromhex(x)) su tutte le coordinate esadecimali di ingresso. D=(bx-ax)*(cy-ay)-(by-ay)*(cx-ax), senza arrotondamenti intermedi. D ha segno positive; numeratore 1, denominatore 2^3. Nessuna soglia né esecuzione di solid-space."
+  }
+}

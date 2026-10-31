@@ -1,0 +1,25 @@
+{
+  "versione": 1,
+  "id": "tolleranza-coincidenza-identici",
+  "componente": "robust",
+  "descrizione": "tolleranza coincidenza identici.",
+  "ingresso": {
+    "operazione": "coincident",
+    "unita_in_metri": 0.001,
+    "a": [
+      0,
+      0
+    ],
+    "b": [
+      0,
+      0
+    ]
+  },
+  "atteso": {
+    "coincidono": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "ADR 0009: f=RN(Fraction(double(1e-9))/Fraction(double(unita))), r=2^-42; epsilon=max(f,RN(r*M)). Confronti mediante Fraction, distanza al quadrato <= Fraction(epsilon)^2; nessuna esecuzione di solid-space. Il caso diagonale distingue il confronto esatto dal sqrt arrotondato a 1."
+  }
+}

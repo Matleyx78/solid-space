@@ -1,0 +1,24 @@
+{
+  "versione": 1,
+  "id": "sincos-griglia-p2",
+  "componente": "robust",
+  "descrizione": "sincos griglia p2.",
+  "ingresso": {
+    "operazione": "sinCos",
+    "angolo": "0x1.921fb54442d18p+0"
+  },
+  "atteso": {
+    "seno": {
+      "valore": 1.0,
+      "tolleranza": 4.440892098500626e-16
+    },
+    "coseno": {
+      "valore": 6.123233995736766e-17,
+      "tolleranza": 2.465190328815662e-32
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente Python decimal a 180 cifre: pi=16*atan(1/5)-4*atan(1/239), atan(t)=somma (-1)^k*t^(2k+1)/(2k+1) fino a stabilità. Ingresso Decimal.from_float sul double esadecimale. Riduzione z=x-RN(x/(2*pi))*2*pi; Taylor seno/coseno con ricorrenza dei termini fino a stabilità. Tolleranza assoluta=2*ulp(float(valore esatto)), minimo 2*2^-1074. Controllo ripetuto a 230 cifre; ingresso già arrotondato a double, non multiplo matematico di pi."
+  }
+}
