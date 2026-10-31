@@ -13,6 +13,17 @@
   risultato: l'estremo che resta libero quando si toglie un pezzo e il verso
   dell'arco di giunzione a tangenti esattamente opposte (punto 4; tabella, caso 3;
   «Verifica»).
+- **Corretto:** 2026-10-31 — cinque punti che il contratto non determinava,
+  decisi dal responsabile dopo l'analisi di AutoCAD, BricsCAD e OpenCAD Studio
+  (issue #103): (1) i pezzi girati al contrario al passo 3 si tolgono tutti
+  insieme prima di rifare le giunzioni; (2) su un arco la giunzione si raggiunge
+  con la rotazione più breve dall'estremo spostato, e a mezzo giro esatto o con
+  ampiezza di un giro o più dà `failed` con `selfIntersection`; (3) una
+  polilinea chiusa con un solo pezzo rimasto dà `failed` con `openJoint`, e se
+  nessun pezzo resta dopo i passi 1, 3 e 4 l'esito è `vanished`; (4) un pezzo
+  ridotto a un punto al passo 4 rende `simple` falso; (5) l'indice dell'arco di
+  giunzione tra pezzi resi consecutivi da vertici ripetuti è il vertice alla
+  fine del pezzo di partenza di A (punti 3, 4, 6 e 8).
 - **Richiesta:** #22 — da Tecnigrafo: tappa 0.7, Matleyx78/tecnigrafo#328
 - **Esito:** 3 pezzo nostro
 - **Tappa:** 0.2 (scheda da scrivere all'apertura)
@@ -130,7 +141,9 @@ per scriverlo al suo utente. Il testo completo è nella issue #22.
    (l'arco tiene angolo iniziale e ampiezza, quindi le stesse direzioni esatte
    D0 e D1 dell'ADR 0010); un segmento di polilinea curvo tiene il bulge, quindi
    lo stesso angolo al centro. Se il nuovo raggio, confrontato esattamente con
-   zero, è zero o negativo, la risposta è `vanished`.
+   zero, è zero o negativo, la risposta è `vanished`. Per una polilinea, se
+   nessun pezzo resta dopo i passi 1, 3 e 4 (tutti i pezzi sono spariti, tolti o
+   ridotti a un punto), la risposta è `vanished`.
 4. **Una polilinea** dà il risultato definito dai quattro passi di `offset.hpp`,
    sui valori esatti: spostamento dei pezzi, giunzioni nel punto comune più
    vicino al vertice o con un arco di raggio |`d`| centrato nel vertice, pezzi
@@ -139,15 +152,23 @@ per scriverlo al suo utente. Il testo completo è nella issue #22.
    se un pezzo gira al contrario) sono esatte. Due curve prolungate si
    incontrano solo se hanno punti comuni isolati: due curve sovrapposte (la
    stessa retta o lo stesso cerchio) non si incontrano, quindi la giunzione tra
-   pezzi non consecutivi dà `openJoint`. Togliere un pezzo non ripristina
-   l'estremo che una giunzione ha dato al suo vicino: un estremo rimasto senza
-   vicino, il capo libero di una polilinea aperta, conserva il taglio; solo un
-   estremo mai tagliato resta lo spostamento del passo 1. L'arco di giunzione
-   gira come gira l'ingresso nel vertice, secondo le tangenti dei due pezzi di
-   partenza; se le tangenti sono esattamente opposte il giro non ha segno, e
-   l'arco è la semicirconferenza che continua in tangenza i pezzi spostati:
-   oraria per `d` positiva, antioraria per `d` negativa. L'altra ripercorrerebbe
-   la polilinea di partenza, e di norma darebbe `meetsOriginal`.
+   pezzi non consecutivi dà `openJoint`; in una polilinea chiusa dà `openJoint`
+   anche quando resta un solo pezzo. Per un arco la giunzione si raggiunge con
+   la rotazione più breve dall'estremo spostato; a mezzo giro esatto o con
+   ampiezza di un giro intero o più dà `failed` con `selfIntersection`. Togliere
+   un pezzo non ripristina l'estremo che una giunzione ha dato al suo vicino: un
+   estremo rimasto senza vicino, il capo libero di una polilinea aperta,
+   conserva il taglio; solo un estremo mai tagliato resta lo spostamento del
+   passo 1. Se più pezzi girano al contrario nello stesso ciclo, si tolgono
+   tutti insieme prima di rinnovare le giunzioni. I pezzi ridotti esattamente a
+   un punto al passo 4 si tolgono e contano come pezzo eliminato (`simple`
+   falso). L'arco di giunzione gira come gira l'ingresso nel vertice, secondo le
+   tangenti dei due pezzi di partenza (se i pezzi sono resi consecutivi da
+   vertici ripetuti eliminati, l'arco fa perno sul vertice alla fine del pezzo
+   di partenza di A); se le tangenti sono esattamente opposte il giro non ha
+   segno, e l'arco è la semicirconferenza che continua in tangenza i pezzi
+   spostati: oraria per `d` positiva, antioraria per `d` negativa. L'altra
+   ripercorrerebbe la polilinea di partenza, e di norma darebbe `meetsOriginal`.
 5. **Mai un risultato sbagliato in silenzio.** Prima di restituire `done`,
    `offsetPolyline` controlla sui `double` del risultato che due pezzi non
    consecutivi non abbiano punti comuni (esatto, come `intersect()`), che due
@@ -157,10 +178,10 @@ per scriverlo al suo utente. Il testo completo è nella issue #22.
    motivo (`OffsetFailure`).
 6. **Che cosa è garantito**, la risposta alla domanda di Tecnigrafo:
    - linee, archi e cerchi: sempre `done` o `vanished`;
-   - polilinee nei **casi semplici** (nessun pezzo si annulla o si toglie, e
-     il risultato esatto resta più lontano di epsilon(M), ADR 0009, da se
-     stesso e dalla polilinea di partenza): sempre `done`, con `simple` vero,
-     e il risultato è quello esatto entro gli errori del punto 7;
+   - polilinee nei **casi semplici** (nessun pezzo si annulla, si toglie o si
+     riduce a un punto, e il risultato esatto resta più lontano di epsilon(M),
+     ADR 0009, da se stesso e dalla polilinea di partenza): sempre `done`, con
+     `simple` vero, e il risultato è quello esatto entro gli errori del punto 7;
    - polilinee negli **altri casi**: `done` con il risultato dei passi, senza
      autointersezioni e senza incontrare la polilinea di partenza, oppure
      `failed`. Può differire da AutoCAD.
@@ -171,7 +192,9 @@ per scriverlo al suo utente. Il testo completo è nella issue #22.
    la grandezza dei dati e di |`d`|.
 8. **Le origini dei pezzi.** Il risultato dice per ogni pezzo da quale pezzo
    di partenza viene, o attorno a quale vertice gira se è un arco di giunzione
-   (`OffsetPiece`), così Tecnigrafo conserva le larghezze dei pezzi che restano.
+   (`OffsetPiece`; con pezzi resi consecutivi da vertici ripetuti eliminati, il
+   vertice alla fine del pezzo di partenza di A), così Tecnigrafo conserva le
+   larghezze dei pezzi che restano.
 9. **Dominio e diagnosi** come nell'ADR 0010; una distanza non finita è
    `invalidValue`, una oltre `kMaxCoordinate` è `outOfDomain`; una giunzione
    che cadrebbe oltre il dominio dà `failed` con `beyondDomain`. I pezzi della

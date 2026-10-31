@@ -122,3 +122,16 @@ i rimandi ai documenti che cambia.
   Regole in [LAVORO-IN-PARALLELO.md](LAVORO-IN-PARALLELO.md) ("Chi fa cosa",
   "Modello e impegno", sezioni 2 e 6) e in [AGENTS.md](../AGENTS.md) (la tua
   etichetta, cartelle di build).
+- **2026-10-31: cinque chiarimenti al contratto della curva parallela.** Su
+  decisione del responsabile (issue #103, dopo l'analisi di AutoCAD, BricsCAD e
+  OpenCAD Studio): al passo 3 i pezzi girati al contrario si tolgono tutti
+  insieme prima di ricalcolare le giunzioni; la giunzione su un arco si
+  raggiunge con la rotazione più breve dall'estremo spostato (a mezzo giro
+  esatto o con ampiezza di un giro o più dà `failed` con `selfIntersection`);
+  una polilinea chiusa con un solo pezzo rimasto dà `failed` con `openJoint`; se
+  nessun pezzo resta dopo i passi 1, 3 e 4 l'esito è `vanished`; un pezzo
+  ridotto a un punto al passo 4 rende `simple` falso; l'indice di un arco di
+  giunzione tra pezzi resi consecutivi da vertici ripetuti è il vertice alla fine
+  del pezzo di partenza di A. Correggono l'[ADR 0012](adr/0012-curva-parallela-nel-piano.md)
+  (terza riga **Corretto:**), i commenti di `offset.hpp`, la scheda di P14 e la
+  scheda della tappa 0.2 in "Modifiche al piano".
