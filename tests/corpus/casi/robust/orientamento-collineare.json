@@ -1,0 +1,28 @@
+{
+  "versione": 1,
+  "id": "orientamento-collineare",
+  "componente": "robust",
+  "descrizione": "Orientamento esatto: collineare.",
+  "ingresso": {
+    "operazione": "orient2d",
+    "a": [
+      "-0x1.0000000000000p+1",
+      "-0x1.0000000000000p+2"
+    ],
+    "b": [
+      "0x0.0p+0",
+      "0x0.0p+0"
+    ],
+    "c": [
+      "0x1.8000000000000p+1",
+      "0x1.8000000000000p+2"
+    ]
+  },
+  "atteso": {
+    "segno": "zero"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Python fractions.Fraction(float.fromhex(x)) su tutte le coordinate esadecimali di ingresso. D=(bx-ax)*(cy-ay)-(by-ay)*(cx-ax), senza arrotondamenti intermedi. D=0, quindi zero."
+  }
+}
