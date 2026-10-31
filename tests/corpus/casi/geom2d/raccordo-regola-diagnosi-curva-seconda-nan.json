@@ -1,0 +1,52 @@
+{
+  "versione": 1,
+  "id": "raccordo-regola-diagnosi-curva-seconda-nan",
+  "componente": "geom2d",
+  "descrizione": "Regole del contratto fillet: diagnosi-curva-seconda-nan.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          1,
+          0
+        ]
+      }
+    },
+    "punto_prima": [
+      1,
+      0
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          "nan",
+          0
+        ],
+        "fine": [
+          0,
+          1
+        ]
+      }
+    },
+    "punto_seconda": [
+      0,
+      1
+    ],
+    "raggio": 1
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "invalidValue",
+      "dato": "1"
+    }
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Controllo dati di fillet: curve0/1, raggio2, pickFirst3, pickSecond4. Il difetto indicato dà invalidValue senza scegliere un raccordo."
+  }
+}

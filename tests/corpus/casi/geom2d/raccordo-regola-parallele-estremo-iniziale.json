@@ -1,0 +1,118 @@
+{
+  "versione": 1,
+  "id": "raccordo-regola-parallele-estremo-iniziale",
+  "componente": "geom2d",
+  "descrizione": "Regole del contratto fillet: parallele-estremo-iniziale.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          1,
+          0
+        ]
+      }
+    },
+    "punto_prima": [
+      0,
+      0
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          0,
+          2
+        ],
+        "fine": [
+          1,
+          2
+        ]
+      }
+    },
+    "punto_seconda": [
+      0,
+      2
+    ],
+    "raggio": 5
+  },
+  "atteso": {
+    "esito": "found",
+    "centro": [
+      {
+        "valore": 0,
+        "tolleranza": 1.7763568394002505e-14
+      },
+      {
+        "valore": 1,
+        "tolleranza": 1.7763568394002505e-14
+      }
+    ],
+    "raggio": "1",
+    "sulla_prima": {
+      "punto": [
+        {
+          "valore": 0,
+          "tolleranza": 1.7763568394002505e-14
+        },
+        {
+          "valore": 0,
+          "tolleranza": 1.7763568394002505e-14
+        }
+      ],
+      "sulla_curva": {
+        "posizione": "atStart"
+      }
+    },
+    "sulla_seconda": {
+      "punto": [
+        {
+          "valore": 0,
+          "tolleranza": 1.7763568394002505e-14
+        },
+        {
+          "valore": 2,
+          "tolleranza": 1.7763568394002505e-14
+        }
+      ],
+      "sulla_curva": {
+        "posizione": "atStart"
+      }
+    },
+    "semicerchio": true,
+    "arco": {
+      "arco": {
+        "centro": [
+          {
+            "valore": 0,
+            "tolleranza": 1.7763568394002505e-14
+          },
+          {
+            "valore": 1,
+            "tolleranza": 1.7763568394002505e-14
+          }
+        ],
+        "raggio": "1",
+        "angolo_iniziale": {
+          "valore": -1.5707963267948966,
+          "tolleranza": 7.105427357601002e-14
+        },
+        "ampiezza": {
+          "valore": -3.141592653589793,
+          "tolleranza": 7.105427357601002e-14
+        }
+      }
+    },
+    "bulge": {
+      "valore": -1,
+      "tolleranza": 7.105427357601002e-14
+    }
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Regola1: estremo iniziale(0,0) più vicino. Semicerchio dalla parte x<0, lontano dalla prima curva: verso orario, -pi, bulge-1. Raggio restituito1, indipendente dal richiesto5. M=5."
+  }
+}

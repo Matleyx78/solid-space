@@ -1,0 +1,52 @@
+{
+  "versione": 1,
+  "id": "raccordo-regola-vicino-diagnosi-secondo",
+  "componente": "geom2d",
+  "descrizione": "Regole del contratto fillet: vicino-diagnosi-secondo.",
+  "ingresso": {
+    "operazione": "tangentCircleNear",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          1,
+          0
+        ]
+      }
+    },
+    "vicino_prima": [
+      1,
+      0
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          0,
+          1
+        ]
+      }
+    },
+    "vicino_seconda": [
+      2251799813685248,
+      0
+    ],
+    "raggio": 1
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "outOfDomain",
+      "dato": "4"
+    }
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Diagnosi di tangentCircleNear sui punti indicati, indice4."
+  }
+}

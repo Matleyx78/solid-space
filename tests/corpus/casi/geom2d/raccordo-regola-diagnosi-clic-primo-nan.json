@@ -1,0 +1,52 @@
+{
+  "versione": 1,
+  "id": "raccordo-regola-diagnosi-clic-primo-nan",
+  "componente": "geom2d",
+  "descrizione": "Regole del contratto fillet: diagnosi-clic-primo-nan.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          1,
+          0
+        ]
+      }
+    },
+    "punto_prima": [
+      "nan",
+      0
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          0,
+          1
+        ]
+      }
+    },
+    "punto_seconda": [
+      0,
+      1
+    ],
+    "raggio": 1
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "invalidValue",
+      "dato": "3"
+    }
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Controllo dati di fillet: curve0/1, raggio2, pickFirst3, pickSecond4. Il difetto indicato dà invalidValue senza scegliere un raccordo."
+  }
+}

@@ -1,0 +1,118 @@
+{
+  "versione": 1,
+  "id": "raccordo-regola-parallele-prima-del-raggio-zero",
+  "componente": "geom2d",
+  "descrizione": "Regole del contratto fillet: parallele-prima-del-raggio-zero.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          1,
+          0
+        ]
+      }
+    },
+    "punto_prima": [
+      0.5,
+      0
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          0,
+          2
+        ],
+        "fine": [
+          1,
+          2
+        ]
+      }
+    },
+    "punto_seconda": [
+      0.5,
+      2
+    ],
+    "raggio": 0
+  },
+  "atteso": {
+    "esito": "found",
+    "centro": [
+      {
+        "valore": 1,
+        "tolleranza": 7.105427357601002e-15
+      },
+      {
+        "valore": 1,
+        "tolleranza": 7.105427357601002e-15
+      }
+    ],
+    "raggio": "1",
+    "sulla_prima": {
+      "punto": [
+        {
+          "valore": 1,
+          "tolleranza": 7.105427357601002e-15
+        },
+        {
+          "valore": 0,
+          "tolleranza": 7.105427357601002e-15
+        }
+      ],
+      "sulla_curva": {
+        "posizione": "atEnd"
+      }
+    },
+    "sulla_seconda": {
+      "punto": [
+        {
+          "valore": 1,
+          "tolleranza": 7.105427357601002e-15
+        },
+        {
+          "valore": 2,
+          "tolleranza": 7.105427357601002e-15
+        }
+      ],
+      "sulla_curva": {
+        "posizione": "atEnd"
+      }
+    },
+    "semicerchio": true,
+    "arco": {
+      "arco": {
+        "centro": [
+          {
+            "valore": 1,
+            "tolleranza": 7.105427357601002e-15
+          },
+          {
+            "valore": 1,
+            "tolleranza": 7.105427357601002e-15
+          }
+        ],
+        "raggio": "1",
+        "angolo_iniziale": {
+          "valore": -1.5707963267948966,
+          "tolleranza": 2.842170943040401e-14
+        },
+        "ampiezza": {
+          "valore": 3.141592653589793,
+          "tolleranza": 2.842170943040401e-14
+        }
+      }
+    },
+    "bulge": {
+      "valore": 1,
+      "tolleranza": 2.842170943040401e-14
+    }
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Regola1 precede il raggio0: rette a distanza2, semicerchio raggio1. Clic a metà della prima curva: distanze esatte uguali1/4, parità va alla fine(1,0). Il semicerchio è oltre x=1, antiorario. M=2; limiti pubblici."
+  }
+}

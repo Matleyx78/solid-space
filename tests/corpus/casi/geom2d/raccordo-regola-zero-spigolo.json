@@ -1,0 +1,85 @@
+{
+  "versione": 1,
+  "id": "raccordo-regola-zero-spigolo",
+  "componente": "geom2d",
+  "descrizione": "Regole del contratto fillet: zero-spigolo.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          1,
+          0
+        ]
+      }
+    },
+    "punto_prima": [
+      1,
+      0
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          0,
+          1
+        ]
+      }
+    },
+    "punto_seconda": [
+      0,
+      1
+    ],
+    "raggio": 0
+  },
+  "atteso": {
+    "esito": "found",
+    "centro": [
+      "0",
+      "0"
+    ],
+    "raggio": "0",
+    "sulla_prima": {
+      "punto": [
+        "0",
+        "0"
+      ],
+      "sulla_curva": {
+        "posizione": "atStart"
+      }
+    },
+    "sulla_seconda": {
+      "punto": [
+        "0",
+        "0"
+      ],
+      "sulla_curva": {
+        "posizione": "atStart"
+      }
+    },
+    "semicerchio": false,
+    "arco": {
+      "arco": {
+        "centro": [
+          "0",
+          "0"
+        ],
+        "raggio": "0",
+        "angolo_iniziale": "0",
+        "ampiezza": "0"
+      }
+    },
+    "bulge": "0"
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Regola2: raggio0, unico incrocio delle rette x=0 e y=0 all’origine; tutti i dati del corner e arco nullo sono esatti."
+  }
+}
