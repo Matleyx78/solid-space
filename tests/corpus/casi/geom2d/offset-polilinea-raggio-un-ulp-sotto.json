@@ -1,0 +1,68 @@
+{
+  "versione": 1,
+  "id": "offset-polilinea-raggio-un-ulp-sotto",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #22, R14c: Distanza pari al predecessore binary64 di 1: 1-2^-53.",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          -1,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "chiusa": false
+    },
+    "distanza": "0x1.fffffffffffffp-1",
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "done",
+    "motivo": "none",
+    "semplice": true,
+    "polilinea": {
+      "vertici": [
+        [
+          {
+            "valore": -1.1102230246251565e-16,
+            "tolleranza": 3.552713678800501e-15
+          },
+          {
+            "valore": 0,
+            "tolleranza": 3.552713678800501e-15
+          },
+          "1"
+        ],
+        [
+          {
+            "valore": 1.1102230246251565e-16,
+            "tolleranza": 3.552713678800501e-15
+          },
+          {
+            "valore": 0,
+            "tolleranza": 3.552713678800501e-15
+          },
+          "0"
+        ]
+      ],
+      "chiusa": false
+    },
+    "origini": [
+      {
+        "origine": "source",
+        "indice": "0"
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Distanza pari al predecessore binary64 di 1: 1-2^-53. Con Fraction, R-d=1-(1-2^-53)=2^-53>0: il semicerchio non sparisce, conserva il bulge 1 e ha estremi (-2^-53,0),(2^-53,0). Sono rappresentabili esattamente; il cerchio di raggio 2^-53 non incontra quello originale di raggio 1. Nessuna giunzione o pezzo rimosso. Coordinate costruite: tolleranza assoluta 1*2^-48, con M massimo delle coordinate degli estremi e dei punti m degli archi, di |d| e delle coordinate del risultato. Bulge 0 o ±1 esatti: copiati nei pezzi sorgente, semicirconferenza esatta nelle giunzioni; non occorre una tolleranza angolare. Nessun valore è ricavato eseguendo solid-space."
+  }
+}

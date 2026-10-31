@@ -1,0 +1,36 @@
+{
+  "versione": 1,
+  "id": "offset-polilinea-diagnosi-distanza-meno-infinita",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #22, R14c: Distanza -infinito con polilinea valida.",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ]
+      ],
+      "chiusa": false
+    },
+    "distanza": "-inf",
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "invalidValue",
+      "dato": "1"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Distanza -infinito con polilinea valida. I valori non finiti danno invalidValue; un modulo maggiore di kMaxCoordinate=2^50 dà outOfDomain. La diagnosi riguarda la distanza (dato 1), non la polilinea."
+  }
+}

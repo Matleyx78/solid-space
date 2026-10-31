@@ -1,0 +1,36 @@
+{
+  "versione": 1,
+  "id": "offset-polilinea-diagnosi-coordinata-nan",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #22, R14c: La coordinata y del primo vertice è NaN.",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          0,
+          "nan",
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ]
+      ],
+      "chiusa": false
+    },
+    "distanza": 1,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "invalidValue",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "La coordinata y del primo vertice è NaN. La diagnosi riguarda la polilinea (dato 0), prima delle costruzioni geometriche."
+  }
+}

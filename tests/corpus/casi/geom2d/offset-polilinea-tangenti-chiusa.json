@@ -1,0 +1,112 @@
+{
+  "versione": 1,
+  "id": "offset-polilinea-tangenti-chiusa",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #22, R14c: Asola chiusa con quattro giunzioni tangenti, compresa ultima-prima.",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          1
+        ],
+        [
+          4,
+          4,
+          0
+        ],
+        [
+          0,
+          4,
+          1
+        ]
+      ],
+      "chiusa": true
+    },
+    "distanza": 1,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "done",
+    "motivo": "none",
+    "semplice": true,
+    "polilinea": {
+      "vertici": [
+        [
+          {
+            "valore": 0,
+            "tolleranza": 2.1316282072803006e-14
+          },
+          {
+            "valore": 1,
+            "tolleranza": 2.1316282072803006e-14
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 4,
+            "tolleranza": 2.1316282072803006e-14
+          },
+          {
+            "valore": 1,
+            "tolleranza": 2.1316282072803006e-14
+          },
+          "1"
+        ],
+        [
+          {
+            "valore": 4,
+            "tolleranza": 2.1316282072803006e-14
+          },
+          {
+            "valore": 3,
+            "tolleranza": 2.1316282072803006e-14
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 0,
+            "tolleranza": 2.1316282072803006e-14
+          },
+          {
+            "valore": 3,
+            "tolleranza": 2.1316282072803006e-14
+          },
+          "1"
+        ]
+      ],
+      "chiusa": true
+    },
+    "origini": [
+      {
+        "origine": "source",
+        "indice": "0"
+      },
+      {
+        "origine": "source",
+        "indice": "1"
+      },
+      {
+        "origine": "source",
+        "indice": "2"
+      },
+      {
+        "origine": "source",
+        "indice": "3"
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Asola chiusa con quattro giunzioni tangenti, compresa ultima-prima. I centri dei semicerchi sono (4,2),(0,2), i raggi 2 diventano 1; i segmenti y=0 e y=4 diventano y=1 e y=3. Ogni coppia consecutiva conserva lo stesso estremo esatto, senza gap. I pezzi non consecutivi sono disgiunti e l’asola risultante è interna e disgiunta dall’originale. Coordinate costruite: tolleranza assoluta 6*2^-48, con M massimo delle coordinate degli estremi e dei punti m degli archi, di |d| e delle coordinate del risultato. Bulge 0 o ±1 esatti: copiati nei pezzi sorgente, semicirconferenza esatta nelle giunzioni; non occorre una tolleranza angolare. Nessun valore è ricavato eseguendo solid-space."
+  }
+}

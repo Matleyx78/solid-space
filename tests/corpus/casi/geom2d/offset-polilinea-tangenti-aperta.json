@@ -1,0 +1,88 @@
+{
+  "versione": 1,
+  "id": "offset-polilinea-tangenti-aperta",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #22, R14c: Segmento e semicerchio consecutivi tangenti nel vertice (4,0).",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          1
+        ],
+        [
+          4,
+          4,
+          0
+        ]
+      ],
+      "chiusa": false
+    },
+    "distanza": 1,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "done",
+    "motivo": "none",
+    "semplice": true,
+    "polilinea": {
+      "vertici": [
+        [
+          {
+            "valore": 0,
+            "tolleranza": 2.1316282072803006e-14
+          },
+          {
+            "valore": 1,
+            "tolleranza": 2.1316282072803006e-14
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 4,
+            "tolleranza": 2.1316282072803006e-14
+          },
+          {
+            "valore": 1,
+            "tolleranza": 2.1316282072803006e-14
+          },
+          "1"
+        ],
+        [
+          {
+            "valore": 4,
+            "tolleranza": 2.1316282072803006e-14
+          },
+          {
+            "valore": 3,
+            "tolleranza": 2.1316282072803006e-14
+          },
+          "0"
+        ]
+      ],
+      "chiusa": false
+    },
+    "origini": [
+      {
+        "origine": "source",
+        "indice": "0"
+      },
+      {
+        "origine": "source",
+        "indice": "1"
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Segmento e semicerchio consecutivi tangenti nel vertice (4,0). Il cerchio ha centro (4,2), R=2 e m=(6,2); con d=1 diventa R=1. Il segmento spostato termina esattamente in (4,1), estremo iniziale del semicerchio: nessuna giunzione. Unico incontro dei due pezzi in (4,1); risultato disgiunto dall’originale. Coordinate costruite: tolleranza assoluta 6*2^-48, con M massimo delle coordinate degli estremi e dei punti m degli archi, di |d| e delle coordinate del risultato. Bulge 0 o ±1 esatti: copiati nei pezzi sorgente, semicirconferenza esatta nelle giunzioni; non occorre una tolleranza angolare. Nessun valore è ricavato eseguendo solid-space."
+  }
+}

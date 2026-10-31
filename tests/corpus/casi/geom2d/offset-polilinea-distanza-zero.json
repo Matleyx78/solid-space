@@ -1,0 +1,35 @@
+{
+  "versione": 1,
+  "id": "offset-polilinea-distanza-zero",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #22, R14c: Distanza zero, secondo la decisione del 2026-10-31.",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ]
+      ],
+      "chiusa": false
+    },
+    "distanza": 0,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "failed",
+    "motivo": "meetsOriginal",
+    "semplice": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Distanza zero, secondo la decisione del 2026-10-31. Il solo segmento rimane (0,0)-(10,0), senza pezzi rimossi; simple vero. La sovrapposizione con l’originale impone failed/meetsOriginal; non esistono coppie di pezzi che possano autointersecarsi."
+  }
+}

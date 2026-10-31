@@ -1,0 +1,45 @@
+{
+  "versione": 1,
+  "id": "offset-polilinea-autointersezione-doppio-giro",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #22, R14c: Cerchio percorso due volte da quattro semicirconferenze antiorarie, senza pezzi degeneri.",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          2,
+          0,
+          1
+        ],
+        [
+          -2,
+          0,
+          1
+        ],
+        [
+          2,
+          0,
+          1
+        ],
+        [
+          -2,
+          0,
+          1
+        ]
+      ],
+      "chiusa": true
+    },
+    "distanza": 1,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "failed",
+    "motivo": "selfIntersection",
+    "semplice": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Cerchio percorso due volte da quattro semicirconferenze antiorarie, senza pezzi degeneri. Tutti i pezzi hanno centro (0,0), raggio 2 e bulge 1; lo spostamento dà raggio 1. Estremi consecutivi esattamente uguali: nessuna giunzione e nessuna rimozione, simple vero. I pezzi risultanti 0 e 2 non sono consecutivi e coincidono lungo l’intero semicerchio: selfIntersection. Il cerchio risultante di raggio 1 non incontra quello originale di raggio 2, quindi meetsOriginal non è applicabile."
+  }
+}

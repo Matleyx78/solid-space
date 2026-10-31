@@ -1,0 +1,25 @@
+{
+  "versione": 1,
+  "id": "offset-polilinea-diagnosi-vuota",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #22, R14c: La polilinea vuota non ha pezzi.",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [],
+      "chiusa": false
+    },
+    "distanza": 1,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "degenerateCurve",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "La polilinea vuota non ha pezzi. La diagnosi riguarda la polilinea (dato 0), prima delle costruzioni geometriche."
+  }
+}

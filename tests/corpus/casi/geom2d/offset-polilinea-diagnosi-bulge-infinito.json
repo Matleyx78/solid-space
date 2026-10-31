@@ -1,0 +1,36 @@
+{
+  "versione": 1,
+  "id": "offset-polilinea-diagnosi-bulge-infinito",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #22, R14c: Il bulge del primo pezzo è infinito.",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          0,
+          0,
+          "inf"
+        ],
+        [
+          10,
+          0,
+          0
+        ]
+      ],
+      "chiusa": false
+    },
+    "distanza": 1,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "invalidValue",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Il bulge del primo pezzo è infinito. La diagnosi riguarda la polilinea (dato 0), prima delle costruzioni geometriche."
+  }
+}
