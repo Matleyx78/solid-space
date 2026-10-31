@@ -1,0 +1,118 @@
+{
+  "versione": 1,
+  "id": "raccordo-richiesta21-parallele-origine-r1",
+  "componente": "geom2d",
+  "descrizione": "raccordo richiesta21 parallele origine r1.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          0.0,
+          0.0
+        ],
+        "fine": [
+          100.0,
+          0.0
+        ]
+      }
+    },
+    "punto_prima": [
+      95.0,
+      0.0
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          0.0,
+          20.0
+        ],
+        "fine": [
+          100.0,
+          20.0
+        ]
+      }
+    },
+    "punto_seconda": [
+      95.0,
+      20.0
+    ],
+    "raggio": 1
+  },
+  "atteso": {
+    "esito": "found",
+    "centro": [
+      {
+        "valore": 100.0,
+        "tolleranza": 3.5527136788005014e-13
+      },
+      {
+        "valore": 10.0,
+        "tolleranza": 3.5527136788005014e-13
+      }
+    ],
+    "raggio": "10",
+    "sulla_prima": {
+      "punto": [
+        {
+          "valore": 100.0,
+          "tolleranza": 3.5527136788005014e-13
+        },
+        {
+          "valore": 0.0,
+          "tolleranza": 3.5527136788005014e-13
+        }
+      ],
+      "sulla_curva": {
+        "posizione": "atEnd"
+      }
+    },
+    "sulla_seconda": {
+      "punto": [
+        {
+          "valore": 100.0,
+          "tolleranza": 3.5527136788005014e-13
+        },
+        {
+          "valore": 20.0,
+          "tolleranza": 3.5527136788005014e-13
+        }
+      ],
+      "sulla_curva": {
+        "posizione": "atEnd"
+      }
+    },
+    "semicerchio": true,
+    "arco": {
+      "arco": {
+        "centro": [
+          {
+            "valore": 100.0,
+            "tolleranza": 3.5527136788005014e-13
+          },
+          {
+            "valore": 10.0,
+            "tolleranza": 3.5527136788005014e-13
+          }
+        ],
+        "raggio": "10",
+        "angolo_iniziale": {
+          "valore": -1.5707963267948966,
+          "tolleranza": 1.4210854715202006e-13
+        },
+        "ampiezza": {
+          "valore": 3.141592653589793,
+          "tolleranza": 1.4210854715202006e-13
+        }
+      }
+    },
+    "bulge": {
+      "valore": 0.9999999999999999,
+      "tolleranza": 1.4210854715202006e-13
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Richiesta #21 casi5 e7: due rette a20, estremità finale della prima più vicina al clic; semicerchio oltre x=100, raggio10 indipendente dal raggio chiesto, arco antiorario da basso ad alto. Coordinate/radicali con Fraction e Decimal180. Punti: limite2^-48*max(M,|p|) per eccesso. Angoli con atan2 a serie; E=2^-46*M, tolleranza angolare E/r; bulge: freccia=corda*|bulge|/2, dunque tolleranza2E/corda. Il raggio chiesto è esatto; per diametro, sweep antioraria pi. M effettiva dei dati e dei clic=0x1.9000000000000p+6; tolleranze ridotte alla M effettiva e arrotondate per eccesso."
+  }
+}
