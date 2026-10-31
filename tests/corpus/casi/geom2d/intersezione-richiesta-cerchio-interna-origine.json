@@ -1,0 +1,96 @@
+{
+  "versione": 1,
+  "id": "intersezione-richiesta-cerchio-interna-origine",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #20, casi 1–4,6 e8; origine. I dati sono prima arrotondati a double dalla trasformazione.",
+  "ingresso": {
+    "operazione": "intersect",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          -10,
+          4.999999999999
+        ],
+        "fine": [
+          10,
+          4.999999999999
+        ]
+      }
+    },
+    "prolunga_prima": "none",
+    "seconda": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 5
+      }
+    },
+    "prolunga_seconda": "none"
+  },
+  "atteso": {
+    "punti": [
+      {
+        "punto": [
+          {
+            "valore": -0.0000031624182212070575,
+            "tolleranza": 3.552713678800501e-14
+          },
+          {
+            "valore": 4.999999999999,
+            "tolleranza": 3.552713678800501e-14
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": {
+          "posizione": "inside",
+          "stazione": {
+            "valore": 9.99999683758178,
+            "tolleranza": 1.4210854715202004e-13
+          }
+        },
+        "sulla_seconda": {
+          "posizione": "inside",
+          "stazione": {
+            "valore": 7.853984796392704,
+            "tolleranza": 1.4210854715202004e-13
+          }
+        }
+      },
+      {
+        "punto": [
+          {
+            "valore": 0.0000031624182212070575,
+            "tolleranza": 3.552713678800501e-14
+          },
+          {
+            "valore": 4.999999999999,
+            "tolleranza": 3.552713678800501e-14
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": {
+          "posizione": "inside",
+          "stazione": {
+            "valore": 10.00000316241822,
+            "tolleranza": 1.4210859209268594e-13
+          }
+        },
+        "sulla_seconda": {
+          "posizione": "inside",
+          "stazione": {
+            "valore": 7.853978471556262,
+            "tolleranza": 1.4210854715202004e-13
+          }
+        }
+      }
+    ],
+    "sovrapposizioni": [],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Richiesta #20, caso 2 e8: Q=Fraction(r)^2-(Fraction(y)-Fraction(cy))^2. Q<0: nessuno; Q=0: un touching; Q>0: due crossing, x=cx±sqrt(Q), ordinati lungo il segmento. Decimal 180 cifre per sqrt e stazioni con atan2 a serie; limiti pubblici 2^-48 e 2^-46 arrotondati per eccesso. A 1e6 tutte le tre y arrotondano allo stesso double."
+  }
+}

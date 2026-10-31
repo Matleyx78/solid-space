@@ -1,0 +1,18 @@
+{
+  "versione": 1,
+  "id": "tolleranza-epsilon-pavimento",
+  "componente": "robust",
+  "descrizione": "tolleranza epsilon pavimento.",
+  "ingresso": {
+    "operazione": "epsilon",
+    "unita_in_metri": 0.001,
+    "grandezza": 1
+  },
+  "atteso": {
+    "epsilon": "4722366482869645/4722366482869645213696"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "ADR 0009: f=RN(Fraction(double(1e-9))/Fraction(double(unita))), r=2^-42; epsilon=max(f,RN(r*M)). Confronti mediante Fraction, distanza al quadrato <= Fraction(epsilon)^2; nessuna esecuzione di solid-space. "
+  }
+}

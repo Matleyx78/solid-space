@@ -1,0 +1,81 @@
+{
+  "versione": 1,
+  "id": "intersezione-limite-coppia-pezzo-dritto-cerchio",
+  "componente": "geom2d",
+  "descrizione": "intersezione limite coppia pezzo dritto cerchio.",
+  "ingresso": {
+    "operazione": "intersect",
+    "prima": {
+      "pezzo": {
+        "inizio": [
+          -2,
+          0
+        ],
+        "fine": [
+          2,
+          0
+        ],
+        "bulge": 0
+      }
+    },
+    "prolunga_prima": "none",
+    "seconda": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 1
+      }
+    },
+    "prolunga_seconda": "none"
+  },
+  "atteso": {
+    "punti": [
+      {
+        "punto": [
+          {
+            "valore": -1,
+            "tolleranza": 7.105427357601002e-15
+          },
+          {
+            "valore": 0,
+            "tolleranza": 7.105427357601002e-15
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": {
+          "posizione": "inside"
+        },
+        "sulla_seconda": {
+          "posizione": "inside"
+        }
+      },
+      {
+        "punto": [
+          {
+            "valore": 1,
+            "tolleranza": 7.105427357601002e-15
+          },
+          {
+            "valore": 0,
+            "tolleranza": 7.105427357601002e-15
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": {
+          "posizione": "inside"
+        },
+        "sulla_seconda": {
+          "posizione": "inside"
+        }
+      }
+    ],
+    "sovrapposizioni": [],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Intersezioni calcolate con Fraction sui double ricevuti; coordinate e stazioni con Decimal a 180 cifre. Tolleranze 2^-48*max(M,|p|) e 2^-46*max(M,|s|), arrotondate per eccesso. Decisioni esatte, nessuna esecuzione di solid-space."
+  }
+}

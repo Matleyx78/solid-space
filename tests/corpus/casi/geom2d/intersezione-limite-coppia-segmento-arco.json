@@ -1,0 +1,82 @@
+{
+  "versione": 1,
+  "id": "intersezione-limite-coppia-segmento-arco",
+  "componente": "geom2d",
+  "descrizione": "intersezione limite coppia segmento arco.",
+  "ingresso": {
+    "operazione": "intersect",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          -2,
+          0
+        ],
+        "fine": [
+          2,
+          0
+        ]
+      }
+    },
+    "prolunga_prima": "none",
+    "seconda": {
+      "arco": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 1,
+        "angolo_iniziale": 1,
+        "ampiezza": "0x1.921fb54442d18p+2"
+      }
+    },
+    "prolunga_seconda": "none"
+  },
+  "atteso": {
+    "punti": [
+      {
+        "punto": [
+          {
+            "valore": -1,
+            "tolleranza": 7.105427357601002e-15
+          },
+          {
+            "valore": 0,
+            "tolleranza": 7.105427357601002e-15
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": {
+          "posizione": "inside"
+        },
+        "sulla_seconda": {
+          "posizione": "inside"
+        }
+      },
+      {
+        "punto": [
+          {
+            "valore": 1,
+            "tolleranza": 7.105427357601002e-15
+          },
+          {
+            "valore": 0,
+            "tolleranza": 7.105427357601002e-15
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": {
+          "posizione": "inside"
+        },
+        "sulla_seconda": {
+          "posizione": "inside"
+        }
+      }
+    ],
+    "sovrapposizioni": [],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Intersezioni calcolate con Fraction sui double ricevuti; coordinate e stazioni con Decimal a 180 cifre. Tolleranze 2^-48*max(M,|p|) e 2^-46*max(M,|s|), arrotondate per eccesso. Decisioni esatte, nessuna esecuzione di solid-space."
+  }
+}

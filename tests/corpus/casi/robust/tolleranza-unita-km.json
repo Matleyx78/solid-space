@@ -1,0 +1,17 @@
+{
+  "versione": 1,
+  "id": "tolleranza-unita-km",
+  "componente": "robust",
+  "descrizione": "tolleranza unita km.",
+  "ingresso": {
+    "operazione": "forUnit",
+    "unita_in_metri": 1000
+  },
+  "atteso": {
+    "lunghezza_minima": "4951760157141521/4951760157141521099596496896"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "ADR 0009: f=RN(Fraction(double(1e-9))/Fraction(double(unita))), r=2^-42; epsilon=max(f,RN(r*M)). Confronti mediante Fraction, distanza al quadrato <= Fraction(epsilon)^2; nessuna esecuzione di solid-space. "
+  }
+}

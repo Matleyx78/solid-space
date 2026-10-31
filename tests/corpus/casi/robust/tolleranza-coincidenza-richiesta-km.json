@@ -1,0 +1,25 @@
+{
+  "versione": 1,
+  "id": "tolleranza-coincidenza-richiesta-km",
+  "componente": "robust",
+  "descrizione": "tolleranza coincidenza richiesta km.",
+  "ingresso": {
+    "operazione": "coincident",
+    "unita_in_metri": 1000,
+    "a": [
+      100000.00001,
+      100000
+    ],
+    "b": [
+      100000.00001,
+      100000.0
+    ]
+  },
+  "atteso": {
+    "coincidono": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "ADR 0009: f=RN(Fraction(double(1e-9))/Fraction(double(unita))), r=2^-42; epsilon=max(f,RN(r*M)). Confronti mediante Fraction, distanza al quadrato <= Fraction(epsilon)^2; nessuna esecuzione di solid-space. Richiesta #23, casi 1 e 4; traslazione km di 1e5 dopo conversione mm→km: lo scarto 1e-16 è perso nel double."
+  }
+}
