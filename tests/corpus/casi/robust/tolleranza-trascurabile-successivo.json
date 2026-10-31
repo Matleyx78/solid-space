@@ -1,0 +1,19 @@
+{
+  "versione": 1,
+  "id": "tolleranza-trascurabile-successivo",
+  "componente": "robust",
+  "descrizione": "tolleranza trascurabile successivo.",
+  "ingresso": {
+    "operazione": "negligible",
+    "unita_in_metri": 1e-09,
+    "lunghezza": "0x1.0000000000001p+0",
+    "grandezza": 0
+  },
+  "atteso": {
+    "trascurabile": false
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "ADR 0009: f=RN(Fraction(double(1e-9))/Fraction(double(unita))), r=2^-42; epsilon=max(f,RN(r*M)). Confronti mediante Fraction, distanza al quadrato <= Fraction(epsilon)^2; nessuna esecuzione di solid-space. "
+  }
+}
