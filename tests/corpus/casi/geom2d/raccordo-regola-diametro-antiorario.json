@@ -1,0 +1,115 @@
+{
+  "versione": 1,
+  "id": "raccordo-regola-diametro-antiorario",
+  "componente": "geom2d",
+  "descrizione": "Regole del contratto fillet: diametro-antiorario.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          -10,
+          3
+        ],
+        "fine": [
+          10,
+          3
+        ]
+      }
+    },
+    "punto_prima": [
+      0,
+      3
+    ],
+    "seconda": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 1
+      }
+    },
+    "punto_seconda": [
+      0,
+      1
+    ],
+    "raggio": 1
+  },
+  "atteso": {
+    "esito": "found",
+    "centro": [
+      {
+        "valore": 0,
+        "tolleranza": 3.552713678800501e-14
+      },
+      {
+        "valore": 2,
+        "tolleranza": 3.552713678800501e-14
+      }
+    ],
+    "raggio": "1",
+    "sulla_prima": {
+      "punto": [
+        {
+          "valore": 0,
+          "tolleranza": 3.552713678800501e-14
+        },
+        {
+          "valore": 3,
+          "tolleranza": 3.552713678800501e-14
+        }
+      ],
+      "sulla_curva": {
+        "posizione": "inside"
+      }
+    },
+    "sulla_seconda": {
+      "punto": [
+        {
+          "valore": 0,
+          "tolleranza": 3.552713678800501e-14
+        },
+        {
+          "valore": 1,
+          "tolleranza": 3.552713678800501e-14
+        }
+      ],
+      "sulla_curva": {
+        "posizione": "inside"
+      }
+    },
+    "semicerchio": false,
+    "arco": {
+      "arco": {
+        "centro": [
+          {
+            "valore": 0,
+            "tolleranza": 3.552713678800501e-14
+          },
+          {
+            "valore": 2,
+            "tolleranza": 3.552713678800501e-14
+          }
+        ],
+        "raggio": "1",
+        "angolo_iniziale": {
+          "valore": 1.5707963267948966,
+          "tolleranza": 1.4210854715202004e-13
+        },
+        "ampiezza": {
+          "valore": 3.141592653589793,
+          "tolleranza": 1.4210854715202004e-13
+        }
+      }
+    },
+    "bulge": {
+      "valore": 1,
+      "tolleranza": 1.4210854715202004e-13
+    }
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Regole3/4: centro unico(0,2), esterno al cerchio e sotto la retta; punti(0,3),(0,1) diametralmente opposti. Regola4 sceglie +pi, bulge1. E=2^-46*M, M=10; tolleranza angoli E/r e bulge2E/corda, punti2^-48*M."
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "versione": 1,
+  "id": "raccordo-regola-zero-cerchi-sovrapposti",
+  "componente": "geom2d",
+  "descrizione": "Regole del contratto fillet: zero-cerchi-sovrapposti.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 1
+      }
+    },
+    "punto_prima": [
+      1,
+      0
+    ],
+    "seconda": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 1
+      }
+    },
+    "punto_seconda": [
+      0,
+      1
+    ],
+    "raggio": 0
+  },
+  "atteso": {
+    "esito": "infinitelyMany"
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Regola2: le curve prolungate sono lo stesso cerchio, una sovrapposizione intera."
+  }
+}
