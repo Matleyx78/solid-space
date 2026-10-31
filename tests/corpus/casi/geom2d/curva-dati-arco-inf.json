@@ -1,0 +1,30 @@
+{
+  "versione": 1,
+  "id": "curva-dati-arco-inf",
+  "componente": "geom2d",
+  "descrizione": "curva dati arco inf.",
+  "ingresso": {
+    "operazione": "length",
+    "curva": {
+      "arco": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 1,
+        "angolo_iniziale": "inf",
+        "ampiezza": 1
+      }
+    }
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "invalidValue",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Controllo dati di curves.hpp: prima valori non finiti o raggio negativo (invalidValue), poi dominio 2^50 e angoli 2^20 (outOfDomain), poi curva ridotta esattamente a un punto (degenerateCurve). Indice dato=0 per una sola curva; magnitude accetta curve degeneri."
+  }
+}

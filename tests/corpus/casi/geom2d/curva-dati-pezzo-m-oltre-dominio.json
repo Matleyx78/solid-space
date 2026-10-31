@@ -1,0 +1,32 @@
+{
+  "versione": 1,
+  "id": "curva-dati-pezzo-m-oltre-dominio",
+  "componente": "geom2d",
+  "descrizione": "curva dati pezzo m oltre dominio.",
+  "ingresso": {
+    "operazione": "magnitude",
+    "curva": {
+      "pezzo": {
+        "inizio": [
+          -1125899906842624,
+          0
+        ],
+        "fine": [
+          1125899906842624,
+          0
+        ],
+        "bulge": 2
+      }
+    }
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "outOfDomain",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Controllo dati di curves.hpp: prima valori non finiti o raggio negativo (invalidValue), poi dominio 2^50 e angoli 2^20 (outOfDomain), poi curva ridotta esattamente a un punto (degenerateCurve). Indice dato=0 per una sola curva; magnitude accetta curve degeneri."
+  }
+}
