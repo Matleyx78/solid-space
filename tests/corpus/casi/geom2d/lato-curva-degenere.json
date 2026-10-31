@@ -1,0 +1,35 @@
+{
+  "versione": 1,
+  "id": "lato-curva-degenere",
+  "componente": "geom2d",
+  "descrizione": "lato curva degenere.",
+  "ingresso": {
+    "operazione": "side",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          0,
+          0
+        ]
+      }
+    },
+    "punto": [
+      1,
+      0
+    ]
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "degenerateCurve",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Confronti esatti Fraction sui double di ingresso. Retta: D=(bx-ax)*(py-ay)-(by-ay)*(px-ax), left se positivo. Cerchio: Q=(px-cx)^2+(py-cy)^2-r^2, on se zero, dentro a sinistra per antiorario e a destra per orario. Nessuna tolleranza. Controllo dei dati di side.hpp: curva indice 0, punto indice 1."
+  }
+}

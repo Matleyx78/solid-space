@@ -1,0 +1,32 @@
+{
+  "versione": 1,
+  "id": "lato-richiesta20-caso7-scalato-sotto",
+  "componente": "geom2d",
+  "descrizione": "lato richiesta20 caso7 scalato sotto.",
+  "ingresso": {
+    "operazione": "side",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          0.01,
+          0
+        ]
+      }
+    },
+    "punto": [
+      0.005,
+      -1.0000000000000001e-16
+    ]
+  },
+  "atteso": {
+    "lato": "right"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Confronti esatti Fraction sui double di ingresso. Retta: D=(bx-ax)*(py-ay)-(by-ay)*(px-ax), left se positivo. Cerchio: Q=(px-cx)^2+(py-cy)^2-r^2, on se zero, dentro a sinistra per antiorario e a destra per orario. Nessuna tolleranza. Richiesta #20, casi 7 e 8: traslazione o scala eseguite in double. A 1e6 lo scarto 1e-13 è perso; il punto è on."
+  }
+}

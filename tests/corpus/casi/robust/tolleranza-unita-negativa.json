@@ -1,0 +1,19 @@
+{
+  "versione": 1,
+  "id": "tolleranza-unita-negativa",
+  "componente": "robust",
+  "descrizione": "tolleranza unita negativa.",
+  "ingresso": {
+    "operazione": "forUnit",
+    "unita_in_metri": -1
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "invalidValue"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "ADR 0009: f=RN(Fraction(double(1e-9))/Fraction(double(unita))), r=2^-42; epsilon=max(f,RN(r*M)). Confronti mediante Fraction, distanza al quadrato <= Fraction(epsilon)^2; nessuna esecuzione di solid-space. Unità non positiva/non finita, oppure f>2^50."
+  }
+}

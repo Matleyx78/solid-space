@@ -1,0 +1,46 @@
+{
+  "versione": 1,
+  "id": "curva-geometria-estremi-2-antiorario",
+  "componente": "geom2d",
+  "descrizione": "curva geometria estremi 2 antiorario.",
+  "ingresso": {
+    "operazione": "endpoints",
+    "curva": {
+      "arco": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 2,
+        "angolo_iniziale": 0,
+        "ampiezza": "0x1.2d97c7f3321d2p+2"
+      }
+    }
+  },
+  "atteso": {
+    "inizio": [
+      {
+        "valore": 2.0,
+        "tolleranza": 7.105427357601002e-15
+      },
+      {
+        "valore": 0.0,
+        "tolleranza": 7.105427357601002e-15
+      }
+    ],
+    "fine": [
+      {
+        "valore": -3.6739403974420594e-16,
+        "tolleranza": 7.105427357601002e-15
+      },
+      {
+        "valore": -2.0,
+        "tolleranza": 7.105427357601002e-15
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente Python decimal a 180 cifre: pi=16*atan(1/5)-4*atan(1/239), atan(t)=somma (-1)^k*t^(2k+1)/(2k+1) fino a stabilità. Ingresso Decimal.from_float sul double esadecimale. Per archi D0 e D1 stanno nei quadranti separati dalle frontiere: nessuna classificazione dipende dai 2 ulp di sinCos. Valori costruiti con serie decimal; tolleranza 2^-48 per coordinate e 2^-46 per lunghezze, moltiplicata per max(M,abs(valore esatto)), arrotondata verso +infinito."
+  }
+}

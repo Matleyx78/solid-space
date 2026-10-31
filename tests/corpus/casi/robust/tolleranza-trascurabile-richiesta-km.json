@@ -1,0 +1,19 @@
+{
+  "versione": 1,
+  "id": "tolleranza-trascurabile-richiesta-km",
+  "componente": "robust",
+  "descrizione": "tolleranza trascurabile richiesta km.",
+  "ingresso": {
+    "operazione": "negligible",
+    "unita_in_metri": 1000,
+    "lunghezza": "0x1.79ca10c924223p-67",
+    "grandezza": 100000.0
+  },
+  "atteso": {
+    "trascurabile": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "ADR 0009: f=RN(Fraction(double(1e-9))/Fraction(double(unita))), r=2^-42; epsilon=max(f,RN(r*M)). Confronti mediante Fraction, distanza al quadrato <= Fraction(epsilon)^2; nessuna esecuzione di solid-space. Richiesta #23, caso 5, conversione 1e-14 mm = 1e-20 km."
+  }
+}

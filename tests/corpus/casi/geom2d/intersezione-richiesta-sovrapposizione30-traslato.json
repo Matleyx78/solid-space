@@ -1,0 +1,98 @@
+{
+  "versione": 1,
+  "id": "intersezione-richiesta-sovrapposizione30-traslato",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #20, casi 1–4,6 e8; traslato. I dati sono prima arrotondati a double dalla trasformazione.",
+  "ingresso": {
+    "operazione": "intersect",
+    "prima": {
+      "arco": {
+        "centro": [
+          1000000,
+          1000000
+        ],
+        "raggio": 5,
+        "angolo_iniziale": 0,
+        "ampiezza": "0x1.0c152382d7366p+0"
+      }
+    },
+    "prolunga_prima": "none",
+    "seconda": {
+      "arco": {
+        "centro": [
+          1000000,
+          1000000
+        ],
+        "raggio": 5,
+        "angolo_iniziale": "0x1.0c152382d7366p-1",
+        "ampiezza": "0x1.0c152382d7366p+0"
+      }
+    },
+    "prolunga_seconda": "none"
+  },
+  "atteso": {
+    "punti": [],
+    "sovrapposizioni": [
+      {
+        "intera": false,
+        "da": {
+          "punto": [
+            {
+              "valore": 1000004.330127019,
+              "tolleranza": 3.5527290625019926e-9
+            },
+            {
+              "valore": 1000002.5,
+              "tolleranza": 3.5527225605846983e-9
+            }
+          ],
+          "sulla_prima": {
+            "posizione": "inside",
+            "stazione": {
+              "valore": 2.617993877991495,
+              "tolleranza": 1.4210854715202005e-8
+            }
+          },
+          "sulla_seconda": {
+            "posizione": "atStart",
+            "stazione": {
+              "valore": 0,
+              "tolleranza": 1.4210854715202005e-8
+            }
+          }
+        },
+        "a": {
+          "punto": [
+            {
+              "valore": 1000002.5,
+              "tolleranza": 3.5527225605846983e-9
+            },
+            {
+              "valore": 1000004.330127019,
+              "tolleranza": 3.5527290625019926e-9
+            }
+          ],
+          "sulla_prima": {
+            "posizione": "atEnd",
+            "stazione": {
+              "valore": 5.23598775598299,
+              "tolleranza": 1.4210854715202005e-8
+            }
+          },
+          "sulla_seconda": {
+            "posizione": "inside",
+            "stazione": {
+              "valore": 2.617993877991495,
+              "tolleranza": 1.4210854715202005e-8
+            }
+          }
+        }
+      }
+    ],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente Python decimal a 180 cifre: pi=16*atan(1/5)-4*atan(1/239), atan(t)=somma (-1)^k*t^(2k+1)/(2k+1) fino a stabilità. Ingresso Decimal.from_float sul double esadecimale. Richiesta #20 caso3 e8: archi 0→60 e30→90 gradi (angoli double). Le direzioni sono separate da30 gradi, quindi per ogni arrotondamento sinCos entro2ulp si sovrappongono da D0 del secondo a D1 del primo. Coordinate con serie decimal180; stazioni=r*angolo. Limiti pubblici arrotondati per eccesso. Verifica finale del limite: M effettiva=1000000 dai soli dati geometrici (angoli e bulge esclusi, punto medio incluso); ogni tolleranza non supera il limite pubblico arrotondato per eccesso sulla M effettiva."
+  }
+}

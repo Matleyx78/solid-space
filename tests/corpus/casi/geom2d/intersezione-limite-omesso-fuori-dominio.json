@@ -1,0 +1,44 @@
+{
+  "versione": 1,
+  "id": "intersezione-limite-omesso-fuori-dominio",
+  "componente": "geom2d",
+  "descrizione": "intersezione limite omesso fuori dominio.",
+  "ingresso": {
+    "operazione": "intersect",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          1,
+          0
+        ]
+      }
+    },
+    "prolunga_prima": "extended",
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          0,
+          1
+        ],
+        "fine": [
+          1,
+          "0x1.ffffffffffffep-1"
+        ]
+      }
+    },
+    "prolunga_seconda": "extended"
+  },
+  "atteso": {
+    "punti": [],
+    "sovrapposizioni": [],
+    "omessi_fuori_dominio": "1"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Rette y=0 e y=1-2^-52*x: unico incrocio esatto x=2^52, maggiore di2^50. Non si elenca ma si conta una volta."
+  }
+}

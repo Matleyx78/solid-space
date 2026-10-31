@@ -1,0 +1,27 @@
+{
+  "versione": 1,
+  "id": "curva-dati-magnitude-degenere-arco-somma-arrotondata",
+  "componente": "geom2d",
+  "descrizione": "curva dati magnitude degenere arco somma arrotondata.",
+  "ingresso": {
+    "operazione": "magnitude",
+    "curva": {
+      "arco": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 2,
+        "angolo_iniziale": 1000000.0,
+        "ampiezza": 1e-12
+      }
+    }
+  },
+  "atteso": {
+    "grandezza": "2"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Controllo dati di curves.hpp: prima valori non finiti o raggio negativo (invalidValue), poi dominio 2^50 e angoli 2^20 (outOfDomain), poi curva ridotta esattamente a un punto (degenerateCurve). Indice dato=0 per una sola curva; magnitude accetta curve degeneri. Inizio e fine identici, raggio zero o ampiezza zero danno un punto. Per 1e6+1e-12: l’ulp di 1e6 è 2^-33, quindi RN(1e6+1e-12)=1e6; D0 e D1 sono lo stesso vettore qualunque sia il loro arrotondamento entro 2 ulp. M=max dei dati dichiarati, non degli angoli."
+  }
+}
