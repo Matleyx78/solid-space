@@ -38,22 +38,22 @@
       {
         "centro": [
           {
-            "valore": 0.0,
+            "valore": 0,
             "tolleranza": 3.552713678800501e-14
           },
           {
-            "valore": 2.0,
+            "valore": 2,
             "tolleranza": 3.552713678800501e-14
           }
         ],
         "sulla_prima": {
           "punto": [
             {
-              "valore": 0.0,
+              "valore": 0,
               "tolleranza": 3.552713678800501e-14
             },
             {
-              "valore": 3.0,
+              "valore": 3,
               "tolleranza": 3.552713678800501e-14
             }
           ],
@@ -64,11 +64,11 @@
         "sulla_seconda": {
           "punto": [
             {
-              "valore": 0.0,
+              "valore": 0,
               "tolleranza": 3.552713678800501e-14
             },
             {
-              "valore": 1.0,
+              "valore": 1,
               "tolleranza": 3.552713678800501e-14
             }
           ],

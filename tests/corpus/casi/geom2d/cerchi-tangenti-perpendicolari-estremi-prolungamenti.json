@@ -37,23 +37,23 @@
       {
         "centro": [
           {
-            "valore": -1.0,
-            "tolleranza": 7.105427357601002e-15
+            "valore": -1,
+            "tolleranza": 3.552713678800502e-15
           },
           {
-            "valore": -1.0,
-            "tolleranza": 7.105427357601002e-15
+            "valore": -1,
+            "tolleranza": 3.552713678800502e-15
           }
         ],
         "sulla_prima": {
           "punto": [
             {
-              "valore": -1.0,
-              "tolleranza": 7.105427357601002e-15
+              "valore": -1,
+              "tolleranza": 3.552713678800502e-15
             },
             {
-              "valore": 0.0,
-              "tolleranza": 7.105427357601002e-15
+              "valore": 0,
+              "tolleranza": 3.552713678800502e-15
             }
           ],
           "sulla_curva": {
@@ -63,12 +63,12 @@
         "sulla_seconda": {
           "punto": [
             {
-              "valore": 0.0,
-              "tolleranza": 7.105427357601002e-15
+              "valore": 0,
+              "tolleranza": 3.552713678800502e-15
             },
             {
-              "valore": -1.0,
-              "tolleranza": 7.105427357601002e-15
+              "valore": -1,
+              "tolleranza": 3.552713678800502e-15
             }
           ],
           "sulla_curva": {
@@ -81,23 +81,23 @@
       {
         "centro": [
           {
-            "valore": -1.0,
-            "tolleranza": 7.105427357601002e-15
+            "valore": -1,
+            "tolleranza": 3.552713678800502e-15
           },
           {
-            "valore": 1.0,
-            "tolleranza": 7.105427357601002e-15
+            "valore": 1,
+            "tolleranza": 3.552713678800502e-15
           }
         ],
         "sulla_prima": {
           "punto": [
             {
-              "valore": -1.0,
-              "tolleranza": 7.105427357601002e-15
+              "valore": -1,
+              "tolleranza": 3.552713678800502e-15
             },
             {
-              "valore": 0.0,
-              "tolleranza": 7.105427357601002e-15
+              "valore": 0,
+              "tolleranza": 3.552713678800502e-15
             }
           ],
           "sulla_curva": {
@@ -107,12 +107,12 @@
         "sulla_seconda": {
           "punto": [
             {
-              "valore": 0.0,
-              "tolleranza": 7.105427357601002e-15
+              "valore": 0,
+              "tolleranza": 3.552713678800502e-15
             },
             {
-              "valore": 1.0,
-              "tolleranza": 7.105427357601002e-15
+              "valore": 1,
+              "tolleranza": 3.552713678800502e-15
             }
           ],
           "sulla_curva": {
@@ -125,23 +125,23 @@
       {
         "centro": [
           {
-            "valore": 1.0,
-            "tolleranza": 7.105427357601002e-15
+            "valore": 1,
+            "tolleranza": 3.552713678800502e-15
           },
           {
-            "valore": -1.0,
-            "tolleranza": 7.105427357601002e-15
+            "valore": -1,
+            "tolleranza": 3.552713678800502e-15
           }
         ],
         "sulla_prima": {
           "punto": [
             {
-              "valore": 1.0,
-              "tolleranza": 7.105427357601002e-15
+              "valore": 1,
+              "tolleranza": 3.552713678800502e-15
             },
             {
-              "valore": 0.0,
-              "tolleranza": 7.105427357601002e-15
+              "valore": 0,
+              "tolleranza": 3.552713678800502e-15
             }
           ],
           "sulla_curva": {
@@ -151,12 +151,12 @@
         "sulla_seconda": {
           "punto": [
             {
-              "valore": 0.0,
-              "tolleranza": 7.105427357601002e-15
+              "valore": 0,
+              "tolleranza": 3.552713678800502e-15
             },
             {
-              "valore": -1.0,
-              "tolleranza": 7.105427357601002e-15
+              "valore": -1,
+              "tolleranza": 3.552713678800502e-15
             }
           ],
           "sulla_curva": {
@@ -169,23 +169,23 @@
       {
         "centro": [
           {
-            "valore": 1.0,
-            "tolleranza": 7.105427357601002e-15
+            "valore": 1,
+            "tolleranza": 3.552713678800502e-15
           },
           {
-            "valore": 1.0,
-            "tolleranza": 7.105427357601002e-15
+            "valore": 1,
+            "tolleranza": 3.552713678800502e-15
           }
         ],
         "sulla_prima": {
           "punto": [
             {
-              "valore": 1.0,
-              "tolleranza": 7.105427357601002e-15
+              "valore": 1,
+              "tolleranza": 3.552713678800502e-15
             },
             {
-              "valore": 0.0,
-              "tolleranza": 7.105427357601002e-15
+              "valore": 0,
+              "tolleranza": 3.552713678800502e-15
             }
           ],
           "sulla_curva": {
@@ -195,12 +195,12 @@
         "sulla_seconda": {
           "punto": [
             {
-              "valore": 0.0,
-              "tolleranza": 7.105427357601002e-15
+              "valore": 0,
+              "tolleranza": 3.552713678800502e-15
             },
             {
-              "valore": 1.0,
-              "tolleranza": 7.105427357601002e-15
+              "valore": 1,
+              "tolleranza": 3.552713678800502e-15
             }
           ],
           "sulla_curva": {
@@ -214,6 +214,6 @@
   },
   "provenienza": {
     "tipo": "aritmetica-esatta",
-    "procedimento": "Cerchi tangenti: centro comune delle rette spostate di ±r e dei cerchi di raggio R+r o |R-r|. Esistenza e lato confrontati con Fraction; coordinate radicali Decimal180, tolleranze pubbliche arrotondate per eccesso. Estensioni intere come tangency.hpp."
+    "procedimento": "Cerchi tangenti: centro comune delle rette spostate di ±r e dei cerchi di raggio R+r o |R-r|. Esistenza e lato confrontati con Fraction; coordinate radicali Decimal180, tolleranze pubbliche arrotondate per eccesso. Estensioni intere come tangency.hpp. Verifica finale del limite: M effettiva=1 dai soli dati geometrici (angoli e bulge esclusi, punto medio incluso); ogni tolleranza non supera il limite pubblico arrotondato per eccesso sulla M effettiva."
   }
 }
