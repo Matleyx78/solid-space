@@ -135,9 +135,9 @@ Result<bool> isStraight(const PolylineSegment& segment, const robust::ToleranceP
     }
     const auto epsilonSquared = squared(Dyadic(policy.epsilon(detail::magnitudeOf(segment))));
     // sagitta^2 = bulge^2 * chord^2 / 4, including zero bulge and zero chord.
-    return atMost(squared(Dyadic(segment.bulge)) *
-                      normSquared(difference(segment.end, segment.start)),
-                  epsilonSquared.timesPowerOfTwo(2));
+    const auto chordSquared = normSquared(difference(segment.end, segment.start));
+    const auto sagittaSquaredTimesFour = squared(Dyadic(segment.bulge)) * chordSquared;
+    return atMost(sagittaSquaredTimesFour, epsilonSquared.timesPowerOfTwo(2));
 }
 
 Result<bool> areAligned(const Segment& first, const Segment& second,

@@ -42,23 +42,26 @@ Value degenerateOperation(const Value& input) {
 }
 
 Value straightOperation(const Value& input) {
-    return writeAnswer(geom2d::isStraight(readAs<geom2d::PolylineSegment>(input, "curva"),
-                                         policyOf(input)));
+    const auto segment = readAs<geom2d::PolylineSegment>(input, "curva");
+    return writeAnswer(geom2d::isStraight(segment, policyOf(input)));
 }
 
 Value alignedOperation(const Value& input) {
-    return writeAnswer(geom2d::areAligned(readAs<geom2d::Segment>(input, "prima"),
-                                         readAs<geom2d::Segment>(input, "seconda"), policyOf(input)));
+    const auto first = readAs<geom2d::Segment>(input, "prima");
+    const auto second = readAs<geom2d::Segment>(input, "seconda");
+    return writeAnswer(geom2d::areAligned(first, second, policyOf(input)));
 }
 
 Value concentricOperation(const Value& input) {
-    return writeAnswer(geom2d::areConcentric(readCurve(field(input, "prima")),
-                                            readCurve(field(input, "seconda")), policyOf(input)));
+    const auto first = readCurve(field(input, "prima"));
+    const auto second = readCurve(field(input, "seconda"));
+    return writeAnswer(geom2d::areConcentric(first, second, policyOf(input)));
 }
 
 Value sameCircleOperation(const Value& input) {
-    return writeAnswer(geom2d::onSameCircle(readCurve(field(input, "prima")),
-                                           readCurve(field(input, "seconda")), policyOf(input)));
+    const auto first = readCurve(field(input, "prima"));
+    const auto second = readCurve(field(input, "seconda"));
+    return writeAnswer(geom2d::onSameCircle(first, second, policyOf(input)));
 }
 
 const Registration kDegenerate("isDegenerate", degenerateOperation);

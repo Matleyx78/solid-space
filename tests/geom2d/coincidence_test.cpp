@@ -64,11 +64,12 @@ TEST(Coincidence, CircularComparisonsAreSymmetricAcrossCurveRepresentations) {
         const geom2d::Point2 center{generator.coordinate(), generator.coordinate()};
         const double radius = 1.0 + static_cast<double>(i % 17);
         // The semicircle has exactly the same centre and radius as the circle.
-        const std::array<geom2d::Curve, 3> curves{
-            geom2d::Circle{center, radius},
-            geom2d::Arc{center, radius, 0.25, -2.0},
-            geom2d::PolylineSegment{{center.x - radius, center.y},
-                                    {center.x + radius, center.y}, 1.0}};
+        const geom2d::Circle circle{center, radius};
+        const geom2d::Arc arc{center, radius, 0.25, -2.0};
+        const geom2d::Point2 start{center.x - radius, center.y};
+        const geom2d::Point2 end{center.x + radius, center.y};
+        const geom2d::PolylineSegment semicircle{start, end, 1.0};
+        const std::array<geom2d::Curve, 3> curves{circle, arc, semicircle};
         const double shift = generator.coordinate() * policy.floorLength();
         const geom2d::Circle other{{center.x + shift, center.y}, radius + shift};
         for (const auto& a : curves) {
@@ -82,8 +83,7 @@ TEST(Coincidence, CircularComparisonsAreSymmetricAcrossCurveRepresentations) {
                        geom2d::onSameCircle(other, a, policy));
         }
         // A non-semicircular piece exercises rational centres and irrational radii.
-        const geom2d::PolylineSegment piece{{center.x, center.y},
-                                            {center.x + 1.0, center.y + 2.0}, 0.3};
+        const geom2d::PolylineSegment piece{center, {center.x + 1.0, center.y + 2.0}, 0.3};
         const geom2d::PolylineSegment reversed{piece.end, piece.start, -piece.bulge};
         expectTrue(geom2d::onSameCircle(piece, reversed, policy));
         expectSame(geom2d::areConcentric(piece, other, policy),
