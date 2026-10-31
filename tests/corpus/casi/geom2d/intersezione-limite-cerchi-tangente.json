@@ -31,12 +31,12 @@
       {
         "punto": [
           {
-            "valore": 1.0,
-            "tolleranza": 1.0658141036401503e-14
+            "valore": 1,
+            "tolleranza": 7.105427357601003e-15
           },
           {
-            "valore": 0.0,
-            "tolleranza": 1.0658141036401503e-14
+            "valore": 0,
+            "tolleranza": 7.105427357601003e-15
           }
         ],
         "contatto": "touching",
@@ -53,6 +53,6 @@
   },
   "provenienza": {
     "tipo": "aritmetica-esatta",
-    "procedimento": "Centri (0,0) e(d,0), raggi1. Asse radicale x=d/2; y²=1-(d/2)² con Fraction. Segno decide esattamente 0,1,2 punti; ordine sul primo cerchio: y positivo prima di negativo. Coordinate Decimal180 e tolleranza pubblica arrotondata per eccesso."
+    "procedimento": "Centri (0,0) e(d,0), raggi1. Asse radicale x=d/2; y²=1-(d/2)² con Fraction. Segno decide esattamente 0,1,2 punti; ordine sul primo cerchio: y positivo prima di negativo. Coordinate Decimal180 e tolleranza pubblica arrotondata per eccesso. Verifica finale del limite: M effettiva=2 dai soli dati geometrici (angoli e bulge esclusi, punto medio incluso); ogni tolleranza non supera il limite pubblico arrotondato per eccesso sulla M effettiva."
   }
 }

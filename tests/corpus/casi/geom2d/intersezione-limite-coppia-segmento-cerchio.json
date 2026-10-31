@@ -34,11 +34,11 @@
       {
         "punto": [
           {
-            "valore": -1.0,
+            "valore": -1,
             "tolleranza": 7.105427357601002e-15
           },
           {
-            "valore": 0.0,
+            "valore": 0,
             "tolleranza": 7.105427357601002e-15
           }
         ],
@@ -53,11 +53,11 @@
       {
         "punto": [
           {
-            "valore": 1.0,
+            "valore": 1,
             "tolleranza": 7.105427357601002e-15
           },
           {
-            "valore": 0.0,
+            "valore": 0,
             "tolleranza": 7.105427357601002e-15
           }
         ],

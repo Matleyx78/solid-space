@@ -38,12 +38,12 @@
         "da": {
           "punto": [
             {
-              "valore": -1.0,
-              "tolleranza": 7.105427357601002e-15
+              "valore": -1,
+              "tolleranza": 3.552713678800502e-15
             },
             {
-              "valore": 0.0,
-              "tolleranza": 7.105427357601002e-15
+              "valore": 0,
+              "tolleranza": 3.552713678800502e-15
             }
           ],
           "sulla_prima": {
@@ -56,12 +56,12 @@
         "a": {
           "punto": [
             {
-              "valore": 1.0,
-              "tolleranza": 7.105427357601002e-15
+              "valore": 1,
+              "tolleranza": 3.552713678800502e-15
             },
             {
-              "valore": 0.0,
-              "tolleranza": 7.105427357601002e-15
+              "valore": 0,
+              "tolleranza": 3.552713678800502e-15
             }
           ],
           "sulla_prima": {
@@ -77,6 +77,6 @@
   },
   "provenienza": {
     "tipo": "aritmetica-esatta",
-    "procedimento": "Intersezioni calcolate con Fraction sui double ricevuti; coordinate e stazioni con Decimal a 180 cifre. Tolleranze 2^-48*max(M,|p|) e 2^-46*max(M,|s|), arrotondate per eccesso. Decisioni esatte, nessuna esecuzione di solid-space."
+    "procedimento": "Intersezioni calcolate con Fraction sui double ricevuti; coordinate e stazioni con Decimal a 180 cifre. Tolleranze 2^-48*max(M,|p|) e 2^-46*max(M,|s|), arrotondate per eccesso. Decisioni esatte, nessuna esecuzione di solid-space. Verifica finale del limite: M effettiva=1 dai soli dati geometrici (angoli e bulge esclusi, punto medio incluso); ogni tolleranza non supera il limite pubblico arrotondato per eccesso sulla M effettiva."
   }
 }

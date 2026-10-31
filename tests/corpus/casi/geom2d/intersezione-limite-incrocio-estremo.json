@@ -37,11 +37,11 @@
       {
         "punto": [
           {
-            "valore": 1.0,
+            "valore": 1,
             "tolleranza": 3.552713678800501e-15
           },
           {
-            "valore": 0.0,
+            "valore": 0,
             "tolleranza": 3.552713678800501e-15
           }
         ],
