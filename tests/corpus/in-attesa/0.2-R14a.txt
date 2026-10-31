@@ -1,0 +1,17 @@
+# [0.2-R14a]
+geom2d/parallela-polilinea-rettangolo-interno #63
+geom2d/parallela-polilinea-rettangolo-esterno #63
+geom2d/parallela-polilinea-asola-interna #63
+geom2d/parallela-polilinea-asola-esterna #63
+geom2d/parallela-polilinea-asola-raggio-esatto #63
+geom2d/parallela-polilinea-asola-oltre-raggio #63
+geom2d/parallela-polilinea-conca-arco-sparito #63
+geom2d/parallela-polilinea-u-stretta #63
+geom2d/parallela-polilinea-rettangolo-interno-traslata #63
+geom2d/parallela-polilinea-rettangolo-esterno-traslata #63
+geom2d/parallela-polilinea-asola-interna-traslata #63
+geom2d/parallela-polilinea-asola-esterna-traslata #63
+geom2d/parallela-polilinea-asola-raggio-esatto-traslata #63
+geom2d/parallela-polilinea-asola-oltre-raggio-traslata #63
+geom2d/parallela-polilinea-conca-arco-sparito-traslata #63
+geom2d/parallela-polilinea-u-stretta-traslata #63

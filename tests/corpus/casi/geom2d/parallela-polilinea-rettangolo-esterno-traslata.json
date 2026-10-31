@@ -1,0 +1,112 @@
+{
+  "versione": 1,
+  "id": "parallela-polilinea-rettangolo-esterno-traslata",
+  "componente": "geom2d",
+  "descrizione": "#22, caso 1: rettangolo 100×50, spigoli vivi. Coordinate traslate di 1e6 (#22, caso 6).",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          1000000,
+          1000000,
+          0
+        ],
+        [
+          1000100,
+          1000000,
+          0
+        ],
+        [
+          1000100,
+          1000050,
+          0
+        ],
+        [
+          1000000,
+          1000050,
+          0
+        ]
+      ],
+      "chiusa": true
+    },
+    "distanza": -10,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "done",
+    "motivo": "none",
+    "semplice": true,
+    "polilinea": {
+      "vertici": [
+        [
+          {
+            "valore": 999990.0,
+            "tolleranza": 3.553068950168381e-09
+          },
+          {
+            "valore": 999990.0,
+            "tolleranza": 3.553068950168381e-09
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 1000110.0,
+            "tolleranza": 3.553104477305169e-09
+          },
+          {
+            "valore": 999990.0,
+            "tolleranza": 3.553104477305169e-09
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 1000110.0,
+            "tolleranza": 3.553104477305169e-09
+          },
+          {
+            "valore": 1000060.0,
+            "tolleranza": 3.553104477305169e-09
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 999990.0,
+            "tolleranza": 3.553068950168381e-09
+          },
+          {
+            "valore": 1000060.0,
+            "tolleranza": 3.553068950168381e-09
+          },
+          "0"
+        ]
+      ],
+      "chiusa": true
+    },
+    "origini": [
+      {
+        "origine": "source",
+        "indice": "0"
+      },
+      {
+        "origine": "source",
+        "indice": "1"
+      },
+      {
+        "origine": "source",
+        "indice": "2"
+      },
+      {
+        "origine": "source",
+        "indice": "3"
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Le rette spostate sono y=d, x=100-d, y=50-d, x=d. Le quattro intersezioni danno il rettangolo 80×30 dentro o 120×70 fuori. Nessun pezzo cambia verso; nessun incontro con ingresso o pezzi non consecutivi. Traslazione esatta di entrambi gli assi di 1000000: tutti i dati interi restano rappresentabili; le decisioni e le origini sono invariate. Le coordinate costruite hanno tolleranza 2^-48*max(M,|x|,|y|), qui esattamente rappresentabile; M include estremi, punti medi degli archi e |d|. I bulge 0 e 1 non modificati sono dati esatti."
+  }
+}
