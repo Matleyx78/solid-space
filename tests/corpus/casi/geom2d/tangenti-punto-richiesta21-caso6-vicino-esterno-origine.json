@@ -1,0 +1,70 @@
+{
+  "versione": 1,
+  "id": "tangenti-punto-richiesta21-caso6-vicino-esterno-origine",
+  "componente": "geom2d",
+  "descrizione": "tangenti punto richiesta21 caso6 vicino esterno origine.",
+  "ingresso": {
+    "operazione": "tangentsFrom",
+    "punto": [
+      5.000000000001,
+      0
+    ],
+    "curva": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 5
+      }
+    },
+    "prolunga": "none"
+  },
+  "atteso": {
+    "collocazione": "outside",
+    "punti": [
+      {
+        "punto": [
+          {
+            "valore": 4.999999999999,
+            "tolleranza": 1.7763568394006058e-14
+          },
+          {
+            "valore": 0.000003162418221206741,
+            "tolleranza": 1.7763568394006058e-14
+          }
+        ],
+        "sulla_curva": {
+          "posizione": "inside",
+          "stazione": {
+            "valore": 0.000003162418221206952,
+            "tolleranza": 7.105427357602423e-14
+          }
+        }
+      },
+      {
+        "punto": [
+          {
+            "valore": 4.999999999999,
+            "tolleranza": 1.7763568394006058e-14
+          },
+          {
+            "valore": -0.000003162418221206741,
+            "tolleranza": 1.7763568394006058e-14
+          }
+        ],
+        "sulla_curva": {
+          "posizione": "inside",
+          "stazione": {
+            "valore": 31.41592337347971,
+            "tolleranza": 4.4644712280443903e-13
+          }
+        }
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Confronto Fraction: |P-C|²-R² decide Placement. Con on il punto è copiato esattamente. Con outside, per P-C=(d,0), T-C=(R²/d, ±R*sqrt(d²-R²)/d). Coordinate e angoli Decimal180; punti entro2^-48 e stazioni entro2^-46 per max(M,|valore|), arrotondati per eccesso. Nessuna esecuzione di solid-space."
+  }
+}

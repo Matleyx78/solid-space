@@ -1,0 +1,40 @@
+{
+  "versione": 1,
+  "id": "cerchi-tangenti-coppia-arco-arco",
+  "componente": "geom2d",
+  "descrizione": "cerchi tangenti coppia arco arco.",
+  "ingresso": {
+    "operazione": "tangentCircles",
+    "prima": {
+      "arco": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 1,
+        "angolo_iniziale": 0,
+        "ampiezza": 1
+      }
+    },
+    "seconda": {
+      "arco": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 1,
+        "angolo_iniziale": 0,
+        "ampiezza": 1
+      }
+    },
+    "raggio": 1
+  },
+  "atteso": {
+    "infiniti": true,
+    "cerchi": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Cerchi tangenti: centro comune delle rette spostate di ±r e dei cerchi di raggio R+r o |R-r|. Esistenza e lato confrontati con Fraction; coordinate radicali Decimal180, tolleranze pubbliche arrotondate per eccesso. Estensioni intere come tangency.hpp."
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "versione": 1,
+  "id": "lato-segmento-on",
+  "componente": "geom2d",
+  "descrizione": "lato segmento on.",
+  "ingresso": {
+    "operazione": "side",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          1,
+          0
+        ]
+      }
+    },
+    "punto": [
+      2,
+      0
+    ]
+  },
+  "atteso": {
+    "lato": "on"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Confronti esatti Fraction sui double di ingresso. Retta: D=(bx-ax)*(py-ay)-(by-ay)*(px-ax), left se positivo. Cerchio: Q=(px-cx)^2+(py-cy)^2-r^2, on se zero, dentro a sinistra per antiorario e a destra per orario. Nessuna tolleranza. La retta è interrogata oltre la fine; per l’arco (3,4) è sul resto del cerchio (angolo >1), quindi si verifica il sostegno intero."
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "versione": 1,
+  "id": "tangenti-punto-diagnosi-pezzo-dritto",
+  "componente": "geom2d",
+  "descrizione": "tangenti punto diagnosi pezzo dritto.",
+  "ingresso": {
+    "operazione": "tangentsFrom",
+    "punto": [
+      2,
+      0
+    ],
+    "curva": {
+      "pezzo": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          1,
+          0
+        ],
+        "bulge": 0
+      }
+    },
+    "prolunga": "none"
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "notCircular",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Controllo dati di tangentsFrom: curva indice0, punto indice1; curva dritta notCircular."
+  }
+}

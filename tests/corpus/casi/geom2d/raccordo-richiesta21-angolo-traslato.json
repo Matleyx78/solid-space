@@ -1,0 +1,118 @@
+{
+  "versione": 1,
+  "id": "raccordo-richiesta21-angolo-traslato",
+  "componente": "geom2d",
+  "descrizione": "raccordo richiesta21 angolo traslato.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          1000000.0,
+          1000000.0
+        ],
+        "fine": [
+          1000100.0,
+          1000000.0
+        ]
+      }
+    },
+    "punto_prima": [
+      1000050.0,
+      1000000.0
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          1000000.0,
+          1000000.0
+        ],
+        "fine": [
+          1000000.0,
+          1000100.0
+        ]
+      }
+    },
+    "punto_seconda": [
+      1000000.0,
+      1000050.0
+    ],
+    "raggio": 10
+  },
+  "atteso": {
+    "esito": "found",
+    "centro": [
+      {
+        "valore": 1000010.0,
+        "tolleranza": 3.5530689501683814e-09
+      },
+      {
+        "valore": 1000010.0,
+        "tolleranza": 3.5530689501683814e-09
+      }
+    ],
+    "raggio": "10",
+    "sulla_prima": {
+      "punto": [
+        {
+          "valore": 1000010.0,
+          "tolleranza": 3.5530689501683814e-09
+        },
+        {
+          "valore": 1000000.0,
+          "tolleranza": 3.5530689501683814e-09
+        }
+      ],
+      "sulla_curva": {
+        "posizione": "inside"
+      }
+    },
+    "sulla_seconda": {
+      "punto": [
+        {
+          "valore": 1000000.0,
+          "tolleranza": 3.5530689501683814e-09
+        },
+        {
+          "valore": 1000010.0,
+          "tolleranza": 3.5530689501683814e-09
+        }
+      ],
+      "sulla_curva": {
+        "posizione": "inside"
+      }
+    },
+    "semicerchio": false,
+    "arco": {
+      "arco": {
+        "centro": [
+          {
+            "valore": 1000010.0,
+            "tolleranza": 3.5530689501683814e-09
+          },
+          {
+            "valore": 1000010.0,
+            "tolleranza": 3.5530689501683814e-09
+          }
+        ],
+        "raggio": "10",
+        "angolo_iniziale": {
+          "valore": -1.5707963267948966,
+          "tolleranza": 1.4212275800673526e-09
+        },
+        "ampiezza": {
+          "valore": -1.5707963267948966,
+          "tolleranza": 1.4212275800673526e-09
+        }
+      }
+    },
+    "bulge": {
+      "valore": -0.41421356237309503,
+      "tolleranza": 2.009919318949944e-09
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Richiesta #21 casi1 e7: centro(10,10) e tangenti(10,0),(0,10) rispetto all’origine traslata; i lati dei clic selezionano il quadrante positivo. Arco corto orario di un quarto di giro. Coordinate/radicali con Fraction e Decimal180. Punti: limite2^-48*max(M,|p|) per eccesso. Angoli con atan2 a serie; E=2^-46*M, tolleranza angolare E/r; bulge: freccia=corda*|bulge|/2, dunque tolleranza2E/corda. Il raggio chiesto è esatto; per diametro, sweep antioraria pi. M effettiva dei dati e dei clic=0x1.e854800000000p+19; tolleranze ridotte alla M effettiva e arrotondate per eccesso."
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "versione": 1,
+  "id": "curva-dati-degenere-pezzo",
+  "componente": "geom2d",
+  "descrizione": "curva dati degenere pezzo.",
+  "ingresso": {
+    "operazione": "length",
+    "curva": {
+      "pezzo": {
+        "inizio": [
+          3,
+          4
+        ],
+        "fine": [
+          3,
+          4
+        ],
+        "bulge": 1
+      }
+    }
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "degenerateCurve",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Controllo dati di curves.hpp: prima valori non finiti o raggio negativo (invalidValue), poi dominio 2^50 e angoli 2^20 (outOfDomain), poi curva ridotta esattamente a un punto (degenerateCurve). Indice dato=0 per una sola curva; magnitude accetta curve degeneri."
+  }
+}

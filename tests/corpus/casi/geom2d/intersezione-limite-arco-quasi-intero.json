@@ -1,0 +1,44 @@
+{
+  "versione": 1,
+  "id": "intersezione-limite-arco-quasi-intero",
+  "componente": "geom2d",
+  "descrizione": "intersezione limite arco quasi intero.",
+  "ingresso": {
+    "operazione": "intersect",
+    "prima": {
+      "arco": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 1,
+        "angolo_iniziale": 1,
+        "ampiezza": "0x1.921fb5442754ap+2"
+      }
+    },
+    "prolunga_prima": "none",
+    "seconda": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 1
+      }
+    },
+    "prolunga_seconda": "none"
+  },
+  "atteso": {
+    "punti": [],
+    "sovrapposizioni": [
+      {
+        "intera": false
+      }
+    ],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Stesso cerchio: l’intersezione è l’arco. Le direzioni differiscono rispettivamente di1e-12 o2pi-1e-10, molto più dei2ulp di sinCos; resta un arco proprio per ogni arrotondamento ammesso. Nessun punto isolato; una sola sovrapposizione non intera."
+  }
+}

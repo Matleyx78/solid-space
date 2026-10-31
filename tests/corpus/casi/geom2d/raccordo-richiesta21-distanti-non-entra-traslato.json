@@ -1,0 +1,46 @@
+{
+  "versione": 1,
+  "id": "raccordo-richiesta21-distanti-non-entra-traslato",
+  "componente": "geom2d",
+  "descrizione": "raccordo richiesta21 distanti non entra traslato.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          999990.0,
+          1000008.0
+        ],
+        "fine": [
+          1000010.0,
+          1000008.0
+        ]
+      }
+    },
+    "punto_prima": [
+      1000004.0,
+      1000008.0
+    ],
+    "seconda": {
+      "cerchio": {
+        "centro": [
+          1000000.0,
+          1000000.0
+        ],
+        "raggio": 5
+      }
+    },
+    "punto_seconda": [
+      1000003.0,
+      1000004.0
+    ],
+    "raggio": 1
+  },
+  "atteso": {
+    "esito": "none"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Richiesta #21 caso2b e7: distanza retta-cerchio=3>2r=2, nessun candidato sui lati richiesti. Coordinate/radicali con Fraction e Decimal180. Punti: limite2^-48*max(M,|p|) per eccesso. Angoli con atan2 a serie; E=2^-46*M, tolleranza angolare E/r; bulge: freccia=corda*|bulge|/2, dunque tolleranza2E/corda. Il raggio chiesto è esatto; per diametro, sweep antioraria pi. M effettiva dei dati e dei clic=0x1.e849400000000p+19; tolleranze ridotte alla M effettiva e arrotondate per eccesso."
+  }
+}

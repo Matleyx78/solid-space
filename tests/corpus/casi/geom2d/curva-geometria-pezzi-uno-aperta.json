@@ -1,0 +1,26 @@
+{
+  "versione": 1,
+  "id": "curva-geometria-pezzi-uno-aperta",
+  "componente": "geom2d",
+  "descrizione": "curva geometria pezzi uno aperta.",
+  "ingresso": {
+    "operazione": "pieces",
+    "polilinea": {
+      "vertici": [
+        [
+          1,
+          2,
+          1
+        ]
+      ],
+      "chiusa": false
+    }
+  },
+  "atteso": {
+    "pezzi": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Copia esatta dei dati: meno di due vertici dà []; aperta n-1 pezzi, chiusa n, ultimo pezzo dall’ultimo al primo con il bulge dell’ultimo vertice. Nessun controllo o costruzione geometrica."
+  }
+}
