@@ -11,10 +11,6 @@
 // The skeleton anchors are private to each component; they are declared here
 // only to prove that the component library links. They are removed together
 // with the anchors.
-namespace solid_space::robust {
-extern const int kSkeletonAnchor;
-}
-
 namespace solid_space::naming {
 extern const int kSkeletonAnchor;
 }
@@ -34,7 +30,6 @@ extern const int kSkeletonAnchor;
 #endif
 
 TEST(Banco, ComponentsAlwaysBuiltLink) {
-    EXPECT_EQ(solid_space::robust::kSkeletonAnchor, 0);
     EXPECT_EQ(solid_space::naming::kSkeletonAnchor, 0);
     EXPECT_EQ(solid_space::solver::kSkeletonAnchor, 0);
 }
