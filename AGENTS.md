@@ -70,7 +70,8 @@ gh api -X DELETE "repos/Matleyx78/solid-space/issues/<numero>/labels/AA-Presa%20
 
 Leggi, in quest'ordine:
 
-1. [docs/ROADMAP.md](docs/ROADMAP.md): quale tappa è **aperta**.
+1. [docs/ROADMAP.md](docs/ROADMAP.md), solo la tabella "Stato": quale tappa è
+   **aperta**.
 2. La **scheda** della tappa aperta, `docs/tappe/X.Y-nome.md`, e il pacchetto che
    ti è stato assegnato: file, interfacce, test e criterio di "fatto".
 3. Gli ADR citati dalla scheda e [docs/ARCHITETTURA.md](docs/ARCHITETTURA.md).
