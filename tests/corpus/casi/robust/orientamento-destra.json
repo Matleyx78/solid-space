@@ -1,0 +1,28 @@
+{
+  "versione": 1,
+  "id": "orientamento-destra",
+  "componente": "robust",
+  "descrizione": "Orientamento esatto: destra.",
+  "ingresso": {
+    "operazione": "orient2d",
+    "a": [
+      "0x0.0p+0",
+      "0x0.0p+0"
+    ],
+    "b": [
+      "0x0.0p+0",
+      "0x1.0000000000000p+0"
+    ],
+    "c": [
+      "0x1.0000000000000p+0",
+      "0x0.0p+0"
+    ]
+  },
+  "atteso": {
+    "segno": "negative"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Python fractions.Fraction(float.fromhex(x)) su tutte le coordinate esadecimali di ingresso. D=(bx-ax)*(cy-ay)-(by-ay)*(cx-ax), senza arrotondamenti intermedi. D ha segno negative; numeratore -1, denominatore 2^0. Nessuna soglia né esecuzione di solid-space."
+  }
+}

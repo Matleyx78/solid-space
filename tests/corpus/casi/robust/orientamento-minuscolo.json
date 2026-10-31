@@ -1,0 +1,28 @@
+{
+  "versione": 1,
+  "id": "orientamento-minuscolo",
+  "componente": "robust",
+  "descrizione": "Orientamento esatto: minuscolo.",
+  "ingresso": {
+    "operazione": "orient2d",
+    "a": [
+      "0x0.0p+0",
+      "0x0.0p+0"
+    ],
+    "b": [
+      "0x1.87e92154ef7acp-665",
+      "0x0.0p+0"
+    ],
+    "c": [
+      "0x0.0p+0",
+      "0x1.87e92154ef7acp-665"
+    ]
+  },
+  "atteso": {
+    "segno": "positive"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Python fractions.Fraction(float.fromhex(x)) su tutte le coordinate esadecimali di ingresso. D=(bx-ax)*(cy-ay)-(by-ay)*(cx-ax), senza arrotondamenti intermedi. D ha segno positive; numeratore 2970939442134968069332467635641, denominatore 2^1430. Nessuna soglia né esecuzione di solid-space."
+  }
+}
