@@ -1,0 +1,42 @@
+{
+  "versione": 1,
+  "id": "intersezione-limite-diagnosi-prima-nan",
+  "componente": "geom2d",
+  "descrizione": "intersezione limite diagnosi prima nan.",
+  "ingresso": {
+    "operazione": "intersect",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          "nan",
+          0
+        ],
+        "fine": [
+          1,
+          0
+        ]
+      }
+    },
+    "prolunga_prima": "none",
+    "seconda": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 1
+      }
+    },
+    "prolunga_seconda": "none"
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "invalidValue",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Controllo dati di curves.hpp nell’ordine del contratto; prima curva dato0, seconda dato1."
+  }
+}

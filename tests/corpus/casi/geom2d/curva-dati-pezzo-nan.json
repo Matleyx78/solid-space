@@ -1,0 +1,32 @@
+{
+  "versione": 1,
+  "id": "curva-dati-pezzo-nan",
+  "componente": "geom2d",
+  "descrizione": "curva dati pezzo nan.",
+  "ingresso": {
+    "operazione": "magnitude",
+    "curva": {
+      "pezzo": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          1,
+          0
+        ],
+        "bulge": "nan"
+      }
+    }
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "invalidValue",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Controllo dati di curves.hpp: prima valori non finiti o raggio negativo (invalidValue), poi dominio 2^50 e angoli 2^20 (outOfDomain), poi curva ridotta esattamente a un punto (degenerateCurve). Indice dato=0 per una sola curva; magnitude accetta curve degeneri."
+  }
+}

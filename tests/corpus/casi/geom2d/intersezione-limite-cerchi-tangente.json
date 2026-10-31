@@ -1,0 +1,58 @@
+{
+  "versione": 1,
+  "id": "intersezione-limite-cerchi-tangente",
+  "componente": "geom2d",
+  "descrizione": "intersezione limite cerchi tangente.",
+  "ingresso": {
+    "operazione": "intersect",
+    "prima": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 1
+      }
+    },
+    "prolunga_prima": "none",
+    "seconda": {
+      "cerchio": {
+        "centro": [
+          "0x1.0000000000000p+1",
+          0
+        ],
+        "raggio": 1
+      }
+    },
+    "prolunga_seconda": "none"
+  },
+  "atteso": {
+    "punti": [
+      {
+        "punto": [
+          {
+            "valore": 1,
+            "tolleranza": 7.105427357601003e-15
+          },
+          {
+            "valore": 0,
+            "tolleranza": 7.105427357601003e-15
+          }
+        ],
+        "contatto": "touching",
+        "sulla_prima": {
+          "posizione": "inside"
+        },
+        "sulla_seconda": {
+          "posizione": "inside"
+        }
+      }
+    ],
+    "sovrapposizioni": [],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Centri (0,0) e(d,0), raggi1. Asse radicale x=d/2; y²=1-(d/2)² con Fraction. Segno decide esattamente 0,1,2 punti; ordine sul primo cerchio: y positivo prima di negativo. Coordinate Decimal180 e tolleranza pubblica arrotondata per eccesso. Verifica finale del limite: M effettiva=2 dai soli dati geometrici (angoli e bulge esclusi, punto medio incluso); ogni tolleranza non supera il limite pubblico arrotondato per eccesso sulla M effettiva."
+  }
+}
