@@ -6,14 +6,14 @@
   "ingresso": {
     "operazione": "tangentsFrom",
     "punto": [
-      5.0,
-      0.0
+      5,
+      0
     ],
     "curva": {
       "cerchio": {
         "centro": [
-          0.0,
-          0.0
+          0,
+          0
         ],
         "raggio": 5
       }
@@ -31,7 +31,7 @@
         "sulla_curva": {
           "posizione": "inside",
           "stazione": {
-            "valore": 0.0,
+            "valore": 0,
             "tolleranza": 7.105427357601002e-14
           }
         }

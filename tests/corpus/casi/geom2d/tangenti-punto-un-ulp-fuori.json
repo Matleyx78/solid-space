@@ -27,11 +27,11 @@
         "punto": [
           {
             "valore": 4.999999999999999,
-            "tolleranza": 2.1316282072803006e-14
+            "tolleranza": 1.776356839400251e-14
           },
           {
-            "valore": 9.424321830774483e-08,
-            "tolleranza": 2.1316282072803006e-14
+            "valore": 9.424321830774483e-8,
+            "tolleranza": 1.776356839400251e-14
           }
         ],
         "sulla_curva": {
@@ -42,11 +42,11 @@
         "punto": [
           {
             "valore": 4.999999999999999,
-            "tolleranza": 2.1316282072803006e-14
+            "tolleranza": 1.776356839400251e-14
           },
           {
-            "valore": -9.424321830774483e-08,
-            "tolleranza": 2.1316282072803006e-14
+            "valore": -9.424321830774483e-8,
+            "tolleranza": 1.776356839400251e-14
           }
         ],
         "sulla_curva": {
@@ -57,6 +57,6 @@
   },
   "provenienza": {
     "tipo": "aritmetica-esatta",
-    "procedimento": "Confronto Fraction: |P-C|²-R² decide Placement. Con on il punto è copiato esattamente. Con outside, per P-C=(d,0), T-C=(R²/d, ±R*sqrt(d²-R²)/d). Coordinate e angoli Decimal180; punti entro2^-48 e stazioni entro2^-46 per max(M,|valore|), arrotondati per eccesso. Nessuna esecuzione di solid-space."
+    "procedimento": "Confronto Fraction: |P-C|²-R² decide Placement. Con on il punto è copiato esattamente. Con outside, per P-C=(d,0), T-C=(R²/d, ±R*sqrt(d²-R²)/d). Coordinate e angoli Decimal180; punti entro2^-48 e stazioni entro2^-46 per max(M,|valore|), arrotondati per eccesso. Nessuna esecuzione di solid-space. Verifica finale del limite: M effettiva=5.000000000000001 dai soli dati geometrici (angoli e bulge esclusi, punto medio incluso); ogni tolleranza non supera il limite pubblico arrotondato per eccesso sulla M effettiva."
   }
 }
