@@ -26,7 +26,7 @@
 - `geom2d/src/curves.cpp` (nuovo)
 - `tests/geom2d/curve_meaning_test.cpp`, `tests/geom2d/curves_test.cpp` (nuovi)
 - `tests/corpus/esegui/op_curves.cpp` (nuovo)
-- `tests/corpus/in-attesa.txt` (togliere i blocchi di R7a e R7b)
+- `tests/corpus/in-attesa/` (cancellare `0.2-R7a.txt` e `0.2-R7b.txt`)
 
 ## Cosa fare
 
@@ -93,8 +93,8 @@ da serie calcolate con `decimal` di Python; i razionali da `fractions`.
 - Decisioni esatte, costruzioni con l'errore dichiarato, nessuna soglia.
 - `curve_meaning.hpp` è un'intestazione interna che P8–P16 useranno: tienila
   documentata.
-- File comuni: solo `tests/corpus/in-attesa.txt`, dove togli i blocchi dei tuoi
-  riferimenti e nient'altro (piano, sezione 6). Nessun `CMakeLists.txt`: sorgenti
+- File comuni: nessuno; cancelli solo i file dei tuoi riferimenti in
+  `tests/corpus/in-attesa/` (piano, sezione 6). Nessun `CMakeLists.txt`: sorgenti
   e test li raccoglie la compilazione preparata da P3 (i test di unità in
   `tests/<componente>/`, le operazioni dei casi in `tests/corpus/esegui/`).
 
@@ -115,7 +115,6 @@ da serie calcolate con `decimal` di Python; i razionali da `fractions`.
 - `pieces`, `magnitude`, `endpoints` e `length` sono realizzate come dichiara
   `curves.hpp`, con il controllo dei dati nell'ordine scritto lì.
 - Il significato esatto delle curve è nell'intestazione interna, documentato.
-- I casi di `[0.2-R7a]` e `[0.2-R7b]` passano e i loro
-  blocchi sono tolti da `in-attesa.txt`.
+- I casi di `[0.2-R7a]` e `[0.2-R7b]` passano e i loro file sono cancellati da `in-attesa/`.
 - Il job del determinismo è verde.
 - La CI è verde.

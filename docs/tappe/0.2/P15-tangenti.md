@@ -26,7 +26,7 @@
 - `geom2d/src/tangency_internal.hpp` (nuovo, interno: ciò che P16 riusa)
 - `tests/geom2d/tangency_test.cpp` (nuovo)
 - `tests/corpus/esegui/op_tangency.cpp` (nuovo)
-- `tests/corpus/in-attesa.txt` (togliere i blocchi di R15a e R15b)
+- `tests/corpus/in-attesa/` (cancellare `0.2-R15a.txt` e `0.2-R15b.txt`)
 
 ## Cosa fare
 
@@ -104,8 +104,8 @@ algebrici (elevamenti al quadrato, scritti in `provenienza`); centri e punti con
 - Il lato ha lo stesso significato di `side()` (ADR 0011, punto 3).
 - Le intestazioni interne di P6, P7, P9, P10 e P12 si usano senza cambiarle; se
   serve altro, fermati e scrivilo nella issue.
-- File comuni: solo `tests/corpus/in-attesa.txt`, dove togli i blocchi dei tuoi
-  riferimenti e nient'altro (piano, sezione 6). Nessun `CMakeLists.txt`: sorgenti
+- File comuni: nessuno; cancelli solo i file dei tuoi riferimenti in
+  `tests/corpus/in-attesa/` (piano, sezione 6). Nessun `CMakeLists.txt`: sorgenti
   e test li raccoglie la compilazione preparata da P3 (i test di unità in
   `tests/<componente>/`, le operazioni dei casi in `tests/corpus/esegui/`).
 
@@ -128,7 +128,6 @@ E i casi di R15a e R15b.
 
 - `tangentsFrom` e `tangentCircles` sono realizzate come dichiara
   `tangency.hpp`.
-- I casi di `[0.2-R15a]` e `[0.2-R15b]` passano e i loro
-  blocchi sono tolti da `in-attesa.txt`.
+- I casi di `[0.2-R15a]` e `[0.2-R15b]` passano e i loro file sono cancellati da `in-attesa/`.
 - Il job del determinismo è verde.
 - La CI è verde.

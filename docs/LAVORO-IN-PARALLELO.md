@@ -67,12 +67,10 @@ dice, per ogni pacchetto:
   comportamento);
 - **Dipende da**: le issue che devono essere chiuse prima. Due pacchetti che
   toccano gli stessi file sono **sempre** legati da "Dipende da", così non
-  possono partire insieme. **Unica eccezione**: l'elenco dei casi in attesa
-  (`tests/corpus/in-attesa.txt`), che ogni pacchetto di riferimenti allunga con
-  i suoi casi e ogni pacchetto di lavoro accorcia togliendo i propri (ADR 0005,
-  punto 4). Lì ognuno tocca solo le righe dei propri casi, e chi arriva dopo si
-  aggiorna; legare tutti quei pacchetti per un solo file li metterebbe in fila.
-  La stessa eccezione vale in Tecnigrafo.
+  possono partire insieme. Nessuna eccezione: nemmeno l'elenco dei casi in
+  attesa è un file condiviso, perché è la cartella `tests/corpus/in-attesa/` con
+  un file per blocco di riferimenti, che il pacchetto di riferimenti aggiunge e
+  quello di lavoro cancella (ADR 0005, punto 4).
 
 ### Pacchetti leggeri
 

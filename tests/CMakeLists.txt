@@ -92,15 +92,19 @@ add_test(NAME corpus_validator_tests
 set_tests_properties(corpus_validate corpus_validator_tests PROPERTIES LABELS corpus)
 
 # Compile the corpus into an immutable table, including pending cases. Watch
-# directories as well as files so adding/removing a case reruns generation.
+# directories as well as files so adding/removing a case reruns generation. The
+# pending list is a directory with one file per block of references: a package
+# that makes its cases mandatory deletes its file, and only the directory (whose
+# modification time changes) tells the build that something disappeared.
 set(ss_corpus_dir ${CMAKE_CURRENT_SOURCE_DIR}/corpus)
 set(ss_corpus_output ${CMAKE_BINARY_DIR}/corpus)
 file(GLOB_RECURSE ss_corpus_cases CONFIGURE_DEPENDS ${ss_corpus_dir}/casi/*.json)
+file(GLOB ss_corpus_pending CONFIGURE_DEPENDS ${ss_corpus_dir}/in-attesa/*.txt)
 add_custom_command(
   OUTPUT ${ss_corpus_output}/casi.cpp ${ss_corpus_output}/obbligatori.txt
   COMMAND ${Python3_EXECUTABLE} -B ${ss_corpus_dir}/genera_casi.py
           ${ss_corpus_dir} ${ss_corpus_output} --componenti robust geom2d
-  DEPENDS ${ss_corpus_cases} ${ss_corpus_dir}/in-attesa.txt
+  DEPENDS ${ss_corpus_cases} ${ss_corpus_pending} ${ss_corpus_dir}/in-attesa
           ${ss_corpus_dir}/sorgenti.json ${ss_corpus_dir}/genera_casi.py
           ${ss_corpus_dir}/valida_corpus.py
   VERBATIM)

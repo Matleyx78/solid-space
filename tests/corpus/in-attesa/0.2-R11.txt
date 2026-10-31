@@ -1,0 +1,14 @@
+geom2d/tagli-richiesta20-caso5-pezzo-0 #56
+geom2d/tagli-richiesta20-caso5-pezzo-1 #56
+geom2d/tagli-richiesta20-caso5-pezzo-2 #56
+geom2d/tagli-richiesta20-caso5-pezzo-3 #56
+geom2d/tagli-richiesta20-caso5-pezzo-4 #56
+geom2d/tagli-radici-distinte-01 #56
+geom2d/tagli-radici-distinte-10 #56
+geom2d/tagli-tre-rette-stesso-punto #56
+geom2d/tagli-tangenza-e-retta-stesso-punto #56
+geom2d/tagli-scarti-in-mezzo #56
+geom2d/tagli-ospite-non-valido #56
+geom2d/tagli-sovrapposizioni-stesso-inizio #56
+geom2d/tagli-omessi-sommati #56
+geom2d/tagli-nessun-tagliente #56

@@ -25,7 +25,7 @@
   servono)
 - `tests/geom2d/positions_test.cpp`, `tests/geom2d/intersection_test.cpp` (nuovi)
 - `tests/corpus/esegui/op_intersection.cpp` (nuovo)
-- `tests/corpus/in-attesa.txt` (togliere i blocchi di R10a e R10b)
+- `tests/corpus/in-attesa/` (cancellare `0.2-R10a.txt` e `0.2-R10b.txt`)
 
 ## Cosa fare
 
@@ -117,8 +117,8 @@ forma a + b·√d; coordinate e stazioni con `decimal` ad alta precisione.
   (`carriers.hpp`) puoi solo aggiungere, senza cambiare ciò che c'è. Se serve
   altro, fermati e scrivilo nella issue.
 - `positions.hpp` la usano P11, P14, P15 e P16: tienila documentata.
-- File comuni: solo `tests/corpus/in-attesa.txt`, dove togli i blocchi dei tuoi
-  riferimenti e nient'altro (piano, sezione 6). Nessun `CMakeLists.txt`: sorgenti
+- File comuni: nessuno; cancelli solo i file dei tuoi riferimenti in
+  `tests/corpus/in-attesa/` (piano, sezione 6). Nessun `CMakeLists.txt`: sorgenti
   e test li raccoglie la compilazione preparata da P3 (i test di unità in
   `tests/<componente>/`, le operazioni dei casi in `tests/corpus/esegui/`).
 
@@ -141,7 +141,6 @@ E i casi di R10a e R10b.
 
 - `intersect` è realizzata come dichiara `intersection.hpp`.
 - Le posizioni lungo le curve sono nell'intestazione interna, documentate.
-- I casi di `[0.2-R10a]` e `[0.2-R10b]` passano, con la simmetria, e i loro
-  blocchi sono tolti da `in-attesa.txt`.
+- I casi di `[0.2-R10a]` e `[0.2-R10b]` passano, con la simmetria, e i loro file sono cancellati da `in-attesa/`.
 - Il job del determinismo è verde.
 - La CI è verde.

@@ -44,17 +44,21 @@ jobs:
               reference = any(p.startswith('tests/corpus/casi/') or
                               p.startswith('tests/corpus/esterni/') or
                               p == 'tests/corpus/sorgenti.json' for p in paths)
+              # The pending list (a file per block of references) is changed by both
+              # kinds of package: references add their file, work deletes it.
               work = any(not (p.startswith('tests/corpus/casi/') or
-                              p.startswith('tests/corpus/esterni/') or p in {
-                  'tests/corpus/sorgenti.json', 'tests/corpus/in-attesa.txt'
+                              p.startswith('tests/corpus/esterni/') or
+                              p.startswith('tests/corpus/in-attesa/') or p in {
+                  'tests/corpus/sorgenti.json'
               }) for p in paths)
               return reference and work
 
           # Exercise the guard itself, including moves out of the reference tree.
           assert classify(['tests/corpus/casi/robust/a.json', 'robust/src/a.cpp'])
           assert classify(['tests/corpus/sorgenti.json', 'README.md'])
-          assert not classify(['tests/corpus/in-attesa.txt'])
-          assert not classify(['tests/corpus/casi/robust/a.json', 'tests/corpus/in-attesa.txt'])
+          assert not classify(['tests/corpus/in-attesa/0.2-R4a.txt'])
+          assert not classify(['tests/corpus/casi/robust/a.json',
+                               'tests/corpus/in-attesa/0.2-R4a.txt'])
           assert not classify(['tests/corpus/casi/geom2d/a.json',
                                'tests/corpus/sorgenti.json', 'tests/corpus/esterni/a.dxf'])
           assert classify(['tests/corpus/esterni/a.dxf', 'geom2d/src/a.cpp'])

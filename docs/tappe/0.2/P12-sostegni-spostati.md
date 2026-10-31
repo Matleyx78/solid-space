@@ -101,7 +101,7 @@ documentano, perché li usano P14 e P15.
 - Nessuna eccezione per errori attesi; solo `std::bad_alloc` quando la memoria
   è esaurita (ADR 0003, punto 5, corretto), che non si intercetta. Le funzioni
   interne non sono `noexcept`.
-- Le righe di `tests/corpus/in-attesa.txt` non ti riguardano: il pacchetto non ha
+- I file di `tests/corpus/in-attesa/` non ti riguardano: il pacchetto non ha
   casi propri.
 
 ## Test richiesti

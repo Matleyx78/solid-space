@@ -46,8 +46,7 @@ Tappe chiuse e ADR accettati da cui questa dipende.
 
 Ogni pacchetto è **una pull request**. I pacchetti senza dipendenze tra loro si
 possono fare in parallelo; due pacchetti che toccano gli stessi file sono legati
-da "Dipende da", salvo `tests/corpus/in-attesa.txt`, dove ognuno tocca solo le
-righe dei propri casi ([LAVORO-IN-PARALLELO.md](../LAVORO-IN-PARALLELO.md),
+da "Dipende da" ([LAVORO-IN-PARALLELO.md](../LAVORO-IN-PARALLELO.md),
 "Preparare il piano").
 
 Un pacchetto che cambia il comportamento geometrico ha anche un pacchetto di

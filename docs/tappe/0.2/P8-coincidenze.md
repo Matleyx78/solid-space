@@ -24,7 +24,7 @@
 - `geom2d/src/coincidence.cpp` (nuovo)
 - `tests/geom2d/coincidence_test.cpp` (nuovo)
 - `tests/corpus/esegui/op_coincidence.cpp` (nuovo)
-- `tests/corpus/in-attesa.txt` (togliere i blocchi di R8a e R8b)
+- `tests/corpus/in-attesa/` (cancellare `0.2-R8a.txt` e `0.2-R8b.txt`)
 
 ## Cosa fare
 
@@ -90,8 +90,8 @@ gli archi vale la regola del README («Gli archi»).
   non entra in nessuna decisione esatta (ADR 0009, punto 1).
 - Le intestazioni interne di P6 e P7 si usano, non si cambiano: se manca
   qualcosa, fermati e scrivilo nella issue.
-- File comuni: solo `tests/corpus/in-attesa.txt`, dove togli i blocchi dei tuoi
-  riferimenti e nient'altro (piano, sezione 6). Nessun `CMakeLists.txt`: sorgenti
+- File comuni: nessuno; cancelli solo i file dei tuoi riferimenti in
+  `tests/corpus/in-attesa/` (piano, sezione 6). Nessun `CMakeLists.txt`: sorgenti
   e test li raccoglie la compilazione preparata da P3 (i test di unità in
   `tests/<componente>/`, le operazioni dei casi in `tests/corpus/esegui/`).
 
@@ -107,7 +107,6 @@ gli archi vale la regola del README («Gli archi»).
 
 - Le cinque funzioni sono realizzate come dichiara `coincidence.hpp`, con
   confronti esatti.
-- I casi di `[0.2-R8a]` e `[0.2-R8b]` passano e i loro
-  blocchi sono tolti da `in-attesa.txt`.
+- I casi di `[0.2-R8a]` e `[0.2-R8b]` passano e i loro file sono cancellati da `in-attesa/`.
 - Il job del determinismo è verde.
 - La CI è verde.

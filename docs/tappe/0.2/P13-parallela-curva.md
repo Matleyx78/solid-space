@@ -21,7 +21,7 @@
 - `geom2d/src/offset_curve.cpp` (nuovo)
 - `tests/geom2d/offset_curve_test.cpp` (nuovo)
 - `tests/corpus/esegui/op_offset_curve.cpp` (nuovo)
-- `tests/corpus/in-attesa.txt` (togliere il blocco di R13)
+- `tests/corpus/in-attesa/` (cancellare `0.2-R13.txt`)
 
 ## Cosa fare
 
@@ -95,8 +95,8 @@ spostati con `decimal` (una radice). Per gli archi vale la regola del README
 - `offsetPolyline` è di P14: non scriverla qui.
 - Le intestazioni interne di P6 e P7 si usano, non si cambiano: se manca
   qualcosa, fermati e scrivilo nella issue.
-- File comuni: solo `tests/corpus/in-attesa.txt`, dove togli i blocchi dei tuoi
-  riferimenti e nient'altro (piano, sezione 6). Nessun `CMakeLists.txt`: sorgenti
+- File comuni: nessuno; cancelli solo i file dei tuoi riferimenti in
+  `tests/corpus/in-attesa/` (piano, sezione 6). Nessun `CMakeLists.txt`: sorgenti
   e test li raccoglie la compilazione preparata da P3 (i test di unità in
   `tests/<componente>/`, le operazioni dei casi in `tests/corpus/esegui/`).
 
@@ -111,7 +111,6 @@ spostati con `decimal` (una radice). Per gli archi vale la regola del README
 ## Fatto quando
 
 - `offsetCurve` è realizzata come dichiara `offset.hpp`.
-- I casi di `[0.2-R13]` passano e il loro blocco è tolto da
-  `in-attesa.txt`.
+- I casi di `[0.2-R13]` passano e il loro file è cancellato da `in-attesa/`.
 - Il job del determinismo è verde.
 - La CI è verde.
