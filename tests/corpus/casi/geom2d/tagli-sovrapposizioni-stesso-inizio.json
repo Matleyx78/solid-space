@@ -1,0 +1,140 @@
+{
+  "versione": 1,
+  "id": "tagli-sovrapposizioni-stesso-inizio",
+  "componente": "geom2d",
+  "descrizione": "tagli sovrapposizioni stesso inizio.",
+  "ingresso": {
+    "operazione": "intersectAlong",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          -2,
+          0
+        ],
+        "fine": [
+          2,
+          0
+        ]
+      }
+    },
+    "prolunga": "none",
+    "taglienti": [
+      {
+        "segmento": {
+          "inizio": [
+            -1,
+            0
+          ],
+          "fine": [
+            1,
+            0
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            -1,
+            0
+          ],
+          "fine": [
+            0,
+            0
+          ]
+        }
+      }
+    ],
+    "prolunga_taglienti": "none"
+  },
+  "atteso": {
+    "tagli": [],
+    "sovrapposizioni": [
+      {
+        "tagliente": "0",
+        "intera": false,
+        "da": {
+          "punto": [
+            {
+              "valore": -1.0,
+              "tolleranza": 7.105427357601002e-15
+            },
+            {
+              "valore": 0.0,
+              "tolleranza": 7.105427357601002e-15
+            }
+          ],
+          "sulla_prima": {
+            "posizione": "inside"
+          },
+          "sulla_seconda": {
+            "posizione": "atStart"
+          }
+        },
+        "a": {
+          "punto": [
+            {
+              "valore": 1.0,
+              "tolleranza": 7.105427357601002e-15
+            },
+            {
+              "valore": 0.0,
+              "tolleranza": 7.105427357601002e-15
+            }
+          ],
+          "sulla_prima": {
+            "posizione": "inside"
+          },
+          "sulla_seconda": {
+            "posizione": "atEnd"
+          }
+        }
+      },
+      {
+        "tagliente": "1",
+        "intera": false,
+        "da": {
+          "punto": [
+            {
+              "valore": -1.0,
+              "tolleranza": 7.105427357601002e-15
+            },
+            {
+              "valore": 0.0,
+              "tolleranza": 7.105427357601002e-15
+            }
+          ],
+          "sulla_prima": {
+            "posizione": "inside"
+          },
+          "sulla_seconda": {
+            "posizione": "atStart"
+          }
+        },
+        "a": {
+          "punto": [
+            {
+              "valore": 0.0,
+              "tolleranza": 7.105427357601002e-15
+            },
+            {
+              "valore": 0.0,
+              "tolleranza": 7.105427357601002e-15
+            }
+          ],
+          "sulla_prima": {
+            "posizione": "inside"
+          },
+          "sulla_seconda": {
+            "posizione": "atEnd"
+          }
+        }
+      }
+    ],
+    "scartati": [],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Fraction sui double: intersezione delle rette con prodotti vettoriali esatti, parametri t=cross(c-a,d-c)/cross(b-a,d-c), u=cross(c-a,b-a)/denominatore; 0<=t,u<=1. Raggruppamento per coordinate razionali uguali, ordine per t; Location da t/u esatti. Stazioni Decimal180; tolleranze pubbliche arrotondate per eccesso."
+  }
+}

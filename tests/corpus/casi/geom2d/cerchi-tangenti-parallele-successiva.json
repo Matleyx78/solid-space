@@ -1,0 +1,42 @@
+{
+  "versione": 1,
+  "id": "cerchi-tangenti-parallele-successiva",
+  "componente": "geom2d",
+  "descrizione": "cerchi tangenti parallele successiva.",
+  "ingresso": {
+    "operazione": "tangentCircles",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          1,
+          0
+        ]
+      }
+    },
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          0,
+          "0x1.0000000000001p+1"
+        ],
+        "fine": [
+          1,
+          "0x1.0000000000001p+1"
+        ]
+      }
+    },
+    "raggio": 1
+  },
+  "atteso": {
+    "infiniti": false,
+    "cerchi": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Cerchi tangenti: centro comune delle rette spostate di ±r e dei cerchi di raggio R+r o |R-r|. Esistenza e lato confrontati con Fraction; coordinate radicali Decimal180, tolleranze pubbliche arrotondate per eccesso. Estensioni intere come tangency.hpp."
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "versione": 1,
+  "id": "lato-pezzo-antiorario-on",
+  "componente": "geom2d",
+  "descrizione": "lato pezzo antiorario on.",
+  "ingresso": {
+    "operazione": "side",
+    "curva": {
+      "pezzo": {
+        "inizio": [
+          -5,
+          0
+        ],
+        "fine": [
+          5,
+          0
+        ],
+        "bulge": 1
+      }
+    },
+    "punto": [
+      3,
+      "0x1.0000000000000p+2"
+    ]
+  },
+  "atteso": {
+    "lato": "on"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Confronti esatti Fraction sui double di ingresso. Retta: D=(bx-ax)*(py-ay)-(by-ay)*(px-ax), left se positivo. Cerchio: Q=(px-cx)^2+(py-cy)^2-r^2, on se zero, dentro a sinistra per antiorario e a destra per orario. Nessuna tolleranza. "
+  }
+}

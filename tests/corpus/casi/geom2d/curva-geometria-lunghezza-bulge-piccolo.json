@@ -1,0 +1,32 @@
+{
+  "versione": 1,
+  "id": "curva-geometria-lunghezza-bulge-piccolo",
+  "componente": "geom2d",
+  "descrizione": "curva geometria lunghezza bulge piccolo.",
+  "ingresso": {
+    "operazione": "length",
+    "curva": {
+      "pezzo": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          2,
+          0
+        ],
+        "bulge": 9.5367431640625e-07
+      }
+    }
+  },
+  "atteso": {
+    "lunghezza": {
+      "valore": 2.000000000001213,
+      "tolleranza": 2.842170943042124e-14
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente Python decimal a 180 cifre: pi=16*atan(1/5)-4*atan(1/239), atan(t)=somma (-1)^k*t^(2k+1)/(2k+1) fino a stabilità. Ingresso Decimal.from_float sul double esadecimale. Per archi D0 e D1 stanno nei quadranti separati dalle frontiere: nessuna classificazione dipende dai 2 ulp di sinCos. Valori costruiti con serie decimal; tolleranza 2^-48 per coordinate e 2^-46 per lunghezze, moltiplicata per max(M,abs(valore esatto)), arrotondata verso +infinito."
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "versione": 1,
+  "id": "tangenti-punto-pezzo-curvo",
+  "componente": "geom2d",
+  "descrizione": "tangenti punto pezzo curvo.",
+  "ingresso": {
+    "operazione": "tangentsFrom",
+    "punto": [
+      5.000000000001,
+      0
+    ],
+    "curva": {
+      "pezzo": {
+        "inizio": [
+          -5,
+          0
+        ],
+        "fine": [
+          5,
+          0
+        ],
+        "bulge": 1
+      }
+    },
+    "prolunga": "none"
+  },
+  "atteso": {
+    "collocazione": "outside",
+    "punti": [
+      {
+        "punto": [
+          {
+            "valore": 4.999999999999,
+            "tolleranza": 1.776356839400606e-14
+          },
+          {
+            "valore": -0.000003162418221206741,
+            "tolleranza": 1.776356839400606e-14
+          }
+        ],
+        "sulla_curva": {
+          "posizione": "inside"
+        }
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Confronto Fraction: |P-C|²-R² decide Placement. Con on il punto è copiato esattamente. Con outside, per P-C=(d,0), T-C=(R²/d, ±R*sqrt(d²-R²)/d). Coordinate e angoli Decimal180; punti entro2^-48 e stazioni entro2^-46 per max(M,|valore|), arrotondati per eccesso. Nessuna esecuzione di solid-space. Verifica finale del limite: M effettiva=5.000000000001 dai soli dati geometrici (angoli e bulge esclusi, punto medio incluso); ogni tolleranza non supera il limite pubblico arrotondato per eccesso sulla M effettiva."
+  }
+}

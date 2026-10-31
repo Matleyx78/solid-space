@@ -1,0 +1,31 @@
+{
+  "versione": 1,
+  "id": "lato-arco-orario-interno",
+  "componente": "geom2d",
+  "descrizione": "lato arco orario interno.",
+  "ingresso": {
+    "operazione": "side",
+    "curva": {
+      "arco": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 5,
+        "angolo_iniziale": 0,
+        "ampiezza": -1
+      }
+    },
+    "punto": [
+      0,
+      0
+    ]
+  },
+  "atteso": {
+    "lato": "right"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Confronti esatti Fraction sui double di ingresso. Retta: D=(bx-ax)*(py-ay)-(by-ay)*(px-ax), left se positivo. Cerchio: Q=(px-cx)^2+(py-cy)^2-r^2, on se zero, dentro a sinistra per antiorario e a destra per orario. Nessuna tolleranza. Raggio 5, distanza 0: interno, ma curva oraria."
+  }
+}

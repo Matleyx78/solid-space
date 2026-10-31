@@ -1,0 +1,28 @@
+{
+  "versione": 1,
+  "id": "curva-dati-cerchio-inf",
+  "componente": "geom2d",
+  "descrizione": "curva dati cerchio inf.",
+  "ingresso": {
+    "operazione": "length",
+    "curva": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": "inf"
+      }
+    }
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "invalidValue",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Controllo dati di curves.hpp: prima valori non finiti o raggio negativo (invalidValue), poi dominio 2^50 e angoli 2^20 (outOfDomain), poi curva ridotta esattamente a un punto (degenerateCurve). Indice dato=0 per una sola curva; magnitude accetta curve degeneri."
+  }
+}

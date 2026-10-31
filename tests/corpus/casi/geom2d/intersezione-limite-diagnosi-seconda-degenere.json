@@ -1,0 +1,42 @@
+{
+  "versione": 1,
+  "id": "intersezione-limite-diagnosi-seconda-degenere",
+  "componente": "geom2d",
+  "descrizione": "intersezione limite diagnosi seconda degenere.",
+  "ingresso": {
+    "operazione": "intersect",
+    "prima": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 1
+      }
+    },
+    "prolunga_prima": "none",
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          0,
+          0
+        ]
+      }
+    },
+    "prolunga_seconda": "none"
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "degenerateCurve",
+      "dato": "1"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Controllo dati di curves.hpp nell’ordine del contratto; prima curva dato0, seconda dato1."
+  }
+}
