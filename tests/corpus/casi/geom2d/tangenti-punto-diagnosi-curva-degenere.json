@@ -1,0 +1,33 @@
+{
+  "versione": 1,
+  "id": "tangenti-punto-diagnosi-curva-degenere",
+  "componente": "geom2d",
+  "descrizione": "tangenti punto diagnosi curva degenere.",
+  "ingresso": {
+    "operazione": "tangentsFrom",
+    "punto": [
+      1,
+      0
+    ],
+    "curva": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 0
+      }
+    },
+    "prolunga": "none"
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "degenerateCurve",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Controllo dati di tangentsFrom: curva indice0, punto indice1; curva dritta notCircular."
+  }
+}

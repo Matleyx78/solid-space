@@ -1,0 +1,33 @@
+{
+  "versione": 1,
+  "id": "tangenti-punto-diagnosi-punto-nan",
+  "componente": "geom2d",
+  "descrizione": "tangenti punto diagnosi punto nan.",
+  "ingresso": {
+    "operazione": "tangentsFrom",
+    "punto": [
+      "nan",
+      0
+    ],
+    "curva": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 5
+      }
+    },
+    "prolunga": "none"
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "invalidValue",
+      "dato": "1"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Controllo dati di tangentsFrom: curva indice0, punto indice1; curva dritta notCircular."
+  }
+}
