@@ -1,0 +1,148 @@
+{
+  "versione": 1,
+  "id": "tagli-richiesta20-caso5-pezzo-1",
+  "componente": "geom2d",
+  "descrizione": "tagli richiesta20 caso5 pezzo 1.",
+  "ingresso": {
+    "operazione": "intersectAlong",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          2,
+          0
+        ],
+        "fine": [
+          0,
+          2
+        ]
+      }
+    },
+    "prolunga": "none",
+    "taglienti": [
+      {
+        "segmento": {
+          "inizio": [
+            -2,
+            0
+          ],
+          "fine": [
+            2,
+            0
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            2
+          ],
+          "fine": [
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            0
+          ],
+          "fine": [
+            0,
+            -2
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            -2
+          ],
+          "fine": [
+            -2,
+            0
+          ]
+        }
+      }
+    ],
+    "prolunga_taglienti": "none"
+  },
+  "atteso": {
+    "tagli": [
+      {
+        "punto": [
+          {
+            "valore": 2.0,
+            "tolleranza": 7.105427357601002e-15
+          },
+          {
+            "valore": 0.0,
+            "tolleranza": 7.105427357601002e-15
+          }
+        ],
+        "sull_ospite": {
+          "posizione": "atStart",
+          "stazione": {
+            "valore": 0.0,
+            "tolleranza": 2.842170943040401e-14
+          }
+        },
+        "taglienti": [
+          {
+            "indice": "0",
+            "contatto": "crossing",
+            "sul_tagliente": {
+              "posizione": "atEnd",
+              "stazione": {
+                "valore": 4.0,
+                "tolleranza": 5.684341886080802e-14
+              }
+            }
+          }
+        ]
+      },
+      {
+        "punto": [
+          {
+            "valore": 0.0,
+            "tolleranza": 7.105427357601002e-15
+          },
+          {
+            "valore": 2.0,
+            "tolleranza": 7.105427357601002e-15
+          }
+        ],
+        "sull_ospite": {
+          "posizione": "atEnd",
+          "stazione": {
+            "valore": 2.8284271247461903,
+            "tolleranza": 4.0194366942304644e-14
+          }
+        },
+        "taglienti": [
+          {
+            "indice": "1",
+            "contatto": "crossing",
+            "sul_tagliente": {
+              "posizione": "atStart",
+              "stazione": {
+                "valore": 0.0,
+                "tolleranza": 2.842170943040401e-14
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "sovrapposizioni": [],
+    "scartati": [],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Fraction sui double: intersezione delle rette con prodotti vettoriali esatti, parametri t=cross(c-a,d-c)/cross(b-a,d-c), u=cross(c-a,b-a)/denominatore; 0<=t,u<=1. Raggruppamento per coordinate razionali uguali, ordine per t; Location da t/u esatti. Stazioni Decimal180; tolleranze pubbliche arrotondate per eccesso. Richiesta #20 caso5: polilinea chiusa (-2,0),(2,0),(0,2),(0,0),(0,-2); il primo lato attraversa il vertice (0,0). Host pezzo 1, gli altri nell’ordine originario."
+  }
+}

@@ -1,0 +1,166 @@
+{
+  "versione": 1,
+  "id": "tagli-radici-distinte-10",
+  "componente": "geom2d",
+  "descrizione": "tagli radici distinte 10.",
+  "ingresso": {
+    "operazione": "intersectAlong",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          -2,
+          0
+        ],
+        "fine": [
+          2,
+          0
+        ]
+      }
+    },
+    "prolunga": "none",
+    "taglienti": [
+      {
+        "cerchio": {
+          "centro": [
+            0,
+            "0x1.0000000000001p-30"
+          ],
+          "raggio": 1
+        }
+      },
+      {
+        "cerchio": {
+          "centro": [
+            0,
+            "0x1.0000000000000p-30"
+          ],
+          "raggio": 1
+        }
+      }
+    ],
+    "prolunga_taglienti": "none"
+  },
+  "atteso": {
+    "tagli": [
+      {
+        "punto": [
+          {
+            "valore": -1.0,
+            "tolleranza": 7.105427357601002e-15
+          },
+          {
+            "valore": 0.0,
+            "tolleranza": 7.105427357601002e-15
+          }
+        ],
+        "sull_ospite": {
+          "posizione": "inside",
+          "stazione": {
+            "valore": 1.0,
+            "tolleranza": 2.842170943040401e-14
+          }
+        },
+        "taglienti": [
+          {
+            "indice": "1",
+            "contatto": "crossing",
+            "sul_tagliente": {
+              "posizione": "inside"
+            }
+          }
+        ]
+      },
+      {
+        "punto": [
+          {
+            "valore": -1.0,
+            "tolleranza": 7.105427357601002e-15
+          },
+          {
+            "valore": 0.0,
+            "tolleranza": 7.105427357601002e-15
+          }
+        ],
+        "sull_ospite": {
+          "posizione": "inside",
+          "stazione": {
+            "valore": 1.0,
+            "tolleranza": 2.842170943040401e-14
+          }
+        },
+        "taglienti": [
+          {
+            "indice": "0",
+            "contatto": "crossing",
+            "sul_tagliente": {
+              "posizione": "inside"
+            }
+          }
+        ]
+      },
+      {
+        "punto": [
+          {
+            "valore": 1.0,
+            "tolleranza": 7.105427357601002e-15
+          },
+          {
+            "valore": 0.0,
+            "tolleranza": 7.105427357601002e-15
+          }
+        ],
+        "sull_ospite": {
+          "posizione": "inside",
+          "stazione": {
+            "valore": 3.0,
+            "tolleranza": 4.263256414560601e-14
+          }
+        },
+        "taglienti": [
+          {
+            "indice": "0",
+            "contatto": "crossing",
+            "sul_tagliente": {
+              "posizione": "inside"
+            }
+          }
+        ]
+      },
+      {
+        "punto": [
+          {
+            "valore": 1.0,
+            "tolleranza": 7.105427357601002e-15
+          },
+          {
+            "valore": 0.0,
+            "tolleranza": 7.105427357601002e-15
+          }
+        ],
+        "sull_ospite": {
+          "posizione": "inside",
+          "stazione": {
+            "valore": 3.0,
+            "tolleranza": 4.263256414560601e-14
+          }
+        },
+        "taglienti": [
+          {
+            "indice": "1",
+            "contatto": "crossing",
+            "sul_tagliente": {
+              "posizione": "inside"
+            }
+          }
+        ]
+      }
+    ],
+    "sovrapposizioni": [],
+    "scartati": [],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "y0=2^-30, y1=nextafter(y0,+inf). Q0=1-Fraction(y0)^2>Q1=1-Fraction(y1)^2>0; dunque -sqrt(Q0)<-sqrt(Q1)<sqrt(Q1)<sqrt(Q0). Differenza dei radicali=(Q0-Q1)/(sqrt(Q0)+sqrt(Q1)) molto minore di un ulp; i punti e le stazioni arrotondati coincidono ma i quattro tagli restano distinti. Coordinate Decimal180, confronto esatto mediante Q0-Q1. La permutazione cambia soltanto gli indici. Limiti pubblici arrotondati per eccesso."
+  }
+}
