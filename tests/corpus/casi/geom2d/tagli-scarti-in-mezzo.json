@@ -1,0 +1,179 @@
+{
+  "versione": 1,
+  "id": "tagli-scarti-in-mezzo",
+  "componente": "geom2d",
+  "descrizione": "tagli scarti in mezzo.",
+  "ingresso": {
+    "operazione": "intersectAlong",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          -2,
+          0
+        ],
+        "fine": [
+          2,
+          0
+        ]
+      }
+    },
+    "prolunga": "none",
+    "taglienti": [
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            -1
+          ],
+          "fine": [
+            0,
+            1
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            "nan",
+            0
+          ],
+          "fine": [
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "cerchio": {
+          "centro": [
+            2251799813685248,
+            0
+          ],
+          "raggio": 1
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            0
+          ],
+          "fine": [
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            1,
+            -1
+          ],
+          "fine": [
+            1,
+            1
+          ]
+        }
+      }
+    ],
+    "prolunga_taglienti": "none"
+  },
+  "atteso": {
+    "tagli": [
+      {
+        "punto": [
+          {
+            "valore": 0.0,
+            "tolleranza": 7.105427357601002e-15
+          },
+          {
+            "valore": 0.0,
+            "tolleranza": 7.105427357601002e-15
+          }
+        ],
+        "sull_ospite": {
+          "posizione": "inside",
+          "stazione": {
+            "valore": 2.0,
+            "tolleranza": 2.842170943040401e-14
+          }
+        },
+        "taglienti": [
+          {
+            "indice": "0",
+            "contatto": "crossing",
+            "sul_tagliente": {
+              "posizione": "inside",
+              "stazione": {
+                "valore": 1.0,
+                "tolleranza": 2.842170943040401e-14
+              }
+            }
+          }
+        ]
+      },
+      {
+        "punto": [
+          {
+            "valore": 1.0,
+            "tolleranza": 7.105427357601002e-15
+          },
+          {
+            "valore": 0.0,
+            "tolleranza": 7.105427357601002e-15
+          }
+        ],
+        "sull_ospite": {
+          "posizione": "inside",
+          "stazione": {
+            "valore": 3.0,
+            "tolleranza": 4.263256414560601e-14
+          }
+        },
+        "taglienti": [
+          {
+            "indice": "4",
+            "contatto": "crossing",
+            "sul_tagliente": {
+              "posizione": "inside",
+              "stazione": {
+                "valore": 1.0,
+                "tolleranza": 2.842170943040401e-14
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "sovrapposizioni": [],
+    "scartati": [
+      {
+        "tagliente": "1",
+        "diagnosi": {
+          "codice": "invalidValue",
+          "dato": "2"
+        }
+      },
+      {
+        "tagliente": "2",
+        "diagnosi": {
+          "codice": "outOfDomain",
+          "dato": "3"
+        }
+      },
+      {
+        "tagliente": "3",
+        "diagnosi": {
+          "codice": "degenerateCurve",
+          "dato": "4"
+        }
+      }
+    ],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Fraction sui double: intersezione delle rette con prodotti vettoriali esatti, parametri t=cross(c-a,d-c)/cross(b-a,d-c), u=cross(c-a,b-a)/denominatore; 0<=t,u<=1. Raggruppamento per coordinate razionali uguali, ordine per t; Location da t/u esatti. Stazioni Decimal180; tolleranze pubbliche arrotondate per eccesso."
+  }
+}

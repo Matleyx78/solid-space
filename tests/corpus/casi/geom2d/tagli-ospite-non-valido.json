@@ -1,0 +1,31 @@
+{
+  "versione": 1,
+  "id": "tagli-ospite-non-valido",
+  "componente": "geom2d",
+  "descrizione": "tagli ospite non valido.",
+  "ingresso": {
+    "operazione": "intersectAlong",
+    "curva": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": -1
+      }
+    },
+    "prolunga": "none",
+    "taglienti": [],
+    "prolunga_taglienti": "none"
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "invalidValue",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Fraction sui double: intersezione delle rette con prodotti vettoriali esatti, parametri t=cross(c-a,d-c)/cross(b-a,d-c), u=cross(c-a,b-a)/denominatore; 0<=t,u<=1. Raggruppamento per coordinate razionali uguali, ordine per t; Location da t/u esatti. Stazioni Decimal180; tolleranze pubbliche arrotondate per eccesso. Raggio negativo dell’ospite: invalidValue dato0, anche senza taglienti."
+  }
+}
