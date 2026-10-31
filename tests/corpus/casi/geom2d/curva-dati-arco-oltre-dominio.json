@@ -1,0 +1,30 @@
+{
+  "versione": 1,
+  "id": "curva-dati-arco-oltre-dominio",
+  "componente": "geom2d",
+  "descrizione": "curva dati arco oltre dominio.",
+  "ingresso": {
+    "operazione": "endpoints",
+    "curva": {
+      "arco": {
+        "centro": [
+          "0x1.0000000000001p+50",
+          0
+        ],
+        "raggio": 1,
+        "angolo_iniziale": 0,
+        "ampiezza": 1
+      }
+    }
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "outOfDomain",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Controllo dati di curves.hpp: prima valori non finiti o raggio negativo (invalidValue), poi dominio 2^50 e angoli 2^20 (outOfDomain), poi curva ridotta esattamente a un punto (degenerateCurve). Indice dato=0 per una sola curva; magnitude accetta curve degeneri."
+  }
+}
