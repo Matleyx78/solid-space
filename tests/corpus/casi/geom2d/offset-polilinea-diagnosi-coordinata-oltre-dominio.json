@@ -1,0 +1,36 @@
+{
+  "versione": 1,
+  "id": "offset-polilinea-diagnosi-coordinata-oltre-dominio",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #22, R14c: La coordinata x finale è il successore binary64 di 2^50, cioè 2^50+1/4, oltre kMaxCoordinate.",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          "0x1.0000000000001p+50",
+          0,
+          0
+        ]
+      ],
+      "chiusa": false
+    },
+    "distanza": 1,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "outOfDomain",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "La coordinata x finale è il successore binary64 di 2^50, cioè 2^50+1/4, oltre kMaxCoordinate. La diagnosi riguarda la polilinea (dato 0), prima delle costruzioni geometriche."
+  }
+}

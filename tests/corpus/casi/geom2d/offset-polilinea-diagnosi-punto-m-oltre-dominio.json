@@ -1,0 +1,36 @@
+{
+  "versione": 1,
+  "id": "offset-polilinea-diagnosi-punto-m-oltre-dominio",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #22, R14c: Gli estremi sono entro il dominio, ma m=(0,-2L) per bulge 2 e L=2^50: la formula m=(start+end)/2+(b/2)*(dy,-dx) supera kMaxCoordinate.",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          -1125899906842624,
+          0,
+          2
+        ],
+        [
+          1125899906842624,
+          0,
+          0
+        ]
+      ],
+      "chiusa": false
+    },
+    "distanza": 1,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "outOfDomain",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Gli estremi sono entro il dominio, ma m=(0,-2L) per bulge 2 e L=2^50: la formula m=(start+end)/2+(b/2)*(dy,-dx) supera kMaxCoordinate. La diagnosi riguarda la polilinea (dato 0), prima delle costruzioni geometriche."
+  }
+}

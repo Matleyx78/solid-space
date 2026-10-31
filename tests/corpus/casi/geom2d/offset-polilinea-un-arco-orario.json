@@ -1,0 +1,68 @@
+{
+  "versione": 1,
+  "id": "offset-polilinea-un-arco-orario",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #22, R14c: Un solo semicerchio orario aumenta il raggio da 2 a 3.",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          0,
+          -2,
+          -1
+        ],
+        [
+          0,
+          2,
+          0
+        ]
+      ],
+      "chiusa": false
+    },
+    "distanza": 1,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "done",
+    "motivo": "none",
+    "semplice": true,
+    "polilinea": {
+      "vertici": [
+        [
+          {
+            "valore": 0,
+            "tolleranza": 1.0658141036401503e-14
+          },
+          {
+            "valore": -3,
+            "tolleranza": 1.0658141036401503e-14
+          },
+          "-1"
+        ],
+        [
+          {
+            "valore": 0,
+            "tolleranza": 1.0658141036401503e-14
+          },
+          {
+            "valore": 3,
+            "tolleranza": 1.0658141036401503e-14
+          },
+          "0"
+        ]
+      ],
+      "chiusa": false
+    },
+    "origini": [
+      {
+        "origine": "source",
+        "indice": "0"
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Un solo semicerchio orario aumenta il raggio da 2 a 3. Centro (0,0), punto m iniziale (-2,0), bulge -1; la sinistra è esterna e gli estremi diventano (0,-3),(0,3). Nessuna intersezione tra cerchi concentrici di raggi 2 e 3; concorda con offsetCurve. Coordinate costruite: tolleranza assoluta 3*2^-48, con M massimo delle coordinate degli estremi e dei punti m degli archi, di |d| e delle coordinate del risultato. Bulge 0 o ±1 esatti: copiati nei pezzi sorgente, semicirconferenza esatta nelle giunzioni; non occorre una tolleranza angolare. Nessun valore è ricavato eseguendo solid-space."
+  }
+}

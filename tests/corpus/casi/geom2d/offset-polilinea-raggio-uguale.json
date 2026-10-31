@@ -1,0 +1,35 @@
+{
+  "versione": 1,
+  "id": "offset-polilinea-raggio-uguale",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #22, R14c: Distanza esattamente uguale al raggio del solo pezzo curvo.",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          -1,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0
+        ]
+      ],
+      "chiusa": false
+    },
+    "distanza": 1,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "vanished",
+    "motivo": "none",
+    "semplice": false
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Distanza esattamente uguale al raggio del solo pezzo curvo. Il punto m=(0,-1) determina il cerchio unitario; R-d=1-1=0 esatto. Il pezzo sparisce al passo 1, nulla rimane e simple è falso."
+  }
+}

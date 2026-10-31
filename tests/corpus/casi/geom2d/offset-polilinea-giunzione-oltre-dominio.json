@@ -1,0 +1,40 @@
+{
+  "versione": 1,
+  "id": "offset-polilinea-giunzione-oltre-dominio",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #22, R14c: Giunzione oltre il dominio con dati e singoli pezzi spostati entro il dominio.",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          1125899906842614,
+          0,
+          0
+        ],
+        [
+          1125899906842623,
+          0,
+          0
+        ],
+        [
+          1125899906842619,
+          3,
+          0
+        ]
+      ],
+      "chiusa": false
+    },
+    "distanza": -1,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "failed",
+    "motivo": "beyondDomain",
+    "semplice": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Giunzione oltre il dominio con dati e singoli pezzi spostati entro il dominio. Sia L=2^50=kMaxCoordinate. La direzione del secondo segmento è (-4,3)/5; la sua normale destra è (3,4)/5. Il primo sostegno spostato ha y=-1. Il secondo è (L-1+3/5,4/5)+t*(-4/5,3/5): y=-1 dà t=-3 e x=L+2>L. Gli estremi spostati hanno x massimo L-2/5<L, quindi è la giunzione, non un dato iniziale, a superare il dominio. Nessun pezzo è sparito o rimosso: simple vero."
+  }
+}

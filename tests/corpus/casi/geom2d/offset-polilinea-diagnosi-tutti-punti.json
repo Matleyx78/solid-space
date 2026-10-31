@@ -1,0 +1,41 @@
+{
+  "versione": 1,
+  "id": "offset-polilinea-diagnosi-tutti-punti",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #22, R14c: Tutti gli estremi coincidono in (3,4), anche con bulge non nullo: ogni pezzo è un punto esatto e viene scartato prima del passo 1.",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          3,
+          4,
+          1
+        ],
+        [
+          3,
+          4,
+          0
+        ],
+        [
+          3,
+          4,
+          -1
+        ]
+      ],
+      "chiusa": false
+    },
+    "distanza": 1,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "degenerateCurve",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Tutti gli estremi coincidono in (3,4), anche con bulge non nullo: ogni pezzo è un punto esatto e viene scartato prima del passo 1. La diagnosi riguarda la polilinea (dato 0), prima delle costruzioni geometriche."
+  }
+}

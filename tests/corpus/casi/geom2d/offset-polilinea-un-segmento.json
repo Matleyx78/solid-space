@@ -1,0 +1,68 @@
+{
+  "versione": 1,
+  "id": "offset-polilinea-un-segmento",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #22, R14c: Un solo segmento aperto si sposta lungo la normale sinistra (0,1).",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ]
+      ],
+      "chiusa": false
+    },
+    "distanza": 2,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "done",
+    "motivo": "none",
+    "semplice": true,
+    "polilinea": {
+      "vertici": [
+        [
+          {
+            "valore": 0,
+            "tolleranza": 3.552713678800501e-14
+          },
+          {
+            "valore": 2,
+            "tolleranza": 3.552713678800501e-14
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 10,
+            "tolleranza": 3.552713678800501e-14
+          },
+          {
+            "valore": 2,
+            "tolleranza": 3.552713678800501e-14
+          },
+          "0"
+        ]
+      ],
+      "chiusa": false
+    },
+    "origini": [
+      {
+        "origine": "source",
+        "indice": "0"
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Un solo segmento aperto si sposta lungo la normale sinistra (0,1). Gli estremi sono (0,2) e (10,2), come offsetCurve; nessuna giunzione, rimozione o incontro con y=0. Coordinate costruite: tolleranza assoluta 10*2^-48, con M massimo delle coordinate degli estremi e dei punti m degli archi, di |d| e delle coordinate del risultato. Bulge 0 o ±1 esatti: copiati nei pezzi sorgente, semicirconferenza esatta nelle giunzioni; non occorre una tolleranza angolare. Nessun valore è ricavato eseguendo solid-space."
+  }
+}

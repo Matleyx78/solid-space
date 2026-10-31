@@ -1,0 +1,78 @@
+{
+  "versione": 1,
+  "id": "offset-polilinea-vertici-ripetuti",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #22, R14c: Vertici ripetuti agli estremi della polilinea aperta.",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ]
+      ],
+      "chiusa": false
+    },
+    "distanza": 1,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "done",
+    "motivo": "none",
+    "semplice": true,
+    "polilinea": {
+      "vertici": [
+        [
+          {
+            "valore": 0,
+            "tolleranza": 3.552713678800501e-14
+          },
+          {
+            "valore": 1,
+            "tolleranza": 3.552713678800501e-14
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 10,
+            "tolleranza": 3.552713678800501e-14
+          },
+          {
+            "valore": 1,
+            "tolleranza": 3.552713678800501e-14
+          },
+          "0"
+        ]
+      ],
+      "chiusa": false
+    },
+    "origini": [
+      {
+        "origine": "source",
+        "indice": "1"
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Vertici ripetuti agli estremi della polilinea aperta. I pezzi 0 e 2 sono punti esatti e si scartano prima del passo 1, senza contare come spariti: simple resta vero. Rimane il segmento originale di indice 1, traslato a y=1, disgiunto dall’originale. Nessun arco gap e nessuna ambiguità di indice. Coordinate costruite: tolleranza assoluta 10*2^-48, con M massimo delle coordinate degli estremi e dei punti m degli archi, di |d| e delle coordinate del risultato. Bulge 0 o ±1 esatti: copiati nei pezzi sorgente, semicirconferenza esatta nelle giunzioni; non occorre una tolleranza angolare. Nessun valore è ricavato eseguendo solid-space."
+  }
+}

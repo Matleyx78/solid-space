@@ -1,0 +1,106 @@
+{
+  "versione": 1,
+  "id": "offset-polilinea-inversione-180-destra",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #22, R14c: Inversione esatta di 180 gradi con distanza -1.",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "chiusa": false
+    },
+    "distanza": -1,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "done",
+    "motivo": "none",
+    "semplice": true,
+    "polilinea": {
+      "vertici": [
+        [
+          {
+            "valore": 0,
+            "tolleranza": 3.552713678800501e-14
+          },
+          {
+            "valore": -1,
+            "tolleranza": 3.552713678800501e-14
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 10,
+            "tolleranza": 3.552713678800501e-14
+          },
+          {
+            "valore": -1,
+            "tolleranza": 3.552713678800501e-14
+          },
+          {
+            "valore": 1,
+            "tolleranza": 1.4210854715202004e-13
+          }
+        ],
+        [
+          {
+            "valore": 10,
+            "tolleranza": 3.552713678800501e-14
+          },
+          {
+            "valore": 1,
+            "tolleranza": 3.552713678800501e-14
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 0,
+            "tolleranza": 3.552713678800501e-14
+          },
+          {
+            "valore": 1,
+            "tolleranza": 3.552713678800501e-14
+          },
+          "0"
+        ]
+      ],
+      "chiusa": false
+    },
+    "origini": [
+      {
+        "origine": "source",
+        "indice": "0"
+      },
+      {
+        "origine": "gap",
+        "indice": "1"
+      },
+      {
+        "origine": "source",
+        "indice": "1"
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Inversione esatta di 180 gradi con distanza -1. I segmenti spostati stanno sulle rette y=d e y=-d. La PR #99 prescrive la semicirconferenza tangente centrata in (10,0), oraria per d>0, antioraria per d<0, con bulge -segno(d). Passa per (11,0), quindi non incontra l’originale x in [0,10], y=0. I segmenti sono disgiunti tra loro; l’arco li incontra soltanto agli estremi. Nessun pezzo sparisce: simple vero; origini source 0, gap 1, source 1. Coordinate costruite: tolleranza assoluta 10*2^-48, con M massimo delle coordinate degli estremi e dei punti m degli archi, di |d| e delle coordinate del risultato. I bulge dei pezzi sorgente sono copiati ed esatti; quello della semicirconferenza di giunzione è costruito, e la sua tolleranza viene dalla freccia c·|b|/2: tolleranza = 2·(M·2⁻⁴⁶)/c con M = 10 e corda c = 2, cioè 10·2⁻⁴⁶ = 1.4210854715202004e-13, esatta in binary64. Nessun valore è ricavato eseguendo solid-space."
+  }
+}

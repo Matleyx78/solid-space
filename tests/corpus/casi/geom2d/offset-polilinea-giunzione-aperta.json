@@ -1,0 +1,45 @@
+{
+  "versione": 1,
+  "id": "offset-polilinea-giunzione-aperta",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #22, R14c: U larga 2 con distanza interna 2.",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          0,
+          10,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          10,
+          0
+        ]
+      ],
+      "chiusa": false
+    },
+    "distanza": 2,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "failed",
+    "motivo": "openJoint",
+    "semplice": false
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "U larga 2 con distanza interna 2. I sostegni spostati sono x=2, y=2, x=0; le giunzioni esatte sono (2,2),(0,2). Il fondo, inizialmente orientato verso +x, gira al contrario e si rimuove al passo 3. I due pezzi rimasti non erano consecutivi nell’ingresso, e le rette x=2,x=0 non si incontrano: failed/openJoint, simple falso. La decisione precede il controllo finale."
+  }
+}
