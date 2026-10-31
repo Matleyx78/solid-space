@@ -2,6 +2,23 @@
 # Il numero è la issue del pacchetto di lavoro che renderà il caso obbligatorio.
 # Chi fa quel pacchetto toglie la riga. La regola completa è in README.md.
 
+# [0.2-R4a]
+robust/orientamento-collineare #39
+robust/orientamento-coincidenti #39
+robust/orientamento-verticale #39
+robust/orientamento-sinistra #39
+robust/orientamento-destra #39
+robust/orientamento-un-ulp-sopra #39
+robust/orientamento-un-ulp-sotto #39
+robust/orientamento-richiesta20-caso7 #39
+robust/orientamento-minuscolo #39
+robust/orientamento-subnormale #39
+robust/orientamento-subnormale-negativo #39
+robust/orientamento-grandezze-diverse #39
+robust/orientamento-massimo #39
+robust/orientamento-cancellazione #39
+robust/orientamento-zero-negativo #39
+
 # [0.2-R8a]
 geom2d/allineate-richiesta-mm #49
 geom2d/allineate-richiesta-km #49
