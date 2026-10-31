@@ -1,0 +1,28 @@
+{
+  "versione": 1,
+  "id": "orientamento-grandezze-diverse",
+  "componente": "robust",
+  "descrizione": "Orientamento esatto: grandezze-diverse.",
+  "ingresso": {
+    "operazione": "orient2d",
+    "a": [
+      "0x0.0p+0",
+      "0x0.0p+0"
+    ],
+    "b": [
+      "0x1.0000000000000p+50",
+      "0x1.87e92154ef7acp-665"
+    ],
+    "c": [
+      "0x1.0000000000000p+49",
+      "0x1.87e92154ef7acp-665"
+    ]
+  },
+  "atteso": {
+    "segno": "positive"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Python fractions.Fraction(float.fromhex(x)) su tutte le coordinate esadecimali di ingresso. D=(bx-ax)*(cy-ay)-(by-ay)*(cx-ax), senza arrotondamenti intermedi. D ha segno positive; numeratore 1723641332219371, denominatore 2^666. Nessuna soglia né esecuzione di solid-space."
+  }
+}
