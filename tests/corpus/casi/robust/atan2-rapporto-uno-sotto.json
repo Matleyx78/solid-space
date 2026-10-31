@@ -1,0 +1,22 @@
+{
+  "versione": 1,
+  "id": "atan2-rapporto-uno-sotto",
+  "componente": "robust",
+  "descrizione": "atan2 rapporto uno sotto.",
+  "ingresso": {
+    "operazione": "atan2",
+    "y": "0x1.fffffffffffffp-1",
+    "x": "0x1.0000000000000p+0"
+  },
+  "atteso": {
+    "angolo": {
+      "valore": 0.7853981633974483,
+      "tolleranza": 2.220446049250313e-16
+    },
+    "angolo_negativo": false
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente Python decimal a 180 cifre: pi=16*atan(1/5)-4*atan(1/239), atan(t)=somma (-1)^k*t^(2k+1)/(2k+1) fino a stabilità. Ingresso Decimal.from_float sul double esadecimale. Per y!=0: t=|y/x|, inversione se t>1; riduzione di metà angolo u=t/(1+sqrt(1+t*t)), atan(t)=2*serie(u), poi quadrante. Assi e zeri come standard C e decisione #31: ±0 o double più vicino a ±pi; per gli altri tolleranza 2 ulp. Ripetuto a 230 cifre con stessi arrotondamenti."
+  }
+}
