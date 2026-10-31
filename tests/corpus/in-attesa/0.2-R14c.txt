@@ -9,6 +9,7 @@ geom2d/offset-polilinea-vertici-ripetuti #63
 geom2d/offset-polilinea-inversione-180-sinistra #63
 geom2d/offset-polilinea-inversione-180-destra #63
 geom2d/offset-polilinea-distanza-zero #63
+geom2d/offset-polilinea-incontra-originale #63
 geom2d/offset-polilinea-giunzione-aperta #63
 geom2d/offset-polilinea-giunzione-oltre-dominio #63
 geom2d/offset-polilinea-autointersezione-doppio-giro #63
