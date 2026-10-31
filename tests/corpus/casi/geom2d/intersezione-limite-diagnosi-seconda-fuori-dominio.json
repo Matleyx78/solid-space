@@ -1,0 +1,39 @@
+{
+  "versione": 1,
+  "id": "intersezione-limite-diagnosi-seconda-fuori-dominio",
+  "componente": "geom2d",
+  "descrizione": "intersezione limite diagnosi seconda fuori dominio.",
+  "ingresso": {
+    "operazione": "intersect",
+    "prima": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 1
+      }
+    },
+    "prolunga_prima": "none",
+    "seconda": {
+      "cerchio": {
+        "centro": [
+          2251799813685248,
+          0
+        ],
+        "raggio": 1
+      }
+    },
+    "prolunga_seconda": "none"
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "outOfDomain",
+      "dato": "1"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Controllo dati di curves.hpp nell’ordine del contratto; prima curva dato0, seconda dato1."
+  }
+}

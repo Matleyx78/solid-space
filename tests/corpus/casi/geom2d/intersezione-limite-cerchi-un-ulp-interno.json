@@ -1,0 +1,77 @@
+{
+  "versione": 1,
+  "id": "intersezione-limite-cerchi-un-ulp-interno",
+  "componente": "geom2d",
+  "descrizione": "intersezione limite cerchi un ulp interno.",
+  "ingresso": {
+    "operazione": "intersect",
+    "prima": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 1
+      }
+    },
+    "prolunga_prima": "none",
+    "seconda": {
+      "cerchio": {
+        "centro": [
+          "0x1.fffffffffffffp+0",
+          0
+        ],
+        "raggio": 1
+      }
+    },
+    "prolunga_seconda": "none"
+  },
+  "atteso": {
+    "punti": [
+      {
+        "punto": [
+          {
+            "valore": 0.9999999999999999,
+            "tolleranza": 1.0658141036401503e-14
+          },
+          {
+            "valore": 1.4901161193847656e-08,
+            "tolleranza": 1.0658141036401503e-14
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": {
+          "posizione": "inside"
+        },
+        "sulla_seconda": {
+          "posizione": "inside"
+        }
+      },
+      {
+        "punto": [
+          {
+            "valore": 0.9999999999999999,
+            "tolleranza": 1.0658141036401503e-14
+          },
+          {
+            "valore": -1.4901161193847656e-08,
+            "tolleranza": 1.0658141036401503e-14
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": {
+          "posizione": "inside"
+        },
+        "sulla_seconda": {
+          "posizione": "inside"
+        }
+      }
+    ],
+    "sovrapposizioni": [],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Centri (0,0) e(d,0), raggi1. Asse radicale x=d/2; y²=1-(d/2)² con Fraction. Segno decide esattamente 0,1,2 punti; ordine sul primo cerchio: y positivo prima di negativo. Coordinate Decimal180 e tolleranza pubblica arrotondata per eccesso."
+  }
+}
