@@ -38,7 +38,7 @@ struct SinCos {
 /// in [-pi, pi] (pi being the double nearest to it), within
 /// kTrigMaxErrorUlps of the exact value and with the same bits on every
 /// platform. Signed zeros follow the C standard (atan2(+0, -1) is pi,
-/// atan2(-0, -1) is -pi); atan2(0, 0) is 0.
+/// atan2(-0, -1) is -pi); atan2(+-0, +0) is +-0 and atan2(+-0, -0) is +-pi.
 ///
 /// Precondition (asserted in debug): x and y are finite.
 [[nodiscard]] double atan2(double y, double x) noexcept;
