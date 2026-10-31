@@ -291,8 +291,12 @@ Dalla tappa 0.2 i casi di `robust` e `geom2d` diventano test eseguibili.
 `${CMAKE_BINARY_DIR}/corpus/casi.cpp` e `obbligatori.txt` durante la compilazione.
 Non c'è un lettore JSON nel C++: la tabella contiene alberi di `Value`, i numeri
 in ingresso sono letterali esadecimali e le frazioni attese conservano il testo
-esatto (e il `double` solo quando le rappresenta esattamente). Un caso non valido
-ferma la generazione con la diagnosi del validatore. Gli altri componenti restano
+esatto (e il `double` solo quando le rappresenta esattamente). Ogni caso è
+costruito da una funzione propria e `cases()` scorre solo un elenco di puntatori
+a funzione: costruire tutta la tabella in una sola espressione dà una cornice di
+stack che cresce con i casi (circa 4 KB ciascuno) e, oltre un certo numero, supera
+il megabyte di stack predefinito di Windows (il test falliva all'avvio). Un caso
+non valido ferma la generazione con la diagnosi del validatore. Gli altri componenti restano
 validati ma non eseguiti: entreranno nell'opzione `--componenti` quando avranno
 codice da provare; `kernel/cubo-lato-1` resta una prova del formato.
 
