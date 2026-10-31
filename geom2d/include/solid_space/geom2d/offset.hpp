@@ -12,8 +12,10 @@
 //
 // The distance is signed: positive to the left of the curve, negative to its
 // right, looking along its direction (side.hpp). For a circle, and for a
-// counterclockwise arc, left is inside. A distance of zero gives the input
-// itself. The caller turns a side point into a sign with side().
+// counterclockwise arc, left is inside. A distance of zero gives the curve
+// itself from offsetCurve; offsetPolyline fails with meetsOriginal, because
+// its result would be the input. The caller turns a side point into a sign
+// with side().
 //
 // The magnitude M of an offset is the largest among the magnitude of the
 // input (curves.hpp; for a polyline, of all its pieces) and |distance|.
@@ -79,7 +81,8 @@ enum class OffsetFailure : std::uint8_t {
     /// It did not fail.
     none,
     /// Two pieces left next to each other, after pieces between them vanished
-    /// or were removed, do not meet.
+    /// or were removed, do not meet: their extended curves have no common
+    /// point, or overlap (the same line or the same circle).
     openJoint,
     /// A joint would lie beyond robust::kMaxCoordinate.
     beyondDomain,
@@ -132,9 +135,11 @@ struct PolylineOffset {
 ///    a vertex V of the input: the vertex between their source pieces, or,
 ///    when pieces between them vanished or were removed, the vertex at the end
 ///    of the source piece of A.
-///    - If their extended curves meet, they are joined at the common point
-///      nearest V (compared exactly; a tie goes to the first along A): A is
-///      cut or extended to end there, B to start there.
+///    - If their extended curves meet, that is, have isolated common points
+///      (curves that overlap, the same line or the same circle, do not meet),
+///      they are joined at the common point nearest V (compared exactly; a tie
+///      goes to the first along A): A is cut or extended to end there, B to
+///      start there.
 ///    - Otherwise, if their source pieces are consecutive, by an arc of radius
 ///      |distance| centred on V, from the end of A to the start of B, turning
 ///      as the input turns at V. Both ends lie exactly at |distance| from V.
