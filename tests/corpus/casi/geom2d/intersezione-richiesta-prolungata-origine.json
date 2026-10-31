@@ -1,0 +1,96 @@
+{
+  "versione": 1,
+  "id": "intersezione-richiesta-prolungata-origine",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #20, casi 1–4,6 e8; origine. I dati sono prima arrotondati a double dalla trasformazione.",
+  "ingresso": {
+    "operazione": "intersect",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          0.0,
+          0.0
+        ],
+        "fine": [
+          1.0,
+          0.0
+        ]
+      }
+    },
+    "prolunga_prima": "extended",
+    "seconda": {
+      "cerchio": {
+        "centro": [
+          10.0,
+          0.0
+        ],
+        "raggio": 2.0
+      }
+    },
+    "prolunga_seconda": "none"
+  },
+  "atteso": {
+    "punti": [
+      {
+        "punto": [
+          {
+            "valore": 8.0,
+            "tolleranza": 3.552713678800501e-14
+          },
+          {
+            "valore": 0.0,
+            "tolleranza": 3.552713678800501e-14
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": {
+          "posizione": "afterEnd",
+          "stazione": {
+            "valore": 8.0,
+            "tolleranza": 1.4210854715202004e-13
+          }
+        },
+        "sulla_seconda": {
+          "posizione": "inside",
+          "stazione": {
+            "valore": 6.283185307179586,
+            "tolleranza": 1.4210854715202004e-13
+          }
+        }
+      },
+      {
+        "punto": [
+          {
+            "valore": 12.0,
+            "tolleranza": 4.263256414560601e-14
+          },
+          {
+            "valore": 0.0,
+            "tolleranza": 3.552713678800501e-14
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": {
+          "posizione": "afterEnd",
+          "stazione": {
+            "valore": 12.0,
+            "tolleranza": 1.7053025658242404e-13
+          }
+        },
+        "sulla_seconda": {
+          "posizione": "inside",
+          "stazione": {
+            "valore": 0.0,
+            "tolleranza": 1.4210854715202004e-13
+          }
+        }
+      }
+    ],
+    "sovrapposizioni": [],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Intersezioni calcolate con Fraction sui double ricevuti; coordinate e stazioni con Decimal a 180 cifre. Tolleranze 2^-48*max(M,|p|) e 2^-46*max(M,|s|), arrotondate per eccesso. Decisioni esatte, nessuna esecuzione di solid-space."
+  }
+}

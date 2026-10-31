@@ -1,0 +1,69 @@
+{
+  "versione": 1,
+  "id": "intersezione-richiesta-cerchio-interna-traslato",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #20, casi 1–4,6 e8; traslato. I dati sono prima arrotondati a double dalla trasformazione.",
+  "ingresso": {
+    "operazione": "intersect",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          999990.0,
+          1000005.0
+        ],
+        "fine": [
+          1000010.0,
+          1000005.0
+        ]
+      }
+    },
+    "prolunga_prima": "none",
+    "seconda": {
+      "cerchio": {
+        "centro": [
+          1000000.0,
+          1000000.0
+        ],
+        "raggio": 5.0
+      }
+    },
+    "prolunga_seconda": "none"
+  },
+  "atteso": {
+    "punti": [
+      {
+        "punto": [
+          {
+            "valore": 1000000.0,
+            "tolleranza": 3.552749205937289e-09
+          },
+          {
+            "valore": 1000005.0,
+            "tolleranza": 3.552749205937289e-09
+          }
+        ],
+        "contatto": "touching",
+        "sulla_prima": {
+          "posizione": "inside",
+          "stazione": {
+            "valore": 10.0,
+            "tolleranza": 1.4210996823749156e-08
+          }
+        },
+        "sulla_seconda": {
+          "posizione": "inside",
+          "stazione": {
+            "valore": 7.853981633974483,
+            "tolleranza": 1.4210996823749156e-08
+          }
+        }
+      }
+    ],
+    "sovrapposizioni": [],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Richiesta #20, caso 2 e8: Q=Fraction(r)^2-(Fraction(y)-Fraction(cy))^2. Q<0: nessuno; Q=0: un touching; Q>0: due crossing, x=cx±sqrt(Q), ordinati lungo il segmento. Decimal 180 cifre per sqrt e stazioni con atan2 a serie; limiti pubblici 2^-48 e 2^-46 arrotondati per eccesso. A 1e6 tutte le tre y arrotondano allo stesso double."
+  }
+}
