@@ -2,6 +2,11 @@
 
 - **Stato:** Accettato
 - **Data:** 2026-10-29
+- **Corretto:** 2026-10-31 — due chiarimenti, decisi dal responsabile quando i
+  pacchetti di riferimenti R14a e R14c (issue #60 e #62) hanno trovato due punti
+  in cui il contratto non tornava: la distanza zero (punto 2) e le curve
+  sovrapposte nelle giunzioni (punto 4), che decide il caso g di
+  `autocad-offset.dxf` con distanza 5 (valutazione, «Su che cosa si basa»).
 - **Richiesta:** #22 — da Tecnigrafo: tappa 0.7, Matleyx78/tecnigrafo#328
 - **Esito:** 3 pezzo nostro
 - **Tappa:** 0.2 (scheda da scrivere all'apertura)
@@ -43,11 +48,17 @@ per scriverlo al suo utente. Il testo completo è nella issue #22.
 - **Su che cosa si basa:** il testo della richiesta, il calcolo a mano dei suoi
   casi (sotto) e, come informazione, la descrizione dei casi di
   `autocad-offset.dxf`. **Non verificato:** nessun prototipo è stato eseguito;
-  le prestazioni sono un obiettivo da misurare; e il caso g di
-  `autocad-offset.dxf` (l'arco che sparisce con distanza 5) non si è potuto
-  confrontare con i quattro passi senza le sue coordinate: se AutoCAD chiude la
-  giunzione in un modo che i passi non danno, lo segnala il pacchetto di
-  riferimenti e decide il responsabile, con l'etichetta `contratto`.
+  le prestazioni sono un obiettivo da misurare. Il caso g di
+  `autocad-offset.dxf` (l'arco che sparisce con distanza 5), che non si era
+  potuto confrontare con i quattro passi senza le sue coordinate, è stato
+  confrontato dal pacchetto R14a (issue #60, 2026-10-31): AutoCAD chiude la
+  giunzione con due archi di raggio 5, centrati negli estremi dell'arco sparito,
+  che si incontrano in (473, 4); i passi davano invece una retta, perché i due
+  segmenti spostati stanno sulla stessa retta y = 5, i cui punti di mezzo distano
+  5,83 dalla polilinea di partenza e non 5. Decide il responsabile (punto 4): due
+  curve sovrapposte non si incontrano, e il risultato è `failed` con
+  `openJoint`. Chiudere la giunzione come AutoCAD non si garantisce (punto 12) e,
+  se servirà a Tecnigrafo, nascerà da una richiesta.
 
 ### I casi della richiesta
 
@@ -103,7 +114,11 @@ per scriverlo al suo utente. Il testo completo è nella issue #22.
    polilinea.
 2. **La distanza ha il segno del lato:** positiva a sinistra, negativa a
    destra, guardando nella direzione della curva (`side()`); per un cerchio e
-   per un arco antiorario la sinistra è l'interno. Zero dà la curva stessa.
+   per un arco antiorario la sinistra è l'interno. Con distanza zero
+   `offsetCurve` dà la curva stessa; `offsetPolyline` dà `failed` con
+   `meetsOriginal`, perché il risultato sarebbe la polilinea di partenza (punto
+   5), come per una distanza così piccola che il risultato arrotondato la
+   incontra.
 3. **Una curva** si sposta sempre, e il risultato è dello stesso tipo: un
    segmento lungo la normale; un cerchio e un arco cambiano solo il raggio
    (l'arco tiene angolo iniziale e ampiezza, quindi le stesse direzioni esatte
@@ -115,7 +130,10 @@ per scriverlo al suo utente. Il testo completo è nella issue #22.
    vicino al vertice o con un arco di raggio |`d`| centrato nel vertice, pezzi
    girati al contrario tolti, pezzi ridotti a un punto tolti. Le decisioni dei
    passi (dove si incontrano due curve, quale punto è più vicino al vertice,
-   se un pezzo gira al contrario) sono esatte.
+   se un pezzo gira al contrario) sono esatte. Due curve prolungate si
+   incontrano solo se hanno punti comuni isolati: due curve sovrapposte (la
+   stessa retta o lo stesso cerchio) non si incontrano, quindi la giunzione tra
+   pezzi non consecutivi dà `openJoint`.
 5. **Mai un risultato sbagliato in silenzio.** Prima di restituire `done`,
    `offsetPolyline` controlla sui `double` del risultato che due pezzi non
    consecutivi non abbiano punti comuni (esatto, come `intersect()`), che due
@@ -193,11 +211,14 @@ realizzato.
   - i sei casi della richiesta, con le risposte della tabella sopra, alle due
     scale, con i dati in `double` come Tecnigrafo li darebbe;
   - i casi a–h di `autocad-offset.dxf`, che Tecnigrafo porta nell'archivio con
-    la sua provenienza (ADR 0007, punto 17);
+    la sua provenienza (ADR 0007, punto 17); il caso g con distanza 5 ha come
+    atteso `failed` con `openJoint`, e la sua descrizione dice che AutoCAD
+    disegna due archi (valutazione, «Su che cosa si basa»);
   - i casi limite: distanza esattamente uguale al raggio (`vanished`) e un ulp
     sotto; pezzi tangenti nei vertici, aperti e chiusi; vertici ripetuti;
     inversione di 180° (giunzione ad arco); polilinea di un solo pezzo; distanza
-    zero; giunzione oltre il dominio; un caso `failed` per ciascun motivo.
+    zero (`failed` con `meetsOriginal`); giunzione oltre il dominio; un caso
+    `failed` per ciascun motivo.
 - **Valori attesi** da aritmetica esatta: le decisioni con `fractions` di Python
   e confronti tra numeri algebrici; vertici e curve con il modulo `decimal` ad
   alta precisione, con la tolleranza del caso pari all'errore dichiarato. Per i
