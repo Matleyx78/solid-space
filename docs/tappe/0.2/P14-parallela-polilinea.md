@@ -42,22 +42,28 @@ lettera il commento dell'intestazione:
 2. **i quattro passi sui valori esatti**: spostamento dei pezzi come
    `offsetCurve` (P13); giunzioni nel punto comune dei prolungamenti più vicino
    al vertice (confronto esatto, a parità il primo lungo A; prolungamenti
-   sovrapposti, la stessa retta o lo stesso cerchio, non si incontrano), oppure
-   con un arco di raggio |d| centrato nel vertice se i pezzi di partenza sono
-   consecutivi (con le tangenti nel vertice esattamente opposte, la
-   semicirconferenza che continua in tangenza i pezzi spostati: oraria per d
-   positiva, antioraria per d negativa), altrimenti `failed` con `openJoint`;
-   pezzi girati al contrario tolti, con le giunzioni rifatte finché nessun pezzo
-   si toglie (un estremo rimasto senza vicino conserva il taglio; solo un estremo
-   mai tagliato resta lo spostamento del passo 1); pezzi del risultato ridotti a
-   un punto tolti;
+   sovrapposti, la stessa retta o lo stesso cerchio, non si incontrano; per un
+   arco la giunzione si raggiunge con la rotazione più breve dall'estremo
+   spostato, e a mezzo giro esatto o con ampiezza di un giro o più dà `failed`
+   con `selfIntersection`; in una polilinea chiusa dà `openJoint` anche se resta
+   un solo pezzo), oppure con un arco di raggio |d| centrato nel vertice se i
+   pezzi di partenza sono consecutivi o resi tali da pezzi nulli scartati (con
+   indice pari al vertice alla fine del pezzo di partenza di A; con le tangenti
+   nel vertice esattamente opposte, la semicirconferenza che continua in
+   tangenza i pezzi spostati: oraria per d positiva, antioraria per d negativa),
+   altrimenti `failed` con `openJoint`; pezzi girati al contrario tolti (se più
+   pezzi girano al contrario nello stesso ciclo, si tolgono tutti insieme prima
+   di rifare le giunzioni finché nessun pezzo si toglie; un estremo rimasto
+   senza vicino conserva il taglio; solo un estremo mai tagliato resta lo
+   spostamento del passo 1); pezzi del risultato ridotti a un punto tolti al
+   passo 4; se nessun pezzo resta dopo i passi 1, 3 e 4, l'esito è `vanished`;
 3. **il controllo finale sui `double` del risultato**, prima di dare `done`: due
    pezzi non consecutivi senza punti comuni (esatto, come `intersect`); due pezzi
    consecutivi che si incontrano solo nel vertice comune o in punti che
    coincidono con esso per la regola dell'ADR 0009 (`policy`); nessun incontro
    con la polilinea di partenza. Altrimenti `failed`, con il motivo;
-4. `simple` vero quando nessun pezzo è sparito o è stato tolto (passi 1 e 3);
-   `origins` per ogni pezzo del risultato, in ordine.
+4. `simple` vero quando nessun pezzo è sparito, è stato tolto o si è ridotto a un
+   punto (passi 1, 3 e 4); `origins` per ogni pezzo del risultato, in ordine.
 
 Le decisioni dei passi (dove si incontrano due curve, quale punto è più vicino
 al vertice, se un pezzo gira al contrario) sono esatte. I pezzi spostati stanno

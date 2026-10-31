@@ -42,7 +42,8 @@ enum class OffsetOutcome : std::uint8_t {
     /// There is a result.
     done,
     /// Nothing is left at that distance: an arc or a circle whose radius would
-    /// be zero or negative, a polyline whose pieces all vanish.
+    /// be zero or negative, a polyline whose pieces all vanish, were removed or
+    /// reduced to a single point.
     vanished,
     /// A polyline offset that could not be made without self-intersections
     /// (see PolylineOffset::failure). Never for a single curve.
@@ -82,7 +83,8 @@ enum class OffsetFailure : std::uint8_t {
     none,
     /// Two pieces left next to each other, after pieces between them vanished
     /// or were removed, do not meet: their extended curves have no common
-    /// point, or overlap (the same line or the same circle).
+    /// point, or overlap (the same line or the same circle). In a closed
+    /// polyline, also when only one piece is left.
     openJoint,
     /// A joint would lie beyond robust::kMaxCoordinate.
     beyondDomain,
@@ -104,7 +106,9 @@ enum class PieceOrigin : std::uint8_t {
 struct OffsetPiece {
     PieceOrigin origin = PieceOrigin::source;
     /// source: the index of the piece in pieces(input); gap: the index of the
-    /// vertex of the input that the arc turns around.
+    /// vertex of the input that the arc turns around (when pieces between them
+    /// vanished, were removed or were dropped as duplicate points, the vertex at
+    /// the end of the source piece of A).
     std::size_t index = 0;
 };
 
@@ -113,8 +117,8 @@ struct PolylineOffset {
     OffsetOutcome outcome = OffsetOutcome::failed;
     /// With failed, why; otherwise none.
     OffsetFailure failure = OffsetFailure::none;
-    /// True when no piece vanished or was removed (steps 1 and 3 of
-    /// offsetPolyline).
+    /// True when no piece vanished, was removed or reduced to a point (steps 1,
+    /// 3 and 4 of offsetPolyline).
     bool simple = false;
     /// With done: open or closed as the input.
     Polyline polyline;
@@ -131,15 +135,20 @@ struct PolylineOffset {
 /// 1. Each piece is offset as offsetCurve does. A curved piece whose radius
 ///    becomes zero or negative vanishes.
 /// 2. Joints. Two offset pieces A and B left next to each other (in a closed
-///    polyline, also the last and the first) whose ends differ are joined at
-///    a vertex V of the input: the vertex between their source pieces, or,
-///    when pieces between them vanished or were removed, the vertex at the end
-///    of the source piece of A.
+///    polyline, also the last and the first; if only one piece is left in a
+///    closed polyline, the offset fails with openJoint) whose ends differ are
+///    joined at a vertex V of the input: the vertex between their source
+///    pieces, or, when pieces between them vanished, were removed or were
+///    dropped as duplicate points, the vertex at the end of the source piece
+///    of A.
 ///    - If their extended curves meet, that is, have isolated common points
 ///      (curves that overlap, the same line or the same circle, do not meet),
 ///      they are joined at the common point nearest V (compared exactly; a tie
 ///      goes to the first along A): A is cut or extended to end there, B to
-///      start there.
+///      start there. For an arc piece, the joint point is reached by the
+///      shortest rotation from the moved end (extending forward, shortening
+///      backward); at exactly half a turn, or with an included angle of a full
+///      turn or more, the offset fails with selfIntersection.
 ///    - Otherwise, if their source pieces are consecutive, by an arc of radius
 ///      |distance| centred on V, from the end of A to the start of B, turning
 ///      as the input turns at V (by the tangents of the two source pieces
@@ -150,12 +159,15 @@ struct PolylineOffset {
 ///    - Otherwise the offset fails with openJoint: no such arc ends on both.
 /// 3. A piece that its joints turn backwards (its new end lies before its new
 ///    start along it, or an arc whose sweep would change sign) is removed, and
-///    its neighbours are joined again as in step 2. Removing a piece never
-///    restores the end that a joint gave to its neighbour: an end left without
-///    a neighbour, the free end of an open polyline, keeps its cut, and only an
-///    end that was never cut stays where step 1 put it. Steps 2 and 3 repeat
-///    until no piece is removed.
-/// 4. Pieces of the result that are exactly a single point are dropped.
+///    its neighbours are joined again as in step 2. If multiple pieces turn
+///    backwards in the same round, they are removed together before renewing
+///    the joints. Removing a piece never restores the end that a joint gave to
+///    its neighbour: an end left without a neighbour, the free end of an open
+///    polyline, keeps its cut, and only an end that was never cut stays where
+///    step 1 put it. Steps 2 and 3 repeat until no piece is removed.
+/// 4. Pieces of the result that are exactly a single point are dropped (making
+///    simple false). If no piece is left after steps 1, 3 and 4, the outcome is
+///    vanished.
 ///
 /// The result is checked on its own doubles before it is returned, so that
 /// done always means:
@@ -169,10 +181,10 @@ struct PolylineOffset {
 /// in silence.
 ///
 /// What is guaranteed:
-/// - simple cases: when no piece vanishes or is removed and the exact result
-///   stays farther than epsilon(M) (ADR 0009) from itself (pieces not
-///   consecutive) and from the input, the outcome is done, simple is true,
-///   and the result is the exact one: every vertex within
+/// - simple cases: when no piece vanishes, is removed or reduced to a point
+///   and the exact result stays farther than epsilon(M) (ADR 0009) from itself
+///   (pieces not consecutive) and from the input, the outcome is done, simple
+///   is true, and the result is the exact one: every vertex within
 ///   kRelativePointError and every point within kRelativeOffsetError;
 /// - the other cases: done, with the result of the steps above within the same
 ///   errors, or failed. They may differ from AutoCAD.
