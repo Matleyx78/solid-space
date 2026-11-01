@@ -175,3 +175,19 @@ i rimandi ai documenti che cambia.
   riga **Corretto:**), il commento di `fillet` in `tangency.hpp` (nessuna
   dichiarazione), la scheda di P16 e la scheda della tappa 0.2 in "Modifiche al
   piano".
+- **2026-11-01: bulge della curva parallela.** Su decisione del responsabile
+  (issue #127, trovata da Codex nella revisione della pull request #124 di P14):
+  il contratto di `offset.hpp` si contraddiceva, perché per un arco quasi intero
+  con una corda di pochi ulp tenere il bulge mentre si arrotondano gli estremi
+  sposta l'arco ben oltre `kRelativeOffsetError`, anche in `offsetCurve` (P13).
+  Scelta 1 della issue: il bulge di ogni arco del risultato è quello dell'arco
+  tra gli estremi arrotondati con il centro nel punto del loro asse più vicino
+  al centro esatto (regola esatta in `offset.hpp`); se l'arco così costruito
+  esce da `kRelativeOffsetError`, l'esito è `failed`, mai quando sta entro metà
+  dell'errore: per `offsetCurve` solo con un pezzo curvo, per `offsetPolyline`
+  con il nuovo motivo `notRepresentable`, aggiunto in fondo a `OffsetFailure`
+  (l'unica dichiarazione che cambia). Correggono
+  l'[ADR 0012](adr/0012-curva-parallela-nel-piano.md) (quarta riga
+  **Corretto:**), i commenti di `offset.hpp`, le schede di P13 e P14 e la scheda
+  della tappa 0.2 in "Modifiche al piano", che aggiunge R19 (codex) e P19
+  (claude) per realizzarla.

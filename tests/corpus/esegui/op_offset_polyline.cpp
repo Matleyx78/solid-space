@@ -45,9 +45,11 @@ Value writeName(geom2d::OffsetFailure value) {
         case geom2d::OffsetFailure::selfIntersection:
             return Value::name("selfIntersection");
         case geom2d::OffsetFailure::meetsOriginal:
+            return Value::name("meetsOriginal");
+        case geom2d::OffsetFailure::notRepresentable:
             break;
     }
-    return Value::name("meetsOriginal");
+    return Value::name("notRepresentable");
 }
 
 Value writeName(geom2d::PieceOrigin value) {

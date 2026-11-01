@@ -45,14 +45,17 @@ enum class OffsetOutcome : std::uint8_t {
     /// be zero or negative, a polyline whose pieces all vanish, were removed or
     /// reduced to a single point.
     vanished,
-    /// A polyline offset that could not be made without self-intersections
-    /// (see PolylineOffset::failure). Never for a single curve.
+    /// An offset that could not be made: a polyline offset without
+    /// self-intersections (see PolylineOffset::failure), or an arc of the
+    /// result that its rounded ends and a bulge cannot represent within
+    /// kRelativeOffsetError (see CurveOffset). For a single curve, only a
+    /// curved PolylineSegment.
     failed,
 };
 
 /// The offset of one curve.
 struct CurveOffset {
-    /// done or vanished.
+    /// done or vanished; failed only for a curved PolylineSegment (below).
     OffsetOutcome outcome = OffsetOutcome::vanished;
     /// With done, the same kind of curve as the input:
     /// - Segment and straight PolylineSegment: moved by |distance| along the
@@ -61,15 +64,33 @@ struct CurveOffset {
     /// - Arc: the same centre, start angle and sweep, so the same exact
     ///   directions D0 and D1 (curves.hpp); radius R - distance for a
     ///   counterclockwise arc, R + distance for a clockwise one (rounded);
-    /// - curved PolylineSegment: the same bulge, so the same included angle;
-    ///   start and end moved along the radius, each within
-    ///   kRelativePointError.
+    /// - curved PolylineSegment: start and end moved along the radius, each
+    ///   within kRelativePointError; the bulge is that of the arc from the
+    ///   returned start to the returned end, turning as the input, whose
+    ///   centre is the point of their perpendicular bisector nearest the exact
+    ///   centre C of the offset circle. With m the middle of the returned
+    ///   ends, n the vector from start to end turned a quarter turn
+    ///   counterclockwise and t = ((C - m) . n) / (n . n), all exact, the
+    ///   bulge is the double nearest to -2 t + sqrt(4 t^2 + 1) for a
+    ///   counterclockwise piece and to -2 t - sqrt(4 t^2 + 1) for a clockwise
+    ///   one. So the arc keeps the exact centre as well as the rounded ends
+    ///   allow, and its included angle may differ from that of the input by
+    ///   the rounding of the ends. When the returned ends are the same point,
+    ///   the bulge of the exact arc (for a single curve, that of the input).
     /// The new radius of a circular curve is compared with zero exactly: zero
     /// or less gives vanished.
+    ///
+    /// failed, with no curve, when the arc of a curved PolylineSegment so
+    /// built has a point farther than kRelativeOffsetError * max(M, |p|)
+    /// from the exact offset, or the exact offset a point that far from it:
+    /// its rounded ends turn the chord too much for any bulge. Never when
+    /// both distances are within half that bound; it happens only for an arc
+    /// near a full turn whose chord spans a few ulp of its coordinates.
     Curve curve;
 };
 
-/// The offset of one curve at a signed distance.
+/// The offset of one curve at a signed distance: done or vanished, or failed
+/// for a curved PolylineSegment that cannot be represented (see CurveOffset).
 ///
 /// Diagnosis invalidValue, outOfDomain or degenerateCurve about the curve
 /// (input 0); invalidValue when the distance is not finite, outOfDomain when
@@ -92,6 +113,9 @@ enum class OffsetFailure : std::uint8_t {
     selfIntersection,
     /// The result would meet the original polyline.
     meetsOriginal,
+    /// An arc of the result cannot be represented within kRelativeOffsetError
+    /// by its rounded ends and a bulge (see CurveOffset and offsetPolyline).
+    notRepresentable,
 };
 
 /// Where a piece of the result comes from.
@@ -169,6 +193,13 @@ struct PolylineOffset {
 ///    simple false). If no piece is left after steps 1, 3 and 4, the outcome is
 ///    vanished.
 ///
+/// Every arc of the result, a source piece (cut or not) or a gap arc, gets
+/// its bulge by the rule of CurveOffset for a curved PolylineSegment, around
+/// the exact centre of its circle (the centre of the source piece, or the
+/// vertex V of a gap arc), with the same bound: if one cannot be represented,
+/// the outcome is failed with notRepresentable. This is decided when the
+/// result is assembled, before the checks below.
+///
 /// The result is checked on its own doubles before it is returned, so that
 /// done always means:
 /// - no two pieces that are not consecutive have a common point (decided
@@ -185,7 +216,9 @@ struct PolylineOffset {
 ///   and the exact result stays farther than epsilon(M) (ADR 0009) from itself
 ///   (pieces not consecutive) and from the input, the outcome is done, simple
 ///   is true, and the result is the exact one: every vertex within
-///   kRelativePointError and every point within kRelativeOffsetError;
+///   kRelativePointError and every point within kRelativeOffsetError; or
+///   failed with notRepresentable, under the condition of CurveOffset (an
+///   arc near a full turn whose chord spans a few ulp);
 /// - the other cases: done, with the result of the steps above within the same
 ///   errors, or failed. They may differ from AutoCAD.
 ///

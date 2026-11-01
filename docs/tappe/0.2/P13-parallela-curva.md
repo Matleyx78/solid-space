@@ -36,8 +36,11 @@ di `CurveOffset`:
 - un **cerchio** e un **arco** tengono il centro (e l'arco angolo iniziale e
   ampiezza, quindi le stesse direzioni D0 e D1) e cambiano il raggio:
   R − d per un cerchio e un arco antiorario, R + d per un arco orario;
-- un **pezzo curvo** tiene il bulge; inizio e fine si spostano lungo il raggio
-  del suo cerchio, entro `kRelativePointError`;
+- un **pezzo curvo**: inizio e fine si spostano lungo il raggio del suo
+  cerchio, entro `kRelativePointError`; fino al 2026-11-01 teneva il bulge, che
+  ora si ricostruisce dagli estremi arrotondati con il centro più vicino a
+  quello esatto, e un arco che nessun bulge rappresenta dà `failed` (decisione
+  del responsabile, issue #127; lo realizza P19);
 - il nuovo raggio si confronta con zero **esattamente** (con i numeri di P6, non
   sul `double` arrotondato): zero o meno dà `vanished`; per un pezzo curvo il
   raggio è quello del cerchio per inizio, m e fine;

@@ -24,6 +24,14 @@
   ridotto a un punto al passo 4 rende `simple` falso; (5) l'indice dell'arco di
   giunzione tra pezzi resi consecutivi da vertici ripetuti è il vertice alla
   fine del pezzo di partenza di A (punti 3, 4, 6 e 8).
+- **Corretto:** 2026-11-01 — un punto in cui il contratto si contraddiceva,
+  trovato nella revisione del pacchetto P14 (issue #127) e deciso dal
+  responsabile: per un arco quasi intero con una corda di pochi ulp, tenere il
+  bulge mentre si arrotondano gli estremi sposta l'arco ben oltre
+  `kRelativeOffsetError`. Il bulge di ogni arco del risultato si ricostruisce
+  dagli estremi arrotondati, con il centro più vicino a quello esatto; se
+  nessun bulge rappresenta l'arco entro l'errore, l'esito è `failed`, con il
+  nuovo motivo `notRepresentable` per le polilinee (punti 3, 5, 6 e 9).
 - **Richiesta:** #22 — da Tecnigrafo: tappa 0.7, Matleyx78/tecnigrafo#328
 - **Esito:** 3 pezzo nostro
 - **Tappa:** 0.2 (scheda da scrivere all'apertura)
@@ -139,8 +147,12 @@ per scriverlo al suo utente. Il testo completo è nella issue #22.
 3. **Una curva** si sposta sempre, e il risultato è dello stesso tipo: un
    segmento lungo la normale; un cerchio e un arco cambiano solo il raggio
    (l'arco tiene angolo iniziale e ampiezza, quindi le stesse direzioni esatte
-   D0 e D1 dell'ADR 0010); un segmento di polilinea curvo tiene il bulge, quindi
-   lo stesso angolo al centro. Se il nuovo raggio, confrontato esattamente con
+   D0 e D1 dell'ADR 0010); un segmento di polilinea curvo sposta gli estremi
+   lungo il raggio e prende il bulge dell'arco tra gli estremi arrotondati con
+   il centro più vicino a quello esatto (il punto del loro asse più vicino al
+   centro esatto, regola esatta scritta in `offset.hpp`): l'angolo al centro può
+   cambiare quanto l'arrotondamento degli estremi (corretto il 2026-11-01; prima
+   teneva il bulge). Se il nuovo raggio, confrontato esattamente con
    zero, è zero o negativo, la risposta è `vanished`. Per una polilinea, se
    nessun pezzo resta dopo i passi 1, 3 e 4 (tutti i pezzi sono spariti, tolti o
    ridotti a un punto), la risposta è `vanished`.
@@ -175,13 +187,22 @@ per scriverlo al suo utente. Il testo completo è nella issue #22.
    pezzi consecutivi si incontrino solo nel vertice comune o in punti che
    coincidono con esso per la regola dell'ADR 0009, e che il risultato non
    incontri la polilinea di partenza. Altrimenti risponde `failed`, con il
-   motivo (`OffsetFailure`).
+   motivo (`OffsetFailure`). Prima ancora, mentre compone il risultato, ogni
+   arco (pezzo di partenza, tagliato o no, e arco di giunzione) prende il bulge
+   con la regola del punto 3 attorno al centro esatto del suo cerchio; se
+   nessun bulge lo rappresenta entro `kRelativeOffsetError`, la risposta è
+   `failed` con `notRepresentable` (corretto il 2026-11-01).
 6. **Che cosa è garantito**, la risposta alla domanda di Tecnigrafo:
-   - linee, archi e cerchi: sempre `done` o `vanished`;
+   - linee, archi e cerchi: sempre `done` o `vanished`; un segmento di
+     polilinea curvo anche `failed`, solo quando i suoi estremi arrotondati
+     girano la corda troppo perché un bulge lo rappresenti entro l'errore (un
+     arco vicino al giro intero con una corda di pochi ulp; mai se l'arco della
+     regola sta entro metà dell'errore, corretto il 2026-11-01);
    - polilinee nei **casi semplici** (nessun pezzo si annulla, si toglie o si
      riduce a un punto, e il risultato esatto resta più lontano di epsilon(M),
      ADR 0009, da se stesso e dalla polilinea di partenza): sempre `done`, con
-     `simple` vero, e il risultato è quello esatto entro gli errori del punto 7;
+     `simple` vero, e il risultato è quello esatto entro gli errori del punto 7,
+     oppure `failed` con `notRepresentable` alla stessa condizione;
    - polilinee negli **altri casi**: `done` con il risultato dei passi, senza
      autointersezioni e senza incontrare la polilinea di partenza, oppure
      `failed`. Può differire da AutoCAD.
@@ -197,7 +218,9 @@ per scriverlo al suo utente. Il testo completo è nella issue #22.
    larghezze dei pezzi che restano.
 9. **Dominio e diagnosi** come nell'ADR 0010; una distanza non finita è
    `invalidValue`, una oltre `kMaxCoordinate` è `outOfDomain`; una giunzione
-   che cadrebbe oltre il dominio dà `failed` con `beyondDomain`. I pezzi della
+   che cadrebbe oltre il dominio dà `failed` con `beyondDomain`; un arco che
+   nessun bulge rappresenta dà `failed` con `notRepresentable` (nuovo valore di
+   `OffsetFailure`, aggiunto in fondo il 2026-11-01). I pezzi della
    polilinea ridotti esattamente a un punto (vertici ripetuti) si tolgono senza
    diagnosi. I codici di diagnosi non cambiano.
 10. **Determinismo:** la regola dell'ADR 0008, punto 5.
