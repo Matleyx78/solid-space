@@ -1,0 +1,83 @@
+{
+  "versione": 1,
+  "id": "cerchio-ttr-autocad-caso-n-cerchio-linea",
+  "componente": "geom2d",
+  "descrizione": "Caso n di autocad-raccordi.dxf (handle 284, 285, 287 da 4-raccordi.scr): cerchio tangente a cerchio e linea con raggio 6 (CIRCLE Ttr).",
+  "ingresso": {
+    "operazione": "tangentCircleNear",
+    "prima": {
+      "cerchio": {
+        "centro": [
+          80,
+          220
+        ],
+        "raggio": 10
+      }
+    },
+    "vicino_prima": [
+      74,
+      212
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          60,
+          200
+        ],
+        "fine": [
+          110,
+          200
+        ]
+      }
+    },
+    "vicino_seconda": [
+      90,
+      200
+    ],
+    "raggio": 6
+  },
+  "atteso": {
+    "esito": "found",
+    "cerchio": {
+      "centro": [
+        {
+          "valore": 87.74596669241484,
+          "tolleranza": 1e-12
+        },
+        {
+          "valore": 206.0,
+          "tolleranza": 1e-12
+        }
+      ],
+      "sulla_prima": {
+        "punto": [
+          {
+            "valore": 84.84122918275927,
+            "tolleranza": 1e-12
+          },
+          {
+            "valore": 211.25,
+            "tolleranza": 1e-12
+          }
+        ]
+      },
+      "sulla_seconda": {
+        "punto": [
+          {
+            "valore": 87.74596669241484,
+            "tolleranza": 1e-12
+          },
+          {
+            "valore": 200.0,
+            "tolleranza": 1e-12
+          }
+        ]
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "file-pubblico",
+    "sorgente": "autocad-raccordi",
+    "procedimento": "CIRCLE handle 284 e LINE handle 285 con comando CIRCLE Ttr raggio 6 (clic 74,212 e 90,200). AutoCAD genera CIRCLE handle 287 centro (87.745967,206) raggio 6 tangente al cerchio in (84.841229,211.25) e alla linea in (87.745967,200). Letto dal file pubblico autocad-raccordi.dxf generato da 4-raccordi.scr."
+  }
+}
