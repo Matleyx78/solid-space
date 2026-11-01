@@ -33,17 +33,17 @@ bool inDomain(const Dyadic& a, const Dyadic& b, const Dyadic& d, const Dyadic& c
            exact::signOf(a + limit, b, d) != Sign::negative;
 }
 
-Result<Point2> constructPoint(const ExactVector& a, const ExactVector& b, const Dyadic& d,
-                              const Dyadic& c) {
+std::optional<Point2> constructPoint(const ExactVector& a, const ExactVector& b, const Dyadic& d,
+                                     const Dyadic& c) {
     if (!inDomain(a.x, b.x, d, c) || !inDomain(a.y, b.y, d, c)) {
-        return beyondDomain();
+        return std::nullopt;
     }
     return Point2{exact::quadraticToDouble(a.x, b.x, d, c),
                   exact::quadraticToDouble(a.y, b.y, d, c)};
 }
 
-Result<Point2> moveOnNormal(Point2 p, const ExactVector& normal, const Dyadic& distance,
-                            const Dyadic& squaredLength) {
+std::optional<Point2> moveOnNormal(Point2 p, const ExactVector& normal, const Dyadic& distance,
+                                   const Dyadic& squaredLength) {
     // p + distance * normal / sqrt(squaredLength), without underflow or
     // cancellation in a floating-point normalization.
     return constructPoint({Dyadic(p.x) * squaredLength, Dyadic(p.y) * squaredLength},
@@ -56,18 +56,17 @@ Result<CurveOffset> offsetLine(const Curve& curve, const detail::LineMeaning& li
                              Dyadic(line.end.x) - Dyadic(line.start.x)};
     const auto squaredLength = normSquared(normal);
     const auto start = moveOnNormal(line.start, normal, distance, squaredLength);
-    if (!start.hasValue()) {
-        return start.diagnosis();
+    if (!start) {
+        return beyondDomain();
     }
     const auto end = moveOnNormal(line.end, normal, distance, squaredLength);
-    if (!end.hasValue()) {
-        return end.diagnosis();
+    if (!end) {
+        return beyondDomain();
     }
     if (const auto* piece = std::get_if<PolylineSegment>(&curve)) {
-        return CurveOffset{OffsetOutcome::done,
-                           PolylineSegment{start.value(), end.value(), piece->bulge}};
+        return CurveOffset{OffsetOutcome::done, PolylineSegment{*start, *end, piece->bulge}};
     }
-    return CurveOffset{OffsetOutcome::done, Segment{start.value(), end.value()}};
+    return CurveOffset{OffsetOutcome::done, Segment{*start, *end}};
 }
 
 // Only extrema that belong to the actual arc count: a supporting circle may
@@ -110,15 +109,14 @@ Result<CurveOffset> offsetCircular(const Curve& curve, const detail::ArcMeaning&
             return moveOnNormal(p, radial, -inward, circle.radiusSquared);
         };
         const auto start = move(piece->start);
-        if (!start.hasValue()) {
-            return start.diagnosis();
+        if (!start) {
+            return beyondDomain();
         }
         const auto end = move(piece->end);
-        if (!end.hasValue()) {
-            return end.diagnosis();
+        if (!end) {
+            return beyondDomain();
         }
-        return CurveOffset{OffsetOutcome::done,
-                           PolylineSegment{start.value(), end.value(), piece->bulge}};
+        return CurveOffset{OffsetOutcome::done, PolylineSegment{*start, *end, piece->bulge}};
     }
     if (const auto* inputArc = std::get_if<Arc>(&curve)) {
         const auto radius = Dyadic(inputArc->radius) - inward;
@@ -130,8 +128,8 @@ Result<CurveOffset> offsetCircular(const Curve& curve, const detail::ArcMeaning&
                                      Dyadic(inputArc->center.y) * squaredLength};
             const ExactVector radial{radius * direction.x, radius * direction.y};
             const auto point = constructPoint(center, radial, squaredLength, squaredLength);
-            if (!point.hasValue()) {
-                return point.diagnosis();
+            if (!point) {
+                return beyondDomain();
             }
         }
         auto result = *inputArc;
