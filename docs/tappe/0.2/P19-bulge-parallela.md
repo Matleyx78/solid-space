@@ -9,8 +9,8 @@
   quasi interi, estremi arrotondati)
 - **Contratto:** `geom2d/include/solid_space/geom2d/offset.hpp`
 - **Dipende da:** P13 (#59), P14 (#63), R19
-- **Sblocca in Tecnigrafo:** niente di nuovo: corregge `offsetCurve` e
-  `offsetPolyline`, che Matleyx78/tecnigrafo#363 usa già
+- **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#363 (con P12, P13, P14 e
+  P4–P10): la P17 di Tecnigrafo non parte su un `offsetCurve` che sbaglia
 - **Componente:** `geom2d`
 - **Da leggere:** [ADR 0012](../../adr/0012-curva-parallela-nel-piano.md) punti
   3, 5, 6, 7 e 9 (corretti il 2026-11-01, issue #127); `offset.hpp` (`OffsetOutcome`,
