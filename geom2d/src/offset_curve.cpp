@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 The solid-space authors
 
-#include "solid_space/geom2d/offset.hpp"
-
 #include "curve_meaning.hpp"
 #include "exact/quadratic.hpp"
+#include "solid_space/geom2d/offset.hpp"
 
 #include <array>
 #include <cmath>
@@ -35,7 +34,7 @@ bool inDomain(const Dyadic& a, const Dyadic& b, const Dyadic& d, const Dyadic& c
 }
 
 Result<Point2> constructPoint(const ExactVector& a, const ExactVector& b, const Dyadic& d,
-                             const Dyadic& c) {
+                              const Dyadic& c) {
     if (!inDomain(a.x, b.x, d, c) || !inDomain(a.y, b.y, d, c)) {
         return beyondDomain();
     }
@@ -44,12 +43,11 @@ Result<Point2> constructPoint(const ExactVector& a, const ExactVector& b, const 
 }
 
 Result<Point2> moveOnNormal(Point2 p, const ExactVector& normal, const Dyadic& distance,
-                           const Dyadic& squaredLength) {
+                            const Dyadic& squaredLength) {
     // p + distance * normal / sqrt(squaredLength), without underflow or
     // cancellation in a floating-point normalization.
     return constructPoint({Dyadic(p.x) * squaredLength, Dyadic(p.y) * squaredLength},
-                          {distance * normal.x, distance * normal.y}, squaredLength,
-                          squaredLength);
+                          {distance * normal.x, distance * normal.y}, squaredLength, squaredLength);
 }
 
 Result<CurveOffset> offsetLine(const Curve& curve, const detail::LineMeaning& line,
@@ -84,7 +82,7 @@ std::optional<Diagnosis> checkExtrema(const detail::ArcMeaning& arc, const Dyadi
             continue;
         }
         const ExactVector a{circle.centerX - inward * circle.weight * axis.x,
-                             circle.centerY - inward * circle.weight * axis.y};
+                            circle.centerY - inward * circle.weight * axis.y};
         if (!inDomain(a.x, axis.x, circle.radiusSquared, circle.weight) ||
             !inDomain(a.y, axis.y, circle.radiusSquared, circle.weight)) {
             return beyondDomain();
@@ -128,10 +126,10 @@ Result<CurveOffset> offsetCircular(const Curve& curve, const detail::ArcMeaning&
         // normalizes the exact doubles of sinCos, not their rounded length.
         for (const auto& direction : {arc.startDirection, arc.endDirection}) {
             const auto squaredLength = normSquared(direction);
-            const auto point = constructPoint(
-                {Dyadic(inputArc->center.x) * squaredLength,
-                 Dyadic(inputArc->center.y) * squaredLength},
-                {radius * direction.x, radius * direction.y}, squaredLength, squaredLength);
+            const ExactVector center{Dyadic(inputArc->center.x) * squaredLength,
+                                     Dyadic(inputArc->center.y) * squaredLength};
+            const ExactVector radial{radius * direction.x, radius * direction.y};
+            const auto point = constructPoint(center, radial, squaredLength, squaredLength);
             if (!point.hasValue()) {
                 return point.diagnosis();
             }

@@ -47,14 +47,14 @@ void expectCurveBits(const g::Curve& actual, const g::Curve& expected) {
                     expectBits(value.bulge, other.bulge);
                 }
             }
-        }, actual);
+        },
+        actual);
 }
 
 TEST(OffsetCurve, BothSignedZeroDistancesPreserveEveryField) {
     const std::array<g::Curve, 5> curves{
         g::Segment{{-0.0, 1.0}, {3.0, -0.0}}, g::Circle{{-0.0, 1.0}, 2.0},
-        g::Arc{{-0.0, 1.0}, 2.0, -0.0, -1.25},
-        g::PolylineSegment{{-0.0, 1.0}, {3.0, -0.0}, -0.0},
+        g::Arc{{-0.0, 1.0}, 2.0, -0.0, -1.25}, g::PolylineSegment{{-0.0, 1.0}, {3.0, -0.0}, -0.0},
         g::PolylineSegment{{-0.0, 1.0}, {3.0, -0.0}, -0.125}};
     for (const auto& curve : curves) {
         for (const double distance : {0.0, -0.0}) {
@@ -76,9 +76,9 @@ TEST(OffsetCurve, StraightOffsetsHaveTheRequestedDistanceAndRoundTrip) {
             const double norm = std::hypot(dx, dy);
             for (const double distance : {-0.125 * scale, 0.125 * scale}) {
                 for (const bool piece : {false, true}) {
-                    const g::Curve curve = piece
-                        ? g::Curve(g::PolylineSegment{line.start, line.end, -0.0})
-                        : g::Curve(line);
+                    const g::Curve curve =
+                        piece ? g::Curve(g::PolylineSegment{line.start, line.end, -0.0})
+                              : g::Curve(line);
                     const auto moved = g::offsetCurve(curve, distance);
                     ASSERT_TRUE(moved.hasValue());
                     ASSERT_EQ(moved.value().outcome, g::OffsetOutcome::done);
@@ -120,8 +120,9 @@ TEST(OffsetCurve, CirclesAndArcsRoundTripExactlyWhenRadiusDoes) {
                     expectCurveBits(back.value().curve, curve);
                     const auto ends = g::endpoints(moved.value().curve);
                     ASSERT_TRUE(ends.hasValue());
-                    const double expectedRadius = static_cast<double>(i) +
-                        (std::holds_alternative<g::Arc>(curve) && sweep < 0 ? distance : -distance);
+                    const double radialShift =
+                        std::holds_alternative<g::Arc>(curve) && sweep < 0 ? distance : -distance;
+                    const double expectedRadius = static_cast<double>(i) + radialShift;
                     for (const auto p : {ends.value().start, ends.value().end}) {
                         EXPECT_NEAR(std::hypot(p.x - 2.0, p.y + 3.0), expectedRadius,
                                     g::kRelativePointError * std::max(3.0, expectedRadius));

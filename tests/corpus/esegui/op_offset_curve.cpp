@@ -9,16 +9,17 @@ namespace solid_space::corpus {
 namespace {
 
 Value offsetCurveOperation(const Value& input) {
-    const auto result = geom2d::offsetCurve(readCurve(field(input, "curva")),
-                                           readNumber(field(input, "distanza")));
+    const auto curve = readCurve(field(input, "curva"));
+    const auto distance = readNumber(field(input, "distanza"));
+    const auto result = geom2d::offsetCurve(curve, distance);
     if (!result.hasValue()) {
         return writeDiagnosis(result.diagnosis());
     }
     if (result.value().outcome == geom2d::OffsetOutcome::vanished) {
         return Value::group({{"esito", Value::name("vanished")}});
     }
-    return Value::group({{"esito", Value::name("done")},
-                         {"curva", writeCurve(result.value().curve)}});
+    return Value::group(
+        {{"esito", Value::name("done")}, {"curva", writeCurve(result.value().curve)}});
 }
 
 const Registration kOffsetCurve("offsetCurve", offsetCurveOperation);
