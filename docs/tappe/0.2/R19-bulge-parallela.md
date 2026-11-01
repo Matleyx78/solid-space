@@ -13,8 +13,8 @@
   3, 5–7 e 9; decisioni #127 e #132, [CONTRATTI.md](../../CONTRATTI.md);
   [README dell'archivio](../../../tests/corpus/README.md) e AGENTS.md
 
-Questa scheda riprende l'ambito della #129 e lo allarga secondo la decisione
-#132. Non realizza P19 e non modifica il codice.
+Questa scheda riprende l'ambito della #129 e lo allarga secondo le decisioni
+#132, #148 e #149. Non realizza P19 e non modifica il codice.
 
 ## Cosa verificare
 
@@ -32,6 +32,13 @@ Questa scheda riprende l'ambito della #129 e lo allarga secondo la decisione
 - Un arco non nullo i cui estremi arrotondati coincidono: `failed` per
   `offsetCurve`, `failed` con `notRepresentable` per `offsetPolyline`; non
   diventa un pezzo puntiforme da eliminare.
+- I tre casi #148: segmento (0,0)–(2^-60,2^-60), d = 1 (`failed`);
+  polilinea di un pezzo (`failed` / `notRepresentable`); lo stesso pezzo fra
+  due pezzi lunghi (scarto e `simple` falso, con `origins` allineate).
+- Dominio sui valori esatti (#149), K = 2^50: segmento x = K−1/8 con
+  d = −1/4 (`outOfDomain`, dato 1), stessa polilinea (`beyondDomain`),
+  cerchio r = K con d = −1/8 (`outOfDomain`, dato 1); nessun esatto entro K
+  restituito oltre K, punto m ricostruito esattamente dai double ricevuti.
 - Bulge ricostruito su pezzi tagliati e archi di giunzione; semicirconferenze
   esatte con bulge ±1.
 - Correggere i casi R13/R14 che impongono un bulge esatto non più garantito:

@@ -32,6 +32,12 @@ per un pezzo curvo, estremi arrotondati coincidenti danno `failed`. P19 realizza
 anche l'arrotondamento di tutti gli estremi del codice P13 già unito. Il
 pavimento generale degli errori è 2^-1022, con verifica R20/P20.
 
+Le decisioni #148 e #149 aggiungono: anche un segmento o pezzo dritto
+con estremi arrotondati coincidenti dà `failed`, senza curva. Il dominio di
+coordinate e raggio si decide sul valore esatto; il punto m si ricostruisce
+esattamente dai double restituiti. Un esatto entro K non si restituisce
+oltre K. P19 adegua i percorsi già uniti, senza cambiare questo contratto.
+
 ## Cosa fare
 
 Realizzare, senza cambiarla, `offsetCurve` di `offset.hpp`, come dice il commento
@@ -54,14 +60,14 @@ di `CurveOffset`:
   sul `double` arrotondato): zero o meno dà `vanished`; per un pezzo curvo il
   raggio è quello del cerchio per inizio, m e fine;
 - le diagnosi dell'intestazione: curva (`dato` 0), distanza non finita o oltre
-  `kMaxCoordinate`, dato costruito non valido secondo `curves.hpp` (`dato` 1): coordinate,
+  `kMaxCoordinate`, dato costruito fuori dal dominio di `curves.hpp` (`dato` 1): coordinate,
   raggio o punto m oltre il dominio, mai la sola estensione geometrica.
 
 ### Casi di verifica (per R13)
 
 | Operazione | `ingresso` | `atteso` |
 |---|---|---|
-| `offsetCurve` | `curva`, `distanza` | `esito`: `"done"` o `"vanished"`; con `done`, `curva`: la curva attesa con la stessa forma dell'ingresso (`segmento`, `arco`, `cerchio`, `pezzo`), con valori esatti dove il contratto li garantisce (centro, angoli, ampiezza; bulge secondo la regola aggiornata di P19) e approssimati altrove; oppure `diagnosi` |
+| `offsetCurve` | `curva`, `distanza` | `esito`: `"done"`, `"vanished"` o `"failed"`; con `done`, `curva`: la curva attesa con la stessa forma dell'ingresso (`segmento`, `arco`, `cerchio`, `pezzo`), con valori esatti dove il contratto li garantisce (centro, angoli, ampiezza; bulge secondo la regola aggiornata di P19) e approssimati altrove; oppure `diagnosi` |
 
 Le tolleranze dei punti sono `kRelativePointError · max(M, |p|, 2^-1022)`, con M la
 grandezza della curva e di |d|; quella di un raggio è la stessa. R13 copre almeno:

@@ -142,18 +142,28 @@ struct Polyline {
 // - degenerateCurve: the curve is exactly a single point (see above; a
 //   radius of zero counts too). magnitude() accepts degenerate curves.
 // A polyline is checked piece by piece in pieces() order, with the curve
-// order above within each piece. The first faulty piece decides; the message
-// names its vertex. After dropping pieces that are exactly a point, no piece
+// order above within each piece. The first piece with invalid data decides; the message
+// names its vertex. A piece exactly equal to a point is dropped without a
+// degenerateCurve diagnosis on its vertex. After these drops, no piece
 // left gives degenerateCurve on input 0, before checking later inputs. Values
 // belonging to no piece (the last bulge of an open polyline) are not checked.
-// An input-specific diagnosis other than data validation (e.g. notCircular)
-// follows that input's data checks and precedes checks of later inputs.
+// An input-specific diagnosis about its data (e.g. notCircular) follows that
+// input's data checks and precedes checks of later inputs. All input data
+// checks finish before constructions begin: a construction-domain diagnosis
+// follows the checks of every input, even when it names an earlier input.
 //
-// Returned constructions must themselves be valid data under these rules:
-// coordinates, radii and the point m of curved PolylineSegments stay within
-// robust::kMaxCoordinate. This checks the data values, never the geometric
-// extent of the curve. A construction outside the domain is not returned or
-// silently omitted; each operation specifies its diagnosis or failure.
+// Every construction that geom2d returns keeps its coordinates, radii and
+// the point m of curved PolylineSegments within robust::kMaxCoordinate. This
+// checks the data values, never the geometric extent of the curve. Domain
+// decisions use the exact construction values, even when rounding would
+// bring an out-of-domain value back within the domain. An exact coordinate
+// or radius within kMaxCoordinate is never returned beyond it: if rounding
+// would exceed either boundary, return that boundary (+/-kMaxCoordinate).
+// The point m of a returned curved PolylineSegment is reconstructed exactly
+// from the returned doubles and checked that way, not from an exact precursor.
+// A construction outside the domain is never returned or silently omitted;
+// each operation specifies its diagnosis or failure. Degenerate results are
+// governed by the individual operation, not by this domain rule.
 
 /// The magnitude M of a curve, used by the error bounds above and by the
 /// tolerance rule (ADR 0009): the largest absolute value among

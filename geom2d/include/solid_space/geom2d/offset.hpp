@@ -49,7 +49,7 @@ enum class OffsetOutcome : std::uint8_t {
     /// self-intersections (see PolylineOffset::failure), or an arc of the
     /// result that its rounded ends and a bulge cannot represent within
     /// kRelativeOffsetError (see CurveOffset). For a single curve, only a
-    /// curved PolylineSegment.
+    /// curved PolylineSegment, or a straight piece whose rounded ends coincide.
     failed,
 };
 
@@ -58,15 +58,16 @@ enum class OffsetOutcome : std::uint8_t {
 /// to the nearest double, ties to even. Bulges and representability checks
 /// use these doubles, not arbitrary points within the error bound.
 struct CurveOffset {
-    /// done or vanished; failed only for a curved PolylineSegment (below).
+    /// done or vanished; failed for an unrepresentable curved or straight piece (below).
     OffsetOutcome outcome = OffsetOutcome::vanished;
     /// With done, the same kind of curve as the input:
     /// - Segment and straight PolylineSegment: moved by |distance| along the
     ///   normal; each end within kRelativePointError;
-    /// - Circle: the same centre, radius R - distance (rounded to double);
+    /// - Circle: the same centre, radius R - distance (nearest double, ties to even);
     /// - Arc: the same centre, start angle and sweep, so the same exact
     ///   directions D0 and D1 (curves.hpp); radius R - distance for a
-    ///   counterclockwise arc, R + distance for a clockwise one (rounded);
+    ///   counterclockwise arc, R + distance for a clockwise one (nearest double,
+    ///   ties to even);
     /// - curved PolylineSegment: start and end moved along the radius, each
     ///   within kRelativePointError; the bulge is that of the arc from the
     ///   returned start to the returned end, turning as the input, whose
@@ -90,18 +91,23 @@ struct CurveOffset {
     /// rounded ends, never when both distances are within half that bound;
     /// it happens only for an arc near a full turn whose chord spans a few ulp
     /// of its coordinates. Coincident rounded ends always give failed.
+    /// A nondegenerate Segment or straight PolylineSegment whose rounded ends
+    /// coincide also gives failed, with no curve.
     Curve curve;
 };
 
 /// The offset of one curve at a signed distance: done or vanished, or failed
-/// for a curved PolylineSegment that cannot be represented (see CurveOffset).
+/// for an unrepresentable curved PolylineSegment or a straight piece whose
+/// rounded ends coincide (see CurveOffset).
 ///
 /// Diagnosis invalidValue, outOfDomain or degenerateCurve about the curve
 /// (input 0); invalidValue when the distance is not finite, outOfDomain when
-/// its magnitude is beyond robust::kMaxCoordinate or the constructed curve
-/// would not be valid data under curves.hpp (a coordinate, radius or the
-/// reconstructed point m beyond the domain; input 1). The geometric extent
-/// is not checked. At zero distance the validated input is returned with
+/// its magnitude is beyond robust::kMaxCoordinate, a coordinate or the radius
+/// of the constructed curve would be beyond robust::kMaxCoordinate, or the
+/// reconstructed point m of the returned curve would be (input 1). Domain
+/// checks use exact construction values and m reconstructed exactly from the
+/// returned doubles, as curves.hpp specifies. The geometric extent is not
+/// checked. At zero distance the validated input is returned with
 /// identical bits and outcome done.
 [[nodiscard]] Result<CurveOffset> offsetCurve(const Curve& curve, double distance);
 
@@ -122,7 +128,8 @@ enum class OffsetFailure : std::uint8_t {
     /// The result would meet the original polyline.
     meetsOriginal,
     /// An arc of the result cannot be represented within kRelativeOffsetError
-    /// by its rounded ends and a bulge (see CurveOffset and offsetPolyline).
+    /// by its rounded ends and a bulge (see CurveOffset and offsetPolyline),
+    /// or no piece remains after dropping straight pieces collapsed by rounding.
     notRepresentable,
 };
 
@@ -150,7 +157,7 @@ struct PolylineOffset {
     /// With failed, why; otherwise none.
     OffsetFailure failure = OffsetFailure::none;
     /// True when no piece vanished, was removed or reduced to a point (steps 1,
-    /// 3 and 4 of offsetPolyline).
+    /// 3 and 4 of offsetPolyline, also after rounding).
     bool simple = false;
     /// With done: open or closed as the input.
     Polyline polyline;
@@ -205,6 +212,11 @@ struct PolylineOffset {
 /// Every final vertex, including moved, cut or extended ends, joint points
 /// and gap-arc ends, is rounded coordinate by coordinate to the nearest double,
 /// ties to even. Shared vertices use those same doubles for both pieces.
+/// After rounding, before computing bulges or running final checks, straight
+/// pieces whose rounded ends coincide are dropped, together with their origins
+/// entries, making simple false. Their neighbours already share the same
+/// rounded vertex. If no piece remains, the outcome is failed with
+/// notRepresentable, not vanished: the exact result exists.
 /// Every arc of the result, a source piece (cut or not) or a gap arc, gets
 /// its bulge by the rule of CurveOffset for a curved PolylineSegment, around
 /// the exact centre of its circle (the centre of the source piece, or the
@@ -214,10 +226,13 @@ struct PolylineOffset {
 /// rounded ends of a nonzero exact arc give failed with notRepresentable;
 /// that arc is not dropped as a point by step 4.
 ///
-/// The result is checked on its own doubles before it is returned, so that
-/// done always means:
-/// - the final vertices and the reconstructed point m of every curved piece
-///   are within robust::kMaxCoordinate; otherwise failed with beyondDomain.
+/// Final checks run in the order listed below; the first failure decides the
+/// reason. Domain is checked before intersections, which require in-domain data.
+/// Except for the exact vertex-domain check, the result is checked on its own
+/// doubles before it is returned, so that done always means:
+/// - the exact final vertices and the point m of every curved piece,
+///   reconstructed exactly from the returned doubles, are within
+///   robust::kMaxCoordinate; otherwise failed with beyondDomain.
 ///   Only the final result after steps 1-4 is checked, not an intermediate
 ///   offset or joint later cut or removed;
 /// - no two pieces that are not consecutive have a common point (decided
@@ -231,10 +246,11 @@ struct PolylineOffset {
 ///
 /// What is guaranteed:
 /// - simple cases: when no piece vanishes, is removed or reduced to a point
-///   and the exact result stays farther than epsilon(M) (ADR 0009) from itself
-///   (pieces not consecutive) and from the input, and the exact result rounded
-///   as above is valid data within the domain, the outcome is done, simple
-///   is true, and the result is the exact one: every vertex within
+///   (including by rounding), and the exact result stays farther than
+///   epsilon(M) (ADR 0009) from itself (pieces not consecutive) and from the
+///   input, and the exact final vertices and m reconstructed from the returned
+///   doubles are within the domain, the outcome is done, simple is true,
+///   and the result is the exact one: every vertex within
 ///   kRelativePointError and every point within kRelativeOffsetError; or
 ///   failed with notRepresentable, under the condition of CurveOffset (an
 ///   arc near a full turn whose chord spans a few ulp, or coincident rounded

@@ -42,6 +42,17 @@ mai sull'estensione geometrica. Ingressi controllati per numero; il raggio
 si valida anche per rette parallele prima delle regole geometriche.
 Il pavimento generale degli errori è 2^-1022 (R20/P20).
 
+Le decisioni #149, #150 e #152 precisano: dominio sui valori esatti e
+nessun valore restituito oltre K; punto m esatto dai double restituiti.
+Prima tutti i dati, compresi i punti 3 e 4, poi le costruzioni. In regola 3
+`ambiguousPick` precede le costruzioni e `outOfDomain`, poi `infinitelyMany`
+e i candidati. Se le tangenze restituite coincidono, bulge 0; l'`Arc` resta
+quello del raggio dato e delle regole originarie. La coincidenza può dipendere
+da una scelta lecita entro l'errore, quindi un riferimento non impone né
+coincidenza né una delle due forme del bulge. Il controllo è condizionato ai
+punti restituiti. La forma con bulge può essere un punto: in quel caso si usa
+l'`Arc`. P20 corregge il codice già unito solo se necessario.
+
 ## Cosa fare
 
 Realizzare, senza cambiarle, `tangentCircleNear` e `fillet` di `tangency.hpp`,

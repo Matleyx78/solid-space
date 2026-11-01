@@ -57,6 +57,24 @@ responsabile del 2026-11-01, issue #127 e #132, revisione C #133):
 - `CurveOffset::outcome` e il nome `notRepresentable` nell'archivio sono già
   pronti (pull request del contratto); `tests/corpus/esegui/` non cambia.
 
+
+- **pezzi dritti collassati (#148):** `offsetCurve` dà `failed` senza curva
+  quando gli estremi arrotondati di un segmento o pezzo dritto coincidono.
+  `offsetPolyline` li scarta dopo l'arrotondamento e prima dei bulge e dei
+  controlli finali, elimina le voci in `origins` e mette `simple` falso;
+  se non resta nessun pezzo dà `failed` / `notRepresentable`, non `vanished`.
+  La garanzia dei casi semplici non copre questo scarto;
+- **dominio esatto (#149):** coordinate e raggi costruiti si controllano sul
+  valore esatto, anche quando arrotonderebbero a K; un valore esatto entro K
+  non si restituisce oltre K. Il punto m si ricostruisce esattamente dai
+  double restituiti. Nella polilinea contano solo i vertici finali dopo i
+  passi 1–4, non gli intermedi eliminati; gli altri controlli finali restano
+  sui double del risultato;
+- **ordine dei controlli:** dati prima delle costruzioni (#150); nei controlli
+  finali di `offsetPolyline` prima il dominio, poi le intersezioni nell'ordine
+  dell'intestazione, e decide il primo fallimento. Correggere anche questo
+  ordine se P14 già unito ne segue un altro.
+
 ## Regole della tappa che valgono qui
 
 - Regola del determinismo dell'ADR 0008, punto 5: niente trigonometria di
@@ -65,6 +83,12 @@ responsabile del 2026-11-01, issue #127 e #132, revisione C #133):
 
 ## Test richiesti
 
+- I casi #148: segmento da (0,0) a (2^-60,2^-60), d = 1 (`failed`);
+  polilinea di quel solo pezzo (`failed` / `notRepresentable`); pezzo fra due
+  pezzi lunghi (scarto, origini coerenti, `simple` falso).
+- I casi #149 al confine K: segmento x = K−1/8 spostato di −1/4 e cerchio
+  r = K con d = −1/8 (`outOfDomain`, dato 1); stessa polilinea (`beyondDomain`).
+  Verificare anche che nessun esatto entro K sia restituito oltre K.
 - Il caso della issue #127 (`offsetCurve` e `offsetPolyline`): arco quasi
   intero a x = 1e6 con corda di un ulp, ora `done` con raggio circa 0,15625 e
   ogni punto entro l'errore.
@@ -82,6 +106,7 @@ responsabile del 2026-11-01, issue #127 e #132, revisione C #133):
 
 - Ogni vertice restituito è arrotondato al più vicino con pareggio al pari,
   anche nei percorsi preesistenti di P13/P14; difficoltà invariata, impegnativa.
+- Scarto, fallimenti, dominio e ordine dei controlli rispettano #148–#150.
 - Tutti i casi di R19 passano, e quelli di R13 e R14 come R19 li lascia.
 - Il caso della issue #127 dà `done` e `simple` vero.
 - Nessun arco del risultato fuori da `kRelativeOffsetError` nei test generati.

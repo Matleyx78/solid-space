@@ -13,6 +13,7 @@
 - **Componente:** nessuno (solo documenti e commenti delle intestazioni)
 - **Da leggere:** [CONTRATTI.md](../../CONTRATTI.md), tutto, con i punti 10 e 11
   e «Le correzioni del contratto»;
+  [ADR 0010](../../adr/0010-posizione-e-intersezioni-nel-piano.md),
   [ADR 0011](../../adr/0011-raccordi-e-tangenze-nel-piano.md) e
   [ADR 0012](../../adr/0012-curva-parallela-nel-piano.md), con le righe
   **Corretto:**; [DECISIONI.md](../../DECISIONI.md), le voci dal 2026-10-31;
@@ -72,8 +73,9 @@ responsabile chiude la issue.
 - Dopo le decisioni: `geom2d/include/solid_space/geom2d/offset.hpp` e
   `tangency.hpp` (solo commenti, e dichiarazioni solo se la decisione lo dice),
   `geom2d/include/solid_space/geom2d/curves.hpp` (solo commenti: ordine delle
-  diagnosi, validità dei dati costruiti e pavimento 2^-1022 di tutti i limiti
+  diagnosi, dominio dei dati costruiti e pavimento 2^-1022 di tutti i limiti
   d'errore, decisioni #136–#144 e commenti del responsabile nella #133),
+  `docs/adr/0010-posizione-e-intersezioni-nel-piano.md`,
   `docs/adr/0011-raccordi-e-tangenze-nel-piano.md`,
   `docs/adr/0012-curva-parallela-nel-piano.md`, le schede dei pacchetti
   interessati in `docs/tappe/0.2/`, `docs/DECISIONI.md`,
@@ -81,6 +83,10 @@ responsabile chiude la issue.
   le intestazioni solo come decide il responsabile (ADR 0007, punto 15).
   Comprende le schede R19/P19 allargate, la nuova scheda P20 da #145, le righe
   R20 (#146) e P20 (#145) nel piano e la dipendenza di P18 da P20.
+  Comprende le decisioni #148–#152 e le correzioni del responsabile dopo il
+  verbale: solo dominio, controllo esatto e limite dell'arrotondamento,
+  ordine dei controlli, punti esclusi e bulge puntiforme; schede P7, P10 e P11
+  già chiuse invariate, perché vale la regola generale di `curves.hpp`.
 
 ## Fatto quando
 

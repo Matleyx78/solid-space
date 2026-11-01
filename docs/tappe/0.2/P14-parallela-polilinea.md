@@ -38,10 +38,19 @@ pezzo per pezzo prima della distanza, come `curves.hpp`; passi intermedi
 esatti senza ereditare diagnosi di dominio dei risultati di `offsetCurve`;
 solo vertici e punto m del risultato finale si controllano nel dominio,
 con `failed` / `beyondDomain`. La garanzia dei casi semplici richiede anche
-che il risultato esatto arrotondato sia nel dominio. Tutti i vertici, anche
+che il risultato esatto e il punto m ricostruito dai double siano nel dominio. Tutti i vertici, anche
 dritti e di giunzione, sono al più vicino con pareggio al pari (P19); un arco
 non nullo con estremi arrotondati coincidenti dà `notRepresentable`, non si
 scarta al passo 4. Il pavimento degli errori è 2^-1022 (R20/P20).
+
+Le decisioni #148 e #149 precisano: dopo l'arrotondamento e prima dei bulge
+si scartano i pezzi dritti con estremi coincidenti, con la loro origine e
+`simple` falso; nessun pezzo rimasto dà `failed` / `notRepresentable`, non
+`vanished`. I vertici finali si controllano sul valore esatto, il punto m
+esattamente dai double restituiti; gli altri controlli sui double del risultato.
+I controlli finali seguono l'ordine dell'elenco in `offset.hpp`, il primo
+fallimento decide: prima `beyondDomain`, poi intersezioni. P19 corregge anche
+l'ordine se P14 già unito ne usa un altro.
 
 ## Cosa fare
 
@@ -69,11 +78,12 @@ lettera il commento dell'intestazione:
    senza vicino conserva il taglio; solo un estremo mai tagliato resta lo
    spostamento del passo 1); pezzi del risultato ridotti a un punto tolti al
    passo 4; se nessun pezzo resta dopo i passi 1, 3 e 4, l'esito è `vanished`;
-3. **il controllo finale sui `double` del risultato**, prima di dare `done`: due
+3. **i controlli finali in ordine**, prima di dare `done`: prima il dominio
+   dei vertici esatti e del punto m dai double restituiti; poi, sui double, due
    pezzi non consecutivi senza punti comuni (esatto, come `intersect`); due pezzi
    consecutivi che si incontrano solo nel vertice comune o in punti che
    coincidono con esso per la regola dell'ADR 0009 (`policy`); nessun incontro
-   con la polilinea di partenza. Altrimenti `failed`, con il motivo;
+   con la polilinea di partenza. Altrimenti `failed`, con il primo motivo;
 4. `simple` vero quando nessun pezzo è sparito, è stato tolto o si è ridotto a un
    punto (passi 1, 3 e 4); `origins` per ogni pezzo del risultato, in ordine.
 
