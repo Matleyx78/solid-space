@@ -76,6 +76,9 @@ Leggi, in quest'ordine:
    ti è stato assegnato: file, interfacce, test e criterio di "fatto".
 3. Gli ADR citati dalla scheda e [docs/ARCHITETTURA.md](docs/ARCHITETTURA.md).
 4. [docs/CODING_STYLE.md](docs/CODING_STYLE.md).
+5. Le intestazioni pubbliche del contratto che il pacchetto realizza o usa, e la
+   lista di controllo di [docs/CONTRATTI.md](docs/CONTRATTI.md): vedi "Il
+   contratto", sotto.
 
 Lavora **su un solo pacchetto**. Se il compito non corrisponde a un pacchetto della
 tappa aperta, non scrivere codice: serve prima una decisione del responsabile. Una
@@ -91,19 +94,48 @@ Scegli **una sola** issue, la prima nell'ordine del piano che:
 1. è aperta e porta la **tua** etichetta `agente:…`;
 2. non porta `AA-Presa in carico`;
 3. ha chiuse tutte le issue della sua riga "Dipende da";
-4. ha chiusa la sua issue di riferimenti (`[X.Y-RN]`), se esiste.
+4. ha chiusa la sua issue di riferimenti (`[X.Y-RN]`), se esiste;
+5. non ha aperta nessuna altra issue con l'etichetta `contratto` che nel titolo
+   nomina un'intestazione che il pacchetto realizza o usa (la riga
+   **Contratto:** della scheda; nelle schede che non l'hanno, le intestazioni
+   pubbliche citate in **Da leggere**).
 
-Per "il prossimo pacchetto di riferimenti" valgono le condizioni 1–3, sulle issue
-con l'etichetta `riferimenti`. Se nessuna issue va bene, non iniziare: scrivi
+Per "il prossimo pacchetto di riferimenti" valgono le condizioni 1–3 e 5, sulle
+issue con l'etichetta `riferimenti`. Se nessuna issue va bene, non iniziare: scrivi
 all'utente quali issue sono tue e cosa le blocca. Il pacchetto successivo si
 prende in una nuova sessione, dopo il merge.
+
+### Il contratto
+
+Le intestazioni pubbliche del contratto (ADR 0007, punto 15) si realizzano senza
+cambiarle, commenti compresi; le cambia solo un pacchetto la cui scheda lo
+autorizza, dopo una decisione del responsabile ([docs/CONTRATTI.md](docs/CONTRATTI.md)).
+
+**Prima di scrivere codice o casi**, rileggi le funzioni che il pacchetto
+realizza o usa con la lista di controllo di [docs/CONTRATTI.md](docs/CONTRATTI.md).
+Se un punto non è determinato dall'intestazione, dall'ADR o dalla scheda (per
+esempio che cosa succede a un punto costruito oltre `kMaxCoordinate`), o se due
+di questi si contraddicono:
+
+1. **fermati subito**, prima di scrivere codice o casi. Non scegliere tu una
+   risposta, nemmeno segnalandola: il contratto lo decide il responsabile, e
+   Tecnigrafo ci ha già scritto sopra;
+2. apri una issue con le etichette `contratto` e `tappa-X.Y`, intitolata
+   `[X.Y-PN] <intestazione>: <funzione>: <punto>` (o `[X.Y-RN]`), con che cosa
+   manca, un esempio con i dati, le scelte possibili e quella che consigli;
+3. citala nella issue del tuo pacchetto, togli `AA-Presa in carico` e termina
+   la sessione.
+
+Il pacchetto si riprende dopo la decisione. Se trovi il buco a lavoro già
+avanzato, vale lo stesso: pubblica il ramo senza pull request e scrivine il nome
+nella issue.
 
 ### Lavoro a lotti
 
 Due eccezioni alla regola "un pacchetto per sessione":
 
 - **"Prendi i pacchetti di riferimenti pronti"**: uno dopo l'altro, nell'ordine
-  delle condizioni 1–3, ciascuno con il suo ramo partito da `main` aggiornato e la
+  delle condizioni 1–3 e 5, ciascuno con il suo ramo partito da `main` aggiornato e la
   sua pull request portata alla CI verde; alla fine un solo riepilogo con tutte le
   pull request.
 - **"Rivedi le pull request aperte"**: una alla volta, tutte quelle senza
@@ -111,7 +143,8 @@ Due eccezioni alla regola "un pacchetto per sessione":
   sopra, con un commento di revisione. Non approvare e non unire.
 
 Se in un lotto ti fermi per uno dei motivi di "Quando fermarsi", scrivilo nella
-pull request e passa al pacchetto successivo.
+pull request e passa al pacchetto successivo; se ti fermi per il contratto ("Il
+contratto"), apri la issue e passa al successivo.
 
 ## Regole che non si possono violare
 
@@ -184,6 +217,8 @@ confermano casi di verifica scritti **prima** da un agente o da una persona
   non usare il file e scrivilo nella pull request.
 - Aggiungi i casi limite: valori nulli, punti coincidenti o quasi allineati,
   facce tangenti, spessori minimi.
+- Se il contratto non determina il valore atteso di un caso, non sceglierlo tu:
+  fermati come dice "Il contratto".
 
 ## Comandi
 
@@ -221,12 +256,27 @@ Il pacchetto è finito quando la sua pull request soddisfa ogni condizione "Fatt
 quando" della scheda e, da quando esiste la CI (pacchetto P3 della tappa 0.1),
 **tutti i controlli della CI sono verdi**.
 
-1. Apri la pull request e, se c'è la CI, aspettala con **un solo comando che
+1. Prima di aprire la pull request, aggiorna `main` e controlla che le
+   intestazioni del contratto che il pacchetto realizza o usa non siano cambiate
+   da quando hai cominciato:
+
+   ```sh
+   git fetch origin main
+   git diff "$(git merge-base origin/main HEAD)" origin/main -- <intestazioni>
+   ```
+
+   Se sono cambiate, leggi la decisione (in [docs/DECISIONI.md](docs/DECISIONI.md))
+   e adegua il pacchetto partendo da `main` aggiornato; se il cambiamento
+   contraddice il lavoro fatto in un modo che non sai risolvere, fermati come
+   dice "Il contratto".
+2. Apri la pull request e, se c'è la CI, aspettala con **un solo comando che
    blocca**, non con controlli ripetuti (ogni controllo consuma token). Tieni
-   l'etichetta.
-2. Se un controllo fallisce, leggi gli errori, correggi sullo stesso ramo,
+   l'etichetta. Se la pull request cambia un'intestazione del contratto,
+   scrivilo in un commento nelle issue dei pacchetti in lavorazione (con
+   `AA-Presa in carico`) che la realizzano o la usano.
+3. Se un controllo fallisce, leggi gli errori, correggi sullo stesso ramo,
    pubblica e aspetta di nuovo.
-3. Con tutto verde togli l'etichetta, scrivi il riepilogo e **termina la
+4. Con tutto verde togli l'etichetta, scrivi il riepilogo e **termina la
    sessione**.
 
 Mentre aspetti non fare domande e non cominciare altro. Fermati prima del verde,
@@ -281,3 +331,6 @@ intervallo e numero massimo di attese (default: 540 secondi, 90 secondi, dieci).
 - Una pull request per pacchetto, partita da `main` aggiornato.
 - Nella descrizione della pull request: che cosa cambia, quali file, che cosa non
   hai potuto verificare.
+- La pull request chiude la issue del pacchetto con la parola chiave inglese di
+  GitHub, `Closes #<numero>`, anche se il resto del testo è in italiano: «Chiude»
+  non la chiude.

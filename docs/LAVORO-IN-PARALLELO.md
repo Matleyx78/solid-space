@@ -24,10 +24,12 @@ indicare una issue o una pull request.
 |---|---|---|
 | `[0.2-P3]` | tappa 0.2, pacchetto P3 | titolo della issue del pacchetto |
 | `[0.2-R3]` | tappa 0.2, riferimenti del pacchetto P3 | titolo della issue dei riferimenti |
+| `[0.3-C]` | tappa 0.3, revisione del contratto ([CONTRATTI.md](CONTRATTI.md)) | titolo della issue della revisione |
 | `#5` | issue o pull request numero 5 | scheda **Issues** o **Pull requests** |
 | `Closes #5` | la pull request, quando viene unita, chiude la issue 5 | descrizione della pull request |
 | `p0.2-03-…` | ramo su cui si lavora al pacchetto P3 della tappa 0.2 | scheda **Branches** |
 | `r0.2-03-…` | ramo dei riferimenti del pacchetto P3 della tappa 0.2 | scheda **Branches** |
+| `c0.3-…` | ramo della revisione del contratto della tappa 0.3 | scheda **Branches** |
 
 Il documento della tappa (`docs/tappe/…`) riporta per ogni pacchetto il numero
 della sua issue; ogni pull request riporta in alto la issue che chiude.
@@ -38,7 +40,7 @@ della sua issue; ogni pull request riporta in alto la issue che chiude.
 |---|---|---|
 | Responsabile | — | piano della tappa, ADR, revisione dei riferimenti, merge, prova manuale, rilascio |
 | Claude | `agente:claude` | pacchetti impegnativi e la maggior parte dei medi, anche in più sessioni nello stesso momento; riferimenti dei pacchetti di lavoro di Codex; piano della tappa insieme al responsabile |
-| Codex | `agente:codex` | riferimenti con calcoli delicati dei pacchetti di lavoro di Claude, in fascia forte; pacchetti facili e medi che il piano non dà a Claude |
+| Codex | `agente:codex` | revisione del contratto di ogni tappa ([CONTRATTI.md](CONTRATTI.md)); riferimenti con calcoli delicati dei pacchetti di lavoro di Claude, in fascia forte; pacchetti facili e medi che il piano non dà a Claude |
 | Gemini (con Antigravity CLI, `agy`) | `agente:gemini` | pacchetti di riferimenti ordinari, revisione delle pull request di lavoro, pull request di chiusura della tappa, pacchetti facili; lavora a lotti (sezioni 3 e 4) |
 | Gemini 4 Argon (con Antigravity CLI, `agy`) | `agente:gemini-argon` | nessun pacchetto nel piano: la sua quota settimanale basta a uno o due pacchetti di riferimenti. Se è disponibile e serve, il responsabile gli passa un pacchetto che il piano dava a Codex, cambiandone l'etichetta; lavora a lotti, in una sessione sua, sullo stesso PC di Gemini |
 | Copilot (GitHub Copilot Pro) | — | solo revisione mirata delle pull request impegnative, chiesta dal responsabile (sezione 6); non prende pacchetti e non apre pull request |
@@ -73,12 +75,26 @@ dice, per ogni pacchetto:
 - **Riferimenti**: l'agente che li scrive, oppure "non servono" con il motivo
   (documentazione, note di rilascio, infrastruttura che non cambia il
   comportamento);
+- **Contratto**: le intestazioni pubbliche del contratto che il pacchetto
+  realizza o usa. Servono agli agenti per riconoscere le issue `contratto` che
+  lo bloccano ([AGENTS.md](../AGENTS.md), condizione 5);
 - **Dipende da**: le issue che devono essere chiuse prima. Due pacchetti che
   toccano gli stessi file sono **sempre** legati da "Dipende da", così non
   possono partire insieme. Nessuna eccezione: nemmeno l'elenco dei casi in
   attesa è un file condiviso, perché è la cartella `tests/corpus/in-attesa/` con
   un file per blocco di riferimenti, che il pacchetto di riferimenti aggiunge e
   quello di lavoro cancella (ADR 0005, punto 4).
+
+### La revisione del contratto
+
+Una tappa che realizza intestazioni del contratto comincia con il pacchetto
+`[X.Y-C]`, **revisione del contratto**: un agente di fascia forte, diverso da chi
+ha scritto gli ADR (di norma Codex), controlla ogni funzione con la lista di
+[CONTRATTI.md](CONTRATTI.md) e apre una issue `contratto` per ogni buco; il
+responsabile decide, e una sola pull request applica le decisioni. Tutte le
+issue di riferimenti e di lavoro che realizzano o usano quelle intestazioni lo
+citano in «Dipende da». Costa una sessione forte all'inizio della tappa, contro
+i pacchetti fermati a metà e le decisioni rincorse tra le chat della tappa 0.2.
 
 ### Pacchetti leggeri
 
@@ -154,7 +170,13 @@ All'apertura si creano, nel milestone `vX.Y`:
   `pacchetto`, la difficoltà e `agente:…` secondo il piano;
 - una issue `[X.Y-RN]` per ogni pacchetto che ha riferimenti, con le etichette
   `tappa-X.Y`, `riferimenti`, la difficoltà e `agente:…` di chi li scrive. La
-  issue del lavoro la cita nella riga "Dipende da".
+  issue del lavoro la cita nella riga "Dipende da";
+- se la tappa realizza intestazioni del contratto, la issue `[X.Y-C]` della
+  revisione, con le etichette `tappa-X.Y`, `pacchetto`, `contratto`,
+  `difficoltà:impegnativa` e `agente:…` di chi la fa, se non esiste già (di
+  norma si crea prima, appena gli ADR sono accettati: [CONTRATTI.md](CONTRATTI.md),
+  «Quando»). Le issue di riferimenti e di lavoro che realizzano o usano quelle
+  intestazioni la citano in «Dipende da».
 
 La difficoltà (`facile`, `media` o `impegnativa`) è quella della colonna
 *Difficoltà* del piano: chi apre la tappa la copia, non la decide. Serve a
@@ -274,6 +296,11 @@ un agente senza pacchetto preciso sconfina.
 - Nessuno scrive su `main` o sui rami degli altri.
 - Se un agente scopre che gli serve un file non previsto, si ferma e lo scrive
   nella issue: decide il responsabile.
+- Se un agente trova un buco nel contratto, si ferma prima di scrivere codice o
+  casi e apre una issue `contratto` ([CONTRATTI.md](CONTRATTI.md), «I buchi
+  trovati più tardi»). Finché è aperta, nessun pacchetto che realizza o usa
+  quell'intestazione parte; quando la decisione cambia l'intestazione, chi la
+  applica avvisa con un commento i pacchetti già in lavorazione su di essa.
 - Se un agente ritiene sbagliato un riferimento, si ferma e lo scrive nella
   issue. La correzione è una nuova pull request di riferimenti, mai una modifica
   nella pull request di lavoro.

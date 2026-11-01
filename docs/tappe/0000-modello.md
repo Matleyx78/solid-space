@@ -54,6 +54,12 @@ riferimenti `RN`, scritto da un altro agente e unito prima del lavoro
 ([ADR 0004](../adr/0004-robustezza-e-verifica.md)). La sua issue si cita in
 "Dipende da".
 
+Se la tappa realizza intestazioni del contratto, la **prima riga** è il pacchetto
+`C`, revisione del contratto ([CONTRATTI.md](../CONTRATTI.md)), di un agente
+diverso da chi ha scritto gli ADR. Tutti i pacchetti di riferimenti e di lavoro
+che realizzano o usano quelle intestazioni lo citano in "Dipende da", e la loro
+scheda le elenca nella riga **Contratto:**.
+
 Questa sezione contiene **solo la tabella**: ogni pacchetto ha una sua **scheda**
 in `docs/tappe/X.Y/PN-<nome>.md` (modello in
 [0000-pacchetto.md](0000-pacchetto.md)), e la sua issue la cita. Così un agente
@@ -63,7 +69,8 @@ lavoro sono in [LAVORO-IN-PARALLELO.md](../LAVORO-IN-PARALLELO.md), sezione
 
 | Pacchetto | Scheda | Issue | Dipende da | Riferimenti | Difficoltà | Agente | Modello | Impegno |
 |---|---|---|---|---|---|---|---|---|
-| P1 Titolo | [P1](X.Y/P1-nome.md) | #… | — | R1 (gemini) / non servono: motivo | facile / media / impegnativa | claude / codex / gemini / … | leggero / medio / forte | basso / medio / alto |
+| C Revisione del contratto | [C](X.Y/C-contratto.md) | #… | — | non servono: non cambia il comportamento | impegnativa | codex | forte | alto |
+| P1 Titolo | [P1](X.Y/P1-nome.md) | #… | C (#…) | R1 (gemini) / non servono: motivo | facile / media / impegnativa | claude / codex / gemini / … | leggero / medio / forte | basso / medio / alto |
 
 L'**ordine delle righe** è l'ordine in cui gli agenti prendono "il prossimo
 pacchetto" (AGENTS.md). Le issue di riferimenti `[X.Y-RN]` hanno una riga

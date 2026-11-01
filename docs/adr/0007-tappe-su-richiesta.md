@@ -13,6 +13,14 @@
   pacchetto unito è utilizzabile da Tecnigrafo (punto 16); la verità geometrica
   sta nell'archivio dei casi (punto 17). Di conseguenza cambiano anche il
   contesto, le alternative e le conseguenze.
+- **Corretto:** 2026-11-01 — il responsabile aggiunge al punto 15 la revisione
+  del contratto prima dei pacchetti, dopo che nella tappa 0.2 cinque contratti
+  si sono rivelati incompleti a lavori iniziati (issue #31, #66 e #103, pull
+  request #97 e #99): un pacchetto `[X.Y-C]` di un agente diverso da chi ha
+  scritto l'ADR controlla il contratto con una lista fissa
+  ([CONTRATTI.md](../CONTRATTI.md)), il responsabile decide i buchi, e solo
+  allora partono riferimenti e lavoro; chi trova un buco più tardi si ferma prima
+  di scrivere codice o casi. Il principio del punto non cambia.
 
 ## Contesto
 
@@ -195,6 +203,19 @@ cosa in un posto solo.
     una issue con etichetta `contratto`, decide il responsabile, e la scheda del
     pacchetto che le cambia lo autorizza. Una funzione dichiarata ma non ancora
     realizzata non si usa finché il suo pacchetto non è unito.
+
+    Prima dei pacchetti che lo realizzano, il contratto si rivede (corretto il
+    2026-11-01): il primo pacchetto della tappa, `[X.Y-C]`, appena l'ADR è
+    accettato e anche con la tappa in preparazione, fatto da un agente diverso
+    da chi ha scritto l'ADR, controlla ogni funzione con la lista di
+    [CONTRATTI.md](../CONTRATTI.md) (diagnosi, dominio dei risultati, casi
+    degeneri e infiniti, ordine e pareggi, simmetria, composizione, coerenza) e
+    apre una issue `contratto` per ogni punto che il contratto non determina. Il
+    responsabile decide; una sola pull request applica le decisioni; poi partono
+    riferimenti e lavoro, e Tecnigrafo scrive le schede che usano il
+    contratto. Un buco trovato più tardi ferma chi lo trova prima del
+    codice o dei casi, e ferma i pacchetti che usano quell'intestazione finché
+    non è deciso ([AGENTS.md](../../AGENTS.md), "Il contratto").
 
 ### Il pacchetto unito
 

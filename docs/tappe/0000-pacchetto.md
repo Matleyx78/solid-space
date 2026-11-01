@@ -17,7 +17,12 @@ Le regole per la dimensione sono in LAVORO-IN-PARALLELO.md, "Preparare il piano"
 - **Modello e impegno:** leggero | medio | forte; impegno basso | medio | alto
   (tabella in LAVORO-IN-PARALLELO.md)
 - **Riferimenti:** issue `[X.Y-RN]` (#…), agente … | non servono: motivo
-- **Dipende da:** —
+- **Contratto:** le intestazioni pubbliche del contratto che il pacchetto
+  realizza o usa (`<componente>/include/solid_space/<componente>/…`), oppure
+  "nessuna". Le issue `contratto` aperte su queste lo bloccano (AGENTS.md,
+  condizione 5)
+- **Dipende da:** la revisione del contratto `[X.Y-C]` (#…), se la riga
+  precedente non è "nessuna"; poi le altre
 - **Componente:** uno solo (più i suoi test e le righe dei file comuni)
 - **Da leggere:** gli ADR e i file di codice che servono davvero, con il motivo
 
