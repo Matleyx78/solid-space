@@ -13,6 +13,7 @@
 
 #include <gtest/gtest.h>
 
+#include <array>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -187,6 +188,13 @@ private:
     std::uint64_t m_state = 0x51DE51DE;
 };
 
+Side sideOf(Sign sign) {
+    if (sign == Sign::positive) {
+        return Side::left;
+    }
+    return sign == Sign::negative ? Side::right : Side::on;
+}
+
 TEST(Side, AgreesWithTheCarrierSign) {
     // On random points near random curves, side() and the sign of carriers.hpp
     // are the same comparison: on exactly when the exact point is on the
@@ -199,15 +207,15 @@ TEST(Side, AgreesWithTheCarrierSign) {
             b.x += 1.0;
         }
         const double radius = std::fabs(generator.coordinate()) + 0.5;
-        const Curve curves[] = {Segment{a, b}, PolylineSegment{a, b, 0.75},
-                                PolylineSegment{a, b, -0.125}, Circle{a, radius},
-                                Arc{a, radius, 1.0, -2.0}};
+        const std::array<Curve, 5> curves{Segment{a, b}, PolylineSegment{a, b, 0.75},
+                                          PolylineSegment{a, b, -0.125}, Circle{a, radius},
+                                          Arc{a, radius, 1.0, -2.0}};
         // A point on the segment from a to b, rounded: often exactly on, often
         // one rounding away.
         const double t = static_cast<double>(generator.integer(16)) / 3.0;
-        const Point2 points[] = {{a.x + t * (b.x - a.x), a.y + t * (b.y - a.y)},
-                                 {a.x + radius, a.y},
-                                 {generator.coordinate(), generator.coordinate()}};
+        const std::array<Point2, 3> points{Point2{a.x + t * (b.x - a.x), a.y + t * (b.y - a.y)},
+                                           Point2{a.x + radius, a.y},
+                                           Point2{generator.coordinate(), generator.coordinate()}};
         for (const auto& curve : curves) {
             const auto meaning = detail::meaningOf(curve);
             const auto carrier = detail::carrierOf(meaning);
@@ -215,11 +223,7 @@ TEST(Side, AgreesWithTheCarrierSign) {
                 const auto result = side(curve, point);
                 ASSERT_TRUE(result.hasValue());
                 const auto exact = detail::exactPoint(point);
-                const auto sign = detail::sideSign(meaning, exact);
-                const Side expected = sign == Sign::positive   ? Side::left
-                                      : sign == Sign::negative ? Side::right
-                                                               : Side::on;
-                EXPECT_EQ(result.value(), expected);
+                EXPECT_EQ(result.value(), sideOf(detail::sideSign(meaning, exact)));
                 EXPECT_EQ(result.value() == Side::on, detail::onCarrier(carrier, exact));
                 if (const auto* line = std::get_if<detail::LineMeaning>(&meaning.support)) {
                     EXPECT_EQ(detail::lineSign(*line, exact),
