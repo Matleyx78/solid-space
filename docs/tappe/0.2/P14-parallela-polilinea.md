@@ -121,7 +121,8 @@ la tolleranza che corrisponde, per la sua corda, a uno scostamento della curva d
   un solo pezzo (come `offsetCurve`); distanza zero (`failed` con
   `meetsOriginal`, decisione del responsabile del 2026-10-31, issue #62);
 - un caso `failed` per ciascun motivo (`openJoint`, `beyondDomain`,
-  `selfIntersection`, `meetsOriginal`);
+  `selfIntersection`, `meetsOriginal`; `notRepresentable`, aggiunto il
+  2026-11-01 con la issue #127, lo coprono R19 e P19);
 - diagnosi della polilinea (`dato` 0) e della distanza (`dato` 1).
 
 **R14b** (gemini) porta i casi d, e, f e h di `autocad-offset.dxf` (rettangolo,

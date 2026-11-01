@@ -18,6 +18,9 @@ Value offsetCurveOperation(const Value& input) {
     if (result.value().outcome == geom2d::OffsetOutcome::vanished) {
         return Value::group({{"esito", Value::name("vanished")}});
     }
+    if (result.value().outcome == geom2d::OffsetOutcome::failed) {
+        return Value::group({{"esito", Value::name("failed")}});
+    }
     return Value::group(
         {{"esito", Value::name("done")}, {"curva", writeCurve(result.value().curve)}});
 }
