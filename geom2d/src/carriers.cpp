@@ -111,9 +111,9 @@ bool lineComesFirst(const LineMeaning& a, const LineMeaning& b) noexcept {
 // The same for circles: equal keys mean the same homogeneous data, hence the
 // same circle.
 bool circleComesFirst(const CircleSupport& a, const CircleSupport& b) noexcept {
-    for (const auto order : {compare(a.centerX, b.centerX), compare(a.centerY, b.centerY),
-                             compare(a.weight, b.weight),
-                             compare(a.radiusSquared, b.radiusSquared)}) {
+    for (const auto order :
+         {compare(a.centerX, b.centerX), compare(a.centerY, b.centerY), compare(a.weight, b.weight),
+          compare(a.radiusSquared, b.radiusSquared)}) {
         if (order != Sign::zero) {
             return order == Sign::negative;
         }
@@ -179,8 +179,8 @@ CarrierMeeting meetLineCircle(const LineMeaning& line, const CircleSupport& circ
             meeting.count = 2;
             meeting.points[0] = {ExactPoint{foot, negated(direction), discriminant, weight},
                                  Contact::crossing};
-            meeting.points[1] = {
-                ExactPoint{foot, direction, std::move(discriminant), weight}, Contact::crossing};
+            meeting.points[1] = {ExactPoint{foot, direction, std::move(discriminant), weight},
+                                 Contact::crossing};
             break;
     }
     return meeting;
@@ -226,9 +226,8 @@ CarrierMeeting meetCircles(const CircleSupport& first, const CircleSupport& seco
             const ExactVector right{difference.y, -difference.x};
             meeting.count = 2;
             meeting.points[0] = {ExactPoint{base, right, discriminant, weight}, Contact::crossing};
-            meeting.points[1] = {
-                ExactPoint{base, negated(right), std::move(discriminant), weight},
-                Contact::crossing};
+            meeting.points[1] = {ExactPoint{base, negated(right), std::move(discriminant), weight},
+                                 Contact::crossing};
             break;
         }
     }
@@ -259,10 +258,9 @@ bool beyondDomain(const ExactPoint& point) {
 }
 
 Point2 roundedPoint(const ExactPoint& point) {
-    return {exact::quadraticToDouble(point.rational.x, point.radical.x, point.radicand,
-                                     point.weight),
-            exact::quadraticToDouble(point.rational.y, point.radical.y, point.radicand,
-                                     point.weight)};
+    return {
+        exact::quadraticToDouble(point.rational.x, point.radical.x, point.radicand, point.weight),
+        exact::quadraticToDouble(point.rational.y, point.radical.y, point.radicand, point.weight)};
 }
 
 Carrier carrierOf(const CurveMeaning& meaning) {
@@ -279,8 +277,7 @@ Sign lineSign(const LineMeaning& line, const ExactPoint& point) {
     const auto direction = directionOf(line);
     assert(!(direction.x.isZero() && direction.y.isZero()) && "a line needs start != end");
     const auto offset = minus(point.rational, times(exactVector(line.start), point.weight));
-    return exact::signOf(cross(direction, offset), cross(direction, point.radical),
-                         point.radicand);
+    return exact::signOf(cross(direction, offset), cross(direction, point.radical), point.radicand);
 }
 
 // |X - c / w|^2 - rho / w^2 for X = (r + q sqrt(d)) / W, times (w W)^2 > 0:
@@ -288,7 +285,8 @@ Sign lineSign(const LineMeaning& line, const ExactPoint& point) {
 //     |A + B sqrt(d)|^2 - rho W^2 = |A|^2 + |B|^2 d - rho W^2 + 2 (A . B) sqrt(d).
 Sign circleSign(const CircleSupport& circle, const ExactPoint& point) {
     assert(circle.weight.sign() == Sign::positive && "a circle needs a positive weight");
-    const auto a = minus(times(point.rational, circle.weight), times(centerOf(circle), point.weight));
+    const auto a =
+        minus(times(point.rational, circle.weight), times(centerOf(circle), point.weight));
     const auto b = times(point.radical, circle.weight);
     const auto rational =
         dot(a, a) + dot(b, b) * point.radicand - circle.radiusSquared * squared(point.weight);

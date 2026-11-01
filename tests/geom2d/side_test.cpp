@@ -62,9 +62,9 @@ void expectDiagnosis(const Curve& curve, Point2 point, DiagnosisCode code, std::
 }
 
 TEST(Side, StraightCurves) {
-    for (const Curve& curve :
-         {Curve{Segment{{0.0, 0.0}, {4.0, 2.0}}}, Curve{PolylineSegment{{0.0, 0.0}, {4.0, 2.0}, 0.0}},
-          Curve{PolylineSegment{{0.0, 0.0}, {4.0, 2.0}, -0.0}}}) {
+    for (const Curve& curve : {Curve{Segment{{0.0, 0.0}, {4.0, 2.0}}},
+                               Curve{PolylineSegment{{0.0, 0.0}, {4.0, 2.0}, 0.0}},
+                               Curve{PolylineSegment{{0.0, 0.0}, {4.0, 2.0}, -0.0}}}) {
         expectSide(curve, {2.0, 1.0}, Side::on);
         expectSide(curve, {-6.0, -3.0}, Side::on);  // on the extension
         expectSide(curve, {2.0, above(1.0)}, Side::left);
@@ -83,7 +83,8 @@ TEST(Side, TinyAndLargeCoordinates) {
     expectSide(tiny, {4.0 * kTiny, 3.0 * kTiny}, Side::left);
     expectSide(tiny, {4.0 * kTiny, kTiny}, Side::right);
     // Data at the edge of the domain.
-    const Curve large = Segment{{-kMaxCoordinate, -kMaxCoordinate}, {kMaxCoordinate, kMaxCoordinate}};
+    const Curve large =
+        Segment{{-kMaxCoordinate, -kMaxCoordinate}, {kMaxCoordinate, kMaxCoordinate}};
     expectSide(large, {1.0, 1.0}, Side::on);
     expectSide(large, {below(kMaxCoordinate), kMaxCoordinate}, Side::left);
 }

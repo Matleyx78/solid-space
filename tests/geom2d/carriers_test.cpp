@@ -132,9 +132,9 @@ Sign inCircleValue(const std::array<detail::ExactVector, 3>& points, const Exact
     const auto minor = [&](std::size_t i, std::size_t j) {
         return subtract(multiply(rows[1][i], rows[2][j], d), multiply(rows[1][j], rows[2][i], d));
     };
-    const auto value = add(subtract(multiply(rows[0][0], minor(1, 2), d),
-                                    multiply(rows[0][1], minor(0, 2), d)),
-                           multiply(rows[0][2], minor(0, 1), d));
+    const auto value =
+        add(subtract(multiply(rows[0][0], minor(1, 2), d), multiply(rows[0][1], minor(0, 2), d)),
+            multiply(rows[0][2], minor(0, 1), d));
     return signOf(value, p);
 }
 
@@ -502,8 +502,7 @@ TEST(Carriers, PointsWithDifferentRadicalsCompare) {
     EXPECT_TRUE(detail::samePoint(fromLine, fromCircles));
     EXPECT_TRUE(detail::samePoint(fromCircles, detail::exactPoint({3.0, 4.0})));
     EXPECT_FALSE(detail::samePoint(fromCircles, detail::exactPoint({3.0, above(4.0)})));
-    EXPECT_EQ(detail::compareY(fromCircles, detail::exactPoint({3.0, above(4.0)})),
-              Sign::negative);
+    EXPECT_EQ(detail::compareY(fromCircles, detail::exactPoint({3.0, above(4.0)})), Sign::negative);
     EXPECT_EQ(detail::compareX(fromLine, detail::exactPoint({below(3.0), 4.0})), Sign::positive);
 
     // Irrational points: y = 1 and the circle of radius 2 meet at
@@ -607,7 +606,8 @@ Curve curveThrough(Generator& generator, Point2 through) {
         case 3U:
             return Circle{center, 5.0 * k};
         default:
-            return Arc{center, 5.0 * k, generator.coordinate(), 1.0 + generator.coordinate() * 0x1p-8};
+            return Arc{center, 5.0 * k, generator.coordinate(),
+                       1.0 + generator.coordinate() * 0x1p-8};
     }
 }
 
