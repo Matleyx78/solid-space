@@ -5,6 +5,8 @@
 - **Corretto:** 2026-11-01 — revisione C (#133), decisioni #136, #139–#142,
   #149 e #150: pavimento 2^-1022 degli errori, ordine generale delle diagnosi,
   costruzioni nel dominio e controllo sul valore esatto (punti 3, 5 e 7).
+  La #156 limita il principio del dominio a offset e tangenze (punto 5);
+  `endpoints`, `intersect` e `intersectAlong` restano invariati.
 - **Richiesta:** #20 — da Tecnigrafo: tappa 0.7, Matleyx78/tecnigrafo#326
 - **Esito:** 3 pezzo nostro
 - **Tappa:** 0.2 (scheda da scrivere all'apertura)
@@ -125,13 +127,17 @@ cosa l'utente intendeva; le decisioni di questo ADR dicono che cosa sono i dati.
    esattamente ridotte a un punto danno la diagnosi `degenerateCurve` (la regola
    dell'ADR 0009 permette a Tecnigrafo di toglierle prima). Le intersezioni
    oltre il dominio (due rette prolungate quasi parallele) non si elencano, ma
-   si contano. Per ogni costruzione restituita il dominio si decide sul valore
-   esatto delle coordinate e dei raggi, mai sull'estensione geometrica della
+   si contano. Per le costruzioni di `offset.hpp` e `tangency.hpp` il dominio
+   si decide sul valore esatto delle coordinate e dei raggi, mai sull'estensione geometrica della
    curva. Un esatto entro K = `kMaxCoordinate` non si restituisce oltre K:
    se l'arrotondamento supererebbe ±K, si restituisce quel limite. Il punto m
    di un pezzo curvo restituito si ricostruisce esattamente dai `double`
-   restituiti. Ogni operazione specifica diagnosi, fallimento o conteggio:
-   niente fuori dominio restituito né omesso in silenzio. Questo principio
+   restituiti. Per offset e tangenze ogni operazione specifica diagnosi o
+   fallimento: niente fuori dominio restituito né omesso in silenzio.
+   Il principio non riguarda i punti delle curve date: `endpoints` e gli
+   estremi delle sovrapposizioni di `intersect` e `intersectAlong` restano
+   entro l'errore dichiarato, anche oltre K; i punti comuni isolati oltre K
+   restano non elencati e contati in `omittedBeyondDomain` (#156). Questo principio
    riguarda solo il dominio, non vieta i risultati degeneri previsti dalle
    singole funzioni. L'ordine dei controlli è quello generale di `curves.hpp`:
    ingressi per numero, dentro ogni curva `invalidValue`, `outOfDomain`,

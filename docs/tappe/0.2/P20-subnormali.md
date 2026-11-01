@@ -27,7 +27,11 @@ solo dove il codice già unito non le rispetta, anche queste decisioni:
 - **#149:** dominio delle costruzioni sui valori esatti; nessun valore esatto
   entro K restituito oltre K (limite ±K se l'arrotondamento lo supererebbe),
   punto m ricostruito esattamente dai double restituiti. Per l'offset se ne
-  occupa P19; qui si adeguano i percorsi interessati di P20, comprese le tangenze.
+  occupa P19; qui si adeguano le tangenze. Come precisa la #156, il principio
+  del dominio vale solo per offset e tangenze: `endpoints` e gli estremi delle
+  sovrapposizioni di `intersect` e `intersectAlong` restano entro l'errore,
+  anche oltre K; i punti comuni isolati oltre K restano omessi e contati.
+  P7, P10 e P11 restano chiuse e invariate.
 - **#150:** tutti i dati prima delle costruzioni; `notCircular` resta dopo i
   dati della sua curva e prima degli ingressi seguenti. In `fillet`, regola 3,
   prima `ambiguousPick`, poi le costruzioni, `infinitelyMany` e i candidati.
@@ -39,6 +43,16 @@ solo dove il codice già unito non le rispetta, anche queste decisioni:
   l'errore e, se coincidono, bulge 0; altrimenti bulge entro l'errore della
   regola ordinaria. Se il formato dei casi non lo permette, questo controllo
   va nei test di unità di P20.
+
+La #155, come la #152, lascia liberi punti di tangenza e bulge entro i loro
+errori. Se l'arco esatto è a meno dell'errore da K, il dominio di m ricostruito
+dai double può dipendere da una scelta lecita: `found` oppure `outOfDomain`
+sul dato 2. Il riferimento al confine non impone nessuno dei due: con `found`
+punti e arco entro gli errori e m entro K; con `outOfDomain`, dato 2.
+Nessun obbligo del double più vicino o di scegliere m sempre entro K.
+P20 non cambia codice per la #155; R20 non impone l'esito al confine.
+Nell'esempio `fillet(Segment{(K,0),(K,2)}, (K,1/2),
+Segment{(0,0),(2,0)}, (1/2,0), 1)` sono lecite entrambe le risposte.
 
 ## Cosa fare
 

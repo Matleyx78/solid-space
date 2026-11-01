@@ -38,6 +38,14 @@ coordinate e raggio si decide sul valore esatto; il punto m si ricostruisce
 esattamente dai double restituiti. Un esatto entro K non si restituisce
 oltre K. P19 adegua i percorsi già uniti, senza cambiare questo contratto.
 
+La #153 precisa che `offsetCurve` controlla estremi e raggio esatti prima
+di `failed`: fuori dominio dà `outOfDomain`, dato 1, anche con estremi
+arrotondati coincidenti o bulge non rappresentabile. `failed` vale solo
+con quei valori esatti nel dominio; m si controlla dai double solo per
+una curva restituita. `offsetPolyline` scarta invece i dritti collassati
+prima dei controlli sul solo risultato finale. P19 corregge anche l'ordine
+del codice P13 già unito, se necessario.
+
 ## Cosa fare
 
 Realizzare, senza cambiarla, `offsetCurve` di `offset.hpp`, come dice il commento

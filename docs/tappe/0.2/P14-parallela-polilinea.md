@@ -52,6 +52,13 @@ I controlli finali seguono l'ordine dell'elenco in `offset.hpp`, il primo
 fallimento decide: prima `beyondDomain`, poi intersezioni. P19 corregge anche
 l'ordine se P14 già unito ne usa un altro.
 
+La #154 precisa che il dominio esatto si controlla dopo lo scarto dei
+dritti collassati, solo sugli estremi dei pezzi rimasti. A un vertice
+condiviso contano entrambi i precursori: fine esatta del precedente e inizio
+esatto del successivo. Estremi appartenenti solo a pezzi scartati non contano;
+m resta ricostruito dai double restituiti. P19 adegua il codice già unito
+se necessario, R19 aggiunge l'esempio della #154.
+
 ## Cosa fare
 
 Realizzare, senza cambiarla, `offsetPolyline` di `offset.hpp` con i suoi tipi
@@ -79,7 +86,9 @@ lettera il commento dell'intestazione:
    spostamento del passo 1); pezzi del risultato ridotti a un punto tolti al
    passo 4; se nessun pezzo resta dopo i passi 1, 3 e 4, l'esito è `vanished`;
 3. **i controlli finali in ordine**, prima di dare `done`: prima il dominio
-   dei vertici esatti e del punto m dai double restituiti; poi, sui double, due
+   degli estremi esatti dei pezzi rimasti dopo lo scarto dei dritti
+   collassati (entrambi i precursori ai vertici condivisi) e del punto m dai
+   double restituiti; poi, sui double, due
    pezzi non consecutivi senza punti comuni (esatto, come `intersect`); due pezzi
    consecutivi che si incontrano solo nel vertice comune o in punti che
    coincidono con esso per la regola dell'ADR 0009 (`policy`); nessun incontro

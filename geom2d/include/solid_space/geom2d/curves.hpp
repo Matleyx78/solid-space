@@ -152,8 +152,9 @@ struct Polyline {
 // checks finish before constructions begin: a construction-domain diagnosis
 // follows the checks of every input, even when it names an earlier input.
 //
-// Every construction that geom2d returns keeps its coordinates, radii and
-// the point m of curved PolylineSegments within robust::kMaxCoordinate. This
+// Every construction returned by offset.hpp or tangency.hpp keeps its
+// coordinates, radii and the point m of curved PolylineSegments within
+// robust::kMaxCoordinate. This
 // checks the data values, never the geometric extent of the curve. Domain
 // decisions use the exact construction values, even when rounding would
 // bring an out-of-domain value back within the domain. An exact coordinate
@@ -163,7 +164,11 @@ struct Polyline {
 // from the returned doubles and checked that way, not from an exact precursor.
 // A construction outside the domain is never returned or silently omitted;
 // each operation specifies its diagnosis or failure. Degenerate results are
-// governed by the individual operation, not by this domain rule.
+// governed by the individual operation, not by this domain rule. This rule
+// does not apply to points on the given curves: endpoints() and overlap ends
+// from intersect() or intersectAlong() remain within their declared error,
+// even beyond kMaxCoordinate; isolated common points beyond the domain remain
+// unlisted and counted in omittedBeyondDomain.
 
 /// The magnitude M of a curve, used by the error bounds above and by the
 /// tolerance rule (ADR 0009): the largest absolute value among

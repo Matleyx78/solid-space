@@ -56,7 +56,10 @@ enum class OffsetOutcome : std::uint8_t {
 /// The offset of one curve. Every returned vertex (the ends of a Segment or
 /// PolylineSegment, straight or curved) is rounded coordinate by coordinate
 /// to the nearest double, ties to even. Bulges and representability checks
-/// use these doubles, not arbitrary points within the error bound.
+/// use these doubles, not arbitrary points within the error bound. Exact
+/// constructed ends and radii in offsetCurve are domain-checked before any
+/// failed outcome below; failed only applies when those exact values are
+/// within the domain.
 struct CurveOffset {
     /// done or vanished; failed for an unrepresentable curved or straight piece (below).
     OffsetOutcome outcome = OffsetOutcome::vanished;
@@ -107,7 +110,12 @@ struct CurveOffset {
 /// reconstructed point m of the returned curve would be (input 1). Domain
 /// checks use exact construction values and m reconstructed exactly from the
 /// returned doubles, as curves.hpp specifies. The geometric extent is not
-/// checked. At zero distance the validated input is returned with
+/// checked. Exact constructed ends and radii beyond the domain give
+/// outOfDomain (input 1) before coincident rounded ends or an unrepresentable
+/// bulge can give failed. The point m is checked only for a curve being
+/// returned, from its returned doubles. Unlike offsetCurve, offsetPolyline
+/// drops collapsed straight pieces before checking only its final result.
+/// At zero distance the validated input is returned with
 /// identical bits and outcome done.
 [[nodiscard]] Result<CurveOffset> offsetCurve(const Curve& curve, double distance);
 
@@ -216,7 +224,11 @@ struct PolylineOffset {
 /// pieces whose rounded ends coincide are dropped, together with their origins
 /// entries, making simple false. Their neighbours already share the same
 /// rounded vertex. If no piece remains, the outcome is failed with
-/// notRepresentable, not vanished: the exact result exists.
+/// notRepresentable, not vanished: the exact result exists. The exact-domain
+/// check below uses only ends of pieces remaining after this drop; exact ends
+/// belonging only to dropped pieces do not count. At a shared vertex of two
+/// remaining pieces, both exact precursors are checked: the previous piece's
+/// exact end and the next piece's exact start.
 /// Every arc of the result, a source piece (cut or not) or a gap arc, gets
 /// its bulge by the rule of CurveOffset for a curved PolylineSegment, around
 /// the exact centre of its circle (the centre of the source piece, or the
@@ -230,11 +242,11 @@ struct PolylineOffset {
 /// reason. Domain is checked before intersections, which require in-domain data.
 /// Except for the exact vertex-domain check, the result is checked on its own
 /// doubles before it is returned, so that done always means:
-/// - the exact final vertices and the point m of every curved piece,
-///   reconstructed exactly from the returned doubles, are within
-///   robust::kMaxCoordinate; otherwise failed with beyondDomain.
-///   Only the final result after steps 1-4 is checked, not an intermediate
-///   offset or joint later cut or removed;
+/// - the exact ends of pieces remaining after the rounding drop are within
+///   robust::kMaxCoordinate, as is the point m of every curved piece,
+///   reconstructed exactly from the returned doubles; otherwise failed with
+///   beyondDomain. Only the final result after steps 1-4 and the rounding drop
+///   is checked, not an intermediate offset or joint later cut or removed;
 /// - no two pieces that are not consecutive have a common point (decided
 ///   exactly, as intersect() does);
 /// - two consecutive pieces meet only at their shared vertex, or at points

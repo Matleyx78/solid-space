@@ -42,6 +42,10 @@
   collassati dall'arrotondamento, dominio sul valore esatto e punto m dai
   double restituiti, nessun valore restituito oltre K, dati prima delle
   costruzioni e ordine dei controlli finali (punti 3–6 e 9).
+  Le #153 e #154 precisano: in `offsetCurve` dominio di estremi e raggio
+  esatti prima di `failed`; nella polilinea solo estremi dei pezzi rimasti
+  dopo lo scarto dei dritti collassati, con entrambi i precursori esatti
+  dei vertici condivisi (punto 9).
 - **Richiesta:** #22 — da Tecnigrafo: tappa 0.7, Matleyx78/tecnigrafo#328
 - **Esito:** 3 pezzo nostro
 - **Tappa:** 0.2 (scheda da scrivere all'apertura)
@@ -253,8 +257,17 @@ per scriverlo al suo utente. Il testo completo è nella issue #22.
    `offsetCurve` dà inoltre `outOfDomain` sul dato 1 se il risultato non è
    nel dominio di `curves.hpp`: coordinate, raggio o punto m ricostruito oltre
    `kMaxCoordinate`, mai il solo sconfinamento geometrico (#143, #144).
-   `offsetPolyline` controlla solo vertici e punto m del risultato finale,
-   dopo i passi 1–4; un valore oltre il dominio dà `failed` con `beyondDomain`
+   In `offsetCurve` il controllo di estremi e raggio esatti precede `failed`,
+   anche con estremi arrotondati coincidenti o bulge non rappresentabile:
+   `outOfDomain` sul dato 1 prevale; `failed` vale solo con quei valori esatti
+   nel dominio. Il punto m si controlla solo per una curva che si restituisce.
+   `offsetPolyline`, invece, scarta prima i dritti collassati e controlla solo
+   il risultato finale (#153). Il dominio esatto riguarda gli estremi dei
+   pezzi rimasti dopo i passi 1–4 e quello scarto: a un vertice condiviso si
+   controllano sia la fine esatta del precedente sia l'inizio esatto del
+   successivo; estremi solo di pezzi scartati non contano (#154). Il punto m
+   resta ricostruito dai double restituiti; un valore oltre il dominio dà
+   `failed` con `beyondDomain`
    (#138). Coordinate e raggi costruiti si controllano sui valori esatti;
    un valore esatto entro K non si restituisce oltre K, limitando a ±K
    l'arrotondamento se serve. Il punto m si ricostruisce esattamente dai

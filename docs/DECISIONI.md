@@ -307,3 +307,37 @@ i rimandi ai documenti che cambia.
   `Contratto:` invariato. Nessuna implementazione o caso modificato da C.
   Le decisioni entrano nella stessa PR #147, con `Closes #148`–`Closes #152`,
   da rivedere di nuovo sulle sole funzioni toccate secondo CONTRATTI.md.
+
+- **2026-11-01: ulteriori decisioni della revisione della PR #147 (#153–#156).**
+  - **#153:** in `offsetCurve`, estremi e raggio esatti fuori dominio danno
+    `outOfDomain`, dato 1, prima di `failed`, anche con estremi arrotondati
+    coincidenti o bulge non rappresentabile. `failed` vale solo con quei
+    valori esatti nel dominio; m si controlla dai double solo per una curva
+    restituita. La polilinea scarta invece prima i dritti collassati e
+    controlla solo il risultato finale: lo stesso pezzo da solo può dare
+    `failed` / `notRepresentable`. P13, P19 e R19 allineate; P19 corregge
+    l'ordine già unito se necessario, R19 aggiunge l'esempio curva/polilinea.
+  - **#154:** dominio esatto della polilinea sugli estremi dei pezzi rimasti
+    dopo lo scarto dei dritti collassati. Ai vertici condivisi si controllano
+    entrambi i precursori esatti, fine del precedente e inizio del successivo;
+    estremi solo di pezzi scartati non contano. m resta dai double restituiti.
+    P14, P19 e R19 allineate; P19 adegua se serve, R19 aggiunge l'esempio.
+  - **#155:** in `fillet`, tangenze e bulge liberi entro l'errore possono dare
+    m ricostruito entro o oltre K: al confine sono leciti `found` oppure
+    `outOfDomain` sul dato 2. Un riferimento non impone l'esito: con `found`
+    punti e arco entro gli errori e m entro K; con `outOfDomain`, dato 2.
+    Nessun obbligo del double più vicino o di un m sempre entro K. P16 e P20
+    allineate; P20 non cambia codice per questa decisione e R20 non impone
+    l'esito al confine, come nella #152.
+  - **#156:** il principio del dominio di `curves.hpp` (esatto, limite ±K,
+    m dai double, nessuna omissione silenziosa) vale solo per costruzioni di
+    `offset.hpp` e `tangency.hpp`. Gli estremi di `endpoints` e delle
+    sovrapposizioni di `intersect` e `intersectAlong` restano entro l'errore
+    anche oltre K; i punti comuni isolati oltre K restano omessi e contati
+    (`omittedBeyondDomain`). `endpoints`, `intersect`, `intersectAlong` e
+    `intersection.hpp` invariati; nessun pacchetto nuovo, P7/P10/P11 invariate.
+  Solo commenti delle intestazioni, ADR 0010–0012, schede elencate dalle
+  decisioni e questo registro nella stessa PR #147, con `Closes #153`–
+  `Closes #156`. Nessuna dichiarazione, implementazione o caso modificato.
+  La nuova revisione del contratto sulle sole funzioni toccate spetta a un
+  agente diverso dall'autore, prima del merge.

@@ -25,6 +25,21 @@
 - `tests/geom2d/offset_curve_test.cpp`, `tests/geom2d/offset_polyline_test.cpp`
 - `tests/corpus/in-attesa/` (cancellare `0.2-R19.txt`)
 
+La #153 precisa che `offsetCurve` controlla estremi e raggio esatti prima
+di `failed`: fuori dominio dà `outOfDomain`, dato 1, anche con estremi
+arrotondati coincidenti o bulge non rappresentabile. `failed` vale solo
+con quei valori esatti nel dominio; m si controlla dai double solo per
+una curva restituita. `offsetPolyline` scarta invece i dritti collassati
+prima dei controlli sul solo risultato finale. P19 corregge anche l'ordine
+del codice P13 già unito, se necessario.
+
+La #154 precisa che il dominio esatto si controlla dopo lo scarto dei
+dritti collassati, solo sugli estremi dei pezzi rimasti. A un vertice
+condiviso contano entrambi i precursori: fine esatta del precedente e inizio
+esatto del successivo. Estremi appartenenti solo a pezzi scartati non contano;
+m resta ricostruito dai double restituiti. P19 adegua il codice già unito
+se necessario, R19 aggiunge l'esempio della #154.
+
 ## Cosa fare
 
 Realizzare, senza cambiarla, la regola del bulge di `offset.hpp` (decisione del
@@ -67,8 +82,9 @@ responsabile del 2026-11-01, issue #127 e #132, revisione C #133):
 - **dominio esatto (#149):** coordinate e raggi costruiti si controllano sul
   valore esatto, anche quando arrotonderebbero a K; un valore esatto entro K
   non si restituisce oltre K. Il punto m si ricostruisce esattamente dai
-  double restituiti. Nella polilinea contano solo i vertici finali dopo i
-  passi 1–4, non gli intermedi eliminati; gli altri controlli finali restano
+  double restituiti. Nella polilinea contano solo gli estremi dei pezzi rimasti
+  dopo i passi 1–4 e lo scarto dei dritti collassati (#154), con entrambi i
+  precursori esatti ai vertici condivisi; gli altri controlli finali restano
   sui double del risultato;
 - **ordine dei controlli:** dati prima delle costruzioni (#150); nei controlli
   finali di `offsetPolyline` prima il dominio, poi le intersezioni nell'ordine
@@ -89,6 +105,13 @@ responsabile del 2026-11-01, issue #127 e #132, revisione C #133):
 - I casi #149 al confine K: segmento x = K−1/8 spostato di −1/4 e cerchio
   r = K con d = −1/8 (`outOfDomain`, dato 1); stessa polilinea (`beyondDomain`).
   Verificare anche che nessun esatto entro K sia restituito oltre K.
+- **#153**, K = 2^50, t = 3·2^-34: segmento (K, 0)–(K−1/8, t),
+  d = −2^26: `offsetCurve` dà `outOfDomain`, dato 1, prima del collasso;
+  polilinea aperta degli stessi due vertici: `failed` / `notRepresentable`.
+- **#154**, stessi K, t e d: polilinea aperta (K, 0), (K−1/8, t),
+  (K−1/8−2^17, t·(1+2^20)), bulge 0. Il primo pezzo si scarta:
+  `done`, `simple` falso, un solo pezzo che parte da (K, 2^26).
+  L'estremo esatto (K+0,09375, …) solo del pezzo scartato non conta.
 - Il caso della issue #127 (`offsetCurve` e `offsetPolyline`): arco quasi
   intero a x = 1e6 con corda di un ulp, ora `done` con raggio circa 0,15625 e
   ogni punto entro l'errore.
@@ -106,7 +129,7 @@ responsabile del 2026-11-01, issue #127 e #132, revisione C #133):
 
 - Ogni vertice restituito è arrotondato al più vicino con pareggio al pari,
   anche nei percorsi preesistenti di P13/P14; difficoltà invariata, impegnativa.
-- Scarto, fallimenti, dominio e ordine dei controlli rispettano #148–#150.
+- Scarto, fallimenti, dominio e ordine dei controlli rispettano #148–#150, #153 e #154.
 - Tutti i casi di R19 passano, e quelli di R13 e R14 come R19 li lascia.
 - Il caso della issue #127 dà `done` e `simple` vero.
 - Nessun arco del risultato fuori da `kRelativeOffsetError` nei test generati.

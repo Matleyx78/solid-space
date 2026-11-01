@@ -258,6 +258,13 @@ struct Fillet {
 /// rules; such a fillet exists, so it is never answered with none. Checks use
 /// exact construction values, except m reconstructed exactly from returned
 /// doubles; returned coordinates and radii obey the boundary rule of curves.hpp.
+/// Tangency points and bulge remain free within their declared errors. When
+/// the exact arc is closer than that error to kMaxCoordinate, a permitted
+/// choice may give either found or outOfDomain (input 2) for reconstructed m.
+/// A boundary reference case must not require either outcome: with found,
+/// points and arc must meet their error bounds and reconstructed m must be
+/// within the domain; with outOfDomain, input is 2. This adds no nearest-double
+/// requirement and no requirement to choose an m within the domain.
 [[nodiscard]] Result<Fillet> fillet(const Curve& first, Point2 pickFirst, const Curve& second,
                                     Point2 pickSecond, double radius);
 

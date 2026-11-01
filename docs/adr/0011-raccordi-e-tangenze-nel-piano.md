@@ -27,6 +27,8 @@
   esatto e nessun valore restituito oltre K, dati prima delle costruzioni e
   `ambiguousPick` prima dei candidati, soli punti elencati di `tangentsFrom`
   controllati, bulge zero se le tangenze restituite coincidono (punti 4, 6 e 8).
+  La #155 dichiara la dipendenza del dominio del punto m dalle scelte lecite
+  di tangenze e bulge entro l'errore (punto 8).
 - **Richiesta:** #21 — da Tecnigrafo: tappa 0.7, Matleyx78/tecnigrafo#327
 - **Esito:** 3 pezzo nostro
 - **Tappa:** 0.2 (scheda da scrivere all'apertura)
@@ -206,7 +208,13 @@ quadrato, con un filtro in virgola mobile nel caso comune, come nell'ADR 0010.
    di `curves.hpp`, senza un divieto generale di risultati degeneri. Il
    dominio si decide sui valori esatti; un esatto entro K non si restituisce
    oltre K (si limita l'arrotondamento a ±K). Il punto m si ricostruisce
-   esattamente dai `double` restituiti (#149). Un punto di tangenza oltre il dominio fa fallire
+   esattamente dai `double` restituiti (#149). In `fillet`, punti di tangenza
+   e bulge sono liberi entro i rispettivi errori: con l'arco esatto a meno
+   dell'errore da K, una scelta lecita può dare `found` oppure `outOfDomain`
+   sul dato 2 per m (#155). Nessun riferimento al confine impone un esito:
+   con `found` punti e arco rispettano gli errori e m ricostruito è entro K;
+   con `outOfDomain` il dato è 2. Nessun obbligo del double più vicino né
+   di scegliere m sempre entro K. Un punto di tangenza oltre il dominio fa fallire
    l'intera chiamata: `outOfDomain`, dato 1 per `tangentsFrom`, dato 2 per
    `tangentCircles`, `tangentCircleNear` e `fillet`; nessuna omissione.
    In `tangentsFrom` si controllano solo i punti elencati: `Extension::none`
