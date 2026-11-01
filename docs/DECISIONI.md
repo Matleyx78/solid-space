@@ -212,3 +212,54 @@ i rimandi ai documenti che cambia.
   [AGENTS.md](../AGENTS.md), [LAVORO-IN-PARALLELO.md](LAVORO-IN-PARALLELO.md) e
   la scheda della [tappa 0.2](tappe/0.2-geometria-del-piano.md) in «Modifiche
   al piano».
+- **2026-11-01: decisioni della revisione C del contratto (#133).** Il
+  responsabile decide nelle issue #132 e #135–#144 e nei commenti della #133:
+  - **#132:** ogni vertice restituito dall'offset, anche dritto, tagliato,
+    prolungato o di giunzione, è il double più vicino per coordinata, pareggio
+    al pari. Bulge e rappresentabilità si calcolano su quei double. Estremi
+    arrotondati coincidenti di un arco non nullo danno `failed` per
+    `offsetCurve`, `failed` / `notRepresentable` per `offsetPolyline`, senza
+    scartare l'arco come puntiforme. R19 e P19 si allargano a tutti i vertici
+    e ai percorsi già uniti di P13/P14, difficoltà invariata.
+  - **#135:** dopo le due tangenze esatte, `TangentCircles::circles` si ordina
+    per centro esatto, x e poi y; `tangentCircleNear` e `fillet` ereditano il
+    primo della lista a parità di punteggio. Nell'esempio il primo centro è
+    (−0,5, 0), come nel codice già unito.
+  - **#136, #137, #138, #143, #144:** ogni costruzione restituita è un dato
+    valido secondo `curves.hpp`: coordinate, raggi e punto m dei pezzi curvi
+    entro `kMaxCoordinate`. Si controllano i dati, mai l'estensione geometrica;
+    nessuna costruzione fuori dominio si restituisce o si omette in silenzio.
+    `tangentsFrom` dà `outOfDomain` sul dato 1 per tangenze fuori dominio;
+    `tangentCircles`, `tangentCircleNear` e `fillet` sul dato 2 per centri o
+    tangenze, con fallimento dell'intera chiamata. In `fillet` vale anche per
+    regola 1 (centro, raggio costruito, tangenze e piede), spigoli di regola 2
+    e punto m della forma con bulge. `offsetCurve` dà `outOfDomain` sul dato 1
+    per risultato non valido (anche raggio e punto m); zero conserva la curva
+    valida e i suoi bit, con `done`. `offsetPolyline` controlla soltanto i dati
+    del risultato finale dopo i passi 1–4, con `failed` / `beyondDomain`;
+    intermedi poi tagliati o rimossi non contano, nessuna diagnosi di risultato
+    ereditata da `offsetCurve`. La garanzia dei casi semplici richiede anche
+    il risultato esatto arrotondato nel dominio.
+  - **#139, #140:** regola generale di `curves.hpp`, per tutti i limiti di
+    errore geom2d: scala max(M, |p|, 2^-1022), o max(M, |s|, 2^-1022) per
+    stazioni e lunghezze. Nei subnormali il limite dei punti è 2^-1070,
+    quello di stazioni e curve 2^-1068. Nessun cambiamento delle decisioni
+    esatte, del dominio o delle diagnosi. R20 (#146, codex) scrive i casi;
+    P20 (#145, claude) li rende obbligatori e corregge solo se falliscono,
+    senza cambiare contratto né predicati esatti. P18 dipende anche da P20.
+  - **#141, #142:** regola unica in «Checking the data» di `curves.hpp`:
+    ingressi per numero di `Diagnosis::input`, ciascuno per intero; prima
+    diagnosi applicabile, dentro una curva invalidValue, outOfDomain,
+    degenerateCurve. Polilinea per pezzi in ordine di `pieces()`, primo pezzo
+    errato con vertice nel messaggio; scartati i pezzi puntiformi, nessun
+    pezzo rimasto dà degenerateCurve sul dato 0 prima degli ingressi seguenti.
+    Valori non appartenenti a un pezzo, come l'ultimo bulge aperto, ignorati.
+    Diagnosi specifiche come notCircular seguono i dati dello stesso ingresso
+    e precedono gli ingressi seguenti. Per fillet il raggio si valida anche
+    con rette parallele, prima delle regole geometriche.
+  Correggono i soli commenti di `curves.hpp`, `offset.hpp`, `tangency.hpp`, gli
+  ADR 0011 e 0012 con riga **Corretto:** e le schede interessate; C è esteso
+  ai commenti generali di `curves.hpp`. Il piano aggiunge R20/P20 e allarga
+  R19/P19. Le dichiarazioni e i casi di riferimento non cambiano in C. La
+  pull request unica chiude C e i buchi, e passa la revisione delle correzioni
+  da un agente diverso dall'autore prima del merge (CONTRATTI.md).

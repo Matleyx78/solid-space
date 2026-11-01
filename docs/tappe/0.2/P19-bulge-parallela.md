@@ -13,7 +13,7 @@
   P4–P10): la P17 di Tecnigrafo non parte su un `offsetCurve` che sbaglia
 - **Componente:** `geom2d`
 - **Da leggere:** [ADR 0012](../../adr/0012-curva-parallela-nel-piano.md) punti
-  3, 5, 6, 7 e 9 (corretti il 2026-11-01, issue #127); `offset.hpp` (`OffsetOutcome`,
+  3, 5, 6, 7 e 9 (corretti il 2026-11-01, issue #127 e decisioni C #133); `offset.hpp` (`OffsetOutcome`,
   `CurveOffset`, `offsetCurve`, `OffsetFailure`, `offsetPolyline`); i sorgenti
   di P13 e P14 elencati sotto
 
@@ -28,7 +28,13 @@
 ## Cosa fare
 
 Realizzare, senza cambiarla, la regola del bulge di `offset.hpp` (decisione del
-responsabile del 2026-11-01, issue #127):
+responsabile del 2026-11-01, issue #127 e #132, revisione C #133):
+
+- **tutti i vertici del risultato**, anche dei pezzi dritti e quelli calcolati
+  dal codice già unito di P13 e P14, sono il double più vicino al valore esatto,
+  coordinata per coordinata, con pareggio al pari: estremi spostati, tagliati,
+  prolungati e di giunzione, compresi gli archi di giunzione. Non basta stare
+  entro l'errore: il bulge e `notRepresentable` usano questi double;
 
 - **il bulge di ogni arco del risultato** (`offsetCurve` di un pezzo curvo;
   in `offsetPolyline` ogni pezzo di partenza, tagliato o no, e ogni arco di
@@ -38,14 +44,15 @@ responsabile del 2026-11-01, issue #127):
   vettore dall'inizio alla fine girato di un quarto di giro in senso
   antiorario e t = ((C − m) · n) / (n · n), il `double` più vicino a
   −2t + √(4t² + 1) in senso antiorario e a −2t − √(4t² + 1) in senso orario.
-  Con estremi arrotondati coincidenti, il bulge dell'arco esatto (per una
-  curva sola, quello dell'ingresso);
+  Con estremi arrotondati coincidenti di un arco non nullo, `failed` per
+  `offsetCurve`, `failed` con `notRepresentable` per `offsetPolyline`, senza
+  eliminare l'arco come pezzo puntiforme;
 - **non rappresentabile:** se l'arco così costruito ha un punto più lontano di
-  `kRelativeOffsetError · max(M, |p|)` dall'offset esatto, o l'offset esatto un
+  `kRelativeOffsetError · max(M, |p|, 2^-1022)` dall'offset esatto, o l'offset esatto un
   punto così lontano dall'arco, `offsetCurve` dà `failed` (senza curva) e
   `offsetPolyline` `failed` con `notRepresentable`, deciso mentre si compone il
-  risultato, prima degli altri controlli. Mai `failed` quando entrambe le
-  distanze stanno entro metà di quel limite: il controllo può essere calcolato
+  risultato, prima degli altri controlli. Con estremi distinti, mai `failed`
+  quando entrambe le distanze stanno entro metà di quel limite: il controllo può essere calcolato
   in `double` con il suo margine, scritto e dimostrato in testa al file;
 - `CurveOffset::outcome` e il nome `notRepresentable` nell'archivio sono già
   pronti (pull request del contratto); `tests/corpus/esegui/` non cambia.
@@ -61,13 +68,20 @@ responsabile del 2026-11-01, issue #127):
 - Il caso della issue #127 (`offsetCurve` e `offsetPolyline`): arco quasi
   intero a x = 1e6 con corda di un ulp, ora `done` con raggio circa 0,15625 e
   ogni punto entro l'errore.
-- Un caso `failed` / `notRepresentable` in cui l'arrotondamento gira la corda.
+- Il caso `failed` / `notRepresentable` della #132, ora determinato
+  dall'arrotondamento al più vicino, e un arco con estremi arrotondati
+  coincidenti che non deve essere scartato.
+- Arrotondamento corretto di tutti i vertici: pezzi dritti e curvi, capi
+  liberi, tagli, prolungamenti, giunzioni e archi di giunzione, anche nei
+  percorsi di P13/P14 già uniti; casi a metà tra double per il pareggio al pari.
 - Su dati generati: archi di ogni ampiezza, vicino all'origine e a 1e6,
   il centro dell'arco restituito vicino a quello esatto e ogni punto entro
   `kRelativeOffsetError`; semicirconferenze esatte con bulge ±1.
 
 ## Fatto quando
 
+- Ogni vertice restituito è arrotondato al più vicino con pareggio al pari,
+  anche nei percorsi preesistenti di P13/P14; difficoltà invariata, impegnativa.
 - Tutti i casi di R19 passano, e quelli di R13 e R14 come R19 li lascia.
 - Il caso della issue #127 dà `done` e `simple` vero.
 - Nessun arco del risultato fuori da `kRelativeOffsetError` nei test generati.

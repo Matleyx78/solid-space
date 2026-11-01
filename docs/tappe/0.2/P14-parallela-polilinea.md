@@ -31,6 +31,18 @@
 - `tests/corpus/esegui/op_offset_polyline.cpp` (nuovo)
 - `tests/corpus/in-attesa/` (cancellare `0.2-R14a.txt`, `0.2-R14b.txt` e `0.2-R14c.txt`)
 
+## Chiarimenti del contratto del 2026-11-01
+
+La revisione C (#133; decisioni #132, #138, #139, #141) precisa: validazione
+pezzo per pezzo prima della distanza, come `curves.hpp`; passi intermedi
+esatti senza ereditare diagnosi di dominio dei risultati di `offsetCurve`;
+solo vertici e punto m del risultato finale si controllano nel dominio,
+con `failed` / `beyondDomain`. La garanzia dei casi semplici richiede anche
+che il risultato esatto arrotondato sia nel dominio. Tutti i vertici, anche
+dritti e di giunzione, sono al più vicino con pareggio al pari (P19); un arco
+non nullo con estremi arrotondati coincidenti dà `notRepresentable`, non si
+scarta al passo 4. Il pavimento degli errori è 2^-1022 (R20/P20).
+
 ## Cosa fare
 
 Realizzare, senza cambiarla, `offsetPolyline` di `offset.hpp` con i suoi tipi
@@ -80,9 +92,9 @@ pezzi (ADR 0012, punto 11): una struttura che riduca le coppie non serve ora.
 |---|---|---|
 | `offsetPolyline` | `polilinea`, `distanza`, `unita_in_metri` | `esito`: `"done"`, `"vanished"` o `"failed"`; `motivo`: nome di `OffsetFailure` (`"none"` se non è `failed`); `semplice`: booleano; con `done`, `polilinea`: `{"vertici": [[x, y, bulge], …], "chiusa": booleano}` con valori approssimati, e `origini`: elenco di `{"origine": "source" o "gap", "indice": intero}`; oppure `diagnosi` (`dato` 0 o 1) |
 
-Tolleranze: i vertici `kRelativePointError · max(M, |p|)`; il bulge di un pezzo
+Tolleranze: i vertici `kRelativePointError · max(M, |p|, 2^-1022)`; il bulge di un pezzo
 la tolleranza che corrisponde, per la sua corda, a uno scostamento della curva di
-`kRelativeOffsetError · max(M, |p|)` (chi scrive il caso la ricava e la scrive in
+`kRelativeOffsetError · max(M, |p|, 2^-1022)` (chi scrive il caso la ricava e la scrive in
 `provenienza`). M è la grandezza della polilinea e di |d|.
 
 **R14a** (codex) copre i casi della richiesta e il caso g di AutoCAD:

@@ -38,7 +38,7 @@ namespace solid_space::geom2d {
 /// Largest distance of a returned fillet arc from the exact one, relative to
 /// the magnitude: every point of the returned Arc (as curves.hpp defines it)
 /// and of the returned bulge form lies within
-/// kRelativeArcError * max(M, |p|) of the exact fillet arc, and the reverse;
+/// kRelativeArcError * max(M, |p|, 2^-1022) of the exact fillet arc, and the reverse;
 /// their ends lie within the same distance of the exact points of tangency.
 /// 2^-46 is about 1.4e-14, 16 times below the relative tolerance of ADR 0009.
 inline constexpr double kRelativeArcError = 0x1p-46;
@@ -78,7 +78,9 @@ struct TangentsFromPoint {
 ///
 /// Diagnosis invalidValue, outOfDomain or degenerateCurve about the curve
 /// (input 0); notCircular when it is straight (input 0); invalidValue or
-/// outOfDomain about the point (input 1).
+/// outOfDomain about the point (input 1). Also outOfDomain (input 1) if a
+/// constructed point of tangency is outside the data domain of curves.hpp:
+/// the whole call fails, with no point silently omitted.
 [[nodiscard]] Result<TangentsFromPoint> tangentsFrom(Point2 point, const Curve& curve,
                                                      Extension extension);
 
@@ -101,7 +103,9 @@ struct TangentCircle {
 /// All the circles of a radius tangent to two curves.
 struct TangentCircles {
     /// In the exact order of their point of tangency along the first curve,
-    /// then along the second.
+    /// then along the second, then by the exact centre's x coordinate and
+    /// finally its y coordinate (exact comparisons). This is a total order;
+    /// rounded coordinates must not be used to break these ties.
     std::vector<TangentCircle> circles;
     /// True when there are infinitely many (the two curves lie on the same
     /// line or circle; two parallel lines at distance exactly 2 * radius; two
@@ -120,9 +124,10 @@ struct TangentCircles {
 /// curve (input 0) or the second (input 1); invalidValue when the radius is
 /// negative or not finite, outOfDomain when it is beyond kMaxCoordinate,
 /// degenerateCurve when it is zero (input 2). Also outOfDomain (input 2) when
-/// the centre of a tangent circle lies beyond kMaxCoordinate, as for two
-/// almost parallel lines, which meet far away: such a circle is never left out
-/// silently, and the call gives no circles.
+/// a constructed centre or point of tangency lies beyond kMaxCoordinate,
+/// as for two almost parallel lines, which meet far away. The whole call
+/// gives no circles; no candidate is silently omitted. Domain checks concern
+/// data values under curves.hpp, never the geometric extent of a circle.
 [[nodiscard]] Result<TangentCircles> tangentCircles(const Curve& first, const Curve& second,
                                                     double radius);
 
@@ -157,7 +162,9 @@ struct ChosenCircle {
 /// may choose either. A tie goes to the first circle in the list.
 ///
 /// Diagnoses as tangentCircles; invalidValue or outOfDomain about nearFirst
-/// (input 3) or nearSecond (input 4).
+/// (input 3) or nearSecond (input 4). This includes failure of the whole call
+/// on an out-of-domain constructed centre or tangency point (input 2), before
+/// choosing among candidates.
 [[nodiscard]] Result<ChosenCircle> tangentCircleNear(const Curve& first, Point2 nearFirst,
                                                      const Curve& second, Point2 nearSecond,
                                                      double radius);
@@ -223,11 +230,15 @@ struct Fillet {
 /// curve (input 0) or the second (input 1); invalidValue when the radius is
 /// negative or not finite, outOfDomain when it is beyond kMaxCoordinate
 /// (input 2); invalidValue or outOfDomain about pickFirst (input 3) or
-/// pickSecond (input 4). A radius of zero is accepted (rule 2). Also
-/// outOfDomain (input 2) when rule 3 meets a tangent circle whose centre lies
-/// beyond kMaxCoordinate, as tangentCircles does, and when a common point of
-/// rule 2 lies beyond kMaxCoordinate (two almost parallel lines meet far away):
-/// such a fillet exists, so it is never answered with none.
+/// pickSecond (input 4). A radius of zero is accepted (rule 2). Input data
+/// checks precede the geometric rules, including the radius check for parallel
+/// lines. Also outOfDomain (input 2) for a construction outside the data
+/// domain of curves.hpp: a centre, constructed radius, point of tangency
+/// (including the perpendicular foot in rule 1), reconstructed point m of the
+/// bulge form, or a common point of rule 2 beyond kMaxCoordinate. In rule 3
+/// the whole-call domain diagnosis of tangentCircles is inherited, without
+/// silently dropping candidates. This applies to all three construction
+/// rules; such a fillet exists, so it is never answered with none.
 [[nodiscard]] Result<Fillet> fillet(const Curve& first, Point2 pickFirst, const Curve& second,
                                     Point2 pickSecond, double radius);
 

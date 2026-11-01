@@ -7,9 +7,10 @@
 - **Modello e impegno:** leggero; impegno basso
 - **Riferimenti:** non servono: documentazione e commenti, nessun cambiamento di
   comportamento
-- **Dipende da:** P8 (#49), P11 (#56), P14 (#63), P16 (#70), P17 (#71): i primi
-  quattro chiudono le catene che realizzano le intestazioni del contratto, P17 è
-  l'ultimo altro pacchetto che tocca `tests/CMakeLists.txt`
+- **Dipende da:** P8 (#49), P11 (#56), P14 (#63), P16 (#70), P17 (#71), P19 (#130),
+  P20 (#145): i primi quattro chiudono le catene che realizzano le intestazioni del contratto, P17 è
+  l'ultimo altro pacchetto che tocca `tests/CMakeLists.txt`; P19 completa
+  bulge e vertici dell'offset, P20 le costruzioni nei subnormali
 - **Sblocca in Tecnigrafo:** niente
 - **Componente:** documenti (più i commenti iniziali delle intestazioni del
   contratto)
@@ -71,7 +72,7 @@ solo una o due righe di commento.
 ## Regole della tappa che valgono qui
 
 - Documenti in italiano, commenti del codice in inglese.
-- Prima di cominciare controlla che le issue di P8, P11, P14, P16 e P17 siano
+- Prima di cominciare controlla che le issue di P8, P11, P14, P16, P17, P19 e P20 siano
   chiuse: la frase del punto 3 e i commenti del punto 4 sono veri solo dopo.
 - Nelle intestazioni, se una riga da cambiare non è come la descrive questa
   scheda, fermati e scrivilo nella issue.

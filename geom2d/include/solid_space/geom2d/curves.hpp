@@ -10,7 +10,11 @@
 // Every curve has an exact meaning, fixed below from its doubles. All the
 // decisions of geom2d (intersections, positions, order, side) are exact
 // answers about that meaning. Constructions (points, stations, lengths) are
-// rounded, within the errors declared here.
+// rounded, within the errors declared here. Every construction error bound in
+// geom2d, including bounds declared in other headers, uses a scale of at least
+// 2^-1022 (the smallest normal double): max(M, |p|, 2^-1022) for points and
+// max(M, |s|, 2^-1022) for stations and lengths. This floor changes no exact
+// decision and does not restrict the input domain.
 
 #include "solid_space/geom2d/diagnosis.hpp"
 #include "solid_space/robust/point.hpp"
@@ -32,13 +36,13 @@ inline constexpr double kFullTurn = 6.283185307179586;         // 2 pi
 
 /// Largest error of a constructed point, relative to the magnitude: a point p
 /// returned by geom2d differs from the exact point by at most
-/// kRelativePointError * max(M, |p|), where |p| is the largest absolute
+/// kRelativePointError * max(M, |p|, 2^-1022), where |p| is the largest absolute
 /// coordinate of the exact point and M the magnitude of the inputs (see
 /// magnitude()). 2^-48 is about 3.6e-15.
 inline constexpr double kRelativePointError = 0x1p-48;
 
 /// Largest error of a station or a length (see CurvePosition), relative in
-/// the same way: at most kRelativeStationError * max(M, |s|), with s the exact
+/// the same way: at most kRelativeStationError * max(M, |s|, 2^-1022), with s the exact
 /// value. 2^-46 is about 1.4e-14.
 inline constexpr double kRelativeStationError = 0x1p-46;
 
@@ -127,8 +131,9 @@ struct Polyline {
 /// The pieces are copied as they are: they are checked when used.
 [[nodiscard]] std::vector<PolylineSegment> pieces(const Polyline& polyline);
 
-// Checking the data. Every function of geom2d checks each curve it receives,
-// in this order, and gives the first diagnosis that applies:
+// Checking the data. Every function of geom2d checks inputs in increasing
+// Diagnosis::input order: all of input 0, then input 1, and so on. The first
+// applicable diagnosis wins. Within each curve, the order is:
 // - invalidValue: a value is NaN or infinite, or a radius is negative;
 // - outOfDomain: a coordinate, a radius or the point m of a curved
 //   PolylineSegment has magnitude beyond robust::kMaxCoordinate, or
@@ -136,6 +141,19 @@ struct Polyline {
 //   robust::kMaxTrigArgument;
 // - degenerateCurve: the curve is exactly a single point (see above; a
 //   radius of zero counts too). magnitude() accepts degenerate curves.
+// A polyline is checked piece by piece in pieces() order, with the curve
+// order above within each piece. The first faulty piece decides; the message
+// names its vertex. After dropping pieces that are exactly a point, no piece
+// left gives degenerateCurve on input 0, before checking later inputs. Values
+// belonging to no piece (the last bulge of an open polyline) are not checked.
+// An input-specific diagnosis other than data validation (e.g. notCircular)
+// follows that input's data checks and precedes checks of later inputs.
+//
+// Returned constructions must themselves be valid data under these rules:
+// coordinates, radii and the point m of curved PolylineSegments stay within
+// robust::kMaxCoordinate. This checks the data values, never the geometric
+// extent of the curve. A construction outside the domain is not returned or
+// silently omitted; each operation specifies its diagnosis or failure.
 
 /// The magnitude M of a curve, used by the error bounds above and by the
 /// tolerance rule (ADR 0009): the largest absolute value among

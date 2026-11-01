@@ -28,6 +28,16 @@
 - `tests/corpus/esegui/op_tangency.cpp` (nuovo)
 - `tests/corpus/in-attesa/` (cancellare `0.2-R15a.txt` e `0.2-R15b.txt`)
 
+## Chiarimenti del contratto del 2026-11-01
+
+La revisione C (#133; decisioni #135, #136, #140, #142) precisa: dopo le due
+tangenze, l'ordine usa il centro esatto x e poi y. Un centro o punto di
+tangenza costruito oltre il dominio fa fallire l'intera chiamata senza
+omissioni: `outOfDomain`, dato 1 per `tangentsFrom`, dato 2 per
+`tangentCircles`. Si controllano gli ingressi per numero; `notCircular`
+segue la curva 0 prima del punto 1. Il pavimento generale degli errori è
+2^-1022 (R20/P20); non cambiano decisioni esatte né dichiarazioni.
+
 ## Cosa fare
 
 Realizzare, senza cambiarle, `tangentsFrom` e `tangentCircles` di
@@ -70,8 +80,8 @@ Realizzare, senza cambiarle, `tangentsFrom` e `tangentCircles` di
 
 Un punto di tangenza (`TangencyPoint`) si scrive sempre
 `{"punto": punto, "sulla_curva": posizione}`, anche in P16. Tolleranze: centri e
-punti `kRelativePointError · max(M, |p|)`, stazioni
-`kRelativeStationError · max(M, |s|)`; il punto di `tangentsFrom` con `on` è
+punti `kRelativePointError · max(M, |p|, 2^-1022)`, stazioni
+`kRelativeStationError · max(M, |s|, 2^-1022)`; il punto di `tangentsFrom` con `on` è
 esatto. **R15a** (`tangentsFrom`) e **R15b** (`tangentCircles`) coprono almeno:
 
 - **#21, casi 6 e 7** (R15a): tangenti da un punto sul cerchio (`on`, il punto

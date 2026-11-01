@@ -32,6 +32,12 @@
   dagli estremi arrotondati, con il centro più vicino a quello esatto; se
   nessun bulge rappresenta l'arco entro l'errore, l'esito è `failed`, con il
   nuovo motivo `notRepresentable` per le polilinee (punti 3, 5, 6 e 9).
+- **Corretto:** 2026-11-01 — decisioni della revisione C (#133), issue #132,
+  #138, #139, #141, #143 e #144: tutti i vertici dell'offset al double più
+  vicino, pareggio al pari; estremi curvi arrotondati coincidenti danno
+  `failed` / `notRepresentable`; dominio sui dati restituiti, soltanto finali
+  per le polilinee; pavimento 2^-1022 degli errori e ordine delle diagnosi.
+  R19/P19 sono allargati, R20/P20 verificano e realizzano i subnormali.
 - **Richiesta:** #22 — da Tecnigrafo: tappa 0.7, Matleyx78/tecnigrafo#328
 - **Esito:** 3 pezzo nostro
 - **Tappa:** 0.2 (scheda da scrivere all'apertura)
@@ -140,7 +146,9 @@ per scriverlo al suo utente. Il testo completo è nella issue #22.
 2. **La distanza ha il segno del lato:** positiva a sinistra, negativa a
    destra, guardando nella direzione della curva (`side()`); per un cerchio e
    per un arco antiorario la sinistra è l'interno. Con distanza zero
-   `offsetCurve` dà la curva stessa; `offsetPolyline` dà `failed` con
+   `offsetCurve` dà `done` con la curva stessa e gli stessi bit: l'ingresso è
+   già un dato valido, anche quando la sua estensione geometrica esce dal
+   quadrato delle coordinate; `offsetPolyline` dà `failed` con
    `meetsOriginal`, perché il risultato sarebbe la polilinea di partenza (punto
    5), come per una distanza così piccola che il risultato arrotondato la
    incontra.
@@ -153,7 +161,13 @@ per scriverlo al suo utente. Il testo completo è nella issue #22.
    centro esatto, regola esatta scritta in `offset.hpp`): l'angolo al centro può
    cambiare quanto l'arrotondamento degli estremi (corretto il 2026-11-01; prima
    teneva il bulge). Se il nuovo raggio, confrontato esattamente con
-   zero, è zero o negativo, la risposta è `vanished`. Per una polilinea, se
+   zero, è zero o negativo, la risposta è `vanished`. Ogni vertice restituito
+   (anche di pezzi dritti, tagliati, prolungati o di giunzione) si arrotonda
+   coordinata per coordinata al double più vicino, pareggio al pari (#132).
+   Bulge e controllo di rappresentabilità usano questi double. Se gli estremi
+   arrotondati di un arco non nullo coincidono, `offsetCurve` dà `failed` e
+   `offsetPolyline` dà `failed` con `notRepresentable`: non lo elimina come
+   pezzo puntiforme. Per una polilinea, se
    nessun pezzo resta dopo i passi 1, 3 e 4 (tutti i pezzi sono spariti, tolti o
    ridotti a un punto), la risposta è `vanished`.
 4. **Una polilinea** dà il risultato definito dai quattro passi di `offset.hpp`,
@@ -197,28 +211,42 @@ per scriverlo al suo utente. Il testo completo è nella issue #22.
      polilinea curvo anche `failed`, solo quando i suoi estremi arrotondati
      girano la corda troppo perché un bulge lo rappresenti entro l'errore (un
      arco vicino al giro intero con una corda di pochi ulp; mai se l'arco della
-     regola sta entro metà dell'errore, corretto il 2026-11-01);
+     regola sta entro metà dell'errore, corretto il 2026-11-01); anche quando
+     gli estremi arrotondati di un arco non nullo coincidono dà `failed`;
    - polilinee nei **casi semplici** (nessun pezzo si annulla, si toglie o si
      riduce a un punto, e il risultato esatto resta più lontano di epsilon(M),
-     ADR 0009, da se stesso e dalla polilinea di partenza): sempre `done`, con
+     ADR 0009, da se stesso e dalla polilinea di partenza, e il risultato
+     esatto arrotondato è un dato valido nel dominio): sempre `done`, con
      `simple` vero, e il risultato è quello esatto entro gli errori del punto 7,
      oppure `failed` con `notRepresentable` alla stessa condizione;
    - polilinee negli **altri casi**: `done` con il risultato dei passi, senza
      autointersezioni e senza incontrare la polilinea di partenza, oppure
      `failed`. Può differire da AutoCAD.
 7. **Errori dichiarati.** I vertici entro `kRelativePointError` (2^-48) ·
-   max(M, |p|) dai vertici esatti; ogni punto del risultato entro
-   `kRelativeOffsetError` = 2^-46 · max(M, |p|) dalla curva esatta, e il
+   max(M, |p|, 2^-1022) dai vertici esatti; ogni punto del risultato entro
+   `kRelativeOffsetError` = 2^-46 · max(M, |p|, 2^-1022) dalla curva esatta, e il
    contrario. 2^-46 è 16 volte sotto la tolleranza relativa dell'ADR 0009. M è
-   la grandezza dei dati e di |`d`|.
+   la grandezza dei dati e di |`d`|. Il pavimento 2^-1022 è generale in
+   `curves.hpp` (#139, #140): punti entro 2^-1070 e curve entro 2^-1068
+   nei subnormali, senza cambiare le decisioni esatte.
 8. **Le origini dei pezzi.** Il risultato dice per ogni pezzo da quale pezzo
    di partenza viene, o attorno a quale vertice gira se è un arco di giunzione
    (`OffsetPiece`; con pezzi resi consecutivi da vertici ripetuti eliminati, il
    vertice alla fine del pezzo di partenza di A), così Tecnigrafo conserva le
    larghezze dei pezzi che restano.
 9. **Dominio e diagnosi** come nell'ADR 0010; una distanza non finita è
-   `invalidValue`, una oltre `kMaxCoordinate` è `outOfDomain`; una giunzione
-   che cadrebbe oltre il dominio dà `failed` con `beyondDomain`; un arco che
+   `invalidValue`, una oltre `kMaxCoordinate` è `outOfDomain` (dato 1).
+   `offsetCurve` dà inoltre `outOfDomain` sul dato 1 se il risultato non è un
+   dato valido di `curves.hpp`: coordinate, raggio o punto m ricostruito oltre
+   `kMaxCoordinate`, mai il solo sconfinamento geometrico (#143, #144).
+   `offsetPolyline` controlla solo vertici e punto m del risultato finale,
+   dopo i passi 1–4; un valore oltre il dominio dà `failed` con `beyondDomain`
+   (#138). Gli intermedi sono esatti: un pezzo poi tagliato o rimosso non
+   conta, e non si eredita la diagnosi dei risultati di `offsetCurve`.
+   L'ordine delle diagnosi di ingresso è quello generale di `curves.hpp`
+   (#141): polilinea pezzo per pezzo, prima della distanza; i pezzi puntiformi
+   si scartano e nessun pezzo rimasto dà `degenerateCurve` sul dato 0 prima
+   della distanza. Un arco che
    nessun bulge rappresenta dà `failed` con `notRepresentable` (nuovo valore di
    `OffsetFailure`, aggiunto in fondo il 2026-11-01). I pezzi della
    polilinea ridotti esattamente a un punto (vertici ripetuti) si tolgono senza

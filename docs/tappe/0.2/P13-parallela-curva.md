@@ -23,6 +23,15 @@
 - `tests/corpus/esegui/op_offset_curve.cpp` (nuovo)
 - `tests/corpus/in-attesa/` (cancellare `0.2-R13.txt`)
 
+## Chiarimenti del contratto del 2026-11-01
+
+La revisione C (#133; decisioni #132, #139, #141, #143, #144) precisa:
+curva controllata prima della distanza; zero restituisce l'ingresso valido
+con gli stessi bit; tutti gli estremi al double più vicino, pareggio al pari;
+per un pezzo curvo, estremi arrotondati coincidenti danno `failed`. P19 realizza
+anche l'arrotondamento di tutti gli estremi del codice P13 già unito. Il
+pavimento generale degli errori è 2^-1022, con verifica R20/P20.
+
 ## Cosa fare
 
 Realizzare, senza cambiarla, `offsetCurve` di `offset.hpp`, come dice il commento
@@ -45,15 +54,16 @@ di `CurveOffset`:
   sul `double` arrotondato): zero o meno dà `vanished`; per un pezzo curvo il
   raggio è quello del cerchio per inizio, m e fine;
 - le diagnosi dell'intestazione: curva (`dato` 0), distanza non finita o oltre
-  `kMaxCoordinate`, punto del risultato oltre il dominio (`dato` 1).
+  `kMaxCoordinate`, dato costruito non valido secondo `curves.hpp` (`dato` 1): coordinate,
+  raggio o punto m oltre il dominio, mai la sola estensione geometrica.
 
 ### Casi di verifica (per R13)
 
 | Operazione | `ingresso` | `atteso` |
 |---|---|---|
-| `offsetCurve` | `curva`, `distanza` | `esito`: `"done"` o `"vanished"`; con `done`, `curva`: la curva attesa con la stessa forma dell'ingresso (`segmento`, `arco`, `cerchio`, `pezzo`), con valori esatti dove il contratto li garantisce (centro, angoli, ampiezza, bulge) e approssimati altrove; oppure `diagnosi` |
+| `offsetCurve` | `curva`, `distanza` | `esito`: `"done"` o `"vanished"`; con `done`, `curva`: la curva attesa con la stessa forma dell'ingresso (`segmento`, `arco`, `cerchio`, `pezzo`), con valori esatti dove il contratto li garantisce (centro, angoli, ampiezza; bulge secondo la regola aggiornata di P19) e approssimati altrove; oppure `diagnosi` |
 
-Le tolleranze dei punti sono `kRelativePointError · max(M, |p|)`, con M la
+Le tolleranze dei punti sono `kRelativePointError · max(M, |p|, 2^-1022)`, con M la
 grandezza della curva e di |d|; quella di un raggio è la stessa. R13 copre almeno:
 
 - ogni tipo di curva, dai due lati; archi e pezzi curvi nei due versi;

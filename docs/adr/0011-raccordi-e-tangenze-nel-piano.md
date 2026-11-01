@@ -18,6 +18,11 @@
   spigolo oltre `kMaxCoordinate`, `fillet` dà la diagnosi `outOfDomain` sul
   raggio (dato 2), come `tangentCircles`, e non `none`: il raccordo esiste, ma
   fuori dal dominio (punti 5 e 8).
+- **Corretto:** 2026-11-01 — decisioni della revisione C (#133), issue
+  #135–#137, #140 e #142: ordine totale dei cerchi (tangenze, poi centro
+  esatto x/y), dominio di tutti i dati costruiti con diagnosi dell'intera
+  chiamata, compresa la regola 1 di `fillet`; pavimento 2^-1022 degli errori
+  e ordine generale delle diagnosi in `curves.hpp` (punti 3, 7 e 8).
 - **Richiesta:** #21 — da Tecnigrafo: tappa 0.7, Matleyx78/tecnigrafo#327
 - **Esito:** 3 pezzo nostro
 - **Tappa:** 0.2 (scheda da scrivere all'apertura)
@@ -140,7 +145,10 @@ quadrato, con un filtro in virgola mobile nel caso comune, come nell'ADR 0010.
    curva sta un cerchio tangente (`Side`, con lo stesso significato di
    `side()`), dove stanno i punti di tangenza su ogni curva, il loro ordine, se
    due rette sono parallele, il verso dell'arco di raccordo, e quando i cerchi
-   sono infiniti.
+   sono infiniti. I cerchi si ordinano per tangenza esatta sulla prima curva,
+   poi sulla seconda, poi per centro esatto, prima x e poi y: ordine totale
+   per il raggio dato (#135), ereditato dai pareggi di `tangentCircleNear`
+   e `fillet`.
 4. **La scelta del lato è quella della #20.** Il raccordo sta, rispetto alla
    prima curva, dalla parte in cui `side()` mette il punto indicato sulla
    seconda, e viceversa: ogni punto indica la parte della sua curva da tenere.
@@ -164,9 +172,11 @@ quadrato, con un filtro in virgola mobile nel caso comune, come nell'ADR 0010.
    forme che Tecnigrafo usa: un `Arc` (raggio dato esattamente, angoli da
    `robust::atan2`) e il bulge di un segmento di polilinea.
 7. **Errori dichiarati.** Centri e punti di tangenza entro
-   `kRelativePointError` (2^-48) · max(M, |p|), stazioni entro
-   `kRelativeStationError` (2^-46), come nell'ADR 0010. L'arco, nelle due
-   forme, entro `kRelativeArcError` = 2^-46 · max(M, |p|) dall'arco esatto, e
+   `kRelativePointError` (2^-48) · max(M, |p|, 2^-1022), stazioni entro
+   `kRelativeStationError` (2^-46) · max(M, |s|, 2^-1022), come nella regola
+   generale di `curves.hpp`. Il pavimento (#139, #140) vale per tutte le
+   costruzioni geom2d, senza cambiare decisioni esatte, dominio o diagnosi. L'arco, nelle due
+   forme, entro `kRelativeArcError` = 2^-46 · max(M, |p|, 2^-1022) dall'arco esatto, e
    i suoi estremi dai punti di tangenza esatti: gli angoli passano da punti
    già arrotondati, quindi l'errore è più largo di quello dei punti, ma resta
    16 volte sotto la tolleranza relativa dell'ADR 0009, così gli estremi
@@ -178,7 +188,17 @@ quadrato, con un filtro in virgola mobile nel caso comune, come nell'ADR 0010.
    `outOfDomain` sul raggio (dato 2) e nessun cerchio: i cerchi tangenti non
    hanno un conteggio dei punti omessi come le intersezioni (corretto il
    2026-11-01). Lo stesso vale per `fillet`, anche per lo spigolo del raggio
-   zero oltre `kMaxCoordinate` (corretto il 2026-11-01).
+   zero oltre `kMaxCoordinate` (corretto il 2026-11-01). La revisione C estende
+   il controllo a tutti i dati costruiti, mai all'estensione geometrica:
+   coordinate, raggi e punto m della forma con bulge devono essere dati validi
+   secondo `curves.hpp`. Un punto di tangenza oltre il dominio fa fallire
+   l'intera chiamata: `outOfDomain`, dato 1 per `tangentsFrom`, dato 2 per
+   `tangentCircles`, `tangentCircleNear` e `fillet`; nessuna omissione.
+   Per `fillet` vale anche nella regola 1 (centro, raggio costruito, tangenze
+   e piede della perpendicolare). L'ordine delle diagnosi è quello generale
+   di `curves.hpp`: dato 0 per intero, poi 1, 2, 3, 4; `notCircular` segue i
+   controlli della curva 0 e precede il punto 1. In `fillet` il raggio viene
+   controllato anche per rette parallele, prima delle regole geometriche.
 9. **Determinismo:** la regola dell'ADR 0008, punto 5, anche per la scelta del
    punto 4, che è calcolata in virgola mobile.
 10. **Prestazioni**, obiettivo da misurare nella tappa: `tangentsFrom`, che lo

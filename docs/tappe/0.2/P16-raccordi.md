@@ -30,6 +30,18 @@
 - `tests/corpus/esegui/op_fillet.cpp` (nuovo)
 - `tests/corpus/in-attesa/` (cancellare `0.2-R16a.txt`, `0.2-R16b.txt` e `0.2-R16c.txt`)
 
+## Chiarimenti del contratto del 2026-11-01
+
+La revisione C (#133; decisioni #135–#137, #140, #142) precisa: i pareggi
+ereditano l'ordine totale di `tangentCircles` (tangenze, poi centro esatto
+x/y). Le diagnosi di dominio delle costruzioni si propagano all'intera
+chiamata, sul dato 2, anche prima della scelta di un candidato; per `fillet`
+valgono in tutte le regole, compresa la regola 1 (centro, raggio costruito,
+tangenze e piede) e il punto m della forma con bulge. Controllo sui dati,
+mai sull'estensione geometrica. Ingressi controllati per numero; il raggio
+si valida anche per rette parallele prima delle regole geometriche.
+Il pavimento generale degli errori è 2^-1022 (R20/P20).
+
 ## Cosa fare
 
 Realizzare, senza cambiarle, `tangentCircleNear` e `fillet` di `tangency.hpp`,
@@ -66,9 +78,9 @@ con i loro tipi.
 | `fillet` | `prima`, `punto_prima`, `seconda`, `punto_seconda`, `raggio` | `esito`; con `found`: `centro`, `raggio`, `sulla_prima` e `sulla_seconda` (punti di tangenza), `semicerchio`: booleano, `arco`: la curva attesa nella forma `{"arco": {...}}` di P13, con valori esatti o approssimati, `bulge`: approssimato; oppure `diagnosi` |
 
 Un punto di tangenza si scrive `{"punto": punto, "sulla_curva": posizione}`, come
-in P15. Tolleranze: punti `kRelativePointError · max(M, |p|)`; angoli,
+in P15. Tolleranze: punti `kRelativePointError · max(M, |p|, 2^-1022)`; angoli,
 ampiezza e bulge dell'arco la tolleranza che corrisponde, per il suo raggio e la
-sua corda, a uno scostamento di `kRelativeArcError · max(M, |p|)` (chi scrive il
+sua corda, a uno scostamento di `kRelativeArcError · max(M, |p|, 2^-1022)` (chi scrive il
 caso la ricava e la scrive in `provenienza`); il raggio di `fillet` è esatto
 (quello chiesto), salvo il semicerchio.
 
