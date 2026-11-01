@@ -1,0 +1,86 @@
+{
+  "versione": 1,
+  "id": "cerchio-ttr-autocad-caso-m-linee",
+  "componente": "geom2d",
+  "descrizione": "Caso m di autocad-raccordi.dxf (handle 281, 282, 283 da 4-raccordi.scr): cerchio tangente a due linee con raggio 8 (CIRCLE Ttr).",
+  "ingresso": {
+    "operazione": "tangentCircleNear",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          0,
+          200
+        ],
+        "fine": [
+          40,
+          200
+        ]
+      }
+    },
+    "vicino_prima": [
+      10,
+      200
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          0,
+          200
+        ],
+        "fine": [
+          0,
+          240
+        ]
+      }
+    },
+    "vicino_seconda": [
+      0,
+      210
+    ],
+    "raggio": 8
+  },
+  "atteso": {
+    "esito": "found",
+    "cerchio": {
+      "centro": [
+        {
+          "valore": 8.0,
+          "tolleranza": 1e-12
+        },
+        {
+          "valore": 208.0,
+          "tolleranza": 1e-12
+        }
+      ],
+      "sulla_prima": {
+        "punto": [
+          {
+            "valore": 8.0,
+            "tolleranza": 1e-12
+          },
+          {
+            "valore": 200.0,
+            "tolleranza": 1e-12
+          }
+        ]
+      },
+      "sulla_seconda": {
+        "punto": [
+          {
+            "valore": 0.0,
+            "tolleranza": 1e-12
+          },
+          {
+            "valore": 208.0,
+            "tolleranza": 1e-12
+          }
+        ]
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "file-pubblico",
+    "sorgente": "autocad-raccordi",
+    "procedimento": "Due LINE ortogonali handle 281 e 282 con comando CIRCLE Ttr raggio 8 (clic 10,200 e 0,210). AutoCAD genera CIRCLE handle 283 centro (8,208) raggio 8 tangente in (8,200) e (0,208). Letto dal file pubblico autocad-raccordi.dxf generato da 4-raccordi.scr."
+  }
+}

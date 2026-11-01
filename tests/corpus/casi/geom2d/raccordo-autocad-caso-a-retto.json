@@ -1,0 +1,115 @@
+{
+  "versione": 1,
+  "id": "raccordo-autocad-caso-a-retto",
+  "componente": "geom2d",
+  "descrizione": "Caso a di autocad-raccordi.dxf (handle 263, 264, 265 da 4-raccordi.scr): raccordo tra due linee ad angolo retto con raggio 10.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          30,
+          0
+        ]
+      }
+    },
+    "punto_prima": [
+      20,
+      0
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          0,
+          30
+        ]
+      }
+    },
+    "punto_seconda": [
+      0,
+      20
+    ],
+    "raggio": 10
+  },
+  "atteso": {
+    "esito": "found",
+    "centro": [
+      {
+        "valore": 10.0,
+        "tolleranza": 1e-12
+      },
+      {
+        "valore": 10.0,
+        "tolleranza": 1e-12
+      }
+    ],
+    "raggio": {
+      "valore": 10.0,
+      "tolleranza": 1e-12
+    },
+    "sulla_prima": {
+      "punto": [
+        {
+          "valore": 10.0,
+          "tolleranza": 1e-12
+        },
+        {
+          "valore": 0.0,
+          "tolleranza": 1e-12
+        }
+      ]
+    },
+    "sulla_seconda": {
+      "punto": [
+        {
+          "valore": 0.0,
+          "tolleranza": 1e-12
+        },
+        {
+          "valore": 10.0,
+          "tolleranza": 1e-12
+        }
+      ]
+    },
+    "semicerchio": false,
+    "arco": {
+      "arco": {
+        "centro": [
+          {
+            "valore": 10.0,
+            "tolleranza": 1e-12
+          },
+          {
+            "valore": 10.0,
+            "tolleranza": 1e-12
+          }
+        ],
+        "raggio": {
+          "valore": 10.0,
+          "tolleranza": 1e-12
+        },
+        "angolo_iniziale": {
+          "valore": -1.5707963267948966,
+          "tolleranza": 1e-12
+        },
+        "ampiezza": {
+          "valore": -1.5707963267948966,
+          "tolleranza": 1e-12
+        }
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "file-pubblico",
+    "sorgente": "autocad-raccordi",
+    "procedimento": "Due LINE handle 263 e 264 raccordate con FILLET raggio 10 (clic 20,0 e 0,20). AutoCAD genera ARC handle 265 centro (10,10) raggio 10 da 180 a 270 gradi e rifila le linee a (10,0) e (0,10). Letto dal file pubblico autocad-raccordi.dxf generato da 4-raccordi.scr."
+  }
+}

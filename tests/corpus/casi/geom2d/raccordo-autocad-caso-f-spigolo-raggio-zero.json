@@ -1,0 +1,88 @@
+{
+  "versione": 1,
+  "id": "raccordo-autocad-caso-f-spigolo-raggio-zero",
+  "componente": "geom2d",
+  "descrizione": "Caso f di autocad-raccordi.dxf (handle 273, 274 da 4-raccordi.scr): raccordo a raggio 0 tra due linee incidenti (spigolo vivo in (300,0)).",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          300,
+          -10
+        ],
+        "fine": [
+          300,
+          20
+        ]
+      }
+    },
+    "punto_prima": [
+      300,
+      10
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          290,
+          0
+        ],
+        "fine": [
+          330,
+          0
+        ]
+      }
+    },
+    "punto_seconda": [
+      320,
+      0
+    ],
+    "raggio": 0
+  },
+  "atteso": {
+    "esito": "found",
+    "centro": [
+      {
+        "valore": 300.0,
+        "tolleranza": 1e-12
+      },
+      {
+        "valore": 0.0,
+        "tolleranza": 1e-12
+      }
+    ],
+    "raggio": {
+      "valore": 0.0,
+      "tolleranza": 1e-12
+    },
+    "sulla_prima": {
+      "punto": [
+        {
+          "valore": 300.0,
+          "tolleranza": 1e-12
+        },
+        {
+          "valore": 0.0,
+          "tolleranza": 1e-12
+        }
+      ]
+    },
+    "sulla_seconda": {
+      "punto": [
+        {
+          "valore": 300.0,
+          "tolleranza": 1e-12
+        },
+        {
+          "valore": 0.0,
+          "tolleranza": 1e-12
+        }
+      ]
+    }
+  },
+  "provenienza": {
+    "tipo": "file-pubblico",
+    "sorgente": "autocad-raccordi",
+    "procedimento": "Due LINE incidenti raccordate con FILLET raggio 0 (clic 300,10 e 320,0). AutoCAD rifila le linee formando spigolo vivo in (300,0) (LINE handle 273 e 274 da (300,0)). Letto dal file pubblico autocad-raccordi.dxf generato da 4-raccordi.scr."
+  }
+}

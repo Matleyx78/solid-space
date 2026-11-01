@@ -1,0 +1,112 @@
+{
+  "versione": 1,
+  "id": "raccordo-autocad-caso-d-cerchio-linea",
+  "componente": "geom2d",
+  "descrizione": "Caso d di autocad-raccordi.dxf (handle 26D, 26E, 26F da 4-raccordi.scr): raccordo tra cerchio e linea con raggio 3.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "cerchio": {
+        "centro": [
+          170,
+          10
+        ],
+        "raggio": 10
+      }
+    },
+    "punto_prima": [
+      170,
+      0
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          150,
+          -5
+        ],
+        "fine": [
+          200,
+          -5
+        ]
+      }
+    },
+    "punto_seconda": [
+      185,
+      -5
+    ],
+    "raggio": 3
+  },
+  "atteso": {
+    "esito": "found",
+    "centro": [
+      {
+        "valore": 175.0,
+        "tolleranza": 1e-12
+      },
+      {
+        "valore": -2.0,
+        "tolleranza": 1e-12
+      }
+    ],
+    "raggio": {
+      "valore": 3.0,
+      "tolleranza": 1e-12
+    },
+    "sulla_prima": {
+      "punto": [
+        {
+          "valore": 173.84615384615384,
+          "tolleranza": 1e-12
+        },
+        {
+          "valore": 0.7692307692307693,
+          "tolleranza": 1e-12
+        }
+      ]
+    },
+    "sulla_seconda": {
+      "punto": [
+        {
+          "valore": 175.0,
+          "tolleranza": 1e-12
+        },
+        {
+          "valore": -5.0,
+          "tolleranza": 1e-12
+        }
+      ]
+    },
+    "semicerchio": false,
+    "arco": {
+      "arco": {
+        "centro": [
+          {
+            "valore": 175.0,
+            "tolleranza": 1e-12
+          },
+          {
+            "valore": -2.0,
+            "tolleranza": 1e-12
+          }
+        ],
+        "raggio": {
+          "valore": 3.0,
+          "tolleranza": 1e-12
+        },
+        "angolo_iniziale": {
+          "valore": 1.965587446494658,
+          "tolleranza": 1e-12
+        },
+        "ampiezza": {
+          "valore": 2.7468015338899805,
+          "tolleranza": 1e-12
+        }
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "file-pubblico",
+    "sorgente": "autocad-raccordi",
+    "procedimento": "CIRCLE handle 26D e LINE handle 26E raccordati con FILLET raggio 3 (clic 170,0 e 185,-5). AutoCAD genera ARC handle 26F centro (175,-2) raggio 3 da 112.619865 a 270 gradi e rifila la linea a (175,-5). Letto dal file pubblico autocad-raccordi.dxf generato da 4-raccordi.scr."
+  }
+}

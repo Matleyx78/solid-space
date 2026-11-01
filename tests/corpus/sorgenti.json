@@ -14,6 +14,20 @@
       "versione": "5615d657af2bb98839c63ad683086795657f3322",
       "sha256": "a7be6ea85bf78dafd7ff20d758cbb2913653a3c6f6581ba6b516f747780d02a0",
       "licenza": "GPL-3.0-or-later"
+    },
+    "autocad-raccordi": {
+      "nome": "autocad-raccordi.dxf",
+      "indirizzo": "https://raw.githubusercontent.com/Matleyx78/dxf-test-file/4ad9fff8a88e65561f3998a56a95adf921b58792/autocad-raccordi.dxf",
+      "versione": "4ad9fff8a88e65561f3998a56a95adf921b58792",
+      "sha256": "aecc6725a0d5b0b76c11eef4c9f93613e7beda91c0a2a225496ea8899118e842",
+      "licenza": "CC0-1.0"
+    },
+    "script-raccordi": {
+      "nome": "4-raccordi.scr",
+      "indirizzo": "https://raw.githubusercontent.com/Matleyx78/tecnigrafo/5615d657af2bb98839c63ad683086795657f3322/docs/tappe/0.7/dxf-di-prova/4-raccordi.scr",
+      "versione": "5615d657af2bb98839c63ad683086795657f3322",
+      "sha256": "a7264cccb74cfad6b1094c96cd39cdd69085087d97c3ab88e2a812a0eb963183",
+      "licenza": "GPL-3.0-or-later"
     }
   }
 }

@@ -1,0 +1,115 @@
+{
+  "versione": 1,
+  "id": "raccordo-autocad-caso-c-parallele",
+  "componente": "geom2d",
+  "descrizione": "Caso c di autocad-raccordi.dxf (handle 26A, 26B, 26C da 4-raccordi.scr): raccordo tra due linee parallele a distanza 20 (semicerchio di raggio 10).",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          100,
+          0
+        ],
+        "fine": [
+          130,
+          0
+        ]
+      }
+    },
+    "punto_prima": [
+      120,
+      0
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          100,
+          20
+        ],
+        "fine": [
+          130,
+          20
+        ]
+      }
+    },
+    "punto_seconda": [
+      120,
+      20
+    ],
+    "raggio": 5
+  },
+  "atteso": {
+    "esito": "found",
+    "centro": [
+      {
+        "valore": 130.0,
+        "tolleranza": 1e-12
+      },
+      {
+        "valore": 10.0,
+        "tolleranza": 1e-12
+      }
+    ],
+    "raggio": {
+      "valore": 10.0,
+      "tolleranza": 1e-12
+    },
+    "sulla_prima": {
+      "punto": [
+        {
+          "valore": 130.0,
+          "tolleranza": 1e-12
+        },
+        {
+          "valore": 0.0,
+          "tolleranza": 1e-12
+        }
+      ]
+    },
+    "sulla_seconda": {
+      "punto": [
+        {
+          "valore": 130.0,
+          "tolleranza": 1e-12
+        },
+        {
+          "valore": 20.0,
+          "tolleranza": 1e-12
+        }
+      ]
+    },
+    "semicerchio": true,
+    "arco": {
+      "arco": {
+        "centro": [
+          {
+            "valore": 130.0,
+            "tolleranza": 1e-12
+          },
+          {
+            "valore": 10.0,
+            "tolleranza": 1e-12
+          }
+        ],
+        "raggio": {
+          "valore": 10.0,
+          "tolleranza": 1e-12
+        },
+        "angolo_iniziale": {
+          "valore": -1.5707963267948966,
+          "tolleranza": 1e-12
+        },
+        "ampiezza": {
+          "valore": 3.141592653589793,
+          "tolleranza": 1e-12
+        }
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "file-pubblico",
+    "sorgente": "autocad-raccordi",
+    "procedimento": "Due LINE parallele handle 26A e 26B raccordate con FILLET (clic 120,0 e 120,20). AutoCAD genera semicerchio ARC handle 26C centro (130,10) raggio 10 da 270 a 90 gradi. Letto dal file pubblico autocad-raccordi.dxf generato da 4-raccordi.scr."
+  }
+}
