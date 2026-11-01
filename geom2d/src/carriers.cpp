@@ -13,7 +13,10 @@
 #include "exact/quadratic.hpp"
 #include "solid_space/robust/point.hpp"
 
+#include <algorithm>
+#include <array>
 #include <cassert>
+#include <utility>
 #include <variant>
 
 namespace solid_space::geom2d::detail {
@@ -101,15 +104,8 @@ ExactPoint rationalPoint(ExactVector numerator, Dyadic weight) {
 bool lineComesFirst(const LineMeaning& a, const LineMeaning& b) noexcept {
     const std::array<double, 4> keyA{a.start.x, a.start.y, a.end.x, a.end.y};
     const std::array<double, 4> keyB{b.start.x, b.start.y, b.end.x, b.end.y};
-    for (std::size_t i = 0; i < keyA.size(); ++i) {
-        if (keyA[i] < keyB[i]) {
-            return true;
-        }
-        if (keyB[i] < keyA[i]) {
-            return false;
-        }
-    }
-    return true;
+    // keyA <= keyB; the data are finite, so < is a strict weak order.
+    return !std::lexicographical_compare(keyB.begin(), keyB.end(), keyA.begin(), keyA.end());
 }
 
 // The same for circles: equal keys mean the same homogeneous data, hence the
