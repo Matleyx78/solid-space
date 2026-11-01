@@ -40,7 +40,7 @@ della sua issue; ogni pull request riporta in alto la issue che chiude.
 |---|---|---|
 | Responsabile | — | piano della tappa, ADR, revisione dei riferimenti, merge, prova manuale, rilascio |
 | Claude | `agente:claude` | pacchetti impegnativi e la maggior parte dei medi, anche in più sessioni nello stesso momento; riferimenti dei pacchetti di lavoro di Codex; piano della tappa insieme al responsabile |
-| Codex | `agente:codex` | revisione del contratto di ogni tappa ([CONTRATTI.md](CONTRATTI.md)); riferimenti con calcoli delicati dei pacchetti di lavoro di Claude, in fascia forte; pacchetti facili e medi che il piano non dà a Claude |
+| Codex | `agente:codex` | revisione del contratto di ogni tappa e delle correzioni scritte da altri ([CONTRATTI.md](CONTRATTI.md)); riferimenti con calcoli delicati dei pacchetti di lavoro di Claude, in fascia forte; pacchetti facili e medi che il piano non dà a Claude |
 | Gemini (con Antigravity CLI, `agy`) | `agente:gemini` | pacchetti di riferimenti ordinari, revisione delle pull request di lavoro, pull request di chiusura della tappa, pacchetti facili; lavora a lotti (sezioni 3 e 4) |
 | Gemini 4 Argon (con Antigravity CLI, `agy`) | `agente:gemini-argon` | nessun pacchetto nel piano: la sua quota settimanale basta a uno o due pacchetti di riferimenti. Se è disponibile e serve, il responsabile gli passa un pacchetto che il piano dava a Codex, cambiandone l'etichetta; lavora a lotti, in una sessione sua, sullo stesso PC di Gemini |
 | Copilot (GitHub Copilot Pro) | — | solo revisione mirata delle pull request impegnative, chiesta dal responsabile (sezione 6); non prende pacchetti e non apre pull request |
@@ -95,6 +95,12 @@ responsabile decide, e una sola pull request applica le decisioni. Tutte le
 issue di riferimenti e di lavoro che realizzano o usano quelle intestazioni lo
 citano in «Dipende da». Costa una sessione forte all'inizio della tappa, contro
 i pacchetti fermati a metà e le decisioni rincorse tra le chat della tappa 0.2.
+
+Anche ogni pull request che **corregge** il contratto dopo l'accettazione (che
+applica la decisione di un buco, o quella dello stesso `[X.Y-C]`) si rivede con
+la lista prima del merge, da un agente diverso da chi l'ha scritta, sul testo
+dopo la correzione: lo dice la riga **Revisione del contratto: da fare** nella
+sua descrizione ([CONTRATTI.md](CONTRATTI.md), «Le correzioni del contratto»).
 
 ### Pacchetti leggeri
 
