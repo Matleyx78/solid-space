@@ -1,0 +1,42 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-arco-antiorario-sinistra",
+  "componente": "geom2d",
+  "descrizione": "Curva parallela di un arco antiorario a distanza positiva (a sinistra, verso l'interno).",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "arco": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 10,
+        "angolo_iniziale": 0,
+        "ampiezza": 1.5
+      }
+    },
+    "distanza": 3
+  },
+  "atteso": {
+    "esito": "done",
+    "curva": {
+      "arco": {
+        "centro": [
+          "0",
+          "0"
+        ],
+        "raggio": {
+          "valore": 7,
+          "tolleranza": 3.552713678800501e-14
+        },
+        "angolo_iniziale": "0",
+        "ampiezza": "3/2"
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Arco antiorario (sweep=1.5 > 0) con R=10 e d=3 a sinistra (interno). Nuovo raggio R - d = 7. Centro, angolo iniziale e ampiezza sono garantiti esatti dal contratto: (0,0), 0, 3/2. M=10, tolleranza raggio 10 * 2^-48 = 3.552713678800501e-14."
+  }
+}

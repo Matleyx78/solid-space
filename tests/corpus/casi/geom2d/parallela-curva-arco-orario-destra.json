@@ -1,0 +1,42 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-arco-orario-destra",
+  "componente": "geom2d",
+  "descrizione": "Curva parallela di un arco orario a distanza negativa (a destra, verso l'interno).",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "arco": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 10,
+        "angolo_iniziale": 0,
+        "ampiezza": -1.5
+      }
+    },
+    "distanza": -3
+  },
+  "atteso": {
+    "esito": "done",
+    "curva": {
+      "arco": {
+        "centro": [
+          "0",
+          "0"
+        ],
+        "raggio": {
+          "valore": 7,
+          "tolleranza": 3.552713678800501e-14
+        },
+        "angolo_iniziale": "0",
+        "ampiezza": "-3/2"
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Arco orario con R=10 e d=-3 a destra (interno per verso orario). Nuovo raggio R + d = 10 + (-3) = 7. M=10, tolleranza raggio 10 * 2^-48 = 3.552713678800501e-14."
+  }
+}

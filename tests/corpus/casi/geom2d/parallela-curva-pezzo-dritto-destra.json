@@ -1,0 +1,55 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-pezzo-dritto-destra",
+  "componente": "geom2d",
+  "descrizione": "Curva parallela di un segmento dritto di polilinea a distanza negativa (a destra).",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "pezzo": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          10,
+          0
+        ],
+        "bulge": 0
+      }
+    },
+    "distanza": -2
+  },
+  "atteso": {
+    "esito": "done",
+    "curva": {
+      "pezzo": {
+        "inizio": [
+          {
+            "valore": 0,
+            "tolleranza": 3.552713678800501e-14
+          },
+          {
+            "valore": -2,
+            "tolleranza": 3.552713678800501e-14
+          }
+        ],
+        "fine": [
+          {
+            "valore": 10,
+            "tolleranza": 3.552713678800501e-14
+          },
+          {
+            "valore": -2,
+            "tolleranza": 3.552713678800501e-14
+          }
+        ],
+        "bulge": "0"
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Pezzo dritto con d=-2 a destra (-Y). Estremi spostati (0,-2) e (10,-2), bulge 0. M=10, tolleranza 10 * 2^-48 = 3.552713678800501e-14."
+  }
+}

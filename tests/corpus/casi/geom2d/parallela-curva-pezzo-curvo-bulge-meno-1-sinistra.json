@@ -1,0 +1,55 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-pezzo-curvo-bulge-meno-1-sinistra",
+  "componente": "geom2d",
+  "descrizione": "Curva parallela di un pezzo curvo orario con bulge -1 a distanza positiva (a sinistra, verso l'esterno).",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "pezzo": {
+        "inizio": [
+          -1,
+          0
+        ],
+        "fine": [
+          1,
+          0
+        ],
+        "bulge": -1
+      }
+    },
+    "distanza": 0.5
+  },
+  "atteso": {
+    "esito": "done",
+    "curva": {
+      "pezzo": {
+        "inizio": [
+          {
+            "valore": -1.5,
+            "tolleranza": 5.329070518200751e-15
+          },
+          {
+            "valore": 0,
+            "tolleranza": 5.329070518200751e-15
+          }
+        ],
+        "fine": [
+          {
+            "valore": 1.5,
+            "tolleranza": 5.329070518200751e-15
+          },
+          {
+            "valore": 0,
+            "tolleranza": 5.329070518200751e-15
+          }
+        ],
+        "bulge": "-1"
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Semicirconferenza oraria (bulge=-1) da (-1,0) a (1,0); punto m = (0,-1), centro (0,0), raggio R=1. Per verso orario la sinistra è verso l'esterno: nuovo raggio R + d = 1 + 0.5 = 1.5. Estremi spostati (-1.5,0) e (1.5,0), bulge -1 invariato. M=1.5, tolleranza 1.5 * 2^-48 = 5.329070518200751e-15."
+  }
+}

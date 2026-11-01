@@ -1,0 +1,55 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-pezzo-curvo-raggio-un-ulp-sotto",
+  "componente": "geom2d",
+  "descrizione": "Curva parallela di un pezzo curvo con distanza interna 1 ulp sotto il raggio: esito done.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "pezzo": {
+        "inizio": [
+          1,
+          0
+        ],
+        "fine": [
+          -1,
+          0
+        ],
+        "bulge": 1
+      }
+    },
+    "distanza": "0x1.fffffffffffffp-1"
+  },
+  "atteso": {
+    "esito": "done",
+    "curva": {
+      "pezzo": {
+        "inizio": [
+          {
+            "valore": 1.1102230246251565e-16,
+            "tolleranza": 3.552713678800501e-15
+          },
+          {
+            "valore": 0,
+            "tolleranza": 3.552713678800501e-15
+          }
+        ],
+        "fine": [
+          {
+            "valore": -1.1102230246251565e-16,
+            "tolleranza": 3.552713678800501e-15
+          },
+          {
+            "valore": 0,
+            "tolleranza": 3.552713678800501e-15
+          }
+        ],
+        "bulge": "1"
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Pezzo curvo (bulge=1, R=1) con d = 1 - 2^-53. Nuovo raggio R_new = 2^-53 > 0. Inizio (2^-53,0), fine (-2^-53,0), bulge 1. M=1, tolleranza 1 * 2^-48 = 3.552713678800501e-15."
+  }
+}

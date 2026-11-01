@@ -1,0 +1,39 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-autocad-caso-b-cerchio-fuori",
+  "componente": "geom2d",
+  "descrizione": "Caso b di autocad-offset.dxf (handle 266, 268 da 3-offset.scr): cerchio centro (50,0) raggio 10 con d=3 fuori dà cerchio raggio 13.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "cerchio": {
+        "centro": [
+          50,
+          0
+        ],
+        "raggio": 10
+      }
+    },
+    "distanza": -3
+  },
+  "atteso": {
+    "esito": "done",
+    "curva": {
+      "cerchio": {
+        "centro": [
+          "50",
+          "0"
+        ],
+        "raggio": {
+          "valore": 13,
+          "tolleranza": 1e-12
+        }
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "file-pubblico",
+    "sorgente": "autocad-offset",
+    "procedimento": "Entità CIRCLE handle 266 centro (50,0) raggio 10 con offset d=3 esterno (a destra per verso antiorario, d=-3) produce CIRCLE handle 268 centro (50,0) raggio 13. Letto dal file pubblico autocad-offset.dxf generato da 3-offset.scr."
+  }
+}

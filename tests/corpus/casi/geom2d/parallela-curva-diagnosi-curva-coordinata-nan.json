@@ -1,0 +1,32 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-diagnosi-curva-coordinata-nan",
+  "componente": "geom2d",
+  "descrizione": "Diagnosi di offsetCurve: coordinata NaN nella curva dà invalidValue sul dato 0.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          "nan",
+          0
+        ],
+        "fine": [
+          10,
+          0
+        ]
+      }
+    },
+    "distanza": 2
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "invalidValue",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Coordinata iniziale NaN: invalidValue sul dato 0."
+  }
+}

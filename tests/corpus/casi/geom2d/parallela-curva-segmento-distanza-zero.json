@@ -1,0 +1,41 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-segmento-distanza-zero",
+  "componente": "geom2d",
+  "descrizione": "Curva parallela di un segmento a distanza zero: restituisce la curva stessa esatta.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          10,
+          0
+        ]
+      }
+    },
+    "distanza": 0
+  },
+  "atteso": {
+    "esito": "done",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          "0",
+          "0"
+        ],
+        "fine": [
+          "10",
+          "0"
+        ]
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Regola del contratto (offset.hpp): una distanza pari a zero restituisce la curva stessa, con gli stessi bit. Gli estremi sono quindi i valori esatti (0,0) e (10,0)."
+  }
+}

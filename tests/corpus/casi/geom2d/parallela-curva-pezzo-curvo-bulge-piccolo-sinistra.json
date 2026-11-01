@@ -1,0 +1,55 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-pezzo-curvo-bulge-piccolo-sinistra",
+  "componente": "geom2d",
+  "descrizione": "Curva parallela di un pezzo curvo con bulge piccolo 1/8 verso l'interno.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "pezzo": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          8,
+          0
+        ],
+        "bulge": 0.125
+      }
+    },
+    "distanza": 1
+  },
+  "atteso": {
+    "esito": "done",
+    "curva": {
+      "pezzo": {
+        "inizio": [
+          {
+            "valore": 0.24615384615384617,
+            "tolleranza": 2.842170943040401e-14
+          },
+          {
+            "valore": 0.9692307692307692,
+            "tolleranza": 2.842170943040401e-14
+          }
+        ],
+        "fine": [
+          {
+            "valore": 7.753846153846154,
+            "tolleranza": 2.842170943040401e-14
+          },
+          {
+            "valore": 0.9692307692307692,
+            "tolleranza": 2.842170943040401e-14
+          }
+        ],
+        "bulge": "1/8"
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Pezzo curvo da (0,0) a (8,0) con bulge=1/8. Centro esatto (4, 63/4) = (4, 15.75), raggio R = 65/4 = 16.25. Con d=1 a sinistra (interno): nuovo raggio R_new = 15.25 = 61/4. Fattore di scala R_new/R = 61/65. Nuovo inizio: (4, 63/4) + (61/65)*(-4, -63/4) = (16/65, 63/65) ≈ (0.24615384615384617, 0.9692307692307692). Nuovo fine: (504/65, 63/65) ≈ (7.753846153846154, 0.9692307692307692). Bulge invariato 1/8. M=8 (max coordinate di inizio, fine, m=(4,-0.5) e d=1), tolleranza 8 * 2^-48 = 2.842170943040401e-14. Aritmetica esatta con fractions di Python."
+  }
+}

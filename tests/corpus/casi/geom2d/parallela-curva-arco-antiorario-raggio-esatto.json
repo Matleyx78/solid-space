@@ -1,0 +1,28 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-arco-antiorario-raggio-esatto",
+  "componente": "geom2d",
+  "descrizione": "Curva parallela di un arco antiorario con distanza interna pari al raggio: esito vanished.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "arco": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 10,
+        "angolo_iniziale": 0,
+        "ampiezza": 1.5
+      }
+    },
+    "distanza": 10
+  },
+  "atteso": {
+    "esito": "vanished"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Arco antiorario con R=10 e d=10 a sinistra (interno). R - d = 0; confronto esatto con zero dà esito vanished."
+  }
+}

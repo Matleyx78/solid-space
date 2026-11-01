@@ -1,0 +1,55 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-pezzo-curvo-coordinate-1e6",
+  "componente": "geom2d",
+  "descrizione": "Curva parallela di un pezzo curvo traslato a coordinate di ordine 1e6 verso l'esterno.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "pezzo": {
+        "inizio": [
+          1000001,
+          1000000
+        ],
+        "fine": [
+          999999,
+          1000000
+        ],
+        "bulge": 1
+      }
+    },
+    "distanza": -1
+  },
+  "atteso": {
+    "esito": "done",
+    "curva": {
+      "pezzo": {
+        "inizio": [
+          {
+            "valore": 1000002,
+            "tolleranza": 3.5527172315141806e-09
+          },
+          {
+            "valore": 1000000,
+            "tolleranza": 3.5527172315141806e-09
+          }
+        ],
+        "fine": [
+          {
+            "valore": 999998,
+            "tolleranza": 3.5527172315141806e-09
+          },
+          {
+            "valore": 1000000,
+            "tolleranza": 3.5527172315141806e-09
+          }
+        ],
+        "bulge": "1"
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Pezzo curvo (bulge=1, centro (1000000, 1000000), R=1) con d=-1 esterno. R_new = 2. Inizio (1000002, 1000000), fine (999998, 1000000), bulge 1. M = 1000002, tolleranza 1000002 * 2^-48 = 3.5527172315141804e-09."
+  }
+}
