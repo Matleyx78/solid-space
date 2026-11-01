@@ -1,0 +1,55 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-pezzo-curvo-bulge-1-destra",
+  "componente": "geom2d",
+  "descrizione": "Curva parallela di un pezzo curvo antiorario con bulge 1 a distanza negativa (a destra, verso l'esterno).",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "pezzo": {
+        "inizio": [
+          1,
+          0
+        ],
+        "fine": [
+          -1,
+          0
+        ],
+        "bulge": 1
+      }
+    },
+    "distanza": -0.5
+  },
+  "atteso": {
+    "esito": "done",
+    "curva": {
+      "pezzo": {
+        "inizio": [
+          {
+            "valore": 1.5,
+            "tolleranza": 5.329070518200751e-15
+          },
+          {
+            "valore": 0,
+            "tolleranza": 5.329070518200751e-15
+          }
+        ],
+        "fine": [
+          {
+            "valore": -1.5,
+            "tolleranza": 5.329070518200751e-15
+          },
+          {
+            "valore": 0,
+            "tolleranza": 5.329070518200751e-15
+          }
+        ],
+        "bulge": "1"
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Semicirconferenza antioraria con d=-0.5 a destra (esterno). R - d = 1 - (-0.5) = 1.5. Inizio (1.5,0), fine (-1.5,0), bulge 1. M=1.5, tolleranza 1.5 * 2^-48 = 5.329070518200751e-15."
+  }
+}

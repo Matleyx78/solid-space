@@ -1,0 +1,28 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-arco-orario-raggio-esatto",
+  "componente": "geom2d",
+  "descrizione": "Curva parallela di un arco orario con distanza interna pari al raggio: esito vanished.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "arco": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 10,
+        "angolo_iniziale": 0,
+        "ampiezza": -1.5
+      }
+    },
+    "distanza": -10
+  },
+  "atteso": {
+    "esito": "vanished"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Arco orario con R=10 e d=-10 a destra (interno). R + d = 10 - 10 = 0: confronto esatto dà vanished."
+  }
+}

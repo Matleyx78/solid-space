@@ -1,0 +1,30 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-pezzo-curvo-raggio-esatto",
+  "componente": "geom2d",
+  "descrizione": "Curva parallela di un pezzo curvo con distanza interna pari al raggio: esito vanished.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "pezzo": {
+        "inizio": [
+          1,
+          0
+        ],
+        "fine": [
+          -1,
+          0
+        ],
+        "bulge": 1
+      }
+    },
+    "distanza": 1
+  },
+  "atteso": {
+    "esito": "vanished"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Pezzo curvo con raggio del cerchio associato R=1 e d=1 (interno). R - d = 0; confronto esatto dà esito vanished."
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-segmento-obliquo-irrazionale",
+  "componente": "geom2d",
+  "descrizione": "Curva parallela di un segmento obliquo con versore normale irrazionale.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          1,
+          2
+        ]
+      }
+    },
+    "distanza": 1
+  },
+  "atteso": {
+    "esito": "done",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          {
+            "valore": -0.8944271909999159,
+            "tolleranza": 8.694249215679256e-15
+          },
+          {
+            "valore": 0.4472135954999579,
+            "tolleranza": 8.694249215679256e-15
+          }
+        ],
+        "fine": [
+          {
+            "valore": 0.10557280900008412,
+            "tolleranza": 8.694249215679256e-15
+          },
+          {
+            "valore": 2.447213595499958,
+            "tolleranza": 8.694249215679256e-15
+          }
+        ]
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Segmento da (0,0) a (1,2) con vettore (dx,dy)=(1,2), lunghezza L = sqrt(5). Normale unitaria a sinistra N = (-2/sqrt(5), 1/sqrt(5)). Con d=1: inizio spostato (-2/sqrt(5), 1/sqrt(5)), fine (1 - 2/sqrt(5), 2 + 1/sqrt(5)). Calcolato con modulo decimal di Python a 60 cifre. M = max(2, 2 + 1/sqrt(5)) = 2.447213595499958. Tolleranza kRelativePointError * M = 2^-48 * M = 8.694249215679257e-15."
+  }
+}

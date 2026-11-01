@@ -1,0 +1,54 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-autocad-caso-a-linea",
+  "componente": "geom2d",
+  "descrizione": "Caso a di autocad-offset.dxf (handle 263, 264 da 3-offset.scr): linea da (0,0) a (20,0) con d=5 a sinistra dà linea da (0,5) a (20,5).",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          20,
+          0
+        ]
+      }
+    },
+    "distanza": 5
+  },
+  "atteso": {
+    "esito": "done",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          {
+            "valore": 0,
+            "tolleranza": 1e-12
+          },
+          {
+            "valore": 5,
+            "tolleranza": 1e-12
+          }
+        ],
+        "fine": [
+          {
+            "valore": 20,
+            "tolleranza": 1e-12
+          },
+          {
+            "valore": 5,
+            "tolleranza": 1e-12
+          }
+        ]
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "file-pubblico",
+    "sorgente": "autocad-offset",
+    "procedimento": "Entità LINE handle 263 da (0,0) a (20,0) con offset d=5 verso l'alto (a sinistra del verso +X) produce LINE handle 264 da (0,5) a (20,5). Letto dal file pubblico autocad-offset.dxf generato da 3-offset.scr."
+  }
+}

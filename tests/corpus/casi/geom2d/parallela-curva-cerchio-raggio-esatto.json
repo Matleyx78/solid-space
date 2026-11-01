@@ -1,0 +1,26 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-cerchio-raggio-esatto",
+  "componente": "geom2d",
+  "descrizione": "Curva parallela di un cerchio con distanza interna esattamente uguale al raggio: esito vanished.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 10
+      }
+    },
+    "distanza": 10
+  },
+  "atteso": {
+    "esito": "vanished"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Cerchio con R=10 e d=10 (a sinistra, verso l'interno). R - d = 0; il confronto esatto con zero dà esito vanished come prescritto dal contratto."
+  }
+}

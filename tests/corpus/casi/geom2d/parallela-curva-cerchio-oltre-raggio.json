@@ -1,0 +1,26 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-cerchio-oltre-raggio",
+  "componente": "geom2d",
+  "descrizione": "Curva parallela di un cerchio con distanza interna maggiore del raggio: esito vanished.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 10
+      }
+    },
+    "distanza": 15
+  },
+  "atteso": {
+    "esito": "vanished"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Cerchio con R=10 e d=15 verso l'interno. R - d = -5 < 0: nuovo raggio negativo, esito vanished."
+  }
+}

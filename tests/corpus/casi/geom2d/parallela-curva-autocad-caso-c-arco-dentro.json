@@ -1,0 +1,46 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-autocad-caso-c-arco-dentro",
+  "componente": "geom2d",
+  "descrizione": "Caso c di autocad-offset.dxf (handle 269, 26B da 3-offset.scr): arco centro (100,0) raggio 10 angolo 0..180 con d=4 dentro dà arco raggio 6.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "arco": {
+        "centro": [
+          100,
+          0
+        ],
+        "raggio": 10,
+        "angolo_iniziale": 0,
+        "ampiezza": "0x1.921fb54442d18p+1"
+      }
+    },
+    "distanza": 4
+  },
+  "atteso": {
+    "esito": "done",
+    "curva": {
+      "arco": {
+        "centro": [
+          "100",
+          "0"
+        ],
+        "raggio": {
+          "valore": 6,
+          "tolleranza": 1e-12
+        },
+        "angolo_iniziale": "0",
+        "ampiezza": {
+          "valore": 3.141592653589793,
+          "tolleranza": 1e-12
+        }
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "file-pubblico",
+    "sorgente": "autocad-offset",
+    "procedimento": "Entità ARC handle 269 centro (100,0) raggio 10 ampiezza 180 gradi con offset d=4 interno (a sinistra, d=4) produce ARC handle 26B raggio 6. Letto dal file pubblico autocad-offset.dxf generato da 3-offset.scr."
+  }
+}

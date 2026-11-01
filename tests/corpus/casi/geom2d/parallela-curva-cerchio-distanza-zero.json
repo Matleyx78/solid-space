@@ -1,0 +1,35 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-cerchio-distanza-zero",
+  "componente": "geom2d",
+  "descrizione": "Curva parallela di un cerchio a distanza zero: restituisce il cerchio stesso esatto.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 10
+      }
+    },
+    "distanza": 0
+  },
+  "atteso": {
+    "esito": "done",
+    "curva": {
+      "cerchio": {
+        "centro": [
+          "0",
+          "0"
+        ],
+        "raggio": "10"
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Regola del contratto: distanza zero dà il cerchio stesso esatto con lo stesso centro (0,0) e raggio 10."
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-pezzo-curvo-bulge-piccolo-destra",
+  "componente": "geom2d",
+  "descrizione": "Curva parallela di un pezzo curvo con bulge piccolo 1/8 verso l'esterno.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "pezzo": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          8,
+          0
+        ],
+        "bulge": 0.125
+      }
+    },
+    "distanza": -1
+  },
+  "atteso": {
+    "esito": "done",
+    "curva": {
+      "pezzo": {
+        "inizio": [
+          {
+            "valore": -0.24615384615384617,
+            "tolleranza": 2.929551579750953e-14
+          },
+          {
+            "valore": -0.9692307692307692,
+            "tolleranza": 2.929551579750953e-14
+          }
+        ],
+        "fine": [
+          {
+            "valore": 8.246153846153845,
+            "tolleranza": 2.929551579750953e-14
+          },
+          {
+            "valore": -0.9692307692307692,
+            "tolleranza": 2.929551579750953e-14
+          }
+        ],
+        "bulge": "1/8"
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Pezzo curvo da (0,0) a (8,0) con bulge=1/8. Centro (4, 63/4), R = 65/4 = 16.25. Con d=-1 a destra (esterno): nuovo raggio R_new = 17.25 = 69/4. Scala 69/65. Nuovo inizio: (4, 63/4) + (69/65)*(-4, -63/4) = (-16/65, -63/65) ≈ (-0.24615384615384617, -0.9692307692307692). Nuovo fine: (536/65, -63/65) ≈ (8.246153846153845, -0.9692307692307692). Bulge 1/8. |p| max = 536/65 ≈ 8.246, tolleranza (536/65) * 2^-48 ≈ 2.929551579750953e-14."
+  }
+}

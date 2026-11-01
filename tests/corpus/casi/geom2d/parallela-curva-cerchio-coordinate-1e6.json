@@ -1,0 +1,38 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-cerchio-coordinate-1e6",
+  "componente": "geom2d",
+  "descrizione": "Curva parallela di un cerchio a coordinate di ordine 1e6 verso l'esterno.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "cerchio": {
+        "centro": [
+          1000000,
+          1000000
+        ],
+        "raggio": 50
+      }
+    },
+    "distanza": -10
+  },
+  "atteso": {
+    "esito": "done",
+    "curva": {
+      "cerchio": {
+        "centro": [
+          "1000000",
+          "1000000"
+        ],
+        "raggio": {
+          "valore": 60,
+          "tolleranza": 3.55274920593729e-09
+        }
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Cerchio con centro (1000000, 1000000) e raggio 50. Offset d=-10 (verso l'esterno): nuovo raggio R - d = 50 - (-10) = 60. Centro garantito esatto dal contratto. M = 1000000, tolleranza 1000000 * 2^-48 = 3.55274920593729e-09."
+  }
+}

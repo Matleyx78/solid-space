@@ -1,0 +1,42 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-arco-coordinate-1e6",
+  "componente": "geom2d",
+  "descrizione": "Curva parallela di un arco a coordinate di ordine 1e6 verso l'interno.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "arco": {
+        "centro": [
+          1000000,
+          1000000
+        ],
+        "raggio": 20,
+        "angolo_iniziale": 0,
+        "ampiezza": 1.5
+      }
+    },
+    "distanza": 5
+  },
+  "atteso": {
+    "esito": "done",
+    "curva": {
+      "arco": {
+        "centro": [
+          "1000000",
+          "1000000"
+        ],
+        "raggio": {
+          "valore": 15,
+          "tolleranza": 3.5527136788005018e-09
+        },
+        "angolo_iniziale": "0",
+        "ampiezza": "3/2"
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Arco antiorario centro (1000000, 1000000) e raggio 20 con d=5 interno. Nuovo raggio R - d = 15. Centro, angolo e ampiezza esatti. M = 1000000, tolleranza raggio 1000000 * 2^-48 = 3.5527136788005016e-09."
+  }
+}

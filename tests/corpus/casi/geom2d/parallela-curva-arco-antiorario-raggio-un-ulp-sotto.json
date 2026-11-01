@@ -1,0 +1,42 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-arco-antiorario-raggio-un-ulp-sotto",
+  "componente": "geom2d",
+  "descrizione": "Curva parallela di un arco antiorario con distanza interna 1 ulp sotto il raggio: esito done.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "arco": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 1,
+        "angolo_iniziale": 0,
+        "ampiezza": 1.5
+      }
+    },
+    "distanza": "0x1.fffffffffffffp-1"
+  },
+  "atteso": {
+    "esito": "done",
+    "curva": {
+      "arco": {
+        "centro": [
+          "0",
+          "0"
+        ],
+        "raggio": {
+          "valore": 1.1102230246251565e-16,
+          "tolleranza": 3.552713678800501e-15
+        },
+        "angolo_iniziale": "0",
+        "ampiezza": "3/2"
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Arco antiorario con R=1 e d = 1 - 2^-53. Con fractions.Fraction: R - d = 2^-53 > 0. Esito done con raggio minuscolo. M=1, tolleranza 1 * 2^-48 = 3.552713678800501e-15."
+  }
+}

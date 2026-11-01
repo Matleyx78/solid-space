@@ -1,0 +1,32 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-diagnosi-distanza-nan",
+  "componente": "geom2d",
+  "descrizione": "Diagnosi di offsetCurve: distanza non finita (NaN) dà invalidValue sul dato 1.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          10,
+          0
+        ]
+      }
+    },
+    "distanza": "nan"
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "invalidValue",
+      "dato": "1"
+    }
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Regola di offset.hpp: invalidValue quando la distanza non è finita (dato 1 per il parametro della distanza). Calcolo a mano."
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-arco-distanza-zero",
+  "componente": "geom2d",
+  "descrizione": "Curva parallela di un arco a distanza zero: restituisce l'arco stesso esatto.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "arco": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 10,
+        "angolo_iniziale": 0,
+        "ampiezza": 1.5
+      }
+    },
+    "distanza": 0
+  },
+  "atteso": {
+    "esito": "done",
+    "curva": {
+      "arco": {
+        "centro": [
+          "0",
+          "0"
+        ],
+        "raggio": "10",
+        "angolo_iniziale": "0",
+        "ampiezza": "3/2"
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Regola del contratto: distanza zero restituisce la curva stessa esatta con tutti i parametri invariati."
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-segmento-sinistra",
+  "componente": "geom2d",
+  "descrizione": "Curva parallela di un segmento a distanza positiva (a sinistra): spostamento lungo la normale.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          10,
+          0
+        ]
+      }
+    },
+    "distanza": 2
+  },
+  "atteso": {
+    "esito": "done",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          {
+            "valore": 0,
+            "tolleranza": 3.552713678800501e-14
+          },
+          {
+            "valore": 2,
+            "tolleranza": 3.552713678800501e-14
+          }
+        ],
+        "fine": [
+          {
+            "valore": 10,
+            "tolleranza": 3.552713678800501e-14
+          },
+          {
+            "valore": 2,
+            "tolleranza": 3.552713678800501e-14
+          }
+        ]
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Segmento da (0,0) a (10,0) con d=2 a sinistra. La normale sinistra è (0,1). Gli estremi spostati sono (0,2) e (10,2). M=10, tolleranza dei punti kRelativePointError * M = 10 * 2^-48 = 3.552713678800501e-14. Aritmetica esatta."
+  }
+}

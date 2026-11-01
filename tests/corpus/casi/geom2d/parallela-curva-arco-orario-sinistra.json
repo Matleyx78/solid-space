@@ -1,0 +1,42 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-arco-orario-sinistra",
+  "componente": "geom2d",
+  "descrizione": "Curva parallela di un arco orario a distanza positiva (a sinistra, verso l'esterno).",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "arco": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 10,
+        "angolo_iniziale": 0,
+        "ampiezza": -1.5
+      }
+    },
+    "distanza": 3
+  },
+  "atteso": {
+    "esito": "done",
+    "curva": {
+      "arco": {
+        "centro": [
+          "0",
+          "0"
+        ],
+        "raggio": {
+          "valore": 13,
+          "tolleranza": 4.618527782440652e-14
+        },
+        "angolo_iniziale": "0",
+        "ampiezza": "-3/2"
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Arco orario (sweep=-1.5 < 0) con R=10 e d=3 a sinistra (esterno per verso orario). Nuovo raggio R + d = 10 + 3 = 13. M=13, tolleranza raggio 13 * 2^-48 = 4.618527782440652e-14."
+  }
+}

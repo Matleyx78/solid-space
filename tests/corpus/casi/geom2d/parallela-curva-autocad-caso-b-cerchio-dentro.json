@@ -1,0 +1,39 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-autocad-caso-b-cerchio-dentro",
+  "componente": "geom2d",
+  "descrizione": "Caso b di autocad-offset.dxf (handle 266, 267 da 3-offset.scr): cerchio centro (50,0) raggio 10 con d=3 dentro dà cerchio raggio 7.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "cerchio": {
+        "centro": [
+          50,
+          0
+        ],
+        "raggio": 10
+      }
+    },
+    "distanza": 3
+  },
+  "atteso": {
+    "esito": "done",
+    "curva": {
+      "cerchio": {
+        "centro": [
+          "50",
+          "0"
+        ],
+        "raggio": {
+          "valore": 7,
+          "tolleranza": 1e-12
+        }
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "file-pubblico",
+    "sorgente": "autocad-offset",
+    "procedimento": "Entità CIRCLE handle 266 centro (50,0) raggio 10 con offset d=3 interno (a sinistra per verso antiorario) produce CIRCLE handle 267 centro (50,0) raggio 7. Letto dal file pubblico autocad-offset.dxf generato da 3-offset.scr."
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-segmento-coordinate-1e6",
+  "componente": "geom2d",
+  "descrizione": "Curva parallela di un segmento traslato a coordinate di ordine 1e6.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          1000000,
+          1000000
+        ],
+        "fine": [
+          1000010,
+          1000000
+        ]
+      }
+    },
+    "distanza": 5
+  },
+  "atteso": {
+    "esito": "done",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          {
+            "valore": 1000000,
+            "tolleranza": 3.55274920593729e-09
+          },
+          {
+            "valore": 1000005,
+            "tolleranza": 3.55274920593729e-09
+          }
+        ],
+        "fine": [
+          {
+            "valore": 1000010,
+            "tolleranza": 3.55274920593729e-09
+          },
+          {
+            "valore": 1000005,
+            "tolleranza": 3.55274920593729e-09
+          }
+        ]
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Segmento da (1000000, 1000000) a (1000010, 1000000) con d=5 a sinistra (+Y). Gli estremi spostati sono (1000000, 1000005) e (1000010, 1000005). M = 1000010, tolleranza 1000010 * 2^-48 = 3.55274920593729e-09. Aritmetica esatta."
+  }
+}

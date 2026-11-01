@@ -1,0 +1,38 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-cerchio-raggio-un-ulp-sotto",
+  "componente": "geom2d",
+  "descrizione": "Curva parallela di un cerchio con distanza 1 ulp sotto il raggio verso l'interno: esito done con raggio minuscolo.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 1
+      }
+    },
+    "distanza": "0x1.fffffffffffffp-1"
+  },
+  "atteso": {
+    "esito": "done",
+    "curva": {
+      "cerchio": {
+        "centro": [
+          "0",
+          "0"
+        ],
+        "raggio": {
+          "valore": 1.1102230246251565e-16,
+          "tolleranza": 3.552713678800501e-15
+        }
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Cerchio con R=1 e d pari al predecessore binary64 di 1: 1 - 2^-53 = 0x1.fffffffffffffp-1. Con fractions.Fraction di Python: R - d = 2^-53 ≈ 1.1102230246251565e-16 > 0. Il raggio è positivo: esito done. M=1, tolleranza 1 * 2^-48 = 3.552713678800501e-15."
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-pezzo-dritto-sinistra",
+  "componente": "geom2d",
+  "descrizione": "Curva parallela di un segmento dritto di polilinea a distanza positiva (a sinistra).",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "pezzo": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          10,
+          0
+        ],
+        "bulge": 0
+      }
+    },
+    "distanza": 2
+  },
+  "atteso": {
+    "esito": "done",
+    "curva": {
+      "pezzo": {
+        "inizio": [
+          {
+            "valore": 0,
+            "tolleranza": 3.552713678800501e-14
+          },
+          {
+            "valore": 2,
+            "tolleranza": 3.552713678800501e-14
+          }
+        ],
+        "fine": [
+          {
+            "valore": 10,
+            "tolleranza": 3.552713678800501e-14
+          },
+          {
+            "valore": 2,
+            "tolleranza": 3.552713678800501e-14
+          }
+        ],
+        "bulge": "0"
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Pezzo dritto (bulge=0) da (0,0) a (10,0) con d=2 a sinistra (+Y). Gli estremi spostati sono (0,2) e (10,2) con bulge 0 invariato. M=10, tolleranza 10 * 2^-48 = 3.552713678800501e-14."
+  }
+}

@@ -1,4 +1,19 @@
 {
   "versione": 1,
-  "sorgenti": {}
+  "sorgenti": {
+    "autocad-offset": {
+      "nome": "autocad-offset.dxf",
+      "indirizzo": "https://raw.githubusercontent.com/Matleyx78/dxf-test-file/4ad9fff8a88e65561f3998a56a95adf921b58792/autocad-offset.dxf",
+      "versione": "4ad9fff8a88e65561f3998a56a95adf921b58792",
+      "sha256": "8ffddd1f67c4ea365fb01483edcc948c08aa583136849f8dc071916d9e6d8189",
+      "licenza": "CC0-1.0"
+    },
+    "script-offset": {
+      "nome": "3-offset.scr",
+      "indirizzo": "https://raw.githubusercontent.com/Matleyx78/tecnigrafo/5615d657af2bb98839c63ad683086795657f3322/docs/tappe/0.7/dxf-di-prova/3-offset.scr",
+      "versione": "5615d657af2bb98839c63ad683086795657f3322",
+      "sha256": "a7be6ea85bf78dafd7ff20d758cbb2913653a3c6f6581ba6b516f747780d02a0",
+      "licenza": "GPL-3.0-or-later"
+    }
+  }
 }

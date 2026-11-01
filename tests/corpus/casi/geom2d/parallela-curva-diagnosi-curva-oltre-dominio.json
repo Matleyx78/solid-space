@@ -1,0 +1,32 @@
+{
+  "versione": 1,
+  "id": "parallela-curva-diagnosi-curva-oltre-dominio",
+  "componente": "geom2d",
+  "descrizione": "Diagnosi di offsetCurve: coordinata della curva oltre kMaxCoordinate dà outOfDomain sul dato 0.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          2251799813685248,
+          0
+        ],
+        "fine": [
+          10,
+          0
+        ]
+      }
+    },
+    "distanza": 2
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "outOfDomain",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Coordinata iniziale 2^51 > kMaxCoordinate: outOfDomain sul dato 0."
+  }
+}
