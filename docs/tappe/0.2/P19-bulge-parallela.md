@@ -1,14 +1,14 @@
 # [0.2-P19] `geom2d`: bulge ricostruito della curva parallela
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
-- **Issue:** da aprire con l'unione della pull request del contratto (#127)
+- **Issue:** #130
 - **Difficoltà:** impegnativa
 - **Agente:** claude
 - **Modello e impegno:** forte; impegno alto
-- **Riferimenti:** issue `[0.2-R19]`, agente codex (calcoli delicati: archi
+- **Riferimenti:** issue `[0.2-R19]` (#129), agente codex (calcoli delicati: archi
   quasi interi, estremi arrotondati)
 - **Contratto:** `geom2d/include/solid_space/geom2d/offset.hpp`
-- **Dipende da:** P13 (#59), P14 (#63), R19
+- **Dipende da:** P13 (#59), P14 (#63), R19 (#129)
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#363 (con P12, P13, P14 e
   P4–P10): la P17 di Tecnigrafo non parte su un `offsetCurve` che sbaglia
 - **Componente:** `geom2d`
