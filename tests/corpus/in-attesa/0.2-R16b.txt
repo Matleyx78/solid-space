@@ -1,9 +1,0 @@
-# [0.2-R16b]
-geom2d/raccordo-autocad-caso-a-retto #70
-geom2d/raccordo-autocad-caso-b-distanti #70
-geom2d/raccordo-autocad-caso-c-parallele #70
-geom2d/raccordo-autocad-caso-d-cerchio-linea #70
-geom2d/raccordo-autocad-caso-e-arco-linea #70
-geom2d/raccordo-autocad-caso-f-spigolo-raggio-zero #70
-geom2d/cerchio-ttr-autocad-caso-m-linee #70
-geom2d/cerchio-ttr-autocad-caso-n-cerchio-linea #70
