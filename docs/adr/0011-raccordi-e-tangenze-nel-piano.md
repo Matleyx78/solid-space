@@ -2,6 +2,15 @@
 
 - **Stato:** Accettato
 - **Data:** 2026-10-29
+- **Corretto:** 2026-11-01 — due punti che il contratto non determinava,
+  trovati realizzando `tangentCircles` (pacchetto P15, issue #66, pull request
+  #120) e confermati dal responsabile: (1) un centro di cerchio tangente oltre
+  `kMaxCoordinate` (due rette quasi parallele) dà la diagnosi `outOfDomain` sul
+  raggio (dato 2), perché `TangentCircles`, diversamente dalle intersezioni
+  dell'ADR 0010, non ha un conteggio dei punti omessi e nessun cerchio si toglie
+  in silenzio (punto 8); (2) il cerchio che coincide con una curva circolare
+  (stesso centro, raggio uguale) la tocca ovunque e non in un punto di
+  tangenza, quindi non è un cerchio tangente e non si elenca (punto 5).
 - **Richiesta:** #21 — da Tecnigrafo: tappa 0.7, Matleyx78/tecnigrafo#327
 - **Esito:** 3 pezzo nostro
 - **Tappa:** 0.2 (scheda da scrivere all'apertura)
@@ -139,7 +148,10 @@ quadrato, con un filtro in virgola mobile nel caso comune, come nell'ADR 0010.
    lo spigolo, cioè il punto comune delle due curve prolungate; due curve sulla
    stessa retta o sullo stesso cerchio, e i casi con infiniti cerchi tangenti,
    danno `infinitelyMany`; un raccordo che non entra dà `none`. "Non esiste"
-   arriva solo quando la costruzione esattamente non esiste.
+   arriva solo quando la costruzione esattamente non esiste. Il cerchio che
+   coincide con una curva circolare (stesso centro, raggio uguale) non è un
+   cerchio tangente: la tocca ovunque, non in un punto (corretto il
+   2026-11-01).
 6. **L'arco di raccordo** è il più corto dei due archi del cerchio di raccordo
    tra i punti di tangenza, con il verso deciso esattamente; si dà nelle due
    forme che Tecnigrafo usa: un `Arc` (raggio dato esattamente, angoli da
@@ -155,7 +167,10 @@ quadrato, con un filtro in virgola mobile nel caso comune, come nell'ADR 0010.
 8. **Dominio e diagnosi** come nell'ADR 0010: coordinate e raggi fino a
    `kMaxCoordinate`; dati non validi o fuori dominio danno una diagnosi; un
    raggio negativo o non finito è `invalidValue`. I codici di diagnosi non
-   cambiano.
+   cambiano. Un centro di cerchio tangente oltre `kMaxCoordinate` dà
+   `outOfDomain` sul raggio (dato 2) e nessun cerchio: i cerchi tangenti non
+   hanno un conteggio dei punti omessi come le intersezioni (corretto il
+   2026-11-01).
 9. **Determinismo:** la regola dell'ADR 0008, punto 5, anche per la scelta del
    punto 4, che è calcolata in virgola mobile.
 10. **Prestazioni**, obiettivo da misurare nella tappa: `tangentsFrom`, che lo

@@ -135,3 +135,13 @@ i rimandi ai documenti che cambia.
   del pezzo di partenza di A. Correggono l'[ADR 0012](adr/0012-curva-parallela-nel-piano.md)
   (terza riga **Corretto:**), i commenti di `offset.hpp`, la scheda di P14 e la
   scheda della tappa 0.2 in "Modifiche al piano".
+- **2026-11-01: cerchi tangenti, due chiarimenti al contratto.** Su decisione
+  del responsabile (issue #66, dopo la pull request #120 del pacchetto P15): un
+  centro di cerchio tangente oltre `kMaxCoordinate` (due rette quasi parallele)
+  dà la diagnosi `outOfDomain` sul raggio (dato 2) e nessun cerchio, perché
+  `TangentCircles` non ha un conteggio dei punti omessi e nessun cerchio si
+  toglie in silenzio; il cerchio che coincide con una curva circolare (stesso
+  centro, raggio uguale) la tocca ovunque e non è un cerchio tangente, quindi non
+  si elenca. Correggono l'[ADR 0011](adr/0011-raccordi-e-tangenze-nel-piano.md)
+  (prima riga **Corretto:**), i commenti di `tangency.hpp` (nessuna
+  dichiarazione) e la scheda della tappa 0.2 in "Modifiche al piano".
