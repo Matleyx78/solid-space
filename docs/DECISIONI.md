@@ -165,3 +165,13 @@ i rimandi ai documenti che cambia.
   modelli della tappa e del pacchetto; la lista sta nel nuovo
   [CONTRATTI.md](CONTRATTI.md). Valgono dalla prossima tappa per il pacchetto
   `C`, da subito per B, C e D (nella tappa 0.2 restano P14, P16, P17 e P18).
+- **2026-11-01: raccordi oltre il dominio.** Su decisione del responsabile
+  (issue #70, pull request #123 del pacchetto P16): quando la regola 3 di
+  `fillet` incontra un centro di cerchio tangente oltre `kMaxCoordinate`, o la
+  regola 2 (raggio zero) uno spigolo oltre `kMaxCoordinate`, `fillet` dà la
+  diagnosi `outOfDomain` sul raggio (dato 2), come `tangentCircles` e
+  `tangentCircleNear`, e non `none`: il raccordo esiste, ma fuori dal dominio.
+  Correggono l'[ADR 0011](adr/0011-raccordi-e-tangenze-nel-piano.md) (seconda
+  riga **Corretto:**), il commento di `fillet` in `tangency.hpp` (nessuna
+  dichiarazione), la scheda di P16 e la scheda della tappa 0.2 in "Modifiche al
+  piano".

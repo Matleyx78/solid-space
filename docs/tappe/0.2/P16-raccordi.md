@@ -53,7 +53,10 @@ con i loro tipi.
   due forme entro `kRelativeArcError`, i suoi estremi entro la stessa distanza
   dai punti di tangenza esatti.
 - **Diagnosi** come dice l'intestazione, con `dato` 0 e 1 per le curve, 2 per il
-  raggio, 3 e 4 per i punti indicati.
+  raggio, 3 e 4 per i punti indicati. Un centro di cerchio tangente (regola 3) o
+  uno spigolo (regola 2) oltre `kMaxCoordinate` dà `outOfDomain` sul raggio
+  (dato 2), come `tangentCircles`, e non `none` (decisione del 2026-11-01,
+  [DECISIONI](../../DECISIONI.md)).
 
 ### Casi di verifica (per R16a, R16b e R16c)
 
