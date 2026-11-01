@@ -223,7 +223,11 @@ struct Fillet {
 /// curve (input 0) or the second (input 1); invalidValue when the radius is
 /// negative or not finite, outOfDomain when it is beyond kMaxCoordinate
 /// (input 2); invalidValue or outOfDomain about pickFirst (input 3) or
-/// pickSecond (input 4). A radius of zero is accepted (rule 2).
+/// pickSecond (input 4). A radius of zero is accepted (rule 2). Also
+/// outOfDomain (input 2) when rule 3 meets a tangent circle whose centre lies
+/// beyond kMaxCoordinate, as tangentCircles does, and when a common point of
+/// rule 2 lies beyond kMaxCoordinate (two almost parallel lines meet far away):
+/// such a fillet exists, so it is never answered with none.
 [[nodiscard]] Result<Fillet> fillet(const Curve& first, Point2 pickFirst, const Curve& second,
                                     Point2 pickSecond, double radius);
 

@@ -11,6 +11,13 @@
   in silenzio (punto 8); (2) il cerchio che coincide con una curva circolare
   (stesso centro, raggio uguale) la tocca ovunque e non in un punto di
   tangenza, quindi non è un cerchio tangente e non si elenca (punto 5).
+- **Corretto:** 2026-11-01 — un punto che il contratto di `fillet` non
+  determinava, trovato realizzando `fillet` (pacchetto P16, issue #70, pull
+  request #123) e deciso dal responsabile: quando la regola 3 incontra un centro
+  di cerchio tangente oltre `kMaxCoordinate`, o la regola 2 (raggio zero) uno
+  spigolo oltre `kMaxCoordinate`, `fillet` dà la diagnosi `outOfDomain` sul
+  raggio (dato 2), come `tangentCircles`, e non `none`: il raccordo esiste, ma
+  fuori dal dominio (punti 5 e 8).
 - **Richiesta:** #21 — da Tecnigrafo: tappa 0.7, Matleyx78/tecnigrafo#327
 - **Esito:** 3 pezzo nostro
 - **Tappa:** 0.2 (scheda da scrivere all'apertura)
@@ -170,7 +177,8 @@ quadrato, con un filtro in virgola mobile nel caso comune, come nell'ADR 0010.
    cambiano. Un centro di cerchio tangente oltre `kMaxCoordinate` dà
    `outOfDomain` sul raggio (dato 2) e nessun cerchio: i cerchi tangenti non
    hanno un conteggio dei punti omessi come le intersezioni (corretto il
-   2026-11-01).
+   2026-11-01). Lo stesso vale per `fillet`, anche per lo spigolo del raggio
+   zero oltre `kMaxCoordinate` (corretto il 2026-11-01).
 9. **Determinismo:** la regola dell'ADR 0008, punto 5, anche per la scelta del
    punto 4, che è calcolata in virgola mobile.
 10. **Prestazioni**, obiettivo da misurare nella tappa: `tangentsFrom`, che lo
