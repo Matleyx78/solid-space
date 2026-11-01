@@ -8,7 +8,7 @@
 - **Riferimenti:** issue `[0.2-R19]` (#129), agente codex (calcoli delicati: archi
   quasi interi, estremi arrotondati)
 - **Contratto:** `geom2d/include/solid_space/geom2d/offset.hpp`
-- **Dipende da:** P13 (#59), P14 (#63), R19 (#129)
+- **Dipende da:** P13 (#59), P14 (#63), C (#133), R19 (#129)
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#363 (con P12, P13, P14 e
   P4–P10): la P17 di Tecnigrafo non parte su un `offsetCurve` che sbaglia
 - **Componente:** `geom2d`

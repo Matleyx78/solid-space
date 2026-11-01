@@ -21,6 +21,13 @@
   ([CONTRATTI.md](../CONTRATTI.md)), il responsabile decide i buchi, e solo
   allora partono riferimenti e lavoro; chi trova un buco più tardi si ferma prima
   di scrivere codice o casi. Il principio del punto non cambia.
+- **Corretto:** 2026-11-01 — il responsabile estende la revisione alle
+  correzioni, dopo che la pull request #128, che applicava la decisione della
+  issue #127, ha aperto un buco nuovo nella stessa intestazione (issue #132):
+  ogni pull request che cambia un'intestazione già accettata si rivede con la
+  lista prima del merge, da un agente diverso da chi l'ha scritta, e la lista
+  ha due punti nuovi (scelte libere entro un errore, che cosa arriva al
+  chiamante). Il principio del punto non cambia.
 
 ## Contesto
 
@@ -209,13 +216,18 @@ cosa in un posto solo.
     accettato e anche con la tappa in preparazione, fatto da un agente diverso
     da chi ha scritto l'ADR, controlla ogni funzione con la lista di
     [CONTRATTI.md](../CONTRATTI.md) (diagnosi, dominio dei risultati, casi
-    degeneri e infiniti, ordine e pareggi, simmetria, composizione, coerenza) e
+    degeneri e infiniti, ordine e pareggi, simmetria, composizione, coerenza,
+    scelte libere entro un errore, che cosa arriva al chiamante) e
     apre una issue `contratto` per ogni punto che il contratto non determina. Il
     responsabile decide; una sola pull request applica le decisioni; poi partono
     riferimenti e lavoro, e Tecnigrafo scrive le schede che usano il
     contratto. Un buco trovato più tardi ferma chi lo trova prima del
     codice o dei casi, e ferma i pacchetti che usano quell'intestazione finché
-    non è deciso ([AGENTS.md](../../AGENTS.md), "Il contratto").
+    non è deciso ([AGENTS.md](../../AGENTS.md), "Il contratto"). Ogni pull
+    request che poi corregge il contratto, compresa quella che applica le
+    decisioni, si rivede con la stessa lista prima del merge, da un agente
+    diverso da chi l'ha scritta (corretto il 2026-11-01;
+    [CONTRATTI.md](../CONTRATTI.md), «Le correzioni del contratto»).
 
 ### Il pacchetto unito
 

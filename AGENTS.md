@@ -130,6 +130,15 @@ Il pacchetto si riprende dopo la decisione. Se trovi il buco a lavoro già
 avanzato, vale lo stesso: pubblica il ramo senza pull request e scrivine il nome
 nella issue.
 
+**Se la tua pull request cambia un'intestazione del contratto** (anche solo un
+commento, per esempio applicando una decisione), metti in testa alla
+descrizione la riga **Revisione del contratto: da fare**, con le intestazioni e
+le funzioni che cambia: prima del merge la rivede con la lista un agente diverso
+da te ([docs/CONTRATTI.md](docs/CONTRATTI.md), «Le correzioni del contratto»).
+Se ti chiedono di rivedere una pull request così, segui quella sezione: verbale
+nella pull request, una issue `contratto` per ogni buco nuovo, nessuna modifica
+alla pull request.
+
 ### Lavoro a lotti
 
 Due eccezioni alla regola "un pacchetto per sessione":
@@ -140,7 +149,9 @@ Due eccezioni alla regola "un pacchetto per sessione":
   pull request.
 - **"Rivedi le pull request aperte"**: una alla volta, tutte quelle senza
   `AA-Presa in carico` scritte da un modello diverso dal tuo, prese in carico come
-  sopra, con un commento di revisione. Non approvare e non unire.
+  sopra, con un commento di revisione. Non approvare e non unire. Quelle con
+  **Revisione del contratto: da fare** si rivedono con la lista
+  ([docs/CONTRATTI.md](docs/CONTRATTI.md), «Le correzioni del contratto»).
 
 Se in un lotto ti fermi per uno dei motivi di "Quando fermarsi", scrivilo nella
 pull request e passa al pacchetto successivo; se ti fermi per il contratto ("Il

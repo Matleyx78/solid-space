@@ -191,3 +191,24 @@ i rimandi ai documenti che cambia.
   **Corretto:**), i commenti di `offset.hpp`, le schede di P13 e P14 e la scheda
   della tappa 0.2 in "Modifiche al piano", che aggiunge R19 (codex) e P19
   (claude) per realizzarla.
+- **2026-11-01: si rivedono anche le correzioni del contratto.** La pull
+  request #128 ha applicato la decisione della issue #127 fissando il bulge
+  della curva parallela dati gli estremi arrotondati, ma ha lasciato liberi gli
+  estremi entro l'errore: cinquanta minuti dopo il merge R19 (#129) si è
+  fermato perché due scelte lecite danno esiti diversi (issue #132). Nello
+  stesso giorno, in Tecnigrafo, P15 (Matleyx78/tecnigrafo#359) si è fermato su
+  un buco dello stesso tipo nella sua scheda: due tagli distinti con gli stessi
+  valori arrotondati. Da qui: (A) ogni pull request che cambia un'intestazione
+  del contratto già accettata, anche solo un commento e anche quella di un
+  pacchetto `[X.Y-C]`, porta in testa **Revisione del contratto: da fare** e
+  prima del merge la rivede con la lista un agente diverso da chi l'ha scritta
+  (di norma Codex), con un verbale nella pull request; (B) la lista ha due
+  punti nuovi: 10, scelte libere entro un errore che cambiano un esito
+  discreto; 11, informazioni decise esattamente che non arrivano al chiamante;
+  (C) la tappa 0.2 fa ora la revisione che non ha avuto per `offset.hpp` e
+  `tangency.hpp`, con il pacchetto `[0.2-C]` (#133), da cui dipendono R19 e
+  P19. Correggono l'[ADR 0007](adr/0007-tappe-su-richiesta.md) (punto 15,
+  terza riga **Corretto:**) e cambiano [CONTRATTI.md](CONTRATTI.md),
+  [AGENTS.md](../AGENTS.md), [LAVORO-IN-PARALLELO.md](LAVORO-IN-PARALLELO.md) e
+  la scheda della [tappa 0.2](tappe/0.2-geometria-del-piano.md) in «Modifiche
+  al piano».
