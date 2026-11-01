@@ -111,12 +111,18 @@ struct TangentCircles {
 };
 
 /// The circles of the given radius tangent to both curves, each taken with
-/// its extension. There are at most eight.
+/// its extension. There are at most eight. A circle that coincides with a
+/// circular curve (the radius equals the radius of that curve and the centre
+/// is its centre) touches it everywhere, not at a point of tangency: it is not
+/// a tangent circle and is not listed.
 ///
 /// Diagnosis invalidValue, outOfDomain or degenerateCurve about the first
 /// curve (input 0) or the second (input 1); invalidValue when the radius is
 /// negative or not finite, outOfDomain when it is beyond kMaxCoordinate,
-/// degenerateCurve when it is zero (input 2).
+/// degenerateCurve when it is zero (input 2). Also outOfDomain (input 2) when
+/// the centre of a tangent circle lies beyond kMaxCoordinate, as for two
+/// almost parallel lines, which meet far away: such a circle is never left out
+/// silently, and the call gives no circles.
 [[nodiscard]] Result<TangentCircles> tangentCircles(const Curve& first, const Curve& second,
                                                     double radius);
 
