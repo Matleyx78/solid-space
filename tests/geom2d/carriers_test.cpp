@@ -20,6 +20,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <limits>
+#include <numbers>
 #include <variant>
 #include <vector>
 
@@ -58,8 +59,8 @@ Carrier carrierOf(const Curve& curve) {
     return detail::carrierOf(meaning);
 }
 
-CarrierMeeting meet(const Curve& first, const Curve& second) {
-    return detail::meet(carrierOf(first), carrierOf(second));
+CarrierMeeting meet(const Curve& a, const Curve& b) {
+    return detail::meet(carrierOf(a), carrierOf(b));
 }
 
 // --- Independent exact checks -------------------------------------------
@@ -122,19 +123,22 @@ Sign circleValue(Point2 center, double radius, const ExactPoint& p) {
 // The in-circle determinant of a, b, c and p, all scaled by the weight of p:
 // zero exactly when p lies on the circle through a, b and c.
 Sign inCircleValue(const std::array<detail::ExactVector, 3>& points, const ExactPoint& p) {
+    using Row = std::array<Surd, 3>;
     const auto& d = p.radicand;
-    std::array<std::array<Surd, 3>, 3> rows;
-    for (std::size_t i = 0; i < points.size(); ++i) {
-        const auto x = subtract(Surd{points[i].x * p.weight, Dyadic()}, scaledX(p));
-        const auto y = subtract(Surd{points[i].y * p.weight, Dyadic()}, scaledY(p));
-        rows[i] = {x, y, add(multiply(x, x, d), multiply(y, y, d))};
-    }
-    const auto minor = [&](std::size_t i, std::size_t j) {
-        return subtract(multiply(rows[1][i], rows[2][j], d), multiply(rows[1][j], rows[2][i], d));
+    const auto row = [&](const detail::ExactVector& point) {
+        const auto x = subtract(Surd{point.x * p.weight, Dyadic()}, scaledX(p));
+        const auto y = subtract(Surd{point.y * p.weight, Dyadic()}, scaledY(p));
+        return Row{x, y, add(multiply(x, x, d), multiply(y, y, d))};
     };
-    const auto value =
-        add(subtract(multiply(rows[0][0], minor(1, 2), d), multiply(rows[0][1], minor(0, 2), d)),
-            multiply(rows[0][2], minor(0, 1), d));
+    const Row r0 = row(points[0]);
+    const Row r1 = row(points[1]);
+    const Row r2 = row(points[2]);
+    const auto minor = [&](const Surd& a1, const Surd& b1, const Surd& a2, const Surd& b2) {
+        return subtract(multiply(a1, b2, d), multiply(b1, a2, d));
+    };
+    const auto value = add(subtract(multiply(r0[0], minor(r1[1], r1[2], r2[1], r2[2]), d),
+                                    multiply(r0[1], minor(r1[0], r1[2], r2[0], r2[2]), d)),
+                           multiply(r0[2], minor(r1[0], r1[1], r2[0], r2[1]), d));
     return signOf(value, p);
 }
 
@@ -189,8 +193,8 @@ void expectSymmetric(const Curve& first, const Curve& second) {
     ASSERT_EQ(ab.sameCarrier, ba.sameCarrier);
     ASSERT_EQ(ab.count, ba.count);
     for (std::size_t i = 0; i < ab.count; ++i) {
-        const auto& p = ab.points[i];
-        const auto& q = ba.points[i];
+        const auto& p = ab.points.at(i);
+        const auto& q = ba.points.at(i);
         EXPECT_EQ(p.contact, q.contact);
         EXPECT_TRUE(sameDyadic(p.point.rational.x, q.point.rational.x));
         EXPECT_TRUE(sameDyadic(p.point.rational.y, q.point.rational.y));
@@ -393,13 +397,13 @@ TEST(Carriers, CirclesCrossOnTheRightFirst) {
     // line from it to (6, 0).
     const Curve first = Circle{{0.0, 0.0}, 5.0};
     const Curve second = Circle{{6.0, 0.0}, 5.0};
-    for (const auto& meeting : {meet(first, second), meet(second, first)}) {
-        ASSERT_EQ(meeting.count, 2U);
-        expectPoint(meeting.points[0].point, {3.0, -4.0});
-        expectPoint(meeting.points[1].point, {3.0, 4.0});
-        EXPECT_EQ(meeting.points[0].contact, Contact::crossing);
-    }
-    expectOnBoth(first, second, meet(first, second));
+    const auto meeting = meet(first, second);
+    ASSERT_EQ(meeting.count, 2U);
+    expectPoint(meeting.points[0].point, {3.0, -4.0});
+    expectPoint(meeting.points[1].point, {3.0, 4.0});
+    EXPECT_EQ(meeting.points[0].contact, Contact::crossing);
+    expectOnBoth(first, second, meeting);
+    // Swapped, the same points in the same order.
     expectSymmetric(first, second);
 }
 
@@ -468,7 +472,7 @@ TEST(Carriers, TheCircleOfAPieceIsTheSameAsACircle) {
     EXPECT_TRUE(meet(circle, upper).sameCarrier);
     EXPECT_TRUE(meet(lower, circle).sameCarrier);
     EXPECT_TRUE(meet(upper, lower).sameCarrier);
-    const Curve quarter = PolylineSegment{{5.0, 0.0}, {0.0, 5.0}, std::sqrt(2.0) - 1.0};
+    const Curve quarter = PolylineSegment{{5.0, 0.0}, {0.0, 5.0}, std::numbers::sqrt2 - 1.0};
     const auto meeting = meet(quarter, circle);
     EXPECT_FALSE(meeting.sameCarrier);
     // It still passes through its two ends, which lie on the circle.
@@ -518,9 +522,9 @@ TEST(Carriers, PointsWithDifferentRadicalsCompare) {
     EXPECT_EQ(detail::compareX(a, b), Sign::positive);
     EXPECT_EQ(detail::compareY(a, b), Sign::negative);
     EXPECT_FALSE(detail::samePoint(a, b));
-    // std::sqrt is correctly rounded, so sqrt(3) lies strictly between the
-    // doubles around it and is none of them.
-    const double root = std::sqrt(3.0);
+    // std::numbers::sqrt3 is the double nearest to sqrt(3), which lies
+    // strictly between the doubles around it and is none of them.
+    const double root = std::numbers::sqrt3;
     EXPECT_NE(detail::compareX(a, detail::exactPoint({root, 1.0})), Sign::zero);
     EXPECT_EQ(detail::compareX(a, detail::exactPoint({below(root), 1.0})), Sign::positive);
     EXPECT_EQ(detail::compareX(a, detail::exactPoint({above(root), 1.0})), Sign::negative);
