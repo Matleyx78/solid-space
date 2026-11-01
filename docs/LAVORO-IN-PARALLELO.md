@@ -171,11 +171,12 @@ All'apertura si creano, nel milestone `vX.Y`:
 - una issue `[X.Y-RN]` per ogni pacchetto che ha riferimenti, con le etichette
   `tappa-X.Y`, `riferimenti`, la difficoltà e `agente:…` di chi li scrive. La
   issue del lavoro la cita nella riga "Dipende da";
-- se la tappa realizza intestazioni del contratto, per prima la issue
-  `[X.Y-C]` della revisione, con le etichette `tappa-X.Y`, `pacchetto`,
-  `contratto`, `difficoltà:impegnativa` e `agente:…` di chi la fa. Le issue di
-  riferimenti e di lavoro che realizzano o usano quelle intestazioni la citano
-  in «Dipende da».
+- se la tappa realizza intestazioni del contratto, la issue `[X.Y-C]` della
+  revisione, con le etichette `tappa-X.Y`, `pacchetto`, `contratto`,
+  `difficoltà:impegnativa` e `agente:…` di chi la fa, se non esiste già (di
+  norma si crea prima, appena gli ADR sono accettati: [CONTRATTI.md](CONTRATTI.md),
+  «Quando»). Le issue di riferimenti e di lavoro che realizzano o usano quelle
+  intestazioni la citano in «Dipende da».
 
 La difficoltà (`facile`, `media` o `impegnativa`) è quella della colonna
 *Difficoltà* del piano: chi apre la tappa la copia, non la decide. Serve a

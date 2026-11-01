@@ -29,6 +29,13 @@ Ogni tappa che realizza intestazioni del contratto comincia con un pacchetto di
 **revisione del contratto**, `[X.Y-C]`, prima di ogni pacchetto di riferimenti e
 di lavoro che le realizza o le usa: quelle issue lo citano in «Dipende da».
 
+- **Quando.** Appena gli ADR di valutazione della tappa sono accettati, anche se
+  la tappa è ancora in preparazione: la issue `[X.Y-C]` si crea allora, con
+  l'etichetta `tappa-X.Y`, senza aspettare l'apertura. Così la revisione non
+  rallenta nessuno, e **Tecnigrafo scrive le schede dei pacchetti che usano il
+  contratto dopo che la revisione è chiusa**, non prima: le scrive su un
+  contratto già completo.
+
 - **Chi.** Un agente di fascia forte, con impegno alto, **diverso da chi ha
   scritto l'ADR** e le intestazioni: di norma Codex, perché il piano e gli ADR li
   scrive Claude con il responsabile. Difficoltà impegnativa.

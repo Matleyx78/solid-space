@@ -205,13 +205,15 @@ cosa in un posto solo.
     realizzata non si usa finché il suo pacchetto non è unito.
 
     Prima dei pacchetti che lo realizzano, il contratto si rivede (corretto il
-    2026-11-01): il primo pacchetto della tappa, `[X.Y-C]`, scritto da un agente
-    diverso da chi ha scritto l'ADR, controlla ogni funzione con la lista di
+    2026-11-01): il primo pacchetto della tappa, `[X.Y-C]`, appena l'ADR è
+    accettato e anche con la tappa in preparazione, fatto da un agente diverso
+    da chi ha scritto l'ADR, controlla ogni funzione con la lista di
     [CONTRATTI.md](../CONTRATTI.md) (diagnosi, dominio dei risultati, casi
     degeneri e infiniti, ordine e pareggi, simmetria, composizione, coerenza) e
     apre una issue `contratto` per ogni punto che il contratto non determina. Il
     responsabile decide; una sola pull request applica le decisioni; poi partono
-    riferimenti e lavoro. Un buco trovato più tardi ferma chi lo trova prima del
+    riferimenti e lavoro, e Tecnigrafo scrive le schede che usano il
+    contratto. Un buco trovato più tardi ferma chi lo trova prima del
     codice o dei casi, e ferma i pacchetti che usano quell'intestazione finché
     non è deciso ([AGENTS.md](../../AGENTS.md), "Il contratto").
 

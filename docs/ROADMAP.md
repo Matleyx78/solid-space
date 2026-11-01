@@ -44,15 +44,21 @@ e non indicano un componente.
 3. **Scheda e piano.** Le richieste con esito 1, 2 o 3 della stessa tappa di
    Tecnigrafo entrano in una sola tappa: la sua scheda rimanda agli ADR, il piano
    elenca i pacchetti.
-4. **Apertura.** Quando le valutazioni sono accettate e la tappa precedente di
+4. **Revisione del contratto.** Appena le valutazioni sono accettate, il
+   pacchetto `[X.Y-C]` controlla il contratto con la lista di
+   [CONTRATTI.md](CONTRATTI.md) e ne chiude i buchi, anche con la tappa in
+   preparazione. Tecnigrafo scrive le schede che usano il contratto dopo questa
+   revisione.
+5. **Apertura.** Quando le valutazioni sono accettate e la tappa precedente di
    solid-space è chiusa. Da quel momento la tappa avanza insieme a quella di
    Tecnigrafo.
 
 ### Stati
 
 - **In preparazione**: esistono le richieste e se ne scrivono le valutazioni con
-  il contratto, la scheda e il piano. Non si scrive codice, a parte le
-  intestazioni in bozza del contratto.
+  il contratto, la scheda e il piano, e si rivede il contratto (`[X.Y-C]`). Non
+  si scrive codice, a parte le intestazioni in bozza del contratto e le loro
+  correzioni.
 - **Aperta**: la scheda è pubblicata con l'elenco dei pacchetti. È l'unica tappa di
   solid-space su cui si lavora; la tappa di Tecnigrafo a cui corrisponde è aperta
   nello stesso tempo.

@@ -141,8 +141,9 @@ i rimandi ai documenti che cambia.
   altro, mentre un altro pacchetto lavorava sulla stessa intestazione. Da qui:
   (A) ogni tappa che realizza intestazioni del contratto comincia con il
   pacchetto `[X.Y-C]`, revisione del contratto con una lista fissa, di un
-  agente diverso da chi ha scritto l'ADR (di norma Codex), da cui dipendono
-  riferimenti e lavoro; (B) un pacchetto non si prende se c'è una issue
+  agente diverso da chi ha scritto l'ADR (di norma Codex), appena gli ADR sono
+  accettati, da cui dipendono riferimenti, lavoro e le schede di Tecnigrafo che
+  usano il contratto; (B) un pacchetto non si prende se c'è una issue
   `contratto` aperta sulle sue intestazioni; (C) ogni agente rilegge il
   contratto con la lista prima di scrivere codice o casi, e se trova un buco si
   ferma senza scegliere; (D) chi cambia un'intestazione avvisa i pacchetti in
