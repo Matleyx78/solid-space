@@ -79,7 +79,12 @@ class AcceptedTest(CorpusTestCase):
         self.assertEqual(vc.validate_case_file(SAMPLE, expected_component="kernel"), [])
 
     def test_empty_sources(self):
-        self.assertEqual(json.loads((HERE / "sorgenti.json").read_text())["sorgenti"], {})
+        path = self.tmp() / "sorgenti.json"
+        path.write_text('{"versione": 1, "sorgenti": {}}', encoding="utf-8")
+        self.assertEqual(vc.validate_sources_file(path), [])
+
+    def test_real_sources(self):
+        # The real file grows with reference packages: check it, never assume it is empty.
         self.assertEqual(vc.validate_sources_file(HERE / "sorgenti.json"), [])
 
     def test_pending_line_for_existing_case(self):
