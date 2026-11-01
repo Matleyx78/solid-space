@@ -1,0 +1,93 @@
+{
+  "versione": 1,
+  "id": "parallela-polilinea-autocad-caso-f-u-dentro-d2",
+  "componente": "geom2d",
+  "descrizione": "Caso f di autocad-offset.dxf (handle 272, 273 da 3-offset.scr): polilinea a U con d=2 a sinistra (dentro) dà U ristretta.",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          400,
+          0,
+          0
+        ],
+        [
+          400,
+          -20,
+          0
+        ],
+        [
+          406,
+          -20,
+          0
+        ],
+        [
+          406,
+          0,
+          0
+        ]
+      ],
+      "chiusa": false
+    },
+    "distanza": 2,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "done",
+    "polilinea": {
+      "vertici": [
+        [
+          {
+            "valore": 402.0,
+            "tolleranza": 1e-12
+          },
+          {
+            "valore": 0.0,
+            "tolleranza": 1e-12
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 402.0,
+            "tolleranza": 1e-12
+          },
+          {
+            "valore": -18.0,
+            "tolleranza": 1e-12
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 404.0,
+            "tolleranza": 1e-12
+          },
+          {
+            "valore": -18.0,
+            "tolleranza": 1e-12
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 404.0,
+            "tolleranza": 1e-12
+          },
+          {
+            "valore": 0.0,
+            "tolleranza": 1e-12
+          },
+          "0"
+        ]
+      ],
+      "chiusa": false
+    }
+  },
+  "provenienza": {
+    "tipo": "file-pubblico",
+    "sorgente": "autocad-offset",
+    "procedimento": "Entità LWPOLYLINE handle 272 polilinea aperta a U (400,0)-(400,-20)-(406,-20)-(406,0) con offset d=2 verso l'interno (a sinistra, d=2) produce LWPOLYLINE handle 273 da (402,0) a (404,0). Letto dal file pubblico autocad-offset.dxf generato da 3-offset.scr."
+  }
+}

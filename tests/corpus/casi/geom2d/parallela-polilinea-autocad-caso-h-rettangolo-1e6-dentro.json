@@ -1,0 +1,93 @@
+{
+  "versione": 1,
+  "id": "parallela-polilinea-autocad-caso-h-rettangolo-1e6-dentro",
+  "componente": "geom2d",
+  "descrizione": "Caso h di autocad-offset.dxf (handle 277, 278 da 3-offset.scr): rettangolo a coordinate di ordine 1e6 con d=10 a sinistra (dentro).",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          1000150,
+          999975,
+          0
+        ],
+        [
+          1000250,
+          999975,
+          0
+        ],
+        [
+          1000250,
+          1000025,
+          0
+        ],
+        [
+          1000150,
+          1000025,
+          0
+        ]
+      ],
+      "chiusa": true
+    },
+    "distanza": 10,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "done",
+    "polilinea": {
+      "vertici": [
+        [
+          {
+            "valore": 1000160.0,
+            "tolleranza": 1e-8
+          },
+          {
+            "valore": 999985.0,
+            "tolleranza": 1e-8
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 1000240.0,
+            "tolleranza": 1e-8
+          },
+          {
+            "valore": 999985.0,
+            "tolleranza": 1e-8
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 1000240.0,
+            "tolleranza": 1e-8
+          },
+          {
+            "valore": 1000015.0,
+            "tolleranza": 1e-8
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 1000160.0,
+            "tolleranza": 1e-8
+          },
+          {
+            "valore": 1000015.0,
+            "tolleranza": 1e-8
+          },
+          "0"
+        ]
+      ],
+      "chiusa": true
+    }
+  },
+  "provenienza": {
+    "tipo": "file-pubblico",
+    "sorgente": "autocad-offset",
+    "procedimento": "Entità LWPOLYLINE handle 277 rettangolo a coordinate di ordine 1e6 con offset d=10 verso l'interno (a sinistra, d=10) produce LWPOLYLINE handle 278. Letto dal file pubblico autocad-offset.dxf generato da 3-offset.scr."
+  }
+}

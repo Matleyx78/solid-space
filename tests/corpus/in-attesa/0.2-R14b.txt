@@ -1,0 +1,8 @@
+# [0.2-R14b]
+geom2d/parallela-polilinea-autocad-caso-d-rettangolo-dentro #63
+geom2d/parallela-polilinea-autocad-caso-d-rettangolo-fuori #63
+geom2d/parallela-polilinea-autocad-caso-e-asola-dentro #63
+geom2d/parallela-polilinea-autocad-caso-e-asola-fuori #63
+geom2d/parallela-polilinea-autocad-caso-f-u-dentro-d2 #63
+geom2d/parallela-polilinea-autocad-caso-f-u-dentro-d4 #63
+geom2d/parallela-polilinea-autocad-caso-h-rettangolo-1e6-dentro #63

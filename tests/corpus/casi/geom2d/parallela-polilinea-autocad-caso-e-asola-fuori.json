@@ -1,0 +1,99 @@
+{
+  "versione": 1,
+  "id": "parallela-polilinea-autocad-caso-e-asola-fuori",
+  "componente": "geom2d",
+  "descrizione": "Caso e di autocad-offset.dxf (handle 26F, 271 da 3-offset.scr): asola con d=-4 a destra (fuori) dà asola allargata.",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          300,
+          -10,
+          0
+        ],
+        [
+          340,
+          -10,
+          1
+        ],
+        [
+          340,
+          10,
+          0
+        ],
+        [
+          300,
+          10,
+          1
+        ]
+      ],
+      "chiusa": true
+    },
+    "distanza": -4,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "done",
+    "polilinea": {
+      "vertici": [
+        [
+          {
+            "valore": 300.0,
+            "tolleranza": 1e-12
+          },
+          {
+            "valore": -14.0,
+            "tolleranza": 1e-12
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 340.0,
+            "tolleranza": 1e-12
+          },
+          {
+            "valore": -14.0,
+            "tolleranza": 1e-12
+          },
+          {
+            "valore": 1.0,
+            "tolleranza": 1e-12
+          }
+        ],
+        [
+          {
+            "valore": 340.0,
+            "tolleranza": 1e-12
+          },
+          {
+            "valore": 14.0,
+            "tolleranza": 1e-12
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 300.0,
+            "tolleranza": 1e-12
+          },
+          {
+            "valore": 14.0,
+            "tolleranza": 1e-12
+          },
+          {
+            "valore": 1.0,
+            "tolleranza": 1e-12
+          }
+        ]
+      ],
+      "chiusa": true
+    }
+  },
+  "provenienza": {
+    "tipo": "file-pubblico",
+    "sorgente": "autocad-offset",
+    "procedimento": "Entità LWPOLYLINE handle 26F asola da x=300 a x=340 e y=-10 a y=10 con archi di raggio 10 con offset d=4 verso l'esterno (a destra, d=-4) produce LWPOLYLINE handle 271 con archi di raggio 14 (bulge 1.0). Letto dal file pubblico autocad-offset.dxf generato da 3-offset.scr."
+  }
+}
