@@ -505,6 +505,44 @@ TEST(Fillet, CornerNearestThePicks) {
     EXPECT_EQ(other.value().center.x, -5.0);
 }
 
+TEST(Fillet, TinyRadius) {
+    // The corner of two perpendicular segments, at the scale 2^-600 where the
+    // products of the coordinates underflow (review of #123): the fillet is
+    // the clockwise quarter turn around (r, r) from (r, 0) to (0, r), sweep
+    // -pi/2 and bulge tan(-pi/8) = 1 - sqrt(2). Scaling the data by a power of
+    // two scales centre, radius and points exactly and keeps the bits of the
+    // angles and of the bulge: the same fillet at scale 1 is the reference.
+    for (const double r : {0x1p-600, 0x1p-1000, 1.0}) {
+        const Call call{Segment{{0.0, 0.0}, {4.0 * r, 0.0}}, Point2{2.0 * r, 0.0},
+                        Segment{{0.0, 0.0}, {0.0, 4.0 * r}}, Point2{0.0, 2.0 * r}, r};
+        const auto result =
+            fillet(call.first, call.pickFirst, call.second, call.pickSecond, call.radius);
+        ASSERT_TRUE(result.hasValue());
+        const auto& value = result.value();
+        ASSERT_EQ(value.outcome, TangencyOutcome::found);
+        EXPECT_FALSE(value.semicircle);
+        EXPECT_EQ(value.center.x, r);
+        EXPECT_EQ(value.center.y, r);
+        EXPECT_EQ(value.onFirst.point.x, r);
+        EXPECT_EQ(value.onFirst.point.y, 0.0);
+        EXPECT_EQ(value.onSecond.point.x, 0.0);
+        EXPECT_EQ(value.onSecond.point.y, r);
+        EXPECT_NEAR(value.arc.startAngle, -std::numbers::pi / 2.0, 1e-15);
+        EXPECT_NEAR(value.arc.sweep, -std::numbers::pi / 2.0, 1e-15);
+        EXPECT_NEAR(value.bulge, 1.0 - std::numbers::sqrt2, 1e-15);
+        checkArc(call, value);
+        // The end of the Arc is the second point of tangency, at this scale.
+        const Point2 end = pointOfArc(value.arc, value.arc.startAngle + value.arc.sweep);
+        EXPECT_LE(distance(end, value.onSecond.point), 4.0 * kRelativeArcError * r);
+        const auto unit = fillet(Segment{{0.0, 0.0}, {4.0, 0.0}}, Point2{2.0, 0.0},
+                                 Segment{{0.0, 0.0}, {0.0, 4.0}}, Point2{0.0, 2.0}, 1.0);
+        ASSERT_TRUE(unit.hasValue());
+        EXPECT_TRUE(sameBits(value.arc.startAngle, unit.value().arc.startAngle));
+        EXPECT_TRUE(sameBits(value.arc.sweep, unit.value().arc.sweep));
+        EXPECT_TRUE(sameBits(value.bulge, unit.value().bulge));
+    }
+}
+
 TEST(Fillet, BeyondTheDomain) {
     // Two almost parallel lines meet near x = -2^52: the corner, and the
     // centres of the tangent circles, lie beyond robust::kMaxCoordinate.

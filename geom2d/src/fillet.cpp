@@ -53,7 +53,9 @@
 // The arc in numbers (ADR 0011, points 6 and 7). With the rounded centre C and
 // points of tangency T1, T2 (each coordinate correctly rounded), v1 = T1 - C
 // and v2 = T2 - C in double; the start angle is robust::atan2(v1), the sweep
-// robust::atan2(|cross(v1, v2)|, v1 . v2) with the sign of the exact
+// robust::atan2(|cross(v1, v2)|, v1 . v2), the products taken on v1 and v2
+// scaled by the same power of two (so that nothing underflows for a tiny
+// radius), with the sign of the exact
 // direction, so its magnitude never exceeds pi; the bulge is
 // tan(sweep / 4) = sine / cosine of robust::sinCos(sweep / 4). Error budget,
 // with u = 2^-53 and P = max(M, |p|): each coordinate of v1 and v2 is within
@@ -212,9 +214,27 @@ FilletArc arcBetween(Point2 centre, double radius, Point2 from, Point2 to, Turni
     }
     const double toX = to.x - centre.x;
     const double toY = to.y - centre.y;
-    const double cross = (fromX * toY) - (fromY * toX);
-    const double dot = (fromX * toX) + (fromY * toY);
-    const double magnitude = robust::atan2(std::fabs(cross), dot);
+    // The products are taken on the vectors scaled by a power of two so that
+    // their largest coordinate lies in [1/2, 1): for a tiny radius they would
+    // otherwise underflow to (signed) zeros and atan2 would give a wrong angle
+    // (issue found in the review of #123). The scaling changes neither the
+    // angle nor the bits of an exact product; a coordinate that becomes
+    // subnormal moves by at most 2^-1075, far below u against the largest.
+    const double largest = std::fmax(std::fmax(std::fabs(fromX), std::fabs(fromY)),
+                                     std::fmax(std::fabs(toX), std::fabs(toY)));
+    int exponent = 0;
+    static_cast<void>(std::frexp(largest, &exponent));
+    const double ax = std::ldexp(fromX, -exponent);
+    const double ay = std::ldexp(fromY, -exponent);
+    const double bx = std::ldexp(toX, -exponent);
+    const double by = std::ldexp(toY, -exponent);
+    const double cross = (ax * by) - (ay * bx);
+    const double dot = (ax * bx) + (ay * by);
+    // Both zero only when a rounded point of tangency is the rounded centre,
+    // that is the radius is below the declared error; then the signs of the
+    // zeros would make atan2 give pi or 0 at random.
+    const double magnitude =
+        cross == 0.0 && dot == 0.0 ? 0.0 : robust::atan2(std::fabs(cross), dot);
     if (!(magnitude > 0.0)) {
         // The points are too close for the doubles to tell an angle: the arc
         // is shorter than the declared error.
