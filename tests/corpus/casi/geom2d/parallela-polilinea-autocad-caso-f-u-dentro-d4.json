@@ -1,0 +1,44 @@
+{
+  "versione": 1,
+  "id": "parallela-polilinea-autocad-caso-f-u-dentro-d4",
+  "componente": "geom2d",
+  "descrizione": "Caso f di autocad-offset.dxf (handle 272 da 3-offset.scr): polilinea a U con d=4 a sinistra (dentro > semi-larghezza) fallisce.",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          400,
+          0,
+          0
+        ],
+        [
+          400,
+          -20,
+          0
+        ],
+        [
+          406,
+          -20,
+          0
+        ],
+        [
+          406,
+          0,
+          0
+        ]
+      ],
+      "chiusa": false
+    },
+    "distanza": 4,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "failed"
+  },
+  "provenienza": {
+    "tipo": "file-pubblico",
+    "sorgente": "autocad-offset",
+    "procedimento": "Entità LWPOLYLINE handle 272 polilinea aperta a U (larghezza 6) con offset d=4 verso l'interno (d=4 > larghezza/2). AutoCAD non produce alcuna entità nel DXF e l'ADR 0012 (tabella, caso 5) stabilisce l'esito failed. Letto dal file pubblico autocad-offset.dxf generato da 3-offset.scr."
+  }
+}

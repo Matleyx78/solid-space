@@ -1,0 +1,93 @@
+{
+  "versione": 1,
+  "id": "parallela-polilinea-autocad-caso-d-rettangolo-fuori",
+  "componente": "geom2d",
+  "descrizione": "Caso d di autocad-offset.dxf (handle 26C, 26E da 3-offset.scr): rettangolo [150,-25]..[250,25] con d=-10 a destra (fuori) dà rettangolo [140,-35]..[260,35].",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          150,
+          -25,
+          0
+        ],
+        [
+          250,
+          -25,
+          0
+        ],
+        [
+          250,
+          25,
+          0
+        ],
+        [
+          150,
+          25,
+          0
+        ]
+      ],
+      "chiusa": true
+    },
+    "distanza": -10,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "done",
+    "polilinea": {
+      "vertici": [
+        [
+          {
+            "valore": 140.0,
+            "tolleranza": 1e-12
+          },
+          {
+            "valore": -35.0,
+            "tolleranza": 1e-12
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 260.0,
+            "tolleranza": 1e-12
+          },
+          {
+            "valore": -35.0,
+            "tolleranza": 1e-12
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 260.0,
+            "tolleranza": 1e-12
+          },
+          {
+            "valore": 35.0,
+            "tolleranza": 1e-12
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 140.0,
+            "tolleranza": 1e-12
+          },
+          {
+            "valore": 35.0,
+            "tolleranza": 1e-12
+          },
+          "0"
+        ]
+      ],
+      "chiusa": true
+    }
+  },
+  "provenienza": {
+    "tipo": "file-pubblico",
+    "sorgente": "autocad-offset",
+    "procedimento": "Entità LWPOLYLINE handle 26C rettangolo da (150,-25) a (250,25) con offset d=10 verso l'esterno (a destra, verso -Y lungo il primo segmento, quindi d=-10) produce LWPOLYLINE handle 26E da (140,-35) a (260,35). Letto dal file pubblico autocad-offset.dxf generato da 3-offset.scr."
+  }
+}
