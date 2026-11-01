@@ -63,7 +63,10 @@ e non indicano un componente.
 
 Solo il responsabile, e solo dopo aver chiuso la precedente: completa la scheda
 (`docs/tappe/X.Y-nome.md`) e il piano a partire dagli ADR di valutazione, scrive e
-accetta gli ADR che servono, elenca i pacchetti e aggiorna la tabella. Una
+accetta gli ADR che servono, elenca i pacchetti e aggiorna la tabella. Se la tappa
+realizza intestazioni del contratto, il primo pacchetto è la loro revisione,
+`[X.Y-C]`, da cui dipendono i riferimenti e il lavoro che le toccano
+([CONTRATTI.md](CONTRATTI.md)). Una
 richiesta che nasce mentre la tappa di Tecnigrafo è in corso entra nella tappa
 aperta, dopo la sua valutazione, con una riga in "Modifiche al piano".
 

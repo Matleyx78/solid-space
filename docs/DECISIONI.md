@@ -135,3 +135,22 @@ i rimandi ai documenti che cambia.
   del pezzo di partenza di A. Correggono l'[ADR 0012](adr/0012-curva-parallela-nel-piano.md)
   (terza riga **Corretto:**), i commenti di `offset.hpp`, la scheda di P14 e la
   scheda della tappa 0.2 in "Modifiche al piano".
+- **2026-11-01: il contratto si rivede prima dei pacchetti.** Nella tappa 0.2
+  cinque contratti si sono rivelati incompleti a lavori iniziati (issue #31, #66
+  e #103, pull request #97 e #99), e l'ultimo è emerso in una chat che faceva
+  altro, mentre un altro pacchetto lavorava sulla stessa intestazione. Da qui:
+  (A) ogni tappa che realizza intestazioni del contratto comincia con il
+  pacchetto `[X.Y-C]`, revisione del contratto con una lista fissa, di un
+  agente diverso da chi ha scritto l'ADR (di norma Codex), da cui dipendono
+  riferimenti e lavoro; (B) un pacchetto non si prende se c'è una issue
+  `contratto` aperta sulle sue intestazioni; (C) ogni agente rilegge il
+  contratto con la lista prima di scrivere codice o casi, e se trova un buco si
+  ferma senza scegliere; (D) chi cambia un'intestazione avvisa i pacchetti in
+  lavorazione che la usano, e ogni pacchetto controlla prima della pull request
+  che le sue intestazioni non siano cambiate in `main`. Inoltre le pull request
+  chiudono le issue con `Closes #N`. Correggono l'[ADR 0007](adr/0007-tappe-su-richiesta.md)
+  (punto 15, seconda riga **Corretto:**) e cambiano [AGENTS.md](../AGENTS.md),
+  [LAVORO-IN-PARALLELO.md](LAVORO-IN-PARALLELO.md), [ROADMAP.md](ROADMAP.md) e i
+  modelli della tappa e del pacchetto; la lista sta nel nuovo
+  [CONTRATTI.md](CONTRATTI.md). Valgono dalla prossima tappa per il pacchetto
+  `C`, da subito per B, C e D (nella tappa 0.2 restano P14, P16, P17 e P18).
