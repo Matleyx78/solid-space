@@ -267,9 +267,11 @@ struct PolylineOffset {
 /// each other, or two consecutive ones within 2 E of each other away from
 /// their shared vertex (beyond the coincidence of `policy`); beyondDomain for
 /// the point m of a curved piece in the band of CurveOffset. The simple
-/// cases below hold outside these bands; when every point of the exact
-/// result has |p| at most 8 M, 2 E is at most robust::kRelativeTolerance * M,
-/// not above epsilon(M), so they always do.
+/// cases below hold outside these bands. When every point of the exact result
+/// has |p| at most 8 M, 2 E is at most robust::kRelativeTolerance * M, not
+/// above epsilon(M), so their separation keeps them outside the bands of
+/// meetsOriginal and of pieces not consecutive; the band of m near
+/// kMaxCoordinate and the other bands still apply to them.
 ///
 /// Final checks run in the order listed below; the first failure decides the
 /// reason. Domain is checked before intersections, which require in-domain data.
