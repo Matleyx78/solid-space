@@ -104,7 +104,11 @@ struct CurveOffset {
     /// 2 * kRelativePointError * max(M, |p|), with |p| the larger of the two:
     /// for those data failed for coincident rounded ends is free. For an arc
     /// near a full turn whose chord spans a few ulp, failed for a bulge that
-    /// cannot be represented is free too. Elsewhere the outcome is determined.
+    /// cannot be represented is free too. The point m of a returned curved
+    /// piece is reconstructed from its returned doubles: when a point of the
+    /// exact arc has a coordinate whose magnitude exceeds kMaxCoordinate -
+    /// kRelativeOffsetError * max(M, |p|), outOfDomain (input 1) for m is free
+    /// (as for fillet, tangency.hpp). Elsewhere the outcome is determined.
     Curve curve;
 };
 
@@ -255,6 +259,18 @@ struct PolylineOffset {
 /// exactly which pieces vanish, are removed or reduced to a point, are not
 /// affected.
 ///
+/// The final checks below are exact, but on the returned doubles, which are
+/// free within their errors: so they have bands too. With
+/// E = kRelativeOffsetError * max(M, |p|), these failures are free:
+/// meetsOriginal when the exact result comes within E of the input;
+/// selfIntersection when two exact pieces not consecutive come within 2 E of
+/// each other, or two consecutive ones within 2 E of each other away from
+/// their shared vertex (beyond the coincidence of `policy`); beyondDomain for
+/// the point m of a curved piece in the band of CurveOffset. The simple
+/// cases below hold outside these bands; when every point of the exact
+/// result has |p| at most 8 M, 2 E is at most robust::kRelativeTolerance * M,
+/// not above epsilon(M), so they always do.
+///
 /// Final checks run in the order listed below; the first failure decides the
 /// reason. Domain is checked before intersections, which require in-domain data.
 /// Except for the exact vertex-domain check, the result is checked on its own
@@ -278,8 +294,8 @@ struct PolylineOffset {
 ///   (including by rounding), and the exact result stays farther than
 ///   epsilon(M) (ADR 0009) from itself (pieces not consecutive) and from the
 ///   input, and the exact final vertices and m reconstructed from the returned
-///   doubles are within the domain, the outcome is done, simple is true,
-///   and the result is the exact one: every vertex within
+///   doubles are within the domain, outside the bands above, the outcome is
+///   done, simple is true, and the result is the exact one: every vertex within
 ///   kRelativePointError and every point within kRelativeOffsetError; or
 ///   failed with notRepresentable, under the condition of CurveOffset (an
 ///   arc near a full turn whose chord spans a few ulp, or coincident rounded

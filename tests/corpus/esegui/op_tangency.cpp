@@ -93,17 +93,51 @@ double operationMagnitude(const geom2d::Curve& first, const geom2d::Curve& secon
     return std::max({a.value(), b.value(), radius});
 }
 
+// The diagnosis of the swapped call (curves.hpp checks the inputs in order):
+// the radius and the constructions (input 2) give the same diagnosis; a
+// wrong curve gives the same code on its new input, unless both curves are
+// wrong, when each call names its own first curve.
+void checkSymmetricDiagnoses(const geom2d::Diagnosis& a, const geom2d::Diagnosis& b) {
+    bool same = false;
+    if (a.input >= 2) {
+        same = b.input == a.input && b.code == a.code;
+    } else if (a.input == 1) {
+        same = b.input == 0 && b.code == a.code;
+    } else {
+        same = (b.input == 1 && b.code == a.code) || b.input == 0;
+    }
+    if (!same) {
+        asymmetric("the diagnoses differ");
+    }
+}
+
+// Whether every circle of the direct call can be matched with a different
+// circle of the swapped call. With tolerances a circle may fit more than one
+// (#162), so every assignment is tried: at most eight circles, 8! orders.
+bool completeMatching(const std::vector<std::vector<bool>>& fits) {
+    std::vector<std::size_t> order(fits.size());
+    for (std::size_t i = 0; i < order.size(); ++i) {
+        order[i] = i;
+    }
+    for (bool more = true; more; more = std::next_permutation(order.begin(), order.end())) {
+        bool all = true;
+        for (std::size_t i = 0; i < order.size() && all; ++i) {
+            all = fits[i][order[i]];
+        }
+        if (all) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void checkSymmetry(const geom2d::Result<TangentCircles>& direct,
                    const geom2d::Result<TangentCircles>& swapped, double magnitude) {
     if (direct.hasValue() != swapped.hasValue()) {
         asymmetric("only one of the two calls gives a diagnosis");
     }
     if (!direct.hasValue()) {
-        const auto& a = direct.diagnosis();
-        const auto& b = swapped.diagnosis();
-        if (a.input + b.input == 1 && a.code != b.code) {
-            asymmetric("the diagnoses differ");
-        }
+        checkSymmetricDiagnoses(direct.diagnosis(), swapped.diagnosis());
         return;
     }
     const auto& a = direct.value();
@@ -111,19 +145,15 @@ void checkSymmetry(const geom2d::Result<TangentCircles>& direct,
     if (a.infinitelyMany != b.infinitelyMany || a.circles.size() != b.circles.size()) {
         asymmetric("the counts differ");
     }
-    // Each circle of one call matches a different circle of the other.
-    std::vector<bool> used(b.circles.size(), false);
-    for (const auto& circle : a.circles) {
-        bool found = false;
-        for (std::size_t i = 0; i < b.circles.size() && !found; ++i) {
-            if (!used[i] && sameSwapped(circle, b.circles[i], magnitude)) {
-                used[i] = true;
-                found = true;
-            }
+    std::vector<std::vector<bool>> fits(a.circles.size(),
+                                        std::vector<bool>(b.circles.size(), false));
+    for (std::size_t i = 0; i < a.circles.size(); ++i) {
+        for (std::size_t j = 0; j < b.circles.size(); ++j) {
+            fits[i][j] = sameSwapped(a.circles[i], b.circles[j], magnitude);
         }
-        if (!found) {
-            asymmetric("a circle is missing with the curves swapped");
-        }
+    }
+    if (!completeMatching(fits)) {
+        asymmetric("a circle is missing with the curves swapped");
     }
 }
 
