@@ -1,4 +1,4 @@
-# [0.2-R19] Riferimenti: bulge e vertici della curva parallela
+# [0.2-R19] Riferimenti: bulge e dominio della curva parallela
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
 - **Issue:** #129
@@ -10,65 +10,56 @@
   di `curves.hpp`
 - **Dipende da:** P1 (#34), C (#133, con le decisioni unite)
 - **Da leggere:** [ADR 0012](../../adr/0012-curva-parallela-nel-piano.md), punti
-  3, 5–7 e 9; decisioni #127 e #132, [CONTRATTI.md](../../CONTRATTI.md);
+  3, 5–7 e 9; [ADR 0013](../../adr/0013-esatto-dove-serve.md), punti 1, 4 e 5;
+  decisioni #127 e #132, [CONTRATTI.md](../../CONTRATTI.md);
   [README dell'archivio](../../../tests/corpus/README.md) e AGENTS.md
 
-Questa scheda riprende l'ambito della #129 e lo allarga secondo le decisioni
-#132, #148, #149, #153 e #154. Non realizza P19 e non modifica il codice.
+Questa scheda riprende l'ambito della #129 secondo le decisioni #132, #148,
+#149, #153 e #154, ridotto dall'ADR 0013 (2026-11-02): i vertici non sono più
+il `double` più vicino, e gli esiti che dipendono solo dall'arrotondamento
+stanno in una fascia che nessun caso impone. Non realizza P19 e non modifica il
+codice.
 
 ## Cosa verificare
 
-- Il caso della #127, sia `offsetCurve` sia `offsetPolyline`: arco quasi intero
-  a x = 1e6, corda di un ulp, bulge 2^32, d = −0,03125; `done`, raggio circa
-  0,15625 e `simple` vero.
-- Archi quasi interi con corde di pochi ulp: almeno un `done` e il caso
-  `failed` / `notRepresentable` della #132. Ora i vertici sono determinati:
-  ogni coordinata è il double più vicino al valore esatto, pareggio al pari;
-  il bulge e il controllo di rappresentabilità usano quei double.
-- Tutti i vertici: estremi di pezzi dritti e curvi, capi liberi, tagli,
-  prolungamenti, punti di giunzione e estremi degli archi di giunzione;
-  includere pareggi esatti tra double, risolti al pari, anche nei percorsi
-  del codice P13/P14 già unito.
-- Un arco non nullo i cui estremi arrotondati coincidono: `failed` per
-  `offsetCurve`, `failed` con `notRepresentable` per `offsetPolyline`; non
-  diventa un pezzo puntiforme da eliminare.
-- I tre casi #148: segmento (0,0)–(2^-60,2^-60), d = 1 (`failed`);
-  polilinea di un pezzo (`failed` / `notRepresentable`); lo stesso pezzo fra
-  due pezzi lunghi (scarto e `simple` falso, con `origins` allineate).
-- Dominio sui valori esatti (#149), K = 2^50: segmento x = K−1/8 con
-  d = −1/4 (`outOfDomain`, dato 1), stessa polilinea (`beyondDomain`),
-  cerchio r = K con d = −1/8 (`outOfDomain`, dato 1); nessun esatto entro K
-  restituito oltre K, punto m ricostruito esattamente dai double ricevuti.
-- **#153**, K = 2^50, t = 3·2^-34: segmento (K, 0)–(K−1/8, t),
-  d = −2^26: `offsetCurve` dà `outOfDomain`, dato 1, prima del collasso;
-  polilinea aperta degli stessi due vertici: `failed` / `notRepresentable`.
-- **#154**, stessi K, t e d: polilinea aperta (K, 0), (K−1/8, t),
-  (K−1/8−2^17, t·(1+2^20)), bulge 0. Il primo pezzo si scarta:
-  `done`, `simple` falso, un solo pezzo che parte da (K, 2^26).
-  L'estremo esatto (K+0,09375, …) solo del pezzo scartato non conta.
-- Bulge ricostruito su pezzi tagliati e archi di giunzione; semicirconferenze
-  esatte con bulge ±1.
-- Correggere i casi R13/R14 che impongono un bulge esatto non più garantito:
-  ricalcolo indipendente o tolleranza ricavata dall'errore della curva, come
-  dice P14. Il pavimento generale della scala è 2^-1022; R20 tratta i casi
-  subnormali in modo sistematico.
+Solo esiti e valori che il contratto determina:
 
-La #154 precisa che il dominio esatto si controlla dopo lo scarto dei
-dritti collassati, solo sugli estremi dei pezzi rimasti. A un vertice
-condiviso contano entrambi i precursori: fine esatta del precedente e inizio
-esatto del successivo. Estremi appartenenti solo a pezzi scartati non contano;
-m resta ricostruito dai double restituiti. P19 adegua il codice già unito
-se necessario, R19 aggiunge l'esempio della #154.
+- **Bulge ricostruito**, entro la tolleranza del bulge (4E/corda, con
+  E = 2^-46 · max(M, |p|) sui punti dell'arco esatto, come nei casi della
+  pull request #163): pezzi curvi di `offsetCurve` con estremi lontani tra
+  loro; in `offsetPolyline` pezzi curvi tagliati o prolungati e archi di
+  giunzione; semicirconferenze esatte con bulge ±1. I vertici si confrontano
+  entro `kRelativePointError`.
+- **Dominio sui valori esatti (#149)**, K = 2^50: segmento x = K−1/8 con
+  d = −1/4 (`outOfDomain`, dato 1), stessa polilinea (`beyondDomain`),
+  cerchio r = K con d = −1/8 (`outOfDomain`, dato 1).
+- **#153**, K = 2^50, t = 3·2^-34: segmento (K, 0)–(K−1/8, t), d = −2^26:
+  `offsetCurve` dà `outOfDomain`, dato 1, prima di ogni `failed`.
+- **Ordine dei controlli finali** di `offsetPolyline`: un risultato con un
+  vertice esatto oltre K e anche un'autointersezione dà `beyondDomain`.
+
+Non stanno nel corpus, perché il loro esito è in una fascia di `offset.hpp`
+(ADR 0013, punti 4 e 5), e li prova P19 con test di unità:
+
+- estremi esatti a meno di 2 · `kRelativePointError` · max(M, |p|) per
+  coordinata: i casi #148, la polilinea della #153, la #154, gli archi con
+  estremi arrotondati coincidenti;
+- archi quasi interi con la corda di pochi ulp: il caso della #127 e quello
+  della #132 (`notRepresentable`);
+- il punto m di un pezzo curvo a meno di `kRelativeOffsetError` · max(M, |p|)
+  da K, e i controlli finali con il risultato esatto entro quella distanza
+  dall'ingresso o da sé stesso.
 
 ## File
 
-Solo `tests/corpus/`: casi nuovi in `casi/geom2d/`, correzioni dei casi R13/R14
-necessarie per la nuova regola e `in-attesa/0.2-R19.txt` (casi nuovi con #130).
+Solo `tests/corpus/`: casi nuovi in `casi/geom2d/` e `in-attesa/0.2-R19.txt`
+(casi nuovi con #130).
 
 ## Valori attesi e fatto quando
 
 Calcoli a mano o aritmetica esatta e ad alta precisione, mai eseguendo
-solid-space. Documentare il calcolo dell'arrotondamento, del bulge e delle
-risposte discrete; se il contratto non determina un caso, fermarsi secondo
-AGENTS.md. I casi coprono le voci sopra, passano la validazione e sono
-pubblicati separatamente dal lavoro P19, con CI verde.
+solid-space. Documentare nel `procedimento` il calcolo del bulge, della sua
+tolleranza e delle risposte discrete, e perché i dati stanno fuori dalle fasce;
+se il contratto non determina un caso, fermarsi secondo AGENTS.md. I casi
+coprono le voci sopra, passano la validazione e sono pubblicati separatamente
+dal lavoro P19, con CI verde.
