@@ -42,14 +42,26 @@
   "atteso": {
     "esito": "found",
     "centro": [
-      "0",
-      "0"
+      {
+        "valore": 0.0,
+        "tolleranza": 3.552713678800501e-15
+      },
+      {
+        "valore": 0.0,
+        "tolleranza": 3.552713678800501e-15
+      }
     ],
     "raggio": "0",
     "sulla_prima": {
       "punto": [
-        "0",
-        "0"
+        {
+          "valore": 0.0,
+          "tolleranza": 3.552713678800501e-15
+        },
+        {
+          "valore": 0.0,
+          "tolleranza": 3.552713678800501e-15
+        }
       ],
       "sulla_curva": {
         "posizione": "atStart"
@@ -57,8 +69,14 @@
     },
     "sulla_seconda": {
       "punto": [
-        "0",
-        "0"
+        {
+          "valore": 0.0,
+          "tolleranza": 3.552713678800501e-15
+        },
+        {
+          "valore": 0.0,
+          "tolleranza": 3.552713678800501e-15
+        }
       ],
       "sulla_curva": {
         "posizione": "atStart"
@@ -68,8 +86,14 @@
     "arco": {
       "arco": {
         "centro": [
-          "0",
-          "0"
+          {
+            "valore": 0.0,
+            "tolleranza": 3.552713678800501e-15
+          },
+          {
+            "valore": 0.0,
+            "tolleranza": 3.552713678800501e-15
+          }
         ],
         "raggio": "0",
         "angolo_iniziale": "0",
@@ -80,6 +104,6 @@
   },
   "provenienza": {
     "tipo": "calcolo-a-mano",
-    "procedimento": "Regola2: raggio0, unico incrocio delle rette x=0 e y=0 all’origine; tutti i dati del corner e arco nullo sono esatti."
+    "procedimento": "Regola2: raggio0, unico incrocio delle rette x=0 e y=0 all’origine; tutti i dati del corner e arco nullo sono esatti. ADR 0013 (#160): lo spigolo è un punto costruito (incontro delle due rette) e si confronta entro kRelativePointError*M = 2^-48*1 = 3.552713678800501e-15 nel centro, nei punti di tangenza e nel centro dell'arco; raggio 0, angoli 0 e bulge 0 restano esatti, fissati dalla regola 2."
   }
 }

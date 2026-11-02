@@ -51,7 +51,10 @@
         "tolleranza": 3.5530689501683814e-09
       }
     ],
-    "raggio": "10",
+    "raggio": {
+      "valore": 10.0,
+      "tolleranza": 1.4212275800673524e-08
+    },
     "sulla_prima": {
       "punto": [
         {
@@ -95,7 +98,10 @@
             "tolleranza": 3.5530689501683814e-09
           }
         ],
-        "raggio": "10",
+        "raggio": {
+          "valore": 10.0,
+          "tolleranza": 1.4212275800673524e-08
+        },
         "angolo_iniziale": {
           "valore": -1.5707963267948966,
           "tolleranza": 1.4212275800673526e-09
@@ -113,6 +119,6 @@
   },
   "provenienza": {
     "tipo": "aritmetica-esatta",
-    "procedimento": "Richiesta #21 casi5 e7: due rette a20, estremità finale della prima più vicina al clic; semicerchio oltre x=100, raggio10 indipendente dal raggio chiesto, arco antiorario da basso ad alto. Coordinate/radicali con Fraction e Decimal180. Punti: limite2^-48*max(M,|p|) per eccesso. Angoli con atan2 a serie; E=2^-46*M, tolleranza angolare E/r; bulge: freccia=corda*|bulge|/2, dunque tolleranza2E/corda. Il raggio chiesto è esatto; per diametro, sweep antioraria pi. M effettiva dei dati e dei clic=0x1.e854800000000p+19; tolleranze ridotte alla M effettiva e arrotondate per eccesso."
+    "procedimento": "Richiesta #21 casi5 e7: due rette a20, estremità finale della prima più vicina al clic; semicerchio oltre x=100, raggio10 indipendente dal raggio chiesto, arco antiorario da basso ad alto. Coordinate/radicali con Fraction e Decimal180. Punti: limite2^-48*max(M,|p|) per eccesso. Angoli con atan2 a serie; E=2^-46*M, tolleranza angolare E/r; bulge: freccia=corda*|bulge|/2, dunque tolleranza2E/corda. Il raggio chiesto è esatto; per diametro, sweep antioraria pi. M effettiva dei dati e dei clic=0x1.e854800000000p+19; tolleranze ridotte alla M effettiva e arrotondate per eccesso. ADR 0013 (#160): il raggio del semicerchio è costruito (metà della distanza tra le rette) e si confronta entro kRelativeArcError*M = 2^-46*1.0001e+06 = 1.4212275800673524e-08, nel raggio e nell'arco."
   }
 }
