@@ -353,3 +353,36 @@ i rimandi ai documenti che cambia.
   registro, nella stessa PR #147 con `Closes #157`. Il resto del commento e
   tutte le dichiarazioni restano invariati. P20 non cambia codice; R20 non
   impone l'esito dentro la fascia.
+
+- **2026-11-02: esatto dove serve (operazione snellimento, #160).** Tre
+  decisioni e un principio, nell'[ADR 0013](adr/0013-esatto-dove-serve.md):
+  1. restano esatte le decisioni (lato, incontri, coincidenza, diagnosi e loro
+     ordine, pezzi della curva parallela che sopravvivono); le costruzioni si
+     garantiscono solo entro gli errori già dichiarati, senza dire quale
+     `double` esce; restano il determinismo, i valori copiati o fissati per
+     struttura, il confine esatto di `kMaxCoordinate` e le costanti angolari;
+  2. il dominio in basso è 2^-50: nei limiti d'errore sostituisce il pavimento
+     2^-1022, e sotto 2^-50 si garantiscono solo niente crash, niente
+     risultati fuori dominio e il determinismo; i subnormali escono dal
+     contratto delle costruzioni, mentre le decisioni di `robust` e `geom2d`
+     restano esatte per ogni `double` finito;
+  3. un buco è visibile quando cambia l'esito o la diagnosi, il numero o
+     l'ordine delle entità, o una coordinata di più di epsilon (ADR 0009): lo
+     decide il responsabile; gli altri li sceglie chi implementa, nel modo più
+     semplice, scritto nel commento dell'intestazione, fissato da un test e
+     segnalato nella pull request;
+  4. un esito che dipende solo da quale `double` una costruzione sceglie entro
+     il suo errore è libero dentro la sua fascia, deterministico, e nessun caso
+     del corpus lo impone; per la curva parallela la fascia è quella degli
+     estremi esatti a meno di due errori di punto, e degli archi quasi interi
+     con la corda di pochi ulp; le #152, #155 e #157 di `fillet` ne sono
+     applicazioni.
+
+  Cambiano l'ADR 0013 (nuovo), una riga **Corretto:** negli ADR 0010–0012,
+  [AGENTS.md](../AGENTS.md) e [CONTRATTI.md](CONTRATTI.md) (la regola 3 e il
+  punto 10 della lista). Seguono, in pull request separate: i commenti di
+  `curves.hpp`, `offset.hpp` e `tangency.hpp` (`intersection.hpp` resta
+  com'è), i casi del corpus con valori costruiti, il controllo di simmetria di
+  `tangentCircles` e il piano 0.2 (P19 senza l'obbligo del `double` più
+  vicino, R19 di conseguenza; P20 «dominio delle tangenze» #149–#151, R20 con
+  i soli casi al confine `kMaxCoordinate`; C chiusa).

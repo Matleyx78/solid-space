@@ -32,6 +32,20 @@ estremi danno esiti diversi (issue #132). Una correzione è un contratto nuovo
 scritto in fretta, e nessuno l'aveva ripassato con la lista. Da qui la
 revisione delle correzioni e i punti 10 e 11 della lista.
 
+## Buchi visibili e no
+
+Un buco del contratto è **visibile** quando, per dati dentro il dominio,
+cambia almeno una di queste cose: l'esito o la diagnosi (il messaggio che
+l'utente legge); il numero o l'ordine delle entità risultanti; una coordinata
+di più della tolleranza della regola, epsilon(M) dell'ADR 0009
+([ADR 0013](adr/0013-esatto-dove-serve.md), punto 3). In questo documento un
+«buco» è un buco visibile: lo decide il responsabile, con una issue
+`contratto`. Gli altri li sceglie chi implementa: la scelta più semplice,
+scritta nel commento dell'intestazione, fissata da un test e segnalata nella
+pull request, che si rivede come ogni correzione del contratto (sotto). Chi
+rivede un contratto annota nel verbale i buchi non visibili che trova, senza
+aprire issue.
+
 ## La revisione del contratto
 
 Ogni tappa che realizza intestazioni del contratto comincia con un pacchetto di
@@ -110,11 +124,13 @@ Per ogni funzione, e per ogni tipo che restituisce:
 10. **Scelte libere entro un errore.** Dove il contratto lascia libero un
     valore entro un errore dichiarato (come si arrotonda una coordinata, quale
     `double` si sceglie per un estremo, una stazione), quella scelta può
-    cambiare qualcosa di discreto: un esito, una diagnosi, un ordine,
-    un'uguaglianza, un pareggio? Si prova con un esempio al limite, con due
-    scelte entrambe lecite. Se sì, il contratto fissa la scelta (per esempio
-    «il `double` più vicino, pareggio al pari») oppure dice che l'esito ne
-    dipende, e allora nessun caso di riferimento può imporlo (issue #132).
+    cambiare qualcosa di discreto: un esito, una diagnosi, un numero o un
+    ordine di entità, un'uguaglianza, un pareggio? Si prova con un esempio al
+    limite, con due scelte entrambe lecite. Se sì, il contratto non fissa il
+    `double` (niente «il più vicino»): scrive la **fascia** dei dati in cui
+    l'esito dipende dalla scelta. Lì l'esito è libero e deterministico, e
+    nessun caso di riferimento lo impone; fuori dalla fascia è determinato
+    ([ADR 0013](adr/0013-esatto-dove-serve.md), punto 4; issue #132).
 11. **Che cosa arriva al chiamante.** Ciò che la funzione decide esattamente
     (quale elemento è quale, l'ordine, l'appartenenza a un pezzo,
     l'uguaglianza di due punti) arriva nel risultato, o chi lo usa dovrebbe
