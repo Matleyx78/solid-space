@@ -31,6 +31,34 @@
 - `tests/corpus/esegui/op_offset_polyline.cpp` (nuovo)
 - `tests/corpus/in-attesa/` (cancellare `0.2-R14a.txt`, `0.2-R14b.txt` e `0.2-R14c.txt`)
 
+## Chiarimenti del contratto del 2026-11-01
+
+La revisione C (#133; decisioni #132, #138, #139, #141) precisa: validazione
+pezzo per pezzo prima della distanza, come `curves.hpp`; passi intermedi
+esatti senza ereditare diagnosi di dominio dei risultati di `offsetCurve`;
+solo vertici e punto m del risultato finale si controllano nel dominio,
+con `failed` / `beyondDomain`. La garanzia dei casi semplici richiede anche
+che il risultato esatto e il punto m ricostruito dai double siano nel dominio. Tutti i vertici, anche
+dritti e di giunzione, sono al più vicino con pareggio al pari (P19); un arco
+non nullo con estremi arrotondati coincidenti dà `notRepresentable`, non si
+scarta al passo 4. Il pavimento degli errori è 2^-1022 (R20/P20).
+
+Le decisioni #148 e #149 precisano: dopo l'arrotondamento e prima dei bulge
+si scartano i pezzi dritti con estremi coincidenti, con la loro origine e
+`simple` falso; nessun pezzo rimasto dà `failed` / `notRepresentable`, non
+`vanished`. I vertici finali si controllano sul valore esatto, il punto m
+esattamente dai double restituiti; gli altri controlli sui double del risultato.
+I controlli finali seguono l'ordine dell'elenco in `offset.hpp`, il primo
+fallimento decide: prima `beyondDomain`, poi intersezioni. P19 corregge anche
+l'ordine se P14 già unito ne usa un altro.
+
+La #154 precisa che il dominio esatto si controlla dopo lo scarto dei
+dritti collassati, solo sugli estremi dei pezzi rimasti. A un vertice
+condiviso contano entrambi i precursori: fine esatta del precedente e inizio
+esatto del successivo. Estremi appartenenti solo a pezzi scartati non contano;
+m resta ricostruito dai double restituiti. P19 adegua il codice già unito
+se necessario, R19 aggiunge l'esempio della #154.
+
 ## Cosa fare
 
 Realizzare, senza cambiarla, `offsetPolyline` di `offset.hpp` con i suoi tipi
@@ -57,11 +85,14 @@ lettera il commento dell'intestazione:
    senza vicino conserva il taglio; solo un estremo mai tagliato resta lo
    spostamento del passo 1); pezzi del risultato ridotti a un punto tolti al
    passo 4; se nessun pezzo resta dopo i passi 1, 3 e 4, l'esito è `vanished`;
-3. **il controllo finale sui `double` del risultato**, prima di dare `done`: due
+3. **i controlli finali in ordine**, prima di dare `done`: prima il dominio
+   degli estremi esatti dei pezzi rimasti dopo lo scarto dei dritti
+   collassati (entrambi i precursori ai vertici condivisi) e del punto m dai
+   double restituiti; poi, sui double, due
    pezzi non consecutivi senza punti comuni (esatto, come `intersect`); due pezzi
    consecutivi che si incontrano solo nel vertice comune o in punti che
    coincidono con esso per la regola dell'ADR 0009 (`policy`); nessun incontro
-   con la polilinea di partenza. Altrimenti `failed`, con il motivo;
+   con la polilinea di partenza. Altrimenti `failed`, con il primo motivo;
 4. `simple` vero quando nessun pezzo è sparito, è stato tolto o si è ridotto a un
    punto (passi 1, 3 e 4); `origins` per ogni pezzo del risultato, in ordine.
 
@@ -80,9 +111,9 @@ pezzi (ADR 0012, punto 11): una struttura che riduca le coppie non serve ora.
 |---|---|---|
 | `offsetPolyline` | `polilinea`, `distanza`, `unita_in_metri` | `esito`: `"done"`, `"vanished"` o `"failed"`; `motivo`: nome di `OffsetFailure` (`"none"` se non è `failed`); `semplice`: booleano; con `done`, `polilinea`: `{"vertici": [[x, y, bulge], …], "chiusa": booleano}` con valori approssimati, e `origini`: elenco di `{"origine": "source" o "gap", "indice": intero}`; oppure `diagnosi` (`dato` 0 o 1) |
 
-Tolleranze: i vertici `kRelativePointError · max(M, |p|)`; il bulge di un pezzo
+Tolleranze: i vertici `kRelativePointError · max(M, |p|, 2^-1022)`; il bulge di un pezzo
 la tolleranza che corrisponde, per la sua corda, a uno scostamento della curva di
-`kRelativeOffsetError · max(M, |p|)` (chi scrive il caso la ricava e la scrive in
+`kRelativeOffsetError · max(M, |p|, 2^-1022)` (chi scrive il caso la ricava e la scrive in
 `provenienza`). M è la grandezza della polilinea e di |d|.
 
 **R14a** (codex) copre i casi della richiesta e il caso g di AutoCAD:

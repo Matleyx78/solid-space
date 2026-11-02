@@ -10,7 +10,11 @@
 // Every curve has an exact meaning, fixed below from its doubles. All the
 // decisions of geom2d (intersections, positions, order, side) are exact
 // answers about that meaning. Constructions (points, stations, lengths) are
-// rounded, within the errors declared here.
+// rounded, within the errors declared here. Every construction error bound in
+// geom2d, including bounds declared in other headers, uses a scale of at least
+// 2^-1022 (the smallest normal double): max(M, |p|, 2^-1022) for points and
+// max(M, |s|, 2^-1022) for stations and lengths. This floor changes no exact
+// decision and does not restrict the input domain.
 
 #include "solid_space/geom2d/diagnosis.hpp"
 #include "solid_space/robust/point.hpp"
@@ -32,13 +36,13 @@ inline constexpr double kFullTurn = 6.283185307179586;         // 2 pi
 
 /// Largest error of a constructed point, relative to the magnitude: a point p
 /// returned by geom2d differs from the exact point by at most
-/// kRelativePointError * max(M, |p|), where |p| is the largest absolute
+/// kRelativePointError * max(M, |p|, 2^-1022), where |p| is the largest absolute
 /// coordinate of the exact point and M the magnitude of the inputs (see
 /// magnitude()). 2^-48 is about 3.6e-15.
 inline constexpr double kRelativePointError = 0x1p-48;
 
 /// Largest error of a station or a length (see CurvePosition), relative in
-/// the same way: at most kRelativeStationError * max(M, |s|), with s the exact
+/// the same way: at most kRelativeStationError * max(M, |s|, 2^-1022), with s the exact
 /// value. 2^-46 is about 1.4e-14.
 inline constexpr double kRelativeStationError = 0x1p-46;
 
@@ -127,8 +131,9 @@ struct Polyline {
 /// The pieces are copied as they are: they are checked when used.
 [[nodiscard]] std::vector<PolylineSegment> pieces(const Polyline& polyline);
 
-// Checking the data. Every function of geom2d checks each curve it receives,
-// in this order, and gives the first diagnosis that applies:
+// Checking the data. Every function of geom2d checks inputs in increasing
+// Diagnosis::input order: all of input 0, then input 1, and so on. The first
+// applicable diagnosis wins. Within each curve, the order is:
 // - invalidValue: a value is NaN or infinite, or a radius is negative;
 // - outOfDomain: a coordinate, a radius or the point m of a curved
 //   PolylineSegment has magnitude beyond robust::kMaxCoordinate, or
@@ -136,6 +141,34 @@ struct Polyline {
 //   robust::kMaxTrigArgument;
 // - degenerateCurve: the curve is exactly a single point (see above; a
 //   radius of zero counts too). magnitude() accepts degenerate curves.
+// A polyline is checked piece by piece in pieces() order, with the curve
+// order above within each piece. The first piece with invalid data decides; the message
+// names its vertex. A piece exactly equal to a point is dropped without a
+// degenerateCurve diagnosis on its vertex. After these drops, no piece
+// left gives degenerateCurve on input 0, before checking later inputs. Values
+// belonging to no piece (the last bulge of an open polyline) are not checked.
+// An input-specific diagnosis about its data (e.g. notCircular) follows that
+// input's data checks and precedes checks of later inputs. All input data
+// checks finish before constructions begin: a construction-domain diagnosis
+// follows the checks of every input, even when it names an earlier input.
+//
+// Every construction returned by offset.hpp or tangency.hpp keeps its
+// coordinates, radii and the point m of curved PolylineSegments within
+// robust::kMaxCoordinate. This
+// checks the data values, never the geometric extent of the curve. Domain
+// decisions use the exact construction values, even when rounding would
+// bring an out-of-domain value back within the domain. An exact coordinate
+// or radius within kMaxCoordinate is never returned beyond it: if rounding
+// would exceed either boundary, return that boundary (+/-kMaxCoordinate).
+// The point m of a returned curved PolylineSegment is reconstructed exactly
+// from the returned doubles and checked that way, not from an exact precursor.
+// A construction outside the domain is never returned or silently omitted;
+// each operation specifies its diagnosis or failure. Degenerate results are
+// governed by the individual operation, not by this domain rule. This rule
+// does not apply to points on the given curves: endpoints() and overlap ends
+// from intersect() or intersectAlong() remain within their declared error,
+// even beyond kMaxCoordinate; isolated common points beyond the domain remain
+// unlisted and counted in omittedBeyondDomain.
 
 /// The magnitude M of a curve, used by the error bounds above and by the
 /// tolerance rule (ADR 0009): the largest absolute value among

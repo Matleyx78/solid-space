@@ -18,6 +18,19 @@
   spigolo oltre `kMaxCoordinate`, `fillet` dà la diagnosi `outOfDomain` sul
   raggio (dato 2), come `tangentCircles`, e non `none`: il raccordo esiste, ma
   fuori dal dominio (punti 5 e 8).
+- **Corretto:** 2026-11-01 — decisioni della revisione C (#133), issue
+  #135–#137, #140 e #142: ordine totale dei cerchi (tangenze, poi centro
+  esatto x/y), dominio di tutti i dati costruiti con diagnosi dell'intera
+  chiamata, compresa la regola 1 di `fillet`; pavimento 2^-1022 degli errori
+  e ordine generale delle diagnosi in `curves.hpp` (punti 3, 7 e 8).
+  Dopo la revisione delle correzioni, #149–#152 precisano dominio sul valore
+  esatto e nessun valore restituito oltre K, dati prima delle costruzioni e
+  `ambiguousPick` prima dei candidati, soli punti elencati di `tangentsFrom`
+  controllati, bulge zero se le tangenze restituite coincidono (punti 4, 6 e 8).
+  La #155 dichiara la dipendenza del dominio del punto m dalle scelte lecite
+  di tangenze e bulge entro l'errore (punto 8).
+  La #157 (2026-11-02) precisa che la fascia di confine è a meno dell'errore
+  dell'arco (`kRelativeArcError`) da K (punto 8).
 - **Richiesta:** #21 — da Tecnigrafo: tappa 0.7, Matleyx78/tecnigrafo#327
 - **Esito:** 3 pezzo nostro
 - **Tappa:** 0.2 (scheda da scrivere all'apertura)
@@ -140,12 +153,16 @@ quadrato, con un filtro in virgola mobile nel caso comune, come nell'ADR 0010.
    curva sta un cerchio tangente (`Side`, con lo stesso significato di
    `side()`), dove stanno i punti di tangenza su ogni curva, il loro ordine, se
    due rette sono parallele, il verso dell'arco di raccordo, e quando i cerchi
-   sono infiniti.
+   sono infiniti. I cerchi si ordinano per tangenza esatta sulla prima curva,
+   poi sulla seconda, poi per centro esatto, prima x e poi y: ordine totale
+   per il raggio dato (#135), ereditato dai pareggi di `tangentCircleNear`
+   e `fillet`.
 4. **La scelta del lato è quella della #20.** Il raccordo sta, rispetto alla
    prima curva, dalla parte in cui `side()` mette il punto indicato sulla
    seconda, e viceversa: ogni punto indica la parte della sua curva da tenere.
    Se un punto sta esattamente sulla retta o sul cerchio dell'altra curva la
-   risposta è `ambiguousPick`. Tra i candidati rimasti, e per `CIRCLE`
+   risposta è `ambiguousPick`, prima delle costruzioni e della loro diagnosi
+   di dominio; poi `infinitelyMany`, poi i candidati (#150). Tra i candidati rimasti, e per `CIRCLE`
    tangente-tangente-raggio, si sceglie quello con i punti di tangenza più
    vicini ai punti indicati: la scelta è deterministica, calcolata sui punti
    arrotondati con un'espressione fissata, ma non esatta (vedi le
@@ -162,11 +179,20 @@ quadrato, con un filtro in virgola mobile nel caso comune, come nell'ADR 0010.
 6. **L'arco di raccordo** è il più corto dei due archi del cerchio di raccordo
    tra i punti di tangenza, con il verso deciso esattamente; si dà nelle due
    forme che Tecnigrafo usa: un `Arc` (raggio dato esattamente, angoli da
-   `robust::atan2`) e il bulge di un segmento di polilinea.
+   `robust::atan2`) e il bulge di un segmento di polilinea. Se le tangenze
+   restituite coincidono, il bulge è 0; l'`Arc` mantiene il raggio dato e le
+   proprie regole (#152). Non si impone il double più vicino alle tangenze:
+   la coincidenza può dipendere da una scelta lecita entro l'errore. Un caso
+   al confine non può imporre né coincidenza né una delle due forme del bulge;
+   si controlla condizionatamente ai punti restituiti. La forma con bulge può
+   essere un punto: in quel caso Tecnigrafo usa l'`Arc`. Raggio zero e punti
+   esattamente coincidenti continuano a dare i risultati puntiformi previsti.
 7. **Errori dichiarati.** Centri e punti di tangenza entro
-   `kRelativePointError` (2^-48) · max(M, |p|), stazioni entro
-   `kRelativeStationError` (2^-46), come nell'ADR 0010. L'arco, nelle due
-   forme, entro `kRelativeArcError` = 2^-46 · max(M, |p|) dall'arco esatto, e
+   `kRelativePointError` (2^-48) · max(M, |p|, 2^-1022), stazioni entro
+   `kRelativeStationError` (2^-46) · max(M, |s|, 2^-1022), come nella regola
+   generale di `curves.hpp`. Il pavimento (#139, #140) vale per tutte le
+   costruzioni geom2d, senza cambiare decisioni esatte, dominio o diagnosi. L'arco, nelle due
+   forme, entro `kRelativeArcError` = 2^-46 · max(M, |p|, 2^-1022) dall'arco esatto, e
    i suoi estremi dai punti di tangenza esatti: gli angoli passano da punti
    già arrotondati, quindi l'errore è più largo di quello dei punti, ma resta
    16 volte sotto la tolleranza relativa dell'ADR 0009, così gli estremi
@@ -178,7 +204,32 @@ quadrato, con un filtro in virgola mobile nel caso comune, come nell'ADR 0010.
    `outOfDomain` sul raggio (dato 2) e nessun cerchio: i cerchi tangenti non
    hanno un conteggio dei punti omessi come le intersezioni (corretto il
    2026-11-01). Lo stesso vale per `fillet`, anche per lo spigolo del raggio
-   zero oltre `kMaxCoordinate` (corretto il 2026-11-01).
+   zero oltre `kMaxCoordinate` (corretto il 2026-11-01). La revisione C estende
+   il controllo a tutti i dati costruiti, mai all'estensione geometrica:
+   coordinate, raggi e punto m della forma con bulge devono stare nel dominio
+   di `curves.hpp`, senza un divieto generale di risultati degeneri. Il
+   dominio si decide sui valori esatti; un esatto entro K non si restituisce
+   oltre K (si limita l'arrotondamento a ±K). Il punto m si ricostruisce
+   esattamente dai `double` restituiti (#149). In `fillet`, punti di tangenza
+   e bulge sono liberi entro i rispettivi errori: con l'arco esatto a meno
+   dell'errore dell'arco (`kRelativeArcError`) da K, una scelta lecita può dare
+   `found` oppure `outOfDomain`
+   sul dato 2 per m (#155). Nessun riferimento al confine impone un esito:
+   con `found` punti e arco rispettano gli errori e m ricostruito è entro K;
+   con `outOfDomain` il dato è 2. Nessun obbligo del double più vicino né
+   di scegliere m sempre entro K. Un punto di tangenza oltre il dominio fa fallire
+   l'intera chiamata: `outOfDomain`, dato 1 per `tangentsFrom`, dato 2 per
+   `tangentCircles`, `tangentCircleNear` e `fillet`; nessuna omissione.
+   In `tangentsFrom` si controllano solo i punti elencati: `Extension::none`
+   esclude dal controllo quelli fuori dall'arco dato, anche oltre K; con
+   `Extension::extended` si controllano tutti (#151).
+   Per `fillet` vale anche nella regola 1 (centro, raggio costruito, tangenze
+   e piede della perpendicolare). L'ordine delle diagnosi è quello generale
+   di `curves.hpp`: dato 0 per intero, poi 1, 2, 3, 4; `notCircular` segue i
+   controlli della curva 0 e precede il punto 1. In `fillet` il raggio viene
+   controllato anche per rette parallele, prima delle regole geometriche.
+   Prima si controllano tutti gli ingressi, anche i punti 3 e 4, poi le
+   costruzioni e il loro dominio, anche se la diagnosi porta il dato 2 (#150).
 9. **Determinismo:** la regola dell'ADR 0008, punto 5, anche per la scelta del
    punto 4, che è calcolata in virgola mobile.
 10. **Prestazioni**, obiettivo da misurare nella tappa: `tangentsFrom`, che lo

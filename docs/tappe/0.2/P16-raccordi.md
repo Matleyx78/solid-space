@@ -30,6 +30,40 @@
 - `tests/corpus/esegui/op_fillet.cpp` (nuovo)
 - `tests/corpus/in-attesa/` (cancellare `0.2-R16a.txt`, `0.2-R16b.txt` e `0.2-R16c.txt`)
 
+## Chiarimenti del contratto del 2026-11-01
+
+La revisione C (#133; decisioni #135–#137, #140, #142) precisa: i pareggi
+ereditano l'ordine totale di `tangentCircles` (tangenze, poi centro esatto
+x/y). Le diagnosi di dominio delle costruzioni si propagano all'intera
+chiamata, sul dato 2, anche prima della scelta di un candidato; per `fillet`
+valgono in tutte le regole, compresa la regola 1 (centro, raggio costruito,
+tangenze e piede) e il punto m della forma con bulge. Controllo sui dati,
+mai sull'estensione geometrica. Ingressi controllati per numero; il raggio
+si valida anche per rette parallele prima delle regole geometriche.
+Il pavimento generale degli errori è 2^-1022 (R20/P20).
+
+Le decisioni #149, #150 e #152 precisano: dominio sui valori esatti e
+nessun valore restituito oltre K; punto m esatto dai double restituiti.
+Prima tutti i dati, compresi i punti 3 e 4, poi le costruzioni. In regola 3
+`ambiguousPick` precede le costruzioni e `outOfDomain`, poi `infinitelyMany`
+e i candidati. Se le tangenze restituite coincidono, bulge 0; l'`Arc` resta
+quello del raggio dato e delle regole originarie. La coincidenza può dipendere
+da una scelta lecita entro l'errore, quindi un riferimento non impone né
+coincidenza né una delle due forme del bulge. Il controllo è condizionato ai
+punti restituiti. La forma con bulge può essere un punto: in quel caso si usa
+l'`Arc`. P20 corregge il codice già unito solo se necessario.
+
+La #155, come la #152, lascia liberi punti di tangenza e bulge entro i loro
+errori. Se l'arco esatto è a meno dell'errore dell'arco (`kRelativeArcError`)
+da K, il dominio di m ricostruito
+dai double può dipendere da una scelta lecita: `found` oppure `outOfDomain`
+sul dato 2. Il riferimento al confine non impone nessuno dei due: con `found`
+punti e arco entro gli errori e m entro K; con `outOfDomain`, dato 2.
+Nessun obbligo del double più vicino o di scegliere m sempre entro K.
+P20 non cambia codice per la #155; R20 non impone l'esito al confine.
+Nell'esempio `fillet(Segment{(K,0),(K,2)}, (K,1/2),
+Segment{(0,0),(2,0)}, (1/2,0), 1)` sono lecite entrambe le risposte.
+
 ## Cosa fare
 
 Realizzare, senza cambiarle, `tangentCircleNear` e `fillet` di `tangency.hpp`,
@@ -66,9 +100,9 @@ con i loro tipi.
 | `fillet` | `prima`, `punto_prima`, `seconda`, `punto_seconda`, `raggio` | `esito`; con `found`: `centro`, `raggio`, `sulla_prima` e `sulla_seconda` (punti di tangenza), `semicerchio`: booleano, `arco`: la curva attesa nella forma `{"arco": {...}}` di P13, con valori esatti o approssimati, `bulge`: approssimato; oppure `diagnosi` |
 
 Un punto di tangenza si scrive `{"punto": punto, "sulla_curva": posizione}`, come
-in P15. Tolleranze: punti `kRelativePointError · max(M, |p|)`; angoli,
+in P15. Tolleranze: punti `kRelativePointError · max(M, |p|, 2^-1022)`; angoli,
 ampiezza e bulge dell'arco la tolleranza che corrisponde, per il suo raggio e la
-sua corda, a uno scostamento di `kRelativeArcError · max(M, |p|)` (chi scrive il
+sua corda, a uno scostamento di `kRelativeArcError · max(M, |p|, 2^-1022)` (chi scrive il
 caso la ricava e la scrive in `provenienza`); il raggio di `fillet` è esatto
 (quello chiesto), salvo il semicerchio.
 

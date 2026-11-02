@@ -212,3 +212,144 @@ i rimandi ai documenti che cambia.
   [AGENTS.md](../AGENTS.md), [LAVORO-IN-PARALLELO.md](LAVORO-IN-PARALLELO.md) e
   la scheda della [tappa 0.2](tappe/0.2-geometria-del-piano.md) in «Modifiche
   al piano».
+- **2026-11-01: decisioni della revisione C del contratto (#133).** Il
+  responsabile decide nelle issue #132 e #135–#144 e nei commenti della #133:
+  - **#132:** ogni vertice restituito dall'offset, anche dritto, tagliato,
+    prolungato o di giunzione, è il double più vicino per coordinata, pareggio
+    al pari. Bulge e rappresentabilità si calcolano su quei double. Estremi
+    arrotondati coincidenti di un arco non nullo danno `failed` per
+    `offsetCurve`, `failed` / `notRepresentable` per `offsetPolyline`, senza
+    scartare l'arco come puntiforme. R19 e P19 si allargano a tutti i vertici
+    e ai percorsi già uniti di P13/P14, difficoltà invariata.
+  - **#135:** dopo le due tangenze esatte, `TangentCircles::circles` si ordina
+    per centro esatto, x e poi y; `tangentCircleNear` e `fillet` ereditano il
+    primo della lista a parità di punteggio. Nell'esempio il primo centro è
+    (−0,5, 0), come nel codice già unito.
+  - **#136, #137, #138, #143, #144:** ogni costruzione restituita è nel dominio
+    di `curves.hpp`: coordinate, raggi e punto m dei pezzi curvi
+    entro `kMaxCoordinate`. Si controllano i dati, mai l'estensione geometrica;
+    nessuna costruzione fuori dominio si restituisce o si omette in silenzio.
+    `tangentsFrom` dà `outOfDomain` sul dato 1 per tangenze fuori dominio;
+    `tangentCircles`, `tangentCircleNear` e `fillet` sul dato 2 per centri o
+    tangenze, con fallimento dell'intera chiamata. In `fillet` vale anche per
+    regola 1 (centro, raggio costruito, tangenze e piede), spigoli di regola 2
+    e punto m della forma con bulge. `offsetCurve` dà `outOfDomain` sul dato 1
+    per risultato fuori dominio (anche raggio e punto m); zero conserva la curva
+    valida e i suoi bit, con `done`. `offsetPolyline` controlla soltanto i dati
+    del risultato finale dopo i passi 1–4, con `failed` / `beyondDomain`;
+    intermedi poi tagliati o rimossi non contano, nessuna diagnosi di risultato
+    ereditata da `offsetCurve`. La garanzia dei casi semplici richiede anche
+    il risultato esatto e il punto m dai double restituiti nel dominio.
+  - **#139, #140:** regola generale di `curves.hpp`, per tutti i limiti di
+    errore geom2d: scala max(M, |p|, 2^-1022), o max(M, |s|, 2^-1022) per
+    stazioni e lunghezze. Nei subnormali il limite dei punti è 2^-1070,
+    quello di stazioni e curve 2^-1068. Nessun cambiamento delle decisioni
+    esatte, del dominio o delle diagnosi. R20 (#146, codex) scrive i casi;
+    P20 (#145, claude) li rende obbligatori e corregge solo se falliscono,
+    senza cambiare contratto né predicati esatti. P18 dipende anche da P20.
+  - **#141, #142:** regola unica in «Checking the data» di `curves.hpp`:
+    ingressi per numero di `Diagnosis::input`, ciascuno per intero; prima
+    diagnosi applicabile, dentro una curva invalidValue, outOfDomain,
+    degenerateCurve. Polilinea per pezzi in ordine di `pieces()`, primo pezzo
+    errato con vertice nel messaggio; scartati i pezzi puntiformi, nessun
+    pezzo rimasto dà degenerateCurve sul dato 0 prima degli ingressi seguenti.
+    Valori non appartenenti a un pezzo, come l'ultimo bulge aperto, ignorati.
+    Diagnosi specifiche come notCircular seguono i dati dello stesso ingresso
+    e precedono gli ingressi seguenti; tutti i dati prima delle costruzioni
+    (#150), anche quando queste portano un input precedente. Per fillet il raggio si valida anche
+    con rette parallele, prima delle regole geometriche.
+  Correggono i soli commenti di `curves.hpp`, `offset.hpp`, `tangency.hpp`, gli
+  ADR 0010, 0011 e 0012 con riga **Corretto:** e le schede interessate; C è esteso
+  ai commenti generali di `curves.hpp`. Il piano aggiunge R20/P20 e allarga
+  R19/P19. Le dichiarazioni e i casi di riferimento non cambiano in C. La
+  pull request unica chiude C e i buchi, e passa la revisione delle correzioni
+  da un agente diverso dall'autore prima del merge (CONTRATTI.md).
+
+- **2026-11-01: correzioni dopo la revisione della PR #147, decisioni #148–#152.**
+  Il responsabile distingue il principio del dominio dai risultati degeneri,
+  regolati funzione per funzione (#132, #148, #152):
+  - **#148:** pezzo dritto non degenere con estremi arrotondati coincidenti:
+    `offsetCurve` dà `failed`; `offsetPolyline` lo scarta dopo i vertici e
+    prima dei bulge e dei controlli finali, con la sua origine e `simple`
+    falso. Se non resta nulla, `failed` / `notRepresentable`, non `vanished`.
+    La garanzia dei casi semplici esclude anche il collasso per arrotondamento.
+  - **#149:** dominio sul valore esatto di coordinate, centri, vertici,
+    tangenze e raggi, anche se il double più vicino tornerebbe entro K.
+    Un esatto entro K non si restituisce oltre K: se serve si limita a ±K
+    l'arrotondamento. Nessun nuovo obbligo del double più vicino per centri e
+    tangenze. Il punto m dei pezzi curvi restituiti si ricostruisce esattamente
+    dai double restituiti. In `offsetPolyline` contano solo i vertici esatti
+    finali dopo i passi 1–4; gli altri controlli restano sui double restituiti.
+  - **#150:** tutti i dati, in ordine di input e con le diagnosi specifiche
+    come `notCircular`, prima delle costruzioni, anche se la diagnosi di
+    costruzione porta un input precedente. In regola 3 di `fillet`, prima
+    `ambiguousPick`, poi le costruzioni, `infinitelyMany` e i candidati.
+  - **#151:** `tangentsFrom` controlla solo i punti elencati: con `none` un
+    punto escluso dall'arco, anche oltre K, non fa fallire; con `extended`
+    tutti i punti sono controllati. Non cambia l'eredità di `tangentCircles`
+    nei chiamanti, che falliscono anche per un candidato non scelto.
+  - **#152:** se `onFirst.point` e `onSecond.point` restituiti coincidono,
+    bulge 0, `Arc` col raggio dato e le proprie regole. La coincidenza può
+    dipendere dalla scelta lecita dei punti entro l'errore: un riferimento
+    non impone uno dei due rami. Si verifica condizionatamente; se il formato
+    non lo permette, test di unità in P20. La forma con bulge può essere un
+    punto: Tecnigrafo usa allora l'`Arc`.
+  L'ADR 0010 entra nei file autorizzati di C, con riga **Corretto:** e
+  pavimento 2^-1022 anche per `endpoints` e `length`; P7, P10 e P11 restano
+  invariate. «First piece with invalid data» chiarisce lo scarto dei pezzi
+  esattamente puntiformi. I controlli finali di `offsetPolyline` seguono
+  l'ordine dell'elenco, primo fallimento decisivo, prima `beyondDomain`.
+  R19/P19 coprono #148 e #149 (e P19 corregge l'ordine finale se necessario).
+  R20 aggiunge due o tre casi subnormali di `endpoints` e `length` (arco e
+  segmento), confine K ed esempi #150–#152; il testo della #146 lo aggiorna
+  il responsabile. P20 aggiunge `curves.cpp` ai file solo se servono e copre
+  #149–#152 se il codice già unito non le rispetta, difficoltà impegnativa,
+  `Contratto:` invariato. Nessuna implementazione o caso modificato da C.
+  Le decisioni entrano nella stessa PR #147, con `Closes #148`–`Closes #152`,
+  da rivedere di nuovo sulle sole funzioni toccate secondo CONTRATTI.md.
+
+- **2026-11-01: ulteriori decisioni della revisione della PR #147 (#153–#156).**
+  - **#153:** in `offsetCurve`, estremi e raggio esatti fuori dominio danno
+    `outOfDomain`, dato 1, prima di `failed`, anche con estremi arrotondati
+    coincidenti o bulge non rappresentabile. `failed` vale solo con quei
+    valori esatti nel dominio; m si controlla dai double solo per una curva
+    restituita. La polilinea scarta invece prima i dritti collassati e
+    controlla solo il risultato finale: lo stesso pezzo da solo può dare
+    `failed` / `notRepresentable`. P13, P19 e R19 allineate; P19 corregge
+    l'ordine già unito se necessario, R19 aggiunge l'esempio curva/polilinea.
+  - **#154:** dominio esatto della polilinea sugli estremi dei pezzi rimasti
+    dopo lo scarto dei dritti collassati. Ai vertici condivisi si controllano
+    entrambi i precursori esatti, fine del precedente e inizio del successivo;
+    estremi solo di pezzi scartati non contano. m resta dai double restituiti.
+    P14, P19 e R19 allineate; P19 adegua se serve, R19 aggiunge l'esempio.
+  - **#155:** in `fillet`, tangenze e bulge liberi entro l'errore possono dare
+    m ricostruito entro o oltre K: al confine sono leciti `found` oppure
+    `outOfDomain` sul dato 2. Un riferimento non impone l'esito: con `found`
+    punti e arco entro gli errori e m entro K; con `outOfDomain`, dato 2.
+    Nessun obbligo del double più vicino o di un m sempre entro K. P16 e P20
+    allineate; P20 non cambia codice per questa decisione e R20 non impone
+    l'esito al confine, come nella #152.
+  - **#156:** il principio del dominio di `curves.hpp` (esatto, limite ±K,
+    m dai double, nessuna omissione silenziosa) vale solo per costruzioni di
+    `offset.hpp` e `tangency.hpp`. Gli estremi di `endpoints` e delle
+    sovrapposizioni di `intersect` e `intersectAlong` restano entro l'errore
+    anche oltre K; i punti comuni isolati oltre K restano omessi e contati
+    (`omittedBeyondDomain`). `endpoints`, `intersect`, `intersectAlong` e
+    `intersection.hpp` invariati; nessun pacchetto nuovo, P7/P10/P11 invariate.
+  Solo commenti delle intestazioni, ADR 0010–0012, schede elencate dalle
+  decisioni e questo registro nella stessa PR #147, con `Closes #153`–
+  `Closes #156`. Nessuna dichiarazione, implementazione o caso modificato.
+  La nuova revisione del contratto sulle sole funzioni toccate spetta a un
+  agente diverso dall'autore, prima del merge.
+
+- **2026-11-02: fascia di confine di fillet (#157).** Su decisione del
+  responsabile nella #157, la fascia è quella dell'errore dell'arco:
+  `kRelativeArcError * max(M, |p|, 2^-1022)`. Quando un punto dell'arco esatto
+  ha una coordinata il cui valore assoluto supera K meno quell'errore, una
+  scelta lecita può dare `found` oppure `outOfDomain` sul dato 2 per m
+  ricostruito; più lontano dal confine, m ricostruito è nel dominio.
+  Cambiano soltanto la frase nel commento di `fillet` in `tangency.hpp`,
+  l'ADR 0011 (punto 8 e riga **Corretto:**), le schede P16 e P20 e questo
+  registro, nella stessa PR #147 con `Closes #157`. Il resto del commento e
+  tutte le dichiarazioni restano invariati. P20 non cambia codice; R20 non
+  impone l'esito dentro la fascia.
