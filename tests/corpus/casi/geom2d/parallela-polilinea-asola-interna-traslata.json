@@ -59,7 +59,10 @@
             "valore": 999997.0,
             "tolleranza": 3.552802496642471e-09
           },
-          "1"
+          {
+            "valore": 1.0,
+            "tolleranza": 9.47413999104659e-09
+          }
         ],
         [
           {
@@ -81,7 +84,10 @@
             "valore": 1000003.0,
             "tolleranza": 3.552802496642471e-09
           },
-          "1"
+          {
+            "valore": 1.0,
+            "tolleranza": 9.47413999104659e-09
+          }
         ]
       ],
       "chiusa": true
@@ -107,6 +113,6 @@
   },
   "provenienza": {
     "tipo": "calcolo-a-mano",
-    "procedimento": "Centri (0,0) e (20,0), raggi 5-d. Per d<5 gli estremi spostati coincidono esattamente e non servono giunzioni: restano quattro pezzi tangenti, disgiunti dall’ingresso. Per d=5 i due semicerchi spariscono; i due segmenti opposti su y=0 hanno già gli estremi comuni, quindi il passo 2 non crea giunzioni; il controllo finale trova sovrapposizione oltre i vertici: selfIntersection. Per d=6 i semicerchi spariscono e le rette y=1 e y=-1 non si incontrano: sorgenti non consecutive, openJoint. Traslazione esatta di entrambi gli assi di 1000000: tutti i dati interi restano rappresentabili; le decisioni e le origini sono invariate. Le coordinate costruite hanno tolleranza 2^-48*max(M,|x|,|y|), qui esattamente rappresentabile; M include estremi, punti medi degli archi e |d|. I bulge 0 e 1 non modificati sono dati esatti."
+    "procedimento": "Centri (0,0) e (20,0), raggi 5-d. Per d<5 gli estremi spostati coincidono esattamente e non servono giunzioni: restano quattro pezzi tangenti, disgiunti dall’ingresso. Per d=5 i due semicerchi spariscono; i due segmenti opposti su y=0 hanno già gli estremi comuni, quindi il passo 2 non crea giunzioni; il controllo finale trova sovrapposizione oltre i vertici: selfIntersection. Per d=6 i semicerchi spariscono e le rette y=1 e y=-1 non si incontrano: sorgenti non consecutive, openJoint. Traslazione esatta di entrambi gli assi di 1000000: tutti i dati interi restano rappresentabili; le decisioni e le origini sono invariate. Le coordinate costruite hanno tolleranza 2^-48*max(M,|x|,|y|), qui esattamente rappresentabile; M include estremi, punti medi degli archi e |d|. I bulge 0 e 1 non modificati sono dati esatti. ADR 0013 (#160): il bulge di un arco costruito non è più il double più vicino; si confronta con tolleranza 4E/corda, E=2^-46*S, S=max(M,|p|) sull'arco esatto: la freccia corda*|bulge|/2 può spostarsi di E (punti dell'arco) più l'errore degli estremi (2^-48*S ciascuno), cioè al più 3E/corda sul bulge per |bulge|<=1. Qui M=1.00002e+06; vertice 1: S=1.00002e+06, corda=6, tolleranza 9.47413999104659e-09; vertice 3: S=1.00002e+06, corda=6, tolleranza 9.47413999104659e-09."
   }
 }
