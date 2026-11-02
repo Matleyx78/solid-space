@@ -2,6 +2,14 @@
 
 - **Stato:** Accettato
 - **Data:** 2026-10-29
+- **Corretto:** 2026-11-02 — un punto che il contratto non determinava,
+  trovato da Tecnigrafo scrivendo `JOIN` (issue #158, dalla P22 della sua tappa
+  0.7) e deciso dal responsabile: dati i segmenti allineati con la sorgente,
+  quali sono i due estremi della linea unita, quando due estremi hanno la
+  stessa proiezione esatta lungo la sorgente. Si aggiunge `joinAligned`, che
+  li dà direttamente: il primo e l'ultimo estremo lungo la sorgente, decisi
+  esattamente, con i pareggi nell'ordine dei segmenti (la sorgente prima)
+  (punto 5 e Contratto).
 - **Richiesta:** #23 — da Tecnigrafo: tappa 0.7, Matleyx78/tecnigrafo#329
 - **Esito:** 3 pezzo nostro
 - **Tappa:** 0.2 (scheda da scrivere all'apertura)
@@ -112,6 +120,14 @@ epsilon per gli angoli), e la tappa 0.7 ne richiede di nuove per `JOIN` e
    - La regola non è transitiva: a ~ b e b ~ c non danno a ~ c. Chi la applica a
      catene (`JOIN` su molte entità) la applica in un ordine fissato, e lo
      scrive.
+   - Gli estremi della linea che unisce segmenti allineati non li sceglie chi
+     applica la regola: li dà `geom2d::joinAligned`, che non usa tolleranze.
+     Sono il primo e l'ultimo, lungo la sorgente, fra gli estremi della
+     sorgente e dei segmenti, in quest'ordine; lungo la sorgente vuol dire
+     per (p − inizio) · (fine − inizio), deciso esattamente; a parità esatta
+     vince il primo nell'ordine dei segmenti, la sorgente prima. I due punti
+     sono `double` dei dati, restituiti senza arrotondarli (corretto il
+     2026-11-02, issue #158).
 6. **Fuori da questa richiesta:** le tolleranze dello schermo e la traduzione di
    `INSUNITS` restano a Tecnigrafo; il suo ADR delle tolleranze parte da qui.
 
@@ -142,12 +158,14 @@ Intestazioni pubbliche in bozza in questa pull request ([ADR
   `DiagnosisCode::invalidValue` per un'unità non valida.
 - `robust/include/solid_space/robust/point.hpp`: `Point2`, `kMaxCoordinate`.
 - `geom2d/include/solid_space/geom2d/coincidence.hpp`: `isDegenerate`,
-  `isStraight`, `areAligned`, `areConcentric`, `onSameCircle`. I tipi delle
+  `isStraight`, `areAligned`, `areConcentric`, `onSameCircle`, e
+  `joinAligned` (aggiunta il 2026-11-02, issue #158). I tipi delle
   curve e le diagnosi di `geom2d` sono quelli del contratto dell'ADR 0010
   (`curves.hpp`, `diagnosis.hpp`).
 
 Nessuna funzione costruisce valori: tutte le risposte sono esatte rispetto a
-epsilon, che è un `double` calcolato in modo deterministico. Le precondizioni
+epsilon, che è un `double` calcolato in modo deterministico (`joinAligned`
+non usa epsilon e restituisce estremi dei dati). Le precondizioni
 violate danno un'asserzione in debug; i dati non validi delle curve danno una
 diagnosi. Il test `tests/robust/contract_test.cpp` e
 `tests/geom2d/contract_test.cpp` controllano che le intestazioni compilino con
