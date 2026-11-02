@@ -130,6 +130,18 @@ Il pacchetto si riprende dopo la decisione. Se trovi il buco a lavoro già
 avanzato, vale lo stesso: pubblica il ramo senza pull request e scrivine il nome
 nella issue.
 
+**Buchi visibili e no** ([ADR 0013](docs/adr/0013-esatto-dove-serve.md),
+punto 3). La sosta qui sopra vale solo per un buco **visibile**: per dati dentro
+il dominio cambia l'esito o la diagnosi, il numero o l'ordine delle entità
+risultanti, o una coordinata di più di epsilon (ADR 0009). Un buco non visibile
+non ti ferma: scegli la risposta più semplice, scrivila nel commento
+dell'intestazione (anche se la scheda non la elenca, con la riga **Revisione
+del contratto: da fare** nella pull request), fissala con un test e segnalala
+nella pull request. Un caso di riferimento non impone quella scelta: confronta
+i valori costruiti con una tolleranza dichiarata. Un esito che dipende solo dal
+`double` che una costruzione sceglie entro il suo errore è libero dentro la sua
+fascia (ADR 0013, punto 4), e nessun caso lo impone.
+
 **Se la tua pull request cambia un'intestazione del contratto** (anche solo un
 commento, per esempio applicando una decisione), metti in testa alla
 descrizione la riga **Revisione del contratto: da fare**, con le intestazioni e

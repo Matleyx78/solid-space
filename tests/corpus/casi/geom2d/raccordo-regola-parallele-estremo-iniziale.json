@@ -51,7 +51,10 @@
         "tolleranza": 1.7763568394002505e-14
       }
     ],
-    "raggio": "1",
+    "raggio": {
+      "valore": 1.0,
+      "tolleranza": 7.105427357601002e-14
+    },
     "sulla_prima": {
       "punto": [
         {
@@ -95,7 +98,10 @@
             "tolleranza": 1.7763568394002505e-14
           }
         ],
-        "raggio": "1",
+        "raggio": {
+          "valore": 1.0,
+          "tolleranza": 7.105427357601002e-14
+        },
         "angolo_iniziale": {
           "valore": -1.5707963267948966,
           "tolleranza": 7.105427357601002e-14
@@ -113,6 +119,6 @@
   },
   "provenienza": {
     "tipo": "calcolo-a-mano",
-    "procedimento": "Regola1: estremo iniziale(0,0) più vicino. Semicerchio dalla parte x<0, lontano dalla prima curva: verso orario, -pi, bulge-1. Raggio restituito1, indipendente dal richiesto5. M=5."
+    "procedimento": "Regola1: estremo iniziale(0,0) più vicino. Semicerchio dalla parte x<0, lontano dalla prima curva: verso orario, -pi, bulge-1. Raggio restituito1, indipendente dal richiesto5. M=5. ADR 0013 (#160): il raggio del semicerchio è costruito (metà della distanza tra le rette) e si confronta entro kRelativeArcError*M = 2^-46*5 = 7.105427357601002e-14, nel raggio e nell'arco."
   }
 }

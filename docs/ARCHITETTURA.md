@@ -102,3 +102,4 @@ intestazioni del contratto con Tecnigrafo, in bozza e non ancora realizzate
 | [0010](adr/0010-posizione-e-intersezioni-nel-piano.md) | Posizione reciproca e intersezioni di linee, archi e cerchi del piano (richiesta #20, esito 3) | Accettato |
 | [0011](adr/0011-raccordi-e-tangenze-nel-piano.md) | Raccordi e tangenze tra linee, archi e cerchi del piano (richiesta #21, esito 3) | Accettato |
 | [0012](adr/0012-curva-parallela-nel-piano.md) | Curva parallela di linee, archi, cerchi e polilinee del piano (richiesta #22, esito 3) | Accettato |
+| [0013](adr/0013-esatto-dove-serve.md) | Esatto dove serve: decisioni esatte, costruzioni entro l'errore, dominio in basso e buchi visibili | Accettato |

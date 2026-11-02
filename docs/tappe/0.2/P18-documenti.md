@@ -10,7 +10,7 @@
 - **Dipende da:** P8 (#49), P11 (#56), P14 (#63), P16 (#70), P17 (#71), P19 (#130),
   P20 (#145): i primi quattro chiudono le catene che realizzano le intestazioni del contratto, P17 è
   l'ultimo altro pacchetto che tocca `tests/CMakeLists.txt`; P19 completa
-  bulge e vertici dell'offset, P20 le costruzioni nei subnormali
+  bulge e dominio dell'offset, P20 il dominio delle tangenze
 - **Sblocca in Tecnigrafo:** niente
 - **Componente:** documenti (più i commenti iniziali delle intestazioni del
   contratto)
