@@ -29,6 +29,8 @@
   controllati, bulge zero se le tangenze restituite coincidono (punti 4, 6 e 8).
   La #155 dichiara la dipendenza del dominio del punto m dalle scelte lecite
   di tangenze e bulge entro l'errore (punto 8).
+  La #157 (2026-11-02) precisa che la fascia di confine è a meno dell'errore
+  dell'arco (`kRelativeArcError`) da K (punto 8).
 - **Richiesta:** #21 — da Tecnigrafo: tappa 0.7, Matleyx78/tecnigrafo#327
 - **Esito:** 3 pezzo nostro
 - **Tappa:** 0.2 (scheda da scrivere all'apertura)
@@ -210,7 +212,8 @@ quadrato, con un filtro in virgola mobile nel caso comune, come nell'ADR 0010.
    oltre K (si limita l'arrotondamento a ±K). Il punto m si ricostruisce
    esattamente dai `double` restituiti (#149). In `fillet`, punti di tangenza
    e bulge sono liberi entro i rispettivi errori: con l'arco esatto a meno
-   dell'errore da K, una scelta lecita può dare `found` oppure `outOfDomain`
+   dell'errore dell'arco (`kRelativeArcError`) da K, una scelta lecita può dare
+   `found` oppure `outOfDomain`
    sul dato 2 per m (#155). Nessun riferimento al confine impone un esito:
    con `found` punti e arco rispettano gli errori e m ricostruito è entro K;
    con `outOfDomain` il dato è 2. Nessun obbligo del double più vicino né

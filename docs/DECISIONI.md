@@ -341,3 +341,15 @@ i rimandi ai documenti che cambia.
   `Closes #156`. Nessuna dichiarazione, implementazione o caso modificato.
   La nuova revisione del contratto sulle sole funzioni toccate spetta a un
   agente diverso dall'autore, prima del merge.
+
+- **2026-11-02: fascia di confine di fillet (#157).** Su decisione del
+  responsabile nella #157, la fascia è quella dell'errore dell'arco:
+  `kRelativeArcError * max(M, |p|, 2^-1022)`. Quando un punto dell'arco esatto
+  ha una coordinata il cui valore assoluto supera K meno quell'errore, una
+  scelta lecita può dare `found` oppure `outOfDomain` sul dato 2 per m
+  ricostruito; più lontano dal confine, m ricostruito è nel dominio.
+  Cambiano soltanto la frase nel commento di `fillet` in `tangency.hpp`,
+  l'ADR 0011 (punto 8 e riga **Corretto:**), le schede P16 e P20 e questo
+  registro, nella stessa PR #147 con `Closes #157`. Il resto del commento e
+  tutte le dichiarazioni restano invariati. P20 non cambia codice; R20 non
+  impone l'esito dentro la fascia.

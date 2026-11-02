@@ -54,7 +54,8 @@ punti restituiti. La forma con bulge può essere un punto: in quel caso si usa
 l'`Arc`. P20 corregge il codice già unito solo se necessario.
 
 La #155, come la #152, lascia liberi punti di tangenza e bulge entro i loro
-errori. Se l'arco esatto è a meno dell'errore da K, il dominio di m ricostruito
+errori. Se l'arco esatto è a meno dell'errore dell'arco (`kRelativeArcError`)
+da K, il dominio di m ricostruito
 dai double può dipendere da una scelta lecita: `found` oppure `outOfDomain`
 sul dato 2. Il riferimento al confine non impone nessuno dei due: con `found`
 punti e arco entro gli errori e m entro K; con `outOfDomain`, dato 2.

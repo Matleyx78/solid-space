@@ -259,8 +259,10 @@ struct Fillet {
 /// exact construction values, except m reconstructed exactly from returned
 /// doubles; returned coordinates and radii obey the boundary rule of curves.hpp.
 /// Tangency points and bulge remain free within their declared errors. When
-/// the exact arc is closer than that error to kMaxCoordinate, a permitted
-/// choice may give either found or outOfDomain (input 2) for reconstructed m.
+/// a point of the exact arc has a coordinate whose magnitude exceeds
+/// kMaxCoordinate − kRelativeArcError * max(M, |p|, 2^-1022), a permitted choice
+/// may give either found or outOfDomain (input 2) for reconstructed m. Farther
+/// from the boundary, the reconstructed m is within the domain.
 /// A boundary reference case must not require either outcome: with found,
 /// points and arc must meet their error bounds and reconstructed m must be
 /// within the domain; with outOfDomain, input is 2. This adds no nearest-double
