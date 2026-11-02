@@ -9,12 +9,23 @@
 //
 // Every curve has an exact meaning, fixed below from its doubles. All the
 // decisions of geom2d (intersections, positions, order, side) are exact
-// answers about that meaning. Constructions (points, stations, lengths) are
-// rounded, within the errors declared here. Every construction error bound in
-// geom2d, including bounds declared in other headers, uses a scale of at least
-// 2^-1022 (the smallest normal double): max(M, |p|, 2^-1022) for points and
-// max(M, |s|, 2^-1022) for stations and lengths. This floor changes no exact
-// decision and does not restrict the input domain.
+// answers about that meaning, for every finite double. Constructions (points,
+// radii, stations, lengths, bulges) are rounded within the errors declared
+// here and in other headers; the contract does not say which double within
+// that error is returned, only that the same input gives the same bits on
+// every system (ADR 0013, point 1; ADR 0008, point 5).
+//
+// Every construction error bound in geom2d, including bounds declared in
+// other headers, holds for data of magnitude M (see magnitude()) at least
+// 2^-50 (ADR 0013, point 2). For smaller data, subnormal ones included,
+// geom2d guarantees only no crash, no exception other than std::bad_alloc, no
+// result outside the domain and determinism: no error bound.
+//
+// When an outcome (a result or diagnosis, the number or order of the returned
+// entities, the coincidence of two returned values) depends only on which
+// double a construction picks within its error, it is free inside a band
+// that the function states: deterministic, but not fixed by the contract,
+// and no reference case imposes it (ADR 0013, point 4).
 
 #include "solid_space/geom2d/diagnosis.hpp"
 #include "solid_space/robust/point.hpp"
@@ -36,13 +47,13 @@ inline constexpr double kFullTurn = 6.283185307179586;         // 2 pi
 
 /// Largest error of a constructed point, relative to the magnitude: a point p
 /// returned by geom2d differs from the exact point by at most
-/// kRelativePointError * max(M, |p|, 2^-1022), where |p| is the largest absolute
+/// kRelativePointError * max(M, |p|), where |p| is the largest absolute
 /// coordinate of the exact point and M the magnitude of the inputs (see
 /// magnitude()). 2^-48 is about 3.6e-15.
 inline constexpr double kRelativePointError = 0x1p-48;
 
 /// Largest error of a station or a length (see CurvePosition), relative in
-/// the same way: at most kRelativeStationError * max(M, |s|, 2^-1022), with s the exact
+/// the same way: at most kRelativeStationError * max(M, |s|), with s the exact
 /// value. 2^-46 is about 1.4e-14.
 inline constexpr double kRelativeStationError = 0x1p-46;
 

@@ -3,25 +3,28 @@
 
 // The cases of tangentsFrom() and tangentCircles() (stage 0.2, package P15;
 // references [0.2-R15a] and [0.2-R15b]). Every case of tangentCircles also
-// calls it with the curves swapped and fails unless it gives the same circles,
-// with the same bits, with the two curves and their sides swapped (ADR 0011,
-// "Verifica"): the points and stations are correctly rounded values of exact
-// numbers, so the order of the arguments cannot change them.
+// calls it with the curves swapped and fails unless it gives the same circles
+// with the two curves swapped (tangency.hpp, tangentCircles; ADR 0011,
+// "Verifica"): the same count, the positions and sides swapped exactly, and
+// the centres, points and stations within twice their declared errors, since
+// the contract does not say which double a construction returns (ADR 0013).
 
 #include "operations.hpp"
 #include "plane_data.hpp"
+#include "solid_space/geom2d/curves.hpp"
 #include "solid_space/geom2d/tangency.hpp"
 
-#include <bit>
-#include <cstdint>
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
 #include <stdexcept>
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace solid_space::corpus {
 namespace {
 
-using geom2d::CurvePosition;
 using geom2d::Placement;
 using geom2d::TangencyPoint;
 using geom2d::TangentCircle;
@@ -44,34 +47,54 @@ Value writeTangencyPoint(const TangencyPoint& point) {
         {{"punto", writePoint(point.point)}, {"sulla_curva", writePosition(point.position)}});
 }
 
-bool sameBits(double a, double b) {
-    return std::bit_cast<std::uint64_t>(a) == std::bit_cast<std::uint64_t>(b);
-}
-
-bool sameBits(robust::Point2 a, robust::Point2 b) {
-    return sameBits(a.x, b.x) && sameBits(a.y, b.y);
-}
-
-bool sameBits(const CurvePosition& a, const CurvePosition& b) {
-    return a.location == b.location && sameBits(a.station, b.station);
-}
-
-bool sameBits(const TangencyPoint& a, const TangencyPoint& b) {
-    return sameBits(a.point, b.point) && sameBits(a.position, b.position);
-}
-
 [[noreturn]] void asymmetric(const std::string& what) {
     throw std::runtime_error("tangentCircles is not symmetric: " + what);
 }
 
-bool sameSwapped(const TangentCircle& circle, const TangentCircle& other) {
-    return sameBits(circle.center, other.center) && sameBits(circle.onFirst, other.onSecond) &&
-           sameBits(circle.onSecond, other.onFirst) && circle.sideOfFirst == other.sideOfSecond &&
-           circle.sideOfSecond == other.sideOfFirst;
+// Two returned values, each within relativeError * max(M, |v|) of the same
+// exact value (curves.hpp), differ by at most twice that bound. The largest of
+// the two returned magnitudes stands for |v| of the exact value, with a small
+// margin for the difference between them.
+bool closeEnough(double a, double b, double relativeError, double magnitude) {
+    const double scale = std::max({magnitude, std::fabs(a), std::fabs(b)});
+    return std::fabs(a - b) <= 2.0 * relativeError * scale * (1.0 + 0x1p-20);
+}
+
+// |p| of a point is its largest absolute coordinate (curves.hpp).
+bool closeEnough(robust::Point2 a, robust::Point2 b, double magnitude) {
+    const double scale =
+        std::max({magnitude, std::fabs(a.x), std::fabs(a.y), std::fabs(b.x), std::fabs(b.y)});
+    return closeEnough(a.x, b.x, geom2d::kRelativePointError, scale) &&
+           closeEnough(a.y, b.y, geom2d::kRelativePointError, scale);
+}
+
+bool closeEnough(const TangencyPoint& a, const TangencyPoint& b, double magnitude) {
+    return a.position.location == b.position.location && closeEnough(a.point, b.point, magnitude) &&
+           closeEnough(a.position.station, b.position.station, geom2d::kRelativeStationError,
+                       magnitude);
+}
+
+bool sameSwapped(const TangentCircle& circle, const TangentCircle& other, double magnitude) {
+    return circle.sideOfFirst == other.sideOfSecond && circle.sideOfSecond == other.sideOfFirst &&
+           closeEnough(circle.center, other.center, magnitude) &&
+           closeEnough(circle.onFirst, other.onSecond, magnitude) &&
+           closeEnough(circle.onSecond, other.onFirst, magnitude);
+}
+
+// The magnitude M of tangentCircles (tangency.hpp): the largest among the
+// magnitudes of the two curves and the radius. Only called after both calls
+// succeeded, so the data are valid.
+double operationMagnitude(const geom2d::Curve& first, const geom2d::Curve& second, double radius) {
+    const auto a = geom2d::magnitude(first);
+    const auto b = geom2d::magnitude(second);
+    if (!a.hasValue() || !b.hasValue()) {
+        throw std::runtime_error("tangentCircles succeeded on curves without a magnitude");
+    }
+    return std::max({a.value(), b.value(), radius});
 }
 
 void checkSymmetry(const geom2d::Result<TangentCircles>& direct,
-                   const geom2d::Result<TangentCircles>& swapped) {
+                   const geom2d::Result<TangentCircles>& swapped, double magnitude) {
     if (direct.hasValue() != swapped.hasValue()) {
         asymmetric("only one of the two calls gives a diagnosis");
     }
@@ -88,11 +111,15 @@ void checkSymmetry(const geom2d::Result<TangentCircles>& direct,
     if (a.infinitelyMany != b.infinitelyMany || a.circles.size() != b.circles.size()) {
         asymmetric("the counts differ");
     }
-    // The circles are different, so each one has a single match.
+    // Each circle of one call matches a different circle of the other.
+    std::vector<bool> used(b.circles.size(), false);
     for (const auto& circle : a.circles) {
         bool found = false;
-        for (const auto& other : b.circles) {
-            found = found || sameSwapped(circle, other);
+        for (std::size_t i = 0; i < b.circles.size() && !found; ++i) {
+            if (!used[i] && sameSwapped(circle, b.circles[i], magnitude)) {
+                used[i] = true;
+                found = true;
+            }
         }
         if (!found) {
             asymmetric("a circle is missing with the curves swapped");
@@ -123,10 +150,11 @@ Value tangentCirclesOperation(const Value& input) {
     const double radius = readNumber(field(input, "raggio"), "raggio");
     const auto direct = geom2d::tangentCircles(left, right, radius);
     const auto swapped = geom2d::tangentCircles(right, left, radius);
-    checkSymmetry(direct, swapped);
-    if (!direct.hasValue()) {
+    if (!direct.hasValue() || !swapped.hasValue()) {
+        checkSymmetry(direct, swapped, 0.0);
         return writeDiagnosis(direct.diagnosis());
     }
+    checkSymmetry(direct, swapped, operationMagnitude(left, right, radius));
     Value::List circles;
     for (const auto& circle : direct.value().circles) {
         circles.push_back(Value::group({{"centro", writePoint(circle.center)},

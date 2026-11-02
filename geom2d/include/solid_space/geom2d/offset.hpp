@@ -32,7 +32,7 @@ namespace solid_space::geom2d {
 
 /// Largest distance between a returned offset and the exact one, relative to
 /// the magnitude: every point of the returned curve or polyline lies within
-/// kRelativeOffsetError * max(M, |p|, 2^-1022) of the exact offset, and every point of
+/// kRelativeOffsetError * max(M, |p|) of the exact offset, and every point of
 /// the exact offset within the same distance of the returned one. 2^-46 is
 /// about 1.4e-14, 16 times below the relative tolerance of ADR 0009.
 inline constexpr double kRelativeOffsetError = 0x1p-46;
@@ -54,9 +54,9 @@ enum class OffsetOutcome : std::uint8_t {
 };
 
 /// The offset of one curve. Every returned vertex (the ends of a Segment or
-/// PolylineSegment, straight or curved) is rounded coordinate by coordinate
-/// to the nearest double, ties to even. Bulges and representability checks
-/// use these doubles, not arbitrary points within the error bound. Exact
+/// PolylineSegment, straight or curved) is rounded within kRelativePointError;
+/// which double is returned is not fixed (ADR 0013). Bulges and
+/// representability checks use the returned doubles. Exact
 /// constructed ends and radii in offsetCurve are domain-checked before any
 /// failed outcome below; failed only applies when those exact values are
 /// within the domain.
@@ -66,11 +66,12 @@ struct CurveOffset {
     /// With done, the same kind of curve as the input:
     /// - Segment and straight PolylineSegment: moved by |distance| along the
     ///   normal; each end within kRelativePointError;
-    /// - Circle: the same centre, radius R - distance (nearest double, ties to even);
+    /// - Circle: the same centre, radius R - distance, rounded within
+    ///   kRelativeOffsetError;
     /// - Arc: the same centre, start angle and sweep, so the same exact
     ///   directions D0 and D1 (curves.hpp); radius R - distance for a
-    ///   counterclockwise arc, R + distance for a clockwise one (nearest double,
-    ///   ties to even);
+    ///   counterclockwise arc, R + distance for a clockwise one, rounded within
+    ///   kRelativeOffsetError;
     /// - curved PolylineSegment: start and end moved along the radius, each
     ///   within kRelativePointError; the bulge is that of the arc from the
     ///   returned start to the returned end, turning as the input, whose
@@ -78,9 +79,10 @@ struct CurveOffset {
     ///   centre C of the offset circle. With m the middle of the returned
     ///   ends, n the vector from start to end turned a quarter turn
     ///   counterclockwise and t = ((C - m) . n) / (n . n), all exact, the
-    ///   bulge is the double nearest to -2 t + sqrt(4 t^2 + 1) for a
-    ///   counterclockwise piece and to -2 t - sqrt(4 t^2 + 1) for a clockwise
-    ///   one. So the arc keeps the exact centre as well as the rounded ends
+    ///   bulge is -2 t + sqrt(4 t^2 + 1) for a counterclockwise piece and
+    ///   -2 t - sqrt(4 t^2 + 1) for a clockwise one, rounded (which double is
+    ///   not fixed; the check of failed below is on the returned arc). So the
+    ///   arc keeps the exact centre as well as the rounded ends
     ///   allow, and its included angle may differ from that of the input by
     ///   the rounding of the ends. If the rounded ends coincide, the outcome
     ///   is failed with no curve: a nonzero exact arc must not become a point.
@@ -88,7 +90,7 @@ struct CurveOffset {
     /// or less gives vanished.
     ///
     /// failed, with no curve, when the arc of a curved PolylineSegment so
-    /// built has a point farther than kRelativeOffsetError * max(M, |p|, 2^-1022)
+    /// built has a point farther than kRelativeOffsetError * max(M, |p|)
     /// from the exact offset, or the exact offset a point that far from it:
     /// its rounded ends turn the chord too much for any bulge. For distinct
     /// rounded ends, never when both distances are within half that bound;
@@ -96,6 +98,13 @@ struct CurveOffset {
     /// of its coordinates. Coincident rounded ends always give failed.
     /// A nondegenerate Segment or straight PolylineSegment whose rounded ends
     /// coincide also gives failed, with no curve.
+    ///
+    /// Bands (curves.hpp; ADR 0013, point 4). Two rounded ends can coincide
+    /// only when every coordinate of the two exact ends differs by at most
+    /// 2 * kRelativePointError * max(M, |p|), with |p| the larger of the two:
+    /// for those data failed for coincident rounded ends is free. For an arc
+    /// near a full turn whose chord spans a few ulp, failed for a bulge that
+    /// cannot be represented is free too. Elsewhere the outcome is determined.
     Curve curve;
 };
 
@@ -218,8 +227,9 @@ struct PolylineOffset {
 ///    vanished.
 ///
 /// Every final vertex, including moved, cut or extended ends, joint points
-/// and gap-arc ends, is rounded coordinate by coordinate to the nearest double,
-/// ties to even. Shared vertices use those same doubles for both pieces.
+/// and gap-arc ends, is rounded within kRelativePointError; which double is
+/// returned is not fixed (ADR 0013). Shared vertices use the same doubles for
+/// both pieces.
 /// After rounding, before computing bulges or running final checks, straight
 /// pieces whose rounded ends coincide are dropped, together with their origins
 /// entries, making simple false. Their neighbours already share the same
@@ -237,6 +247,13 @@ struct PolylineOffset {
 /// result is assembled, before the checks below. In particular, coincident
 /// rounded ends of a nonzero exact arc give failed with notRepresentable;
 /// that arc is not dropped as a point by step 4.
+///
+/// Bands: the bands of CurveOffset apply to every piece of the result. Inside
+/// them, which straight pieces collapse and are dropped (with simple, origins,
+/// and failed with notRepresentable when no piece remains), and whether an arc
+/// gives failed with notRepresentable, are free. Steps 1-4, which decide
+/// exactly which pieces vanish, are removed or reduced to a point, are not
+/// affected.
 ///
 /// Final checks run in the order listed below; the first failure decides the
 /// reason. Domain is checked before intersections, which require in-domain data.
