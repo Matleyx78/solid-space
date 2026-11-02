@@ -38,7 +38,7 @@ namespace solid_space::geom2d {
 /// Largest distance of a returned fillet arc from the exact one, relative to
 /// the magnitude: every point of the returned Arc (as curves.hpp defines it)
 /// and of the returned bulge form lies within
-/// kRelativeArcError * max(M, |p|, 2^-1022) of the exact fillet arc, and the reverse;
+/// kRelativeArcError * max(M, |p|) of the exact fillet arc, and the reverse;
 /// their ends lie within the same distance of the exact points of tangency.
 /// 2^-46 is about 1.4e-14, 16 times below the relative tolerance of ADR 0009.
 inline constexpr double kRelativeArcError = 0x1p-46;
@@ -83,7 +83,7 @@ struct TangentsFromPoint {
 /// curves.hpp: the whole call fails, with no listed point silently omitted.
 /// With Extension::none, excluded points are not domain-checked; with
 /// Extension::extended all points are checked. Returned coordinates obey the
-/// boundary rule of curves.hpp; nearest-double rounding is not required.
+/// boundary rule of curves.hpp.
 [[nodiscard]] Result<TangentsFromPoint> tangentsFrom(Point2 point, const Curve& curve,
                                                      Extension extension);
 
@@ -132,7 +132,14 @@ struct TangentCircles {
 /// gives no circles; no candidate is silently omitted. Domain checks concern
 /// data values under curves.hpp, never the geometric extent of a circle.
 /// All input checks precede construction checks; returned coordinates obey
-/// the boundary rule of curves.hpp without requiring nearest-double rounding.
+/// the boundary rule of curves.hpp.
+///
+/// Swapping the curves gives the same circles: the same infinitelyMany and
+/// count, with onFirst and onSecond swapped (their positions decided exactly)
+/// and sideOfFirst and sideOfSecond swapped, listed in the order above for the
+/// swapped curves. Centres, points and stations agree within their errors,
+/// not necessarily in bits (ADR 0013, point 3: the simplest choice, since the
+/// difference is below the tolerance of ADR 0009).
 [[nodiscard]] Result<TangentCircles> tangentCircles(const Curve& first, const Curve& second,
                                                     double radius);
 
@@ -164,7 +171,8 @@ struct ChosenCircle {
 /// |onSecond.point - nearSecond|^2, evaluated in double, in that order, on
 /// the rounded points: the choice is deterministic (the same bits everywhere,
 /// ADR 0008, point 5) but not exact, so picks almost equally near two circles
-/// may choose either. A tie goes to the first circle in the list.
+/// may choose either: a band of curves.hpp (ADR 0013, point 4). A tie goes to
+/// the first circle in the list.
 ///
 /// Diagnoses as tangentCircles; invalidValue or outOfDomain about nearFirst
 /// (input 3) or nearSecond (input 4). This includes failure of the whole call
@@ -185,7 +193,7 @@ struct Fillet {
     /// radius zero, the corner.
     Point2 center;
     /// The radius asked for; for a semicircle, half the distance between the
-    /// two lines (rounded to double).
+    /// two lines, rounded within kRelativeArcError.
     double radius = 0.0;
     /// The points of tangency. Their positions tell how to cut or extend each
     /// curve so that it ends at the fillet.
@@ -203,8 +211,9 @@ struct Fillet {
     /// With radius zero, or when the returned onFirst.point and onSecond.point
     /// coincide: 0. The Arc keeps its given radius and its own rules. Since
     /// point rounding is free within kRelativePointError, coincidence can
-    /// depend on a permitted rounding choice; neither branch is mandatory
-    /// for a boundary case. The bulge form may be a point; use Arc in that case.
+    /// depend on a permitted rounding choice: a band of curves.hpp (ADR 0013,
+    /// point 4), where neither branch is mandatory. The bulge form may be a
+    /// point; use Arc in that case.
     double bulge = 0.0;
 };
 
@@ -240,8 +249,8 @@ struct Fillet {
 ///    the same exact point, it is that single point (sweep 0, bulge 0).
 ///    When only the returned points coincide, bulge is 0 while Arc keeps the
 ///    rules above and the given radius. Coincidence may depend on permitted
-///    point rounding; a reference case must not require either branch. Both
-///    forms still obey kRelativeArcError.
+///    point rounding (a band, ADR 0013, point 4); a reference case must not
+///    require either branch. Both forms still obey kRelativeArcError.
 ///
 /// Diagnosis invalidValue, outOfDomain or degenerateCurve about the first
 /// curve (input 0) or the second (input 1); invalidValue when the radius is
@@ -260,13 +269,14 @@ struct Fillet {
 /// doubles; returned coordinates and radii obey the boundary rule of curves.hpp.
 /// Tangency points and bulge remain free within their declared errors. When
 /// a point of the exact arc has a coordinate whose magnitude exceeds
-/// kMaxCoordinate − kRelativeArcError * max(M, |p|, 2^-1022), a permitted choice
+/// kMaxCoordinate − kRelativeArcError * max(M, |p|), a permitted choice
 /// may give either found or outOfDomain (input 2) for reconstructed m. Farther
 /// from the boundary, the reconstructed m is within the domain.
 /// A boundary reference case must not require either outcome: with found,
 /// points and arc must meet their error bounds and reconstructed m must be
-/// within the domain; with outOfDomain, input is 2. This adds no nearest-double
-/// requirement and no requirement to choose an m within the domain.
+/// within the domain; with outOfDomain, input is 2. This is a band of
+/// curves.hpp (ADR 0013, point 4), and adds no requirement to choose an m
+/// within the domain.
 [[nodiscard]] Result<Fillet> fillet(const Curve& first, Point2 pickFirst, const Curve& second,
                                     Point2 pickSecond, double radius);
 
