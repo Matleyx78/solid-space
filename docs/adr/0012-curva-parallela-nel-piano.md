@@ -46,6 +46,9 @@
   esatti prima di `failed`; nella polilinea solo estremi dei pezzi rimasti
   dopo lo scarto dei dritti collassati, con entrambi i precursori esatti
   dei vertici condivisi (punto 9).
+- **Corretto:** 2026-11-02 — esattezza delle costruzioni, dominio in basso a
+  2^-50, fascia degli esiti liberi e regola dei buchi visibili: vale
+  l'[ADR 0013](0013-esatto-dove-serve.md) dove questo ADR dice altro.
 - **Richiesta:** #22 — da Tecnigrafo: tappa 0.7, Matleyx78/tecnigrafo#328
 - **Esito:** 3 pezzo nostro
 - **Tappa:** 0.2 (scheda da scrivere all'apertura)
