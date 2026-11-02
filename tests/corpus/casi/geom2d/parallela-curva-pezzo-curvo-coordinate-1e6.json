@@ -53,6 +53,6 @@
   },
   "provenienza": {
     "tipo": "aritmetica-esatta",
-    "procedimento": "Pezzo curvo (bulge=1, centro (1000000, 1000000), R=1) con d=-1 esterno. R_new = 2. Inizio (1000002, 1000000), fine (999998, 1000000), bulge 1. M = 1000002, tolleranza 1000002 * 2^-48 = 3.5527172315141804e-09. ADR 0013 (#160): il bulge di un arco costruito non è più il double più vicino; si confronta con tolleranza 4E/corda, E=2^-46*S, S=max(M,|p|) sull'arco esatto: la freccia corda*|bulge|/2 può spostarsi di E (punti dell'arco) più l'errore degli estremi (2^-48*S ciascuno), cioè al più 3E/corda sul bulge per |bulge|<=1. Qui M=1e+06, S=1e+06, corda=4: tolleranza 1.4210883136911434e-08."
+    "procedimento": "Pezzo curvo (bulge=1, centro (1000000, 1000000), R=1) con d=-1 esterno. R_new = 2. Inizio (1000002, 1000000), fine (999998, 1000000), bulge 1. M = 1000002, tolleranza 1000002 * 2^-48 = 3.5527172315141804e-09. ADR 0013 (#160): il bulge di un arco costruito non è più il double più vicino; si confronta con tolleranza 4E/corda, E=2^-46*S, S=max(M,|p|) sui punti dell'arco esatto (estremi ed estremi del cerchio che stanno sull'arco): la freccia corda*|bulge|/2 può spostarsi di E (punti dell'arco) più l'errore degli estremi (2^-48*S ciascuno), cioè al più 3E/corda sul bulge per |bulge|<=1. Qui M=1e+06, S=1e+06, corda=4: tolleranza 1.4210883136911434e-08."
   }
 }

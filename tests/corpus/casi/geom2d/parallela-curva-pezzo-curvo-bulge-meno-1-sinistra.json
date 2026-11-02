@@ -53,6 +53,6 @@
   },
   "provenienza": {
     "tipo": "aritmetica-esatta",
-    "procedimento": "Semicirconferenza oraria (bulge=-1) da (-1,0) a (1,0); punto m = (0,-1), centro (0,0), raggio R=1. Per verso orario la sinistra è verso l'esterno: nuovo raggio R + d = 1 + 0.5 = 1.5. Estremi spostati (-1.5,0) e (1.5,0), bulge -1 invariato. M=1.5, tolleranza 1.5 * 2^-48 = 5.329070518200751e-15. ADR 0013 (#160): il bulge di un arco costruito non è più il double più vicino; si confronta con tolleranza 4E/corda, E=2^-46*S, S=max(M,|p|) sull'arco esatto: la freccia corda*|bulge|/2 può spostarsi di E (punti dell'arco) più l'errore degli estremi (2^-48*S ciascuno), cioè al più 3E/corda sul bulge per |bulge|<=1. Qui M=1, S=1.5, corda=3: tolleranza 2.842170943040401e-14."
+    "procedimento": "Semicirconferenza oraria (bulge=-1) da (-1,0) a (1,0); punto m = (0,-1), centro (0,0), raggio R=1. Per verso orario la sinistra è verso l'esterno: nuovo raggio R + d = 1 + 0.5 = 1.5. Estremi spostati (-1.5,0) e (1.5,0), bulge -1 invariato. M=1.5, tolleranza 1.5 * 2^-48 = 5.329070518200751e-15. ADR 0013 (#160): il bulge di un arco costruito non è più il double più vicino; si confronta con tolleranza 4E/corda, E=2^-46*S, S=max(M,|p|) sui punti dell'arco esatto (estremi ed estremi del cerchio che stanno sull'arco): la freccia corda*|bulge|/2 può spostarsi di E (punti dell'arco) più l'errore degli estremi (2^-48*S ciascuno), cioè al più 3E/corda sul bulge per |bulge|<=1. Qui M=1, S=1.5, corda=3: tolleranza 2.842170943040401e-14."
   }
 }
