@@ -120,7 +120,8 @@ Per ogni funzione, e per ogni tipo che restituisce:
 9. **Coerenza.** Con le intestazioni già accettate (gli stessi nomi con lo
    stesso significato: `side()`, `Location`, le diagnosi) e con l'ADR, compresa
    la tabella dei casi della richiesta: ogni caso concreto ha una risposta
-   determinata dal contratto.
+   determinata dal contratto, salvo un esito che cade in una fascia dichiarata
+   (punto 10), dove il contratto lo lascia libero.
 10. **Scelte libere entro un errore.** Dove il contratto lascia libero un
     valore entro un errore dichiarato (come si arrotonda una coordinata, quale
     `double` si sceglie per un estremo, una stazione), quella scelta può

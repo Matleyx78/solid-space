@@ -60,13 +60,13 @@ risultati tra versioni.
 2. **Dominio in basso: 2^-50**, simmetrico a `kMaxCoordinate` = 2^50. Nei
    limiti d'errore delle costruzioni sostituisce il pavimento 2^-1022: per i
    punti l'errore è al più `kRelativePointError` · max(M, |p|, 2^-50), e così
-   per stazioni, lunghezze, archi e curve parallele con i loro errori. Sotto
-   2^-50 quel limite diventa assoluto e non dice niente della precisione
-   relativa: per dati e costruzioni sotto 2^-50, subnormali compresi, il
-   contratto garantisce solo niente crash, nessuna eccezione oltre a
-   `std::bad_alloc` (ADR 0003, punto 5), niente risultati fuori dominio e il
-   determinismo. I subnormali escono dal contratto delle costruzioni. Le
-   **decisioni** di `robust` e di `geom2d` restano esatte per ogni `double`
+   per stazioni, lunghezze, archi e curve parallele con i loro errori. Questi
+   limiti valgono per dati di grandezza M almeno 2^-50. Per dati di grandezza
+   minore, subnormali compresi, il contratto garantisce **solo** niente crash,
+   nessuna eccezione oltre a `std::bad_alloc` (ADR 0003, punto 5), niente
+   risultati fuori dominio e il determinismo: nessun limite d'errore, né
+   relativo né assoluto. I subnormali escono dal contratto delle costruzioni.
+   Le **decisioni** di `robust` e di `geom2d` restano esatte per ogni `double`
    finito, subnormali compresi: 2^-50 vale solo per i limiti d'errore.
 3. **Regola di default dei buchi.** Un buco del contratto è **visibile** quando,
    per dati dentro il dominio, cambia almeno una di queste cose:
