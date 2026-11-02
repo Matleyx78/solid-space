@@ -46,9 +46,13 @@ Non stanno nel corpus, perché il loro esito è in una fascia di `offset.hpp`
   estremi arrotondati coincidenti;
 - archi quasi interi con la corda di pochi ulp: il caso della #127 e quello
   della #132 (`notRepresentable`);
-- il punto m di un pezzo curvo a meno di `kRelativeOffsetError` · max(M, |p|)
-  da K, e i controlli finali con il risultato esatto entro quella distanza
-  dall'ingresso o da sé stesso.
+- con E = `kRelativeOffsetError` · max(M, |p|): il punto m di un pezzo curvo
+  quando un punto dell'arco esatto ha una coordinata oltre K − E in valore
+  assoluto (`outOfDomain`, dato 1, in `offsetCurve`; `beyondDomain` in
+  `offsetPolyline`); il risultato esatto entro E
+  dall'ingresso (`meetsOriginal`); due pezzi esatti non consecutivi entro 2E
+  l'uno dall'altro, o due consecutivi entro 2E lontano dal vertice comune,
+  oltre la coincidenza di `policy` (`selfIntersection`).
 
 ## File
 
