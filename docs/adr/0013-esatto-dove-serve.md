@@ -57,16 +57,17 @@ risultati tra versioni.
      (ADR 0008, punto 5). Che due ingressi diversi diano gli stessi bit (per
      esempio scambiando gli argomenti) vale solo dove un'intestazione lo
      promette.
-2. **Dominio in basso: 2^-50**, simmetrico a `kMaxCoordinate` = 2^50. Nei
-   limiti d'errore delle costruzioni sostituisce il pavimento 2^-1022: per i
-   punti l'errore è al più `kRelativePointError` · max(M, |p|, 2^-50), e così
-   per stazioni, lunghezze, archi e curve parallele con i loro errori. Questi
-   limiti valgono per dati di grandezza M almeno 2^-50. Per dati di grandezza
-   minore, subnormali compresi, il contratto garantisce **solo** niente crash,
-   nessuna eccezione oltre a `std::bad_alloc` (ADR 0003, punto 5), niente
-   risultati fuori dominio e il determinismo: nessun limite d'errore, né
-   relativo né assoluto. I subnormali escono dal contratto delle costruzioni.
-   Le **decisioni** di `robust` e di `geom2d` restano esatte per ogni `double`
+2. **Dominio in basso: 2^-50**, simmetrico a `kMaxCoordinate` = 2^50. Il
+   pavimento 2^-1022 dei limiti d'errore cade: le formule tornano
+   max(M, |p|) per punti, archi e curve parallele e max(M, |s|) per stazioni e
+   lunghezze, senza pavimento. Al suo posto c'è una soglia, scritta una volta
+   sola in testa a `curves.hpp`: i limiti d'errore delle costruzioni valgono
+   per dati di grandezza M almeno 2^-50. Per dati di grandezza minore,
+   subnormali compresi, il contratto garantisce **solo** niente crash, nessuna
+   eccezione oltre a `std::bad_alloc` (ADR 0003, punto 5), niente risultati
+   fuori dominio e il determinismo: nessun limite d'errore, né relativo né
+   assoluto. I subnormali escono dal contratto delle costruzioni. Le
+   **decisioni** di `robust` e di `geom2d` restano esatte per ogni `double`
    finito, subnormali compresi: 2^-50 vale solo per i limiti d'errore.
 3. **Regola di default dei buchi.** Un buco del contratto è **visibile** quando,
    per dati dentro il dominio, cambia almeno una di queste cose:
@@ -92,7 +93,7 @@ risultati tra versioni.
    scrive la sua fascia nel commento della funzione.
    - **Curva parallela** (`offset.hpp`). Due estremi arrotondati possono
      coincidere solo se gli estremi esatti hanno le coordinate che differiscono
-     ciascuna al più di 2 · `kRelativePointError` · max(M, |p|, 2^-50), con |p|
+     ciascuna al più di 2 · `kRelativePointError` · max(M, |p|), con |p|
      il maggiore dei due. In quella fascia sono liberi lo scarto di un pezzo
      dritto collassato dall'arrotondamento (con `simple`, `origins` e
      `notRepresentable` quando non resta nessun pezzo) e il `failed` di un arco
@@ -123,8 +124,8 @@ risultati tra versioni.
   confronto dei risultati tra versioni ne hanno bisogno, e costa poco (ADR
   0008, punto 5).
 - **Tenere il pavimento 2^-1022.** Chiede costruzioni precise nei subnormali
-  (R20 e P20) per dati che nessun disegno ha: 2^-50 in metri è meno di un
-  millesimo di femtometro. Il dominio simmetrico è più semplice da spiegare e da
+  (R20 e P20) per dati che nessun disegno ha: 2^-50 è circa 9e-16 unità del
+  disegno, meno di un femtometro anche in metri. Il dominio simmetrico è più semplice da spiegare e da
   provare.
 - **Far decidere ogni buco al responsabile.** È la regola di oggi: nella tappa
   0.2 ha prodotto 27 issue `contratto`, 22 il solo 2026-11-01, molte su

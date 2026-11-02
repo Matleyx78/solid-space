@@ -361,8 +361,10 @@ i rimandi ai documenti che cambia.
      garantiscono solo entro gli errori già dichiarati, senza dire quale
      `double` esce; restano il determinismo, i valori copiati o fissati per
      struttura, il confine esatto di `kMaxCoordinate` e le costanti angolari;
-  2. il dominio in basso è 2^-50: nei limiti d'errore sostituisce il pavimento
-     2^-1022, e sotto 2^-50 si garantiscono solo niente crash, niente
+  2. il dominio in basso è 2^-50: il pavimento 2^-1022 cade, le formule
+     degli errori tornano max(M, |p|) e max(M, |s|), e i limiti valgono per
+     dati di grandezza M almeno 2^-50 (una sola frase, in testa a
+     `curves.hpp`); sotto 2^-50 si garantiscono solo niente crash, niente
      risultati fuori dominio e il determinismo; i subnormali escono dal
      contratto delle costruzioni, mentre le decisioni di `robust` e `geom2d`
      restano esatte per ogni `double` finito;
