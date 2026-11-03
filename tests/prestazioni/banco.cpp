@@ -113,8 +113,8 @@ void measure(std::string_view name, std::string_view goal, std::size_t samples,
 }
 
 void measurePairs(Generator& generator, Report& report) {
-    constexpr std::array<std::string_view, 5> kNames{
-        "segment", "arc", "circle", "bulge", "straight-bulge"};
+    constexpr std::array<std::string_view, 5> kNames{"segment", "arc", "circle", "bulge",
+                                                     "straight-bulge"};
     for (std::size_t first = 0; first < kNames.size(); ++first) {
         for (std::size_t second = first; second < kNames.size(); ++second) {
             std::vector<Pair> data;
@@ -148,13 +148,13 @@ void measureNearDegeneracies(Report& report) {
         {"near tangent circle/circle outside", {circle, geom::Circle{{10.0 + kDelta, 0.0}, 5.0}}},
         {"near coincident circles", {circle, geom::Circle{{kDelta, 0.0}, 5.0}}},
         {"near coincident lines",
-         {geom::Segment{{-8.0, 0.0}, {8.0, 0.0}},
-          geom::Segment{{-8.0, -kDelta}, {8.0, kDelta}}}},
+         {geom::Segment{{-8.0, 0.0}, {8.0, 0.0}}, geom::Segment{{-8.0, -kDelta}, {8.0, kDelta}}}},
     }};
     for (const auto& [name, pair] : data) {
         const auto operation = [&pair](std::size_t) {
-            return observe(geom::intersect(pair.first, geom::Extension::none, pair.second,
-                                          geom::Extension::none));
+            constexpr auto kExtension = geom::Extension::none;
+            const auto result = geom::intersect(pair.first, kExtension, pair.second, kExtension);
+            return observe(result);
         };
         measure(name, "ADR 0010.8: bounded exact path (no numeric limit)", 1, kPairRepetitions,
                 operation, report);
@@ -171,8 +171,8 @@ void measureSnap(Generator& generator, Report& report) {
     const auto operation = [&data](std::size_t) {
         Observation batch{true, 0.0};
         for (const auto& [a, b] : data) {
-            const auto observation = observe(
-                geom::intersect(a, geom::Extension::none, b, geom::Extension::none));
+            const auto observation =
+                observe(geom::intersect(a, geom::Extension::none, b, geom::Extension::none));
             batch.valid = batch.valid && observation.valid;
             batch.checksum += observation.checksum;
         }
@@ -193,8 +193,8 @@ void measureAlong(Report& report) {
             cutters.emplace_back(geom::Segment{{x, -1.0}, {x, 1.0}});
         }
         const auto operation = [&host, &cutters](std::size_t) {
-            const auto result = geom::intersectAlong(host, geom::Extension::none, cutters,
-                                                      geom::Extension::none);
+            const auto result =
+                geom::intersectAlong(host, geom::Extension::none, cutters, geom::Extension::none);
             if (!result.hasValue()) {
                 return Observation{};
             }
