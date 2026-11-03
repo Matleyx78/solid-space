@@ -408,3 +408,26 @@ i rimandi ai documenti che cambia.
   **Corretto:**, punto 5 e Contratto), i commenti di `coincidence.hpp` e la
   scheda della tappa 0.2 in "Modifiche al piano", che aggiunge R21 (codex) e
   P21 (claude) per realizzarla.
+
+- **2026-11-03: AGENTS.md a nucleo e due regole nuove (operazione snellimento,
+  #160, passo 4).** [AGENTS.md](../AGENTS.md) diventa un nucleo sempre letto
+  (dove si scrive, presa in carico, regole che non si possono violare, quando
+  fermarsi con «Buchi visibili e no», prima di dichiarare finito, commit e pull
+  request) e una tabella «Se ... leggi anche ...» con segni oggettivi, che
+  instrada agli otto file di [agenti/](agenti/), con gli stessi nomi in
+  Tecnigrafo. Il testo uscito dal nucleo sta lì, sotto i titoli che aveva o in
+  sezioni che dicono da dove viene, con i soli rimandi adeguati; una sezione
+  citata come AGENTS.md, "<titolo>", che il nucleo non ha, sta nel file con lo
+  stesso titolo. [GEMINI.md](../GEMINI.md) rimanda al nucleo e alla
+  tabella. Le regole nuove:
+  1. una pull request che tocca solo documenti, commenti o casi di riferimento
+     non si compila in locale: la verifica la fa la CI (nucleo, «Prima di
+     dichiarare il lavoro finito»; [comandi.md](agenti/comandi.md),
+     [riferimenti.md](agenti/riferimenti.md), [chiusura.md](agenti/chiusura.md));
+  2. nella revisione, un caso che sta entro un errore dichiarato dal confine di
+     `kMaxCoordinate` o da un'altra soglia del contratto si chiude dichiarando
+     la fascia ([ADR 0013](adr/0013-esatto-dove-serve.md), punto 4): il
+     revisore lo segnala come non bloccante, senza issue `contratto` e senza
+     decisione del responsabile; l'autore scrive la fascia nella stessa pull
+     request, nel commento dell'intestazione, senza un altro giro di revisione
+     ([revisione.md](agenti/revisione.md), [contratto.md](agenti/contratto.md)).
