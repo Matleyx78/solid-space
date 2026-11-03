@@ -54,6 +54,12 @@ target_compile_definitions(solid_space_banco_test PRIVATE
 ss_configure_target(solid_space_banco_test)
 gtest_discover_tests(solid_space_banco_test DISCOVERY_MODE PRE_TEST)
 
+# Performance measurements are manual, never registered with CTest (ADR 0010).
+add_executable(solid_space_banco_prestazioni prestazioni/banco.cpp)
+target_link_libraries(solid_space_banco_prestazioni PRIVATE solid_space::geom2d)
+ss_configure_target(solid_space_banco_prestazioni)
+ss_configure_determinism(solid_space_banco_prestazioni)
+
 # Draft contracts (ADR 0007, point 15): the public headers of robust and
 # geom2d compile and keep their declared signatures. They call nothing that is
 # not implemented yet.
