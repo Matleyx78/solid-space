@@ -1,0 +1,65 @@
+{
+  "versione": 1,
+  "id": "r21-minimo-un-ulp",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #23, R21 (#166): Minimo un ulp prima del candidato precedente: vince il candidato successivo più indietro, senza tolleranza.",
+  "ingresso": {
+    "operazione": "joinAligned",
+    "sorgente": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          10,
+          0
+        ]
+      }
+    },
+    "altri": [
+      {
+        "segmento": {
+          "inizio": [
+            -5,
+            0
+          ],
+          "fine": [
+            -1,
+            0
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            "-0x1.4000000000001p+2",
+            1e-07
+          ],
+          "fine": [
+            -2,
+            0
+          ]
+        }
+      }
+    ]
+  },
+  "atteso": {
+    "curva": {
+      "segmento": {
+        "inizio": [
+          "-5629499534213121/1125899906842624",
+          "944473296573929/9444732965739290427392"
+        ],
+        "fine": [
+          "10",
+          "0"
+        ]
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Minimo un ulp prima del candidato precedente: vince il candidato successivo più indietro, senza tolleranza. Formula esatta: d=(10,0), t(p)=(p-A)·d. Nell’ordine inizio/fine della sorgente, poi inizio/fine degli altri, le proiezioni sono [0, 100, -50, -10, -28147497671065605/562949953421312, -20]. Minimo all’indice 4, massimo all’indice 1 (indici da 0): a ogni pareggio si conserva il primo nell’ordine, anche per il massimo. I due estremi attesi sono quindi [['-0x1.4000000000001p+2', 1e-07], [10, 0]]. Calcolo con Fraction su ogni double effettivo, compresi i letterali esadecimali; differenze e prodotti non vengono arrotondati e non si normalizza d. L’allineamento non è un controllo di questa funzione. Nessuna esecuzione di solid-space. I punti sono copiati dagli ingressi senza costruzione: attesi razionali esatti, nessuna tolleranza."
+  }
+}

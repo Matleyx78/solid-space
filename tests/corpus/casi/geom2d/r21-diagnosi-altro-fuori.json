@@ -1,0 +1,45 @@
+{
+  "versione": 1,
+  "id": "r21-diagnosi-altro-fuori",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #23, R21 (#166): Altro con coordinata K+1/4 esatta: outOfDomain sul dato 1.",
+  "ingresso": {
+    "operazione": "joinAligned",
+    "sorgente": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          10,
+          0
+        ]
+      }
+    },
+    "altri": [
+      {
+        "segmento": {
+          "inizio": [
+            1125899906842624.2,
+            0
+          ],
+          "fine": [
+            1125899906842624,
+            1
+          ]
+        }
+      }
+    ]
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "outOfDomain",
+      "dato": "1"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Altro con coordinata K+1/4 esatta: outOfDomain sul dato 1. Non si confrontano proiezioni di dati non validi. Controlli in ordine di ingresso (sorgente 0, altri[i] dato i+1), e per ogni segmento invalidValue prima di outOfDomain prima di degenerateCurve, come curves.hpp. Nessuna esecuzione di solid-space. I punti sono copiati dagli ingressi senza costruzione: attesi razionali esatti, nessuna tolleranza."
+  }
+}

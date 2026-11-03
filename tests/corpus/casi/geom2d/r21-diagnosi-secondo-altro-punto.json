@@ -1,0 +1,57 @@
+{
+  "versione": 1,
+  "id": "r21-diagnosi-secondo-altro-punto",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #23, R21 (#166): Secondo altro ridotto a un punto: dato 2, non 1.",
+  "ingresso": {
+    "operazione": "joinAligned",
+    "sorgente": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          10,
+          0
+        ]
+      }
+    },
+    "altri": [
+      {
+        "segmento": {
+          "inizio": [
+            20,
+            0
+          ],
+          "fine": [
+            30,
+            0
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            1,
+            2
+          ],
+          "fine": [
+            1,
+            2
+          ]
+        }
+      }
+    ]
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "degenerateCurve",
+      "dato": "2"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Secondo altro ridotto a un punto: dato 2, non 1. Non si confrontano proiezioni di dati non validi. Controlli in ordine di ingresso (sorgente 0, altri[i] dato i+1), e per ogni segmento invalidValue prima di outOfDomain prima di degenerateCurve, come curves.hpp. Nessuna esecuzione di solid-space. I punti sono copiati dagli ingressi senza costruzione: attesi razionali esatti, nessuna tolleranza."
+  }
+}

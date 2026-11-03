@@ -1,0 +1,65 @@
+{
+  "versione": 1,
+  "id": "r21-pareggi-altri-sorgente-inversa",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #23, R21 (#166): Pareggi tra due altri sia al minimo sia al massimo: vince il primo segmento nella lista.",
+  "ingresso": {
+    "operazione": "joinAligned",
+    "sorgente": {
+      "segmento": {
+        "inizio": [
+          10,
+          0
+        ],
+        "fine": [
+          0,
+          0
+        ]
+      }
+    },
+    "altri": [
+      {
+        "segmento": {
+          "inizio": [
+            -5,
+            1e-07
+          ],
+          "fine": [
+            20,
+            1e-07
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            -5,
+            2e-07
+          ],
+          "fine": [
+            20,
+            2e-07
+          ]
+        }
+      }
+    ]
+  },
+  "atteso": {
+    "curva": {
+      "segmento": {
+        "inizio": [
+          "20",
+          "944473296573929/9444732965739290427392"
+        ],
+        "fine": [
+          "-5",
+          "944473296573929/9444732965739290427392"
+        ]
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Pareggi tra due altri sia al minimo sia al massimo: vince il primo segmento nella lista. Sorgente invertita: gli stessi punti devono uscire invertiti, senza cambiare la precedenza tra altri. Formula esatta: d=(-10,0), t(p)=(p-A)·d. Nell’ordine inizio/fine della sorgente, poi inizio/fine degli altri, le proiezioni sono [0, 100, 150, -100, 150, -100]. Minimo all’indice 3, massimo all’indice 2 (indici da 0): a ogni pareggio si conserva il primo nell’ordine, anche per il massimo. I due estremi attesi sono quindi [[20, 1e-07], [-5, 1e-07]]. Calcolo con Fraction su ogni double effettivo, compresi i letterali esadecimali; differenze e prodotti non vengono arrotondati e non si normalizza d. L’allineamento non è un controllo di questa funzione. Nessuna esecuzione di solid-space. I punti sono copiati dagli ingressi senza costruzione: attesi razionali esatti, nessuna tolleranza."
+  }
+}

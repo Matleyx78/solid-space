@@ -1,0 +1,53 @@
+{
+  "versione": 1,
+  "id": "r21-esempio-158-sorgente-inversa",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #23, R21 (#166): Esempio #158 in millimetri: pareggio all’inizio tra la sorgente e il punto (0,5e-7), vince la sorgente.",
+  "ingresso": {
+    "operazione": "joinAligned",
+    "sorgente": {
+      "segmento": {
+        "inizio": [
+          10,
+          0
+        ],
+        "fine": [
+          0,
+          0
+        ]
+      }
+    },
+    "altri": [
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            5e-07
+          ],
+          "fine": [
+            5,
+            0
+          ]
+        }
+      }
+    ]
+  },
+  "atteso": {
+    "curva": {
+      "segmento": {
+        "inizio": [
+          "10",
+          "0"
+        ],
+        "fine": [
+          "0",
+          "0"
+        ]
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Esempio #158 in millimetri: pareggio all’inizio tra la sorgente e il punto (0,5e-7), vince la sorgente. Sorgente invertita: gli stessi punti devono uscire invertiti, senza cambiare la precedenza tra altri. Formula esatta: d=(-10,0), t(p)=(p-A)·d. Nell’ordine inizio/fine della sorgente, poi inizio/fine degli altri, le proiezioni sono [0, 100, 100, 50]. Minimo all’indice 0, massimo all’indice 1 (indici da 0): a ogni pareggio si conserva il primo nell’ordine, anche per il massimo. I due estremi attesi sono quindi [[10, 0], [0, 0]]. Calcolo con Fraction su ogni double effettivo, compresi i letterali esadecimali; differenze e prodotti non vengono arrotondati e non si normalizza d. L’allineamento non è un controllo di questa funzione. Nessuna esecuzione di solid-space. I punti sono copiati dagli ingressi senza costruzione: attesi razionali esatti, nessuna tolleranza."
+  }
+}

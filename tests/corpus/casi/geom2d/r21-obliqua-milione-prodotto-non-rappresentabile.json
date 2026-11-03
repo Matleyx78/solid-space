@@ -1,0 +1,53 @@
+{
+  "versione": 1,
+  "id": "r21-obliqua-milione-prodotto-non-rappresentabile",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #23, R21 (#166): Sorgente obliqua con coordinate di 1e6: il candidato supera la fine di un ulp in x.",
+  "ingresso": {
+    "operazione": "joinAligned",
+    "sorgente": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          1000000.0,
+          1000000.0
+        ]
+      }
+    },
+    "altri": [
+      {
+        "segmento": {
+          "inizio": [
+            "0x1.e848000000001p+19",
+            1000000.0
+          ],
+          "fine": [
+            0,
+            0
+          ]
+        }
+      }
+    ]
+  },
+  "atteso": {
+    "curva": {
+      "segmento": {
+        "inizio": [
+          "0",
+          "0"
+        ],
+        "fine": [
+          "8589934592000001/8589934592",
+          "1000000"
+        ]
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Sorgente obliqua con coordinate di 1e6: il candidato supera la fine di un ulp in x. La differenza di proiezione è 1000000*2^-33=15625/134217728, inferiore a mezzo ulp della proiezione 2*10^12; la somma in double può pareggiare, ma l’ordine esatto sceglie il candidato. Formula esatta: d=(1000000,1000000), t(p)=(p-A)·d. Nell’ordine inizio/fine della sorgente, poi inizio/fine degli altri, le proiezioni sono [0, 2000000000000, 268435456000000015625/134217728, 0]. Minimo all’indice 0, massimo all’indice 2 (indici da 0): a ogni pareggio si conserva il primo nell’ordine, anche per il massimo. I due estremi attesi sono quindi [[0, 0], ['0x1.e848000000001p+19', 1000000.0]]. Calcolo con Fraction su ogni double effettivo, compresi i letterali esadecimali; differenze e prodotti non vengono arrotondati e non si normalizza d. L’allineamento non è un controllo di questa funzione. Nessuna esecuzione di solid-space. I punti sono copiati dagli ingressi senza costruzione: attesi razionali esatti, nessuna tolleranza."
+  }
+}
