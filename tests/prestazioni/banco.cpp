@@ -103,11 +103,13 @@ void measure(std::string_view name, std::string_view goal, std::size_t samples,
 [[nodiscard]] std::array<geom::Curve, 5> curves(double x, double y, bool second) {
     const double shift = second ? 3.0 : 0.0;
     const geom::Point2 center{x + shift, y};
-    return {geom::Segment{{x - 8.0, y - 3.0 + shift}, {x + 8.0, y + 3.0 - shift}},
-            geom::Arc{center, 5.0, 0.0, geom::kThreeQuarterTurn}, geom::Circle{center, 5.0},
-            geom::PolylineSegment{{x - 5.0 + shift, y}, {x + 5.0 + shift, y}, 1.0},
-            geom::PolylineSegment{{x - 8.0, y + 4.0 - shift}, {x + 8.0, y - 4.0 + shift},
-                                  0.0}};
+    const geom::Segment segment{{x - 8.0, y - 3.0 + shift}, {x + 8.0, y + 3.0 - shift}};
+    const geom::Arc arc{center, 5.0, 0.0, geom::kThreeQuarterTurn};
+    const geom::Circle circle{center, 5.0};
+    const geom::PolylineSegment curved{{x - 5.0 + shift, y}, {x + 5.0 + shift, y}, 1.0};
+    const geom::PolylineSegment straight{
+        {x - 8.0, y + 4.0 - shift}, {x + 8.0, y - 4.0 + shift}, 0.0};
+    return {segment, arc, circle, curved, straight};
 }
 
 void measurePairs(Generator& generator, Report& report) {
@@ -121,15 +123,13 @@ void measurePairs(Generator& generator, Report& report) {
                 const double y = generator.coordinate();
                 data.emplace_back(curves(x, y, false)[first], curves(x, y, true)[second]);
             }
-            const std::string name = "intersect " + std::string(kNames[first]) + "/" +
-                                     std::string(kNames[second]);
-            measure(name, "ADR 0010.8: a few us", data.size(), kPairRepetitions,
-                    [&data](std::size_t sample) {
-                        const auto& [a, b] = data[sample];
-                        return observe(geom::intersect(a, geom::Extension::none, b,
-                                                       geom::Extension::none));
-                    },
-                    report);
+            const std::string name =
+                "intersect " + std::string(kNames[first]) + "/" + std::string(kNames[second]);
+            const auto operation = [&data](std::size_t sample) {
+                const auto& [a, b] = data[sample];
+                return observe(geom::intersect(a, geom::Extension::none, b, geom::Extension::none));
+            };
+            measure(name, "ADR 0010.8: a few us", data.size(), kPairRepetitions, operation, report);
         }
     }
 }
@@ -152,12 +152,12 @@ void measureNearDegeneracies(Report& report) {
           geom::Segment{{-8.0, -kDelta}, {8.0, kDelta}}}},
     }};
     for (const auto& [name, pair] : data) {
+        const auto operation = [&pair](std::size_t) {
+            return observe(geom::intersect(pair.first, geom::Extension::none, pair.second,
+                                          geom::Extension::none));
+        };
         measure(name, "ADR 0010.8: bounded exact path (no numeric limit)", 1, kPairRepetitions,
-                [&pair](std::size_t) {
-                    return observe(geom::intersect(pair.first, geom::Extension::none, pair.second,
-                                                   geom::Extension::none));
-                },
-                report);
+                operation, report);
     }
 }
 
@@ -168,18 +168,18 @@ void measureSnap(Generator& generator, Report& report) {
         const double y = generator.coordinate();
         data.emplace_back(curves(x, y, false)[index % 5], curves(x, y, true)[(index + 1) % 5]);
     }
+    const auto operation = [&data](std::size_t) {
+        Observation batch{true, 0.0};
+        for (const auto& [a, b] : data) {
+            const auto observation = observe(
+                geom::intersect(a, geom::Extension::none, b, geom::Extension::none));
+            batch.valid = batch.valid && observation.valid;
+            batch.checksum += observation.checksum;
+        }
+        return batch;
+    };
     measure("snap: 32 pairs (whole batch)", "ADR 0010.8: < 1000 us/batch", 1, kPairRepetitions,
-            [&data](std::size_t) {
-                Observation batch{true, 0.0};
-                for (const auto& [a, b] : data) {
-                    const auto observation = observe(
-                        geom::intersect(a, geom::Extension::none, b, geom::Extension::none));
-                    batch.valid = batch.valid && observation.valid;
-                    batch.checksum += observation.checksum;
-                }
-                return batch;
-            },
-            report, true);
+            operation, report, true);
 }
 
 void measureAlong(Report& report) {
@@ -192,23 +192,22 @@ void measureAlong(Report& report) {
             const double x = static_cast<double>(index);
             cutters.emplace_back(geom::Segment{{x, -1.0}, {x, 1.0}});
         }
+        const auto operation = [&host, &cutters](std::size_t) {
+            const auto result = geom::intersectAlong(host, geom::Extension::none, cutters,
+                                                      geom::Extension::none);
+            if (!result.hasValue()) {
+                return Observation{};
+            }
+            const auto& value = result.value();
+            double checksum = static_cast<double>(value.cuts.size());
+            for (const auto& cut : value.cuts) {
+                checksum += cut.point.x + cut.onHost.station;
+            }
+            return Observation{value.skipped.empty() && value.cuts.size() == cutters.size(),
+                               checksum};
+        };
         measure("intersectAlong " + std::to_string(size), "ADR 0010.8: report scaling", 1,
-                kLargeRepetitions,
-                [&host, &cutters](std::size_t) {
-                    const auto result = geom::intersectAlong(host, geom::Extension::none, cutters,
-                                                             geom::Extension::none);
-                    if (!result.hasValue()) {
-                        return Observation{};
-                    }
-                    const auto& value = result.value();
-                    double checksum = static_cast<double>(value.cuts.size());
-                    for (const auto& cut : value.cuts) {
-                        checksum += cut.point.x + cut.onHost.station;
-                    }
-                    return Observation{value.skipped.empty() && value.cuts.size() == cutters.size(),
-                                       checksum};
-                },
-                report);
+                kLargeRepetitions, operation, report);
     }
 }
 
@@ -220,23 +219,21 @@ void measureTangents(Generator& generator, Report& report) {
     constexpr std::array<std::string_view, 3> kNames{"arc", "circle", "bulge"};
     for (std::size_t index = 0; index < kCircular.size(); ++index) {
         const auto& curve = data[kCircular[index]];
+        const auto operation = [&curve](std::size_t sample) {
+            const geom::Point2 externalPoint{100.0 + static_cast<double>(sample), 100.0};
+            const auto result = geom::tangentsFrom(externalPoint, curve, geom::Extension::extended);
+            if (!result.hasValue()) {
+                return Observation{};
+            }
+            double checksum = 0.0;
+            for (const auto& point : result.value().points) {
+                checksum += point.point.x + point.point.y;
+            }
+            return Observation{result.value().points.size() == 2, checksum};
+        };
         measure("tangentsFrom " + std::string(kNames[index]),
                 "ADR 0011.10: common path + square root (no numeric limit)", kSamples,
-                kPairRepetitions,
-                [&curve](std::size_t sample) {
-                    const geom::Point2 point{100.0 + static_cast<double>(sample), 100.0};
-                    const auto result =
-                        geom::tangentsFrom(point, curve, geom::Extension::extended);
-                    if (!result.hasValue()) {
-                        return Observation{};
-                    }
-                    double checksum = 0.0;
-                    for (const auto& point : result.value().points) {
-                        checksum += point.point.x + point.point.y;
-                    }
-                    return Observation{result.value().points.size() == 2, checksum};
-                },
-                report);
+                kPairRepetitions, operation, report);
     }
 }
 
@@ -261,22 +258,22 @@ void measureOffsets(Report& report) {
             }
             polyline.vertices.push_back({point, 0.0});
         }
+        const auto operation = [&polyline, &policy, size](std::size_t) {
+            const auto result = geom::offsetPolyline(polyline, 1.0, policy.value());
+            if (!result.hasValue()) {
+                return Observation{};
+            }
+            const auto& value = result.value();
+            double checksum = 0.0;
+            for (const auto& vertex : value.polyline.vertices) {
+                checksum += vertex.position.x + vertex.position.y + vertex.bulge;
+            }
+            return Observation{value.outcome == geom::OffsetOutcome::done && value.simple &&
+                                   value.origins.size() == size,
+                               checksum};
+        };
         measure("offsetPolyline " + std::to_string(size),
-                "ADR 0012.11: command time (no numeric limit)", 1, kLargeRepetitions,
-                [&polyline, &policy, size](std::size_t) {
-                    const auto result = geom::offsetPolyline(polyline, 1.0, policy.value());
-                    if (!result.hasValue()) {
-                        return Observation{};
-                    }
-                    const auto& value = result.value();
-                    double checksum = 0.0;
-                    for (const auto& vertex : value.polyline.vertices) {
-                        checksum += vertex.position.x + vertex.position.y + vertex.bulge;
-                    }
-                    return Observation{value.outcome == geom::OffsetOutcome::done && value.simple &&
-                                           value.origins.size() == size,
-                                       checksum};
-                },
+                "ADR 0012.11: command time (no numeric limit)", 1, kLargeRepetitions, operation,
                 report);
     }
 }
