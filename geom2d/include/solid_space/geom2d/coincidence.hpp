@@ -17,10 +17,15 @@
 // (curves.hpp, "Checking the data") and gives that diagnosis. Exactly
 // degenerate curves are accepted where the rule makes sense for them
 // (isDegenerate, isStraight) and give degenerateCurve elsewhere.
+//
+// joinAligned uses no tolerance: it orders exactly the ends of segments that
+// the rule has already found aligned (decision of 2026-11-02, issue #158).
 
 #include "solid_space/geom2d/curves.hpp"
 #include "solid_space/geom2d/diagnosis.hpp"
 #include "solid_space/robust/tolerance.hpp"
+
+#include <span>
 
 namespace solid_space::geom2d {
 
@@ -57,5 +62,34 @@ namespace solid_space::geom2d {
 /// Diagnoses as areConcentric.
 [[nodiscard]] Result<bool> onSameCircle(const Curve& first, const Curve& second,
                                         const robust::TolerancePolicy& policy);
+
+/// The segment that joins a source segment with segments aligned with it (as
+/// areAligned decides), as JOIN needs it: from the first to the last of all
+/// their ends along the source, gaps included.
+///
+/// The ends are, in this order, the start and the end of source, then the
+/// start and the end of each segment of others, in the order of others.
+/// Along the source, with d = source.end - source.start, an end p comes
+/// before an end q when (p - source.start) . d is smaller for p than for q,
+/// decided exactly. The result starts at the first end along the source and
+/// ends at the last one; among ends with the same exact value, the first in
+/// the order above is taken, for the start as for the end. So an end of
+/// source wins every tie, and an end of others[i] one with others[j], j > i.
+///
+/// Both points are input doubles, returned unchanged: nothing is constructed
+/// or rounded, and they keep the magnitude of the inputs. The result runs in
+/// the direction of source and is never degenerate (its start is at most 0
+/// along the source and its end at least d . d > 0). With no others, it is
+/// source itself. Reversing source gives the same result reversed, bit for
+/// bit; reordering others can change only which end wins a tie.
+///
+/// No tolerance is used and the alignment is not checked: for any segments
+/// the answer is the one above, and it is the joined line only when every
+/// segment of others is aligned with source.
+///
+/// Diagnosis invalidValue, outOfDomain or degenerateCurve about source
+/// (input 0) or about others[i] (input i + 1), checked in input order
+/// (curves.hpp, "Checking the data"): one bad segment fails the call.
+[[nodiscard]] Result<Segment> joinAligned(const Segment& source, std::span<const Segment> others);
 
 }  // namespace solid_space::geom2d
