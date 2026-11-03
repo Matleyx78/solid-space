@@ -388,3 +388,23 @@ i rimandi ai documenti che cambia.
   `tangentCircles` e il piano 0.2 (P19 senza l'obbligo del `double` più
   vicino, R19 di conseguenza; P20 «dominio delle tangenze» #149–#151, R20 con
   i soli casi al confine `kMaxCoordinate`; C chiusa).
+
+- **2026-11-02: estremi delle linee allineate unite (#158).** Su decisione
+  del responsabile nella #158 (buco trovato dalla P22 della tappa 0.7 di
+  Tecnigrafo, Matleyx78/tecnigrafo#373 punto 3, e classificato come buco nel
+  contratto in Matleyx78/tecnigrafo#476): `JOIN` unisce linee allineate dal
+  primo all'ultimo estremo lungo la sorgente, ma nessuna funzione del
+  contratto ordinava quegli estremi, e due estremi possono avere la stessa
+  proiezione esatta. Scelta 2 della issue: `coincidence.hpp` dà direttamente
+  i due estremi del segmento unito con la funzione nuova `joinAligned`
+  (l'unica dichiarazione che cambia). Gli estremi sono quelli della sorgente,
+  poi quelli di ogni altro segmento nell'ordine dato; lungo la sorgente vuol
+  dire per (p − inizio) · (fine − inizio), deciso esattamente; a parità
+  esatta vince il primo in quell'ordine, la sorgente prima, sia per l'inizio
+  sia per la fine. Nessuna tolleranza, nessun controllo dell'allineamento,
+  punti restituiti come sono nei dati; diagnosi dei dati di ogni segmento
+  (sorgente dato 0, `others[i]` dato i + 1). Correggono
+  l'[ADR 0009](adr/0009-regola-delle-tolleranze-del-piano.md) (riga
+  **Corretto:**, punto 5 e Contratto), i commenti di `coincidence.hpp` e la
+  scheda della tappa 0.2 in "Modifiche al piano", che aggiunge R21 (codex) e
+  P21 (claude) per realizzarla.
