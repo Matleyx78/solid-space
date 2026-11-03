@@ -1,7 +1,7 @@
 # [0.2-P21] `geom2d`: estremi delle linee allineate unite
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
-- **Issue:** da aprire con l'unione della pull request del contratto (#159)
+- **Issue:** #167
 - **Difficoltà:** media
 - **Agente:** claude
 - **Modello e impegno:** medio; impegno alto
@@ -9,7 +9,7 @@
   proiezioni); scheda [R21](R21-estremi-allineate.md)
 - **Contratto:** `geom2d/include/solid_space/geom2d/coincidence.hpp`
   (`joinAligned`)
-- **Dipende da:** P8 (#49), R21
+- **Dipende da:** P8 (#49), R21 (#166)
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#373 (P22, l'unione, con P4 e
   P8): la linea unita di `JOIN` viene da qui
 - **Componente:** `geom2d`

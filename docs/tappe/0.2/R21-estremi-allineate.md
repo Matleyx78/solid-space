@@ -1,7 +1,7 @@
 # [0.2-R21] Riferimenti: estremi delle linee allineate unite
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
-- **Issue:** da aprire con l'unione della pull request del contratto (#159)
+- **Issue:** #166
 - **Agente:** codex
 - **Difficoltà:** media
 - **Modello e impegno:** forte; impegno alto
