@@ -11,11 +11,14 @@ Con gli strumenti di [AMBIENTE-SVILUPPO.md](../../docs/AMBIENTE-SVILUPPO.md),
 dalla radice del repository, in Bash (anche su Windows):
 
 ```sh
-export SS_BUILD_SUFFIX=-codex
 cmake --preset release
 cmake --build --preset release --target solid_space_banco_prestazioni
-./build-codex/release/tests/solid_space_banco_prestazioni
+./build/release/tests/solid_space_banco_prestazioni
 ```
+
+I comandi presuppongono `SS_BUILD_SUFFIX` non impostato. Gli agenti usano il
+proprio suffisso (per esempio `SS_BUILD_SUFFIX=-codex` per entrambi i comandi
+CMake) e avviano il banco dalla corrispondente cartella `build-codex/release`.
 
 Su Windows l'ultimo comando termina con `.exe`. Per la sola geometria del
 piano si può configurare con `cmake --preset release
@@ -50,21 +53,30 @@ della misura. Il checksum stampato rende osservabili coordinate e conteggi;
 le verifiche del carico non sono nuovi riferimenti geometrici. Una diagnosi
 inattesa o un offset non riuscito produce `INVALID` e uscita 1: quel tempo
 non va presentato come costo di un'operazione riuscita. Il superamento di un
-obiettivo di tempo non cambia il codice d'uscita.
+obiettivo di tempo non cambia il codice d'uscita. Uscita 0 significa misure
+completate con risultati validi, 1 segnala un risultato non valido, 2
+un'eccezione inattesa durante l'esecuzione del banco (anche di allocazione):
+in quest'ultimo caso la tabella può essere incompleta e va scartata.
 
 | Riga | Carico misurato | Obiettivo dell'ADR |
 |---|---|---|
 | `intersect A/B` | Tutte le 15 coppie non ordinate tra segmento, arco di 3/4 di giro, cerchio, pezzo di polilinea curvo (bulge 1) e dritto; 8 traslazioni per coppia, senza prolungamenti | ADR 0010, punto 8: qualche microsecondo al più per una coppia non degenere |
-| `near tangent ...` | Retta/cerchio e cerchio/cerchio ai due lati della tangenza, separati dalla soglia di 2^-40 | ADR 0010, punto 8: costo limitato del percorso esatto, senza una soglia numerica |
+| `near tangent ...` | Retta/cerchio e cerchio/cerchio ai due lati di tangenze diagonali, con δ = 2^-40 e scatole sovrapposte anche nei casi `outside` | ADR 0010, punto 8: costo limitato del percorso esatto, senza una soglia numerica |
 | `near coincident ...` | Cerchi con centri distanti 2^-40; rette quasi coincidenti che si attraversano | ADR 0010, punto 8: costo limitato vicino alle degenerazioni, senza una soglia numerica |
-| `snap: 32 pairs` | 32 coppie di tipi misti nello stesso intervallo cronometrato | ADR 0010, punto 8: meno di 1 ms **per tutto il gruppo**, non per coppia |
+| `snap: 32 pairs` | 32 coppie di tipi misti nello stesso intervallo cronometrato; caso peggiore, tutte le coppie si incontrano | ADR 0010, punto 8: meno di 1 ms **per tutto il gruppo**, non per coppia |
 | `intersectAlong N` | Un segmento contro 10, 100 o 1000 taglienti verticali, forniti nell'ordine inverso lungo l'ospite | ADR 0010, punto 8: misurare la crescita del costo; nessuna soglia specifica per `intersectAlong` |
 | `tangentsFrom A` | Punto esterno contro arco, cerchio e pezzo curvo, con prolungamento; 8 punti esterni distinti | ADR 0011, punto 10: poche operazioni in virgola mobile e una radice nel caso comune; nessuna soglia numerica |
 | `offsetPolyline N` | Scala ortogonale aperta di 10, 100 o 500 pezzi lunghi 20, distanza +1, unità millimetri; verifica `done`, `simple` e numero di origini | ADR 0012, punto 11: sotto il tempo di un comando per qualche centinaio di pezzi; nessuna soglia numerica |
 
-I dati quasi degeneri esercitano i percorsi costosi, ma il banco non osserva
-quale filtro interno sia stato usato: non include intestazioni private né
-aggiunge strumentazione alla libreria. Le misure non provano da sole quale
+Nei casi quasi tangenti il primo cerchio ha centro (0, 0) e raggio 5.
+La retta tangente in (3, 4) va da (11, −2) a (−5, 10): si traslano entrambi
+gli estremi di (±3δ, ±4δ), ottenendo distanza 5 ± 5δ dal centro.
+Il secondo cerchio, anch'esso di raggio 5, ha centro (6 ± 3δ, 8 ± 4δ),
+a distanza 10 ± 5δ. Il segno più dà `outside`, il meno `inside`.
+Le scatole si sovrappongono in tutti e quattro i casi, così il filtro delle
+scatole non scarta quelli esterni prima dell'incontro esatto dei supporti.
+Il banco non osserva quale filtro interno sia stato usato: non include
+intestazioni private né aggiunge strumentazione alla libreria. Le misure non provano da sole quale
 algoritmo sia entrato in funzione.
 
 La riga finale segnala automaticamente se il massimo del gruppo di snap

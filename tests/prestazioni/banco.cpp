@@ -60,8 +60,8 @@ struct Report {
         return {};
     }
     const auto& value = result.value();
-    double checksum = static_cast<double>(value.points.size() + value.overlaps.size() +
-                                          value.omittedBeyondDomain);
+    auto checksum = static_cast<double>(value.points.size() + value.overlaps.size() +
+                                        value.omittedBeyondDomain);
     for (const auto& point : value.points) {
         checksum += point.point.x + point.point.y;
     }
@@ -121,10 +121,10 @@ void measurePairs(Generator& generator, Report& report) {
             for (std::size_t sample = 0; sample < kSamples; ++sample) {
                 const double x = generator.coordinate();
                 const double y = generator.coordinate();
-                data.emplace_back(curves(x, y, false)[first], curves(x, y, true)[second]);
+                data.emplace_back(curves(x, y, false).at(first), curves(x, y, true).at(second));
             }
             const std::string name =
-                "intersect " + std::string(kNames[first]) + "/" + std::string(kNames[second]);
+                "intersect " + std::string(kNames.at(first)) + "/" + std::string(kNames.at(second));
             const auto operation = [&data](std::size_t sample) {
                 const auto& [a, b] = data[sample];
                 return observe(geom::intersect(a, geom::Extension::none, b, geom::Extension::none));
@@ -137,27 +137,34 @@ void measurePairs(Generator& generator, Report& report) {
 void measureNearDegeneracies(Report& report) {
     // 2^-40 stays representable at this scale. Each row straddles the exact
     // degeneracy; these are workloads, not geometric reference assertions.
+    // Diagonal tangencies keep the bounding boxes overlapping on both sides.
     constexpr double kDelta = 0x1p-40;
     const geom::Curve circle = geom::Circle{{0.0, 0.0}, 5.0};
     const std::array<std::pair<std::string_view, Pair>, 6> data{{
         {"near tangent line/circle inside",
-         {geom::Segment{{-8.0, 5.0 - kDelta}, {8.0, 5.0 - kDelta}}, circle}},
+         {geom::Segment{{11.0 - 3.0 * kDelta, -2.0 - 4.0 * kDelta},
+                        {-5.0 - 3.0 * kDelta, 10.0 - 4.0 * kDelta}},
+          circle}},
         {"near tangent line/circle outside",
-         {geom::Segment{{-8.0, 5.0 + kDelta}, {8.0, 5.0 + kDelta}}, circle}},
-        {"near tangent circle/circle inside", {circle, geom::Circle{{10.0 - kDelta, 0.0}, 5.0}}},
-        {"near tangent circle/circle outside", {circle, geom::Circle{{10.0 + kDelta, 0.0}, 5.0}}},
+         {geom::Segment{{11.0 + 3.0 * kDelta, -2.0 + 4.0 * kDelta},
+                        {-5.0 + 3.0 * kDelta, 10.0 + 4.0 * kDelta}},
+          circle}},
+        {"near tangent circle/circle inside",
+         {circle, geom::Circle{{6.0 - 3.0 * kDelta, 8.0 - 4.0 * kDelta}, 5.0}}},
+        {"near tangent circle/circle outside",
+         {circle, geom::Circle{{6.0 + 3.0 * kDelta, 8.0 + 4.0 * kDelta}, 5.0}}},
         {"near coincident circles", {circle, geom::Circle{{kDelta, 0.0}, 5.0}}},
         {"near coincident lines",
          {geom::Segment{{-8.0, 0.0}, {8.0, 0.0}}, geom::Segment{{-8.0, -kDelta}, {8.0, kDelta}}}},
     }};
-    for (const auto& [name, pair] : data) {
-        const auto operation = [&pair](std::size_t) {
+    for (const auto& entry : data) {
+        const auto operation = [&entry](std::size_t) {
             constexpr auto kExtension = geom::Extension::none;
-            const auto result = geom::intersect(pair.first, kExtension, pair.second, kExtension);
-            return observe(result);
+            const auto& [first, second] = entry.second;
+            return observe(geom::intersect(first, kExtension, second, kExtension));
         };
-        measure(name, "ADR 0010.8: bounded exact path (no numeric limit)", 1, kPairRepetitions,
-                operation, report);
+        measure(entry.first, "ADR 0010.8: bounded exact path (no numeric limit)", 1,
+                kPairRepetitions, operation, report);
     }
 }
 
@@ -166,7 +173,8 @@ void measureSnap(Generator& generator, Report& report) {
     for (std::size_t index = 0; index < kSnapPairs; ++index) {
         const double x = generator.coordinate();
         const double y = generator.coordinate();
-        data.emplace_back(curves(x, y, false)[index % 5], curves(x, y, true)[(index + 1) % 5]);
+        data.emplace_back(curves(x, y, false).at(index % 5),
+                          curves(x, y, true).at((index + 1) % 5));
     }
     const auto operation = [&data](std::size_t) {
         Observation batch{true, 0.0};
@@ -189,7 +197,7 @@ void measureAlong(Report& report) {
         std::vector<geom::Curve> cutters;
         // Reverse stations exercise ordering instead of supplying pre-sorted cuts.
         for (std::size_t index = size; index > 0; --index) {
-            const double x = static_cast<double>(index);
+            const auto x = static_cast<double>(index);
             cutters.emplace_back(geom::Segment{{x, -1.0}, {x, 1.0}});
         }
         const auto operation = [&host, &cutters](std::size_t) {
@@ -199,7 +207,7 @@ void measureAlong(Report& report) {
                 return Observation{};
             }
             const auto& value = result.value();
-            double checksum = static_cast<double>(value.cuts.size());
+            auto checksum = static_cast<double>(value.cuts.size());
             for (const auto& cut : value.cuts) {
                 checksum += cut.point.x + cut.onHost.station;
             }
@@ -218,7 +226,7 @@ void measureTangents(Generator& generator, Report& report) {
     constexpr std::array<std::size_t, 3> kCircular{1, 2, 3};
     constexpr std::array<std::string_view, 3> kNames{"arc", "circle", "bulge"};
     for (std::size_t index = 0; index < kCircular.size(); ++index) {
-        const auto& curve = data[kCircular[index]];
+        const auto& curve = data.at(kCircular.at(index));
         const auto operation = [&curve](std::size_t sample) {
             const geom::Point2 externalPoint{100.0 + static_cast<double>(sample), 100.0};
             const auto result = geom::tangentsFrom(externalPoint, curve, geom::Extension::extended);
@@ -231,7 +239,7 @@ void measureTangents(Generator& generator, Report& report) {
             }
             return Observation{result.value().points.size() == 2, checksum};
         };
-        measure("tangentsFrom " + std::string(kNames[index]),
+        measure("tangentsFrom " + std::string(kNames.at(index)),
                 "ADR 0011.10: common path + square root (no numeric limit)", kSamples,
                 kPairRepetitions, operation, report);
     }
@@ -278,13 +286,11 @@ void measureOffsets(Report& report) {
     }
 }
 
-}  // namespace
-
-int main() {
+int run() {
     Generator generator;
     Report report;
-    std::cout << "Performance bench; fixed seed " << kSeed
-              << "; steady_clock; times in microseconds.\n\n"
+    std::cout << "Performance bench; fixed seed " << std::showbase << std::hex << kSeed << std::dec
+              << std::noshowbase << "; steady_clock; times in microseconds.\n\n"
               << "| Workload | Calls | Mean us/call | Worst us/call | ADR objective | Data |\n"
               << "|---|---:|---:|---:|---|---|\n"
               << std::fixed << std::setprecision(3);
@@ -302,4 +308,14 @@ int main() {
         return 1;
     }
     return 0;
+}
+
+}  // namespace
+
+int main() {
+    try {
+        return run();
+    } catch (...) {
+        return 2;
+    }
 }
