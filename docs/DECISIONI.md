@@ -431,3 +431,14 @@ i rimandi ai documenti che cambia.
      decisione del responsabile; l'autore scrive la fascia nella stessa pull
      request, nel commento dell'intestazione, senza un altro giro di revisione
      ([revisione.md](agenti/revisione.md), [contratto.md](agenti/contratto.md)).
+
+- **2026-11-03: analisi notturna con SonarQube Cloud (#172).** Il responsabile
+  aggiunge un'analisi di SonarQube Cloud del solo ramo `main`, ogni notte verso
+  le 02:00 italiane (cron `17 1 * * *`, in UTC) e a mano con
+  `workflow_dispatch`, nel workflow separato `.github/workflows/sonar.yml`, che
+  non tocca `ci.yml`. Nessuna analisi sulle pull request né sui push, nessuna
+  copertura dei test per ora. L'azione `SonarSource/sonarqube-scan-action` è
+  fissata a uno SHA preciso; il C++ si analizza dal `compile_commands.json` del
+  preset `release` (`build/release/compile_commands.json`), senza Build
+  Wrapper, con la configurazione in `sonar-project.properties`. L'analisi
+  automatica di Sonar è spenta e il token sta nel secret `SONAR_TOKEN`.
