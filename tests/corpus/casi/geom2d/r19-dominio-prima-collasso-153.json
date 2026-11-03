@@ -1,0 +1,32 @@
+{
+  "versione": 1,
+  "id": "r19-dominio-prima-collasso-153",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #22, R19 (#129): Caso #153: dominio degli estremi esatti prima di failed.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          1125899906842624,
+          0
+        ],
+        "fine": [
+          1125899906842623.9,
+          "0x1.8p-33"
+        ]
+      }
+    },
+    "distanza": -67108864
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "outOfDomain",
+      "dato": "1"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Caso #153: dominio degli estremi esatti prima di failed. K=2^50, t=3*2^-34, vettore (-1/8,t), L=sqrt(1/64+t²), d=-2^26. La traslazione è (2^26*t/L,2^23/L): la sua x è strettamente positiva, quindi l’inizio esatto supera K. La x della traslazione è circa 1/8 e i double degli estremi possono coincidere; la fascia del collasso non rende libera la diagnosi, che offsetCurve impone prima di failed. Non si impone alcun double degli estremi. Nessun valore deriva dall’esecuzione di solid-space."
+  }
+}

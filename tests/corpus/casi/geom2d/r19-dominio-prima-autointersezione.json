@@ -1,0 +1,54 @@
+{
+  "versione": 1,
+  "id": "r19-dominio-prima-autointersezione",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #22, R19 (#129): Ordine dei controlli finali: dominio prima dell’autointersezione.",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          1125899906842524,
+          0,
+          0
+        ],
+        [
+          1125899906842544,
+          20,
+          0
+        ],
+        [
+          1125899906842524,
+          20,
+          0
+        ],
+        [
+          1125899906842544,
+          0,
+          0
+        ],
+        [
+          1125899906842623.9,
+          0,
+          0
+        ],
+        [
+          1125899906842623.9,
+          40,
+          0
+        ]
+      ],
+      "chiusa": false
+    },
+    "distanza": -0.25,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "failed",
+    "motivo": "beyondDomain"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Ordine dei controlli finali: dominio prima dell’autointersezione. K=2^50; la spezzata contiene due diagonali trasversali (pendenze +1 e -1), poi un tratto orizzontale e un tratto verticale x=K-1/8. Con d=-1/4 il tratto verticale finale ha x=K+1/8>K. Le giunzioni delle diagonali si spostano di meno di 1, nessuna inverte un pezzo lungo almeno 20; le diagonali non consecutive continuano a intersecarsi all’interno dei loro intervalli (presso (K-90,10)). Le coordinate esatte degli estremi di ogni pezzo differiscono in almeno una coordinata di oltre 8=2*K*2^-48: nessun dritto può collassare, nessun arco è presente, nessun fallimento di rappresentabilità prima dei controlli finali. Il vertice esatto terminale fuori dominio impone beyondDomain prima di qualsiasi controllo sulle intersezioni dei double: il caso non fissa un esito libero di intersezione entro una fascia. Nessun valore deriva dall’esecuzione di solid-space."
+  }
+}

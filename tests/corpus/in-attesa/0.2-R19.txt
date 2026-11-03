@@ -1,0 +1,13 @@
+geom2d/r19-bulge-1 #130
+geom2d/r19-bulge-meno-1 #130
+geom2d/r19-bulge-0-5 #130
+geom2d/r19-bulge-meno-0-5 #130
+geom2d/r19-arco-prolungato #130
+geom2d/r19-arco-tagliato #130
+geom2d/r19-giunzione-semicircolare-oraria #130
+geom2d/r19-giunzione-semicircolare-antioraria #130
+geom2d/r19-dominio-segmento-esatto #130
+geom2d/r19-dominio-polilinea-esatto #130
+geom2d/r19-dominio-raggio-esatto #130
+geom2d/r19-dominio-prima-collasso-153 #130
+geom2d/r19-dominio-prima-autointersezione #130

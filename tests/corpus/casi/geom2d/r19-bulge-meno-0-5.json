@@ -1,0 +1,58 @@
+{
+  "versione": 1,
+  "id": "r19-bulge-meno-0-5",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #22, R19 (#129): Arco isolato con bulge -0.5, estremi distanti e verso orario.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "pezzo": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          8,
+          0
+        ],
+        "bulge": -0.5
+      }
+    },
+    "distanza": 1
+  },
+  "atteso": {
+    "esito": "done",
+    "curva": {
+      "pezzo": {
+        "inizio": [
+          {
+            "valore": -0.8,
+            "tolleranza": 2.8421709430404014e-14
+          },
+          {
+            "valore": 0.6,
+            "tolleranza": 2.8421709430404014e-14
+          }
+        ],
+        "fine": [
+          {
+            "valore": 8.8,
+            "tolleranza": 3.126388037344442e-14
+          },
+          {
+            "valore": 0.6,
+            "tolleranza": 3.126388037344442e-14
+          }
+        ],
+        "bulge": {
+          "valore": -0.5,
+          "tolleranza": 5.210646728907402e-14
+        }
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Arco isolato con bulge -0.5, estremi distanti e verso orario. Centro C=(4,-3), raggio 5; Rnuovo=6; Pnuovo=C+(P-C)*Rnuovo/R, quindi estremi [[Decimal('-0.8'), Decimal('0.6')], [Decimal('8.8'), Decimal('0.6')]]. Il centro esatto sta sull’asse degli estremi esatti; t=((C-m)·n)/(n·n) e b=-2t-sqrt(4t²+1) ridanno -0.5. S=max(M,|p|)=8.8, errore punti S*2^-48=3.126388037344441e-14, corda=9.6, errore bulge 4*S*2^-46/corda arrotondato per eccesso=5.210646728907402e-14. La corda supera di oltre 10^13 volte 2*S*2^-48, il giro è al più pi: nessun collasso o fascia quasi intera; tutti i dati e m sono lontani da K. Nessun valore deriva dall’esecuzione di solid-space."
+  }
+}
