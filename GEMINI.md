@@ -2,7 +2,7 @@
 
 Le istruzioni per gli assistenti IA sono in [AGENTS.md](AGENTS.md): leggi sempre
 il nucleo, cioè AGENTS.md, e i file di [docs/agenti/](docs/agenti/) che la sua
-tabella «Se … leggi anche …» indica per il tuo lavoro; seguili alla lettera.
+tabella «Se ... leggi anche ...» indica per il tuo lavoro; seguili alla lettera.
 
 Questo file lo leggono Gemini CLI e Antigravity CLI. Di norma Gemini lavora ai
 **pacchetti di riferimenti** (`[X.Y-RN]`): le regole sono in

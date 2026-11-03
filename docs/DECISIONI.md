@@ -393,12 +393,12 @@ i rimandi ai documenti che cambia.
   #160, passo 4).** [AGENTS.md](../AGENTS.md) diventa un nucleo sempre letto
   (dove si scrive, presa in carico, regole che non si possono violare, quando
   fermarsi con «Buchi visibili e no», prima di dichiarare finito, commit e pull
-  request) e una tabella «Se … leggi anche …» con segni oggettivi, che instrada
-  agli otto file di [agenti/](agenti/), con gli stessi nomi in Tecnigrafo. Il
-  testo uscito dal nucleo sta lì, sotto i titoli che aveva, con i soli rimandi
-  adeguati; una
-  sezione citata come AGENTS.md, "<titolo>", che il nucleo non ha, sta nel file
-  con lo stesso titolo. [GEMINI.md](../GEMINI.md) rimanda al nucleo e alla
+  request) e una tabella «Se ... leggi anche ...» con segni oggettivi, che
+  instrada agli otto file di [agenti/](agenti/), con gli stessi nomi in
+  Tecnigrafo. Il testo uscito dal nucleo sta lì, sotto i titoli che aveva o in
+  sezioni che dicono da dove viene, con i soli rimandi adeguati; una sezione
+  citata come AGENTS.md, "<titolo>", che il nucleo non ha, sta nel file con lo
+  stesso titolo. [GEMINI.md](../GEMINI.md) rimanda al nucleo e alla
   tabella. Le regole nuove:
   1. una pull request che tocca solo documenti, commenti o casi di riferimento
      non si compila in locale: la verifica la fa la CI (nucleo, «Prima di

@@ -1,10 +1,9 @@
 # Comandi, build e CI
 
 Si legge insieme al nucleo, [AGENTS.md](../../AGENTS.md), quando apri o aggiorni
-una pull request, quando esegui `scripts/controlla.sh` o `scripts/ci-*.sh`,
-oppure quando il lavoro tocca `CMakeLists.txt`, `CMakePresets.json`, `cmake/`,
-`scripts/`, `.github/` o `third_party/`. Le sezioni portano i titoli che avevano
-in AGENTS.md.
+una pull request, quando lanci uno script di `scripts/`, oppure quando il lavoro
+tocca `scripts/`, `CMakeLists.txt`, `CMakePresets.json`, `cmake/` o `.github/`.
+Le sezioni portano i titoli che avevano in AGENTS.md.
 
 ## Comandi
 
@@ -48,6 +47,9 @@ controlli verdi vale da quando esiste la CI (pacchetto P3 della tappa 0.1).
 Apri la pull request e aspetta la CI con **un solo comando che blocca**, non con
 controlli ripetuti (ogni controllo consuma token). Mentre aspetti non fare
 domande e non cominciare altro.
+
+Nel riepilogo e nella pull request scrivi anche ciò che non hai potuto
+verificare, per esempio Windows e macOS.
 
 Aspetta la CI e leggine gli errori con un solo comando per operazione (solo API
 REST; servono `jq` e `gh` oppure `curl`):

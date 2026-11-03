@@ -3,8 +3,9 @@
 Si legge insieme al nucleo, [AGENTS.md](../../AGENTS.md), quando il lavoro tocca
 un file in `*/include/solid_space/` o [docs/CONTRATTI.md](../CONTRATTI.md),
 quando la scheda ha la riga **Contratto:** o cita intestazioni pubbliche in
-**Da leggere**, oppure quando la issue ha l'etichetta `contratto`. Le sezioni
-portano i titoli che avevano in AGENTS.md.
+**Da leggere**, oppure quando la issue ha l'etichetta `contratto`. Il nucleo,
+"Quando fermarsi", tiene «Un buco nel contratto» e «Buchi visibili e no». Le
+sezioni portano i titoli che avevano in AGENTS.md.
 
 ## Il contratto
 
@@ -49,8 +50,8 @@ contratto la scrivi nella stessa pull request, nel commento dell'intestazione
 
 ## Prima della pull request
 
-Viene dal punto 1 di AGENTS.md, "Quando fermarsi". Prima di aprire la pull
-request, aggiorna `main` e controlla che le intestazioni del contratto che il
+Viene dal vecchio punto 1 di AGENTS.md, "Quando fermarsi". Prima di aprire la
+pull request, aggiorna `main` e controlla che le intestazioni del contratto che il
 pacchetto realizza o usa non siano cambiate da quando hai cominciato:
 
 ```sh

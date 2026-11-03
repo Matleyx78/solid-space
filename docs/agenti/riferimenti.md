@@ -1,8 +1,9 @@
 # Pacchetto di riferimenti
 
 Si legge insieme al nucleo, [AGENTS.md](../../AGENTS.md), quando la issue ha
-l'etichetta `riferimenti` e il titolo `[X.Y-RN]`, oppure quando il lavoro tocca
-`tests/corpus/`. Le sezioni portano i titoli che avevano in AGENTS.md.
+l'etichetta `riferimenti` o il titolo `[X.Y-RN]`, oppure quando il lavoro tocca
+`tests/corpus/`. Le etichette degli agenti sono in [pacchetto.md](pacchetto.md),
+«Le etichette degli agenti». Le sezioni portano i titoli che avevano in AGENTS.md.
 
 Per "il prossimo pacchetto di riferimenti" valgono le condizioni 1–3 e 5 di
 [pacchetto.md](pacchetto.md) ("Se ti chiedono di prendere il prossimo

@@ -1,8 +1,16 @@
 # Pacchetto di lavoro
 
 Si legge insieme al nucleo, [AGENTS.md](../../AGENTS.md), quando la issue ha
-l'etichetta `pacchetto` e il titolo `[X.Y-PN]`, oppure quando ti chiedono «il
-prossimo pacchetto». Le sezioni portano i titoli che avevano in AGENTS.md.
+l'etichetta `pacchetto` o il titolo `[X.Y-PN]`, quando ti chiedono «il prossimo
+pacchetto», oppure quando tocchi file `.hpp` o `.cpp`. Le sezioni portano i titoli che avevano in AGENTS.md.
+
+## Le etichette degli agenti
+
+Viene da AGENTS.md, "Per prima cosa: prendi in carico", punto 2. Per ogni
+sessione di Claude sono sue sia `agente:claude` sia `agente:claude-2`, che resta
+solo sulle issue aperte prima della tappa che corrisponde alla 0.8 di Tecnigrafo;
+Gemini 4 Argon ha `agente:gemini-argon`. Chi fa che cosa:
+[LAVORO-IN-PARALLELO.md](../LAVORO-IN-PARALLELO.md), "Chi fa cosa".
 
 ## Prima di scrivere codice
 
@@ -78,3 +86,20 @@ Chi scrive i casi segue [riferimenti.md](riferimenti.md).
   riprende. In un lotto passa al pacchetto successivo.
 - Un'operazione che può fallire restituisce un risultato con diagnosi; un ripiego
   non è mai silenzioso.
+
+## Regole del codice
+
+Vengono da AGENTS.md, "Regole che non si possono violare", e valgono come quelle:
+
+- **Nessuna intestazione pubblica include OCCT, libslvs, Eigen o altre dipendenze
+  esterne** (ADR 0002). Le forme e le strutture del solver sono maniglie opache.
+- **Le dipendenze tra componenti vanno in un verso solo**: `features` →
+  `kernel`, `naming`, `solver`; `kernel` → `robust`, `naming`, `geom2d`;
+  `solver` → `robust`, `geom2d`; `geom2d` → `robust`. `robust` e `naming` non
+  dipendono da nulla. Un componente non include uno che sta sopra di lui
+  ([ADR 0008](../adr/0008-componente-geom2d.md)).
+- Gli elementi si citano con identificativi stabili (`StableId`), mai con
+  puntatori o indirizzi, e mai con tipi del nucleo.
+- Nessuna eccezione attraversa un'interfaccia pubblica: gli errori sono valori con
+  diagnosi (ADR 0003). Unica eccezione ammessa: `std::bad_alloc` quando la
+  memoria è esaurita, che non si intercetta (ADR 0003, punto 5).
