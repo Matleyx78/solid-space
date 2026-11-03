@@ -1,0 +1,49 @@
+{
+  "versione": 1,
+  "id": "r20-ambiguo-prima-centri-diretti",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #21, R20 (#146): ambiguousPick precede i candidati oltre K nella regola 3 (#150), anche scambiando le curve.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          1,
+          0
+        ]
+      }
+    },
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          0,
+          1
+        ],
+        "fine": [
+          1,
+          "0x1.0000000000001p+0"
+        ]
+      }
+    },
+    "raggio": 0.25,
+    "punto_prima": [
+      0.5,
+      0
+    ],
+    "punto_seconda": [
+      2,
+      0
+    ]
+  },
+  "atteso": {
+    "esito": "ambiguousPick"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "ambiguousPick precede i candidati oltre K nella regola 3 (#150), anche scambiando le curve. Le rette y=0 e y=1+2^-52*x si incontrano a x=-2^52. Per r=1/4, ycentro=±1/4 e |ycentro-1-2^-52*xcentro|=(1/4)*sqrt(1+2^-104); dunque ogni centro ha |x| almeno circa 2^51>K. Ma il clic (2,0) giace esattamente sulla prima retta, anche se fuori dal segmento; side è on e la regola 3 impone ambiguousPick prima della costruzione dei centri. Entrambi i clic e tutti i dati sono validi; le rette non sono parallele e il raggio è positivo. K=2^50. Nessuna esecuzione di solid-space; nessun caso nei subnormali o nelle fasce #152/#155/#157 impone un esito libero."
+  }
+}

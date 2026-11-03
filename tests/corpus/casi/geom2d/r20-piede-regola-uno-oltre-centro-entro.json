@@ -1,0 +1,52 @@
+{
+  "versione": 1,
+  "id": "r20-piede-regola-uno-oltre-centro-entro",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #21, R20 (#146): Piede della perpendicolare oltre K nella regola 1 con centro entro K.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          1125899906842622.9,
+          -0.5
+        ],
+        "fine": [
+          1125899906842623.9,
+          0.5
+        ]
+      }
+    },
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          1125899906842622.9,
+          -1
+        ],
+        "fine": [
+          1125899906842623.9,
+          0
+        ]
+      }
+    },
+    "raggio": 1,
+    "punto_prima": [
+      1125899906842623.9,
+      0.5
+    ],
+    "punto_seconda": [
+      1125899906842623.9,
+      0
+    ]
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "outOfDomain",
+      "dato": "2"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Piede della perpendicolare oltre K nella regola 1 con centro entro K. Le rette sono parallele distinte, entrambe di direzione (1,1); la prima è spostata di (0,1/2) dalla seconda. Il clic sceglie esattamente l’estremo A=(K-1/8,1/2). La proiezione di A sulla seconda retta è F=A+(1/4,-1/4)=(K+1/8,1/4), oltre K. Il centro del semicerchio (A+F)/2=(K,3/8) è entro K e il raggio è sqrt(1/8)/2. La diagnosi outOfDomain sul dato 2 è obbligatoria per F, indipendente dal raggio richiesto e dall’eventuale m arrotondato; non si impone found in una fascia. K=2^50. Nessuna esecuzione di solid-space; nessun caso nei subnormali o nelle fasce #152/#155/#157 impone un esito libero."
+  }
+}

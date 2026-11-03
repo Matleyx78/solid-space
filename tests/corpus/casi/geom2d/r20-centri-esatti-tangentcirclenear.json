@@ -1,0 +1,52 @@
+{
+  "versione": 1,
+  "id": "r20-centri-esatti-tangentcirclenear",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #21, R20 (#146): Centri esatti oltre il dominio anche quando arrotonderebbero a K (#149).",
+  "ingresso": {
+    "operazione": "tangentCircleNear",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          1125899906842623.9,
+          -1
+        ],
+        "fine": [
+          1125899906842623.9,
+          1
+        ]
+      }
+    },
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          1,
+          0
+        ]
+      }
+    },
+    "raggio": 0.25,
+    "vicino_prima": [
+      1125899906842623.9,
+      0.5
+    ],
+    "vicino_seconda": [
+      0.5,
+      0
+    ]
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "outOfDomain",
+      "dato": "2"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Centri esatti oltre il dominio anche quando arrotonderebbero a K (#149). Le rette x=K-1/8 e y=0 hanno quattro cerchi di raggio 1/4, con centri (K-1/8 ±1/4, ±1/4): due hanno x=K+1/8>K. Nessun candidato può essere omesso: tutta la chiamata dà outOfDomain, dato 2. I clic sono validi e nessuno sta sul sostegno dell’altra curva; in fillet si applica la regola 3 e si eredita la diagnosi prima di scegliere un candidato. La diagnosi dei centri esatti è indipendente dalle scelte dei double o dal punto m di un eventuale raccordo. K=2^50. Nessuna esecuzione di solid-space; nessun caso nei subnormali o nelle fasce #152/#155/#157 impone un esito libero."
+  }
+}

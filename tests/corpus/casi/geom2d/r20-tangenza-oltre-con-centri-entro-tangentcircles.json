@@ -1,0 +1,41 @@
+{
+  "versione": 1,
+  "id": "r20-tangenza-oltre-con-centri-entro-tangentcircles",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #21, R20 (#146): Punto di tangenza oltre K con tutti i centri entro K (#149).",
+  "ingresso": {
+    "operazione": "tangentCircles",
+    "prima": {
+      "cerchio": {
+        "centro": [
+          1125899906842623.5,
+          0
+        ],
+        "raggio": 1
+      }
+    },
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          1125899906842623.5,
+          -1
+        ],
+        "fine": [
+          1125899906842623.5,
+          1
+        ]
+      }
+    },
+    "raggio": 0.5
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "outOfDomain",
+      "dato": "2"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Punto di tangenza oltre K con tutti i centri entro K (#149). Sia C=(K-1/2,0), R=1 e retta x=Cx; r=1/2. I centri tangenti hanno x=Cx±r, quindi x=K o K-1. Per tangenza interna |O-C|=R-r=1/2, i centri sono (K,0) e (K-1,0); per quella esterna |O-C|=R+r=3/2, i quattro centri hanno y=±sqrt(2), ancora entro K. Il cerchio interno di centro (K,0) tocca il primo cerchio in C+(1,0)=(K+1/2,0), esattamente oltre K. È un candidato distinto dal cerchio originale, con raggio 1/2. I dati del cerchio sono validi: il dominio non controlla la sua estensione geometrica. Tutta la chiamata fallisce sul dato 2, anche se un altro candidato sarebbe valido. Clic entrambi (0,0), fuori dal primo cerchio e a sinistra della retta: nessun ambiguousPick, quindi fillet eredita la diagnosi di regola 3, prima della costruzione di m. K=2^50. Nessuna esecuzione di solid-space; nessun caso nei subnormali o nelle fasce #152/#155/#157 impone un esito libero."
+  }
+}
