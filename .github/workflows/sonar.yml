@@ -1,0 +1,48 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 The solid-space authors
+#
+# Nightly SonarQube Cloud analysis of main (decision of 2026-11-03,
+# docs/DECISIONI.md). It never runs on pull requests or pushes and collects no
+# test coverage; ci.yml stays the only gate for merging.
+name: SonarQube Cloud
+
+on:
+  schedule:
+    # 01:17 UTC, around 02:00 in Italy; off the hour to avoid the busiest slot.
+    - cron: '17 1 * * *'
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sonar-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  analysis:
+    name: Analysis of main
+    # A manual run started from another branch does nothing: only main is analysed.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history for blame information and new-code detection.
+          fetch-depth: 0
+          submodules: false
+      # Same packages as the Linux job of ci.yml.
+      - run: sudo apt-get update && sudo apt-get install -y ninja-build libgtest-dev clang-format-18 clang-tidy-18
+      # The release preset writes build/release/compile_commands.json, which
+      # sonar-project.properties points the C++ analysis to.
+      - run: cmake --preset release
+      - run: cmake --build --preset release --parallel "$(nproc)"
+      - run: test -s build/release/compile_commands.json
+      - name: SonarQube Cloud scan
+        uses: SonarSource/sonarqube-scan-action@e805d875275f728fac1885b413934be6d7c63f65 # v8.4.1
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
