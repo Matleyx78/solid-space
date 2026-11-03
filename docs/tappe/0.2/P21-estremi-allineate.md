@@ -1,7 +1,7 @@
 # [0.2-P21] `geom2d`: estremi delle linee allineate unite
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
-- **Issue:** da aprire con l'unione della pull request del contratto (#158)
+- **Issue:** da aprire con l'unione della pull request del contratto (#159)
 - **Difficoltà:** media
 - **Agente:** claude
 - **Modello e impegno:** medio; impegno alto
