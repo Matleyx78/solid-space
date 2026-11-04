@@ -1,0 +1,49 @@
+{
+  "versione": 1,
+  "id": "r20-entrambi-clic-non-validi",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #21, R20 (#146): Entrambi i clic non validi precedono la costruzione fuori dominio (#150).",
+  "ingresso": {
+    "operazione": "tangentCircleNear",
+    "prima": {
+      "cerchio": {
+        "centro": [
+          1125899906842623.5,
+          0
+        ],
+        "raggio": 1
+      }
+    },
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          1125899906842623.5,
+          -1
+        ],
+        "fine": [
+          1125899906842623.5,
+          1
+        ]
+      }
+    },
+    "raggio": 0.5,
+    "vicino_prima": [
+      "nan",
+      0
+    ],
+    "vicino_seconda": [
+      0,
+      "inf"
+    ]
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "invalidValue",
+      "dato": "3"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Entrambi i clic non validi precedono la costruzione fuori dominio (#150). Il cerchio C=(K-1/2,0), R=1 e la retta x=Cx con r=1/2 hanno un candidato con tangenza (K+1/2,0). Gli ingressi 0,1,2 sono validi; sia il clic 3 sia il 4 hanno una coordinata non finita: vince invalidValue sul 3 nell’ordine dei dati, prima di ogni costruzione. K=2^50. Nessuna esecuzione di solid-space; nessun caso nei subnormali o nelle fasce #152/#155/#157 impone un esito libero."
+  }
+}

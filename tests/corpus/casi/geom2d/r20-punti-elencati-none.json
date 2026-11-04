@@ -1,0 +1,49 @@
+{
+  "versione": 1,
+  "id": "r20-punti-elencati-none",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #21, R20 (#146): Dominio solo dei punti elencati da tangentsFrom (#151), con Extension::none.",
+  "ingresso": {
+    "operazione": "tangentsFrom",
+    "punto": [
+      1125899906842624,
+      2
+    ],
+    "curva": {
+      "arco": {
+        "centro": [
+          1125899906842624,
+          0
+        ],
+        "raggio": 1,
+        "angolo_iniziale": 1.5707963267948966,
+        "ampiezza": 1.5707963267948966
+      }
+    },
+    "prolunga": "none"
+  },
+  "atteso": {
+    "collocazione": "outside",
+    "punti": [
+      {
+        "punto": [
+          {
+            "valore": 1125899906842623.1,
+            "tolleranza": 4
+          },
+          {
+            "valore": 0.5,
+            "tolleranza": 4
+          }
+        ],
+        "sulla_curva": {
+          "posizione": "inside"
+        }
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Dominio solo dei punti elencati da tangentsFrom (#151), con Extension::none. P-C=(0,2), R=1: T=C+(±sqrt(3)/2,1/2). Il punto destro ha x>K, il sinistro x<K. L’arco va da circa 90 a circa 180 gradi: la tangenza sinistra a 150 gradi è interna, quella destra a 30 gradi è esclusa, con margine angolare di almeno pi/6 rispetto a ogni estremo, molto oltre i 2 ulp di sinCos. Con none conta solo la sinistra, con extended la destra impone outOfDomain sul dato 1. M=K, punti entro K*2^-48=4; il valore ideale è calcolato con Decimal a 100 cifre e arrotondato a double solo per scrivere l’atteso approssimato. Il numero dei punti e Location sono decisioni esatte; non si impone il double né il limite ±K con una tolleranza. K=2^50. Nessuna esecuzione di solid-space; nessun caso nei subnormali o nelle fasce #152/#155/#157 impone un esito libero."
+  }
+}

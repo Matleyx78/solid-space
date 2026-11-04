@@ -1,0 +1,62 @@
+{
+  "versione": 1,
+  "id": "r20-tangenze-entro-vicine-k",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #21, R20 (#146): Punti di tangenza entro K vicino al confine.",
+  "ingresso": {
+    "operazione": "tangentsFrom",
+    "punto": [
+      1125899906842623,
+      2
+    ],
+    "curva": {
+      "cerchio": {
+        "centro": [
+          1125899906842623,
+          0
+        ],
+        "raggio": 1
+      }
+    },
+    "prolunga": "extended"
+  },
+  "atteso": {
+    "collocazione": "outside",
+    "punti": [
+      {
+        "punto": [
+          {
+            "valore": 1125899906842623.9,
+            "tolleranza": 4.0
+          },
+          {
+            "valore": 0.5,
+            "tolleranza": 4.0
+          }
+        ],
+        "sulla_curva": {
+          "posizione": "inside"
+        }
+      },
+      {
+        "punto": [
+          {
+            "valore": 1125899906842622.1,
+            "tolleranza": 3.999999999999997
+          },
+          {
+            "valore": 0.5,
+            "tolleranza": 3.999999999999997
+          }
+        ],
+        "sulla_curva": {
+          "posizione": "inside"
+        }
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Punti di tangenza entro K vicino al confine. C=(K-1,0), P=C+(0,2), R=1: T=C+(±sqrt(3)/2,1/2), entrambi entro K perché sqrt(3)/2<1. L’ordine antiorario del cerchio da +x elenca prima il punto a 30 gradi (segno +), poi quello a 150 gradi (segno -), entrambi inside. Nessun punto viene omesso e nessuna diagnosi è ammessa. M=K-1; per il punto destro S=max(M,|T|)=K-1+sqrt(3)/2, per quello sinistro S=M. Ogni punto ha la propria tolleranza S*2^-48 arrotondata per eccesso. Coordinate Decimal a 100 cifre. Il formato non controlla che il double restituito resti entro K: questo resta al test di unità P20, come la scheda richiede. K=2^50. Nessuna esecuzione di solid-space; nessun caso nei subnormali o nelle fasce #152/#155/#157 impone un esito libero."
+  }
+}

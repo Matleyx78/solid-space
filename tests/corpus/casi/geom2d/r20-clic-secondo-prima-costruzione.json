@@ -1,0 +1,49 @@
+{
+  "versione": 1,
+  "id": "r20-clic-secondo-prima-costruzione",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #21, R20 (#146): Il dato 4 del clic precede il dominio della costruzione (#150).",
+  "ingresso": {
+    "operazione": "tangentCircleNear",
+    "prima": {
+      "cerchio": {
+        "centro": [
+          1125899906842623.5,
+          0
+        ],
+        "raggio": 1
+      }
+    },
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          1125899906842623.5,
+          -1
+        ],
+        "fine": [
+          1125899906842623.5,
+          1
+        ]
+      }
+    },
+    "raggio": 0.5,
+    "vicino_prima": [
+      0,
+      0
+    ],
+    "vicino_seconda": [
+      0,
+      "inf"
+    ]
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "invalidValue",
+      "dato": "4"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Il dato 4 del clic precede il dominio della costruzione (#150). La coppia cerchio C=(K-1/2,0), R=1 e retta x=Cx con r=1/2 costruirebbe la tangenza esatta (K+1/2,0), oltre K, pur con tutti i centri entro K. Il clic secondo è non finito: la sua diagnosi invalidValue, dato 4, precede ogni costruzione e quindi il dato 2 del punto costruito. Tutti gli ingressi precedenti sono validi. K=2^50. Nessuna esecuzione di solid-space; nessun caso nei subnormali o nelle fasce #152/#155/#157 impone un esito libero."
+  }
+}
