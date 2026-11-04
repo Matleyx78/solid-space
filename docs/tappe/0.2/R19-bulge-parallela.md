@@ -44,8 +44,9 @@ Non stanno nel corpus, perché il loro esito è in una fascia di `offset.hpp`
 - estremi esatti a meno di 2 · `kRelativePointError` · max(M, |p|) per
   coordinata: i casi #148, la polilinea della #153, la #154, gli archi con
   estremi arrotondati coincidenti;
-- archi quasi interi con la corda di pochi ulp: il caso della #127 e quello
-  della #132 (`notRepresentable`);
+- archi nella fascia di rappresentabilità della #177, oltre 2π − 1/4
+  radianti: tra gli esempi il caso della #127 e quello della #132. I casi
+  R19 già pubblicati restano validi;
 - con E = `kRelativeOffsetError` · max(M, |p|): il punto m di un pezzo curvo
   quando un punto dell'arco esatto ha una coordinata oltre K − E in valore
   assoluto (`outOfDomain`, dato 1, in `offsetCurve`; `beyondDomain` in

@@ -49,7 +49,9 @@ del 2026-11-02):
 
 - **i vertici del risultato** stanno entro `kRelativePointError` dal valore
   esatto, compresi quelli dritti, tagliati, prolungati, di giunzione e degli
-  archi di giunzione, anche nei percorsi già uniti di P13 e P14. Quale
+  archi di giunzione, anche nei percorsi già uniti di P13 e P14. Per ogni
+  estremo di un pezzo curvo, anche se condiviso con un dritto, si applica
+  il limite più stretto 2^-51 · max(M, |p|) per coordinata (#177). Quale
   `double` esce non è fissato (ADR 0013): il codice già unito che arrotonda al
   più vicino va bene così e non si cambia per questo. Il bulge e il controllo
   di rappresentabilità usano i double restituiti, e i vertici condivisi usano
@@ -115,10 +117,13 @@ Esiti determinati (fuori dalle fasce):
   oltre K.
 - **#153**, K = 2^50, t = 3·2^-34: segmento (K, 0)–(K−1/8, t),
   d = −2^26: `offsetCurve` dà `outOfDomain`, dato 1, prima del collasso.
-- Su dati generati: archi di ogni ampiezza, vicino all'origine e a 1e6, il
-  centro dell'arco restituito vicino a quello esatto e ogni punto entro
-  `kRelativeOffsetError`; semicirconferenze esatte con bulge ±1 entro la
-  tolleranza del bulge.
+- Su dati generati vicino all'origine e a 1e6, verificare il limite più stretto
+  dei vertici e l'errore dell'arco restituito. Dimostrare la soglia #177 di
+  2π − 1/4 radianti per la rappresentabilità con estremi distinti e limiti
+  d'errore applicabili. Provare i casi immediatamente sotto e sopra la soglia: entro la soglia
+  il bulge non dà `failed` / `notRepresentable`; oltre, verificare le
+  proprietà della fascia senza fissare un esito libero. Verificare anche le
+  semicirconferenze esatte con bulge ±1 entro la tolleranza del bulge.
 
 Esempi dentro una fascia, provati con le proprietà valide per ogni scelta
 lecita (l'esito è libero: si controlla che sia uno di quelli ammessi e che, con

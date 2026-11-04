@@ -2,6 +2,8 @@
 
 - **Stato:** Accettato
 - **Data:** 2026-10-29
+- **Corretto:** 2026-11-04 — limite più stretto per gli estremi degli archi
+  di offset e fascia di rappresentabilità espressa in angolo (#177).
 - **Corretto:** 2026-10-31 — due chiarimenti, decisi dal responsabile quando i
   pacchetti di riferimenti R14a e R14c (issue #60 e #62) hanno trovato due punti
   in cui il contratto non tornava: la distanza zero (punto 2) e le curve
@@ -231,8 +233,9 @@ per scriverlo al suo utente. Il testo completo è nella issue #22.
      dritto con estremi arrotondati coincidenti; un segmento di
      polilinea curvo anche `failed`, solo quando i suoi estremi arrotondati
      girano la corda troppo perché un bulge lo rappresenti entro l'errore (un
-     arco vicino al giro intero con una corda di pochi ulp; mai se l'arco della
-     regola sta entro metà dell'errore, corretto il 2026-11-01); anche quando
+     arco di ampiezza assoluta oltre 2π − 1/4 radianti, se valgono i limiti
+     d'errore delle costruzioni, #177; mai se l'arco della regola sta entro
+     metà dell'errore); anche quando
      gli estremi arrotondati di un arco non nullo coincidono dà `failed`;
    - polilinee nei **casi semplici** (nessun pezzo si annulla, si toglie o si
      riduce a un punto, neppure per arrotondamento, e il risultato esatto resta più lontano di epsilon(M),
@@ -243,7 +246,12 @@ per scriverlo al suo utente. Il testo completo è nella issue #22.
    - polilinee negli **altri casi**: `done` con il risultato dei passi, senza
      autointersezioni e senza incontrare la polilinea di partenza, oppure
      `failed`. Può differire da AutoCAD.
-7. **Errori dichiarati.** I vertici entro `kRelativePointError` (2^-48) ·
+7. **Errori dichiarati.** Gli estremi dei pezzi curvi, inclusi quelli di
+   giunzione e i vertici condivisi con pezzi dritti, stanno entro
+   2^-51 · max(M, |p|) per coordinata (#177), con il dominio degli errori
+   dell'ADR 0013 e scelta libera del `double`.
+
+   Per gli altri vertici vale il limite seguente. I vertici entro `kRelativePointError` (2^-48) ·
    max(M, |p|, 2^-1022) dai vertici esatti; ogni punto del risultato entro
    `kRelativeOffsetError` = 2^-46 · max(M, |p|, 2^-1022) dalla curva esatta, e il
    contrario. 2^-46 è 16 volte sotto la tolleranza relativa dell'ADR 0009. M è
