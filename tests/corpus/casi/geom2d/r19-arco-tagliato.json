@@ -1,0 +1,91 @@
+{
+  "versione": 1,
+  "id": "r19-arco-tagliato",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #22, R19 (#129): Semicirconferenza seguita da un segmento verso ovest: arco tagliato.",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          5,
+          0,
+          1
+        ],
+        [
+          -5,
+          0,
+          0
+        ],
+        [
+          -15,
+          0,
+          0
+        ]
+      ],
+      "chiusa": false
+    },
+    "distanza": -1,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "done",
+    "motivo": "none",
+    "semplice": true,
+    "polilinea": {
+      "vertici": [
+        [
+          {
+            "valore": 6.0,
+            "tolleranza": 5.3290705182007514e-14
+          },
+          {
+            "valore": 0.0,
+            "tolleranza": 5.3290705182007514e-14
+          },
+          {
+            "valore": 0.9195949064558151,
+            "tolleranza": 7.130403811261482e-14
+          }
+        ],
+        [
+          {
+            "valore": -5.916079783099616,
+            "tolleranza": 5.3290705182007514e-14
+          },
+          {
+            "valore": 1.0,
+            "tolleranza": 5.3290705182007514e-14
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": -15.0,
+            "tolleranza": 5.3290705182007514e-14
+          },
+          {
+            "valore": 1.0,
+            "tolleranza": 5.3290705182007514e-14
+          },
+          "0"
+        ]
+      ],
+      "chiusa": false
+    },
+    "origini": [
+      {
+        "origine": "source",
+        "indice": "0"
+      },
+      {
+        "origine": "source",
+        "indice": "1"
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Semicirconferenza seguita da un segmento verso ovest: arco tagliato. Centro (0,0), nuovo raggio R=6; retta y=1; incontro più vicino a (-5,0): J=(-sqrt(R²-1),1), con q=sqrt(R²-1)=5.916079783099616042567328291561617048415501230794340322879719669142822459105653036765752527183109178. L’altro incontro è a x positivo e più lontano. Rotazione della fine minore di pi/2; nessun pezzo invertito. Estremo iniziale (R,0), finale del segmento (-15,1). Per gli estremi A=(R,0), B=(-q,-d), n=(d,-q-R), t=-d/(2*(R+q)); b=d/(R+q)+sqrt(1+(d/(R+q))²)=0.9195949064558151389635978996415923665932585878728543303221295696275070657224700701575290721500131561. Calcolo Decimal a 100 cifre, errore numerico <1e-90; S=M=15, punti entro 15*2^-48=5.3290705182007514e-14, corda sqrt(2R(R+q)), bulge entro 4*15*2^-46/corda=7.130403811261482e-14 arrotondato per eccesso. La corda è maggiore di 7, nessuna fascia di collasso o arco quasi intero. Resta un solo incontro tra pezzi consecutivi, trasversale; l’arco e la retta non incontrano l’originale (per d=1 la retta è sotto il semicerchio iniziale, per d=-1 parte a sinistra di -sqrt(35)). Separazione minima dall’originale positiva e dell’ordine dell’unità, enormemente maggiore di E=15*2^-46; K è lontano. Nessun valore deriva dall’esecuzione di solid-space."
+  }
+}

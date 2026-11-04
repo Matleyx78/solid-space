@@ -1,0 +1,32 @@
+{
+  "versione": 1,
+  "id": "r19-dominio-segmento-esatto",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #22, R19 (#129): Dominio esatto della #149 prima dell’arrotondamento.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          1125899906842623.9,
+          0
+        ],
+        "fine": [
+          1125899906842623.9,
+          16
+        ]
+      }
+    },
+    "distanza": -0.25
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "outOfDomain",
+      "dato": "1"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Dominio esatto della #149 prima dell’arrotondamento. K=2^50, segmento verticale x=K-1/8 diretto verso l’alto, normale destra (1,0); con d=-1/4 entrambi gli estremi hanno x=K+1/8>K. Il fatto che un arrotondamento possa dare K non conta: outOfDomain sul dato 1 è esatto. Lunghezza 16, maggiore di 2*K*2^-48=8: nessun collasso; nessun arco né punto m. Nessun valore deriva dall’esecuzione di solid-space."
+  }
+}

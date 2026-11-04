@@ -1,0 +1,106 @@
+{
+  "versione": 1,
+  "id": "r19-giunzione-semicircolare-oraria",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #22, R19 (#129): Inversione di 180 gradi con d=2: arco di giunzione semicircolare con bulge -1.",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          20,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "chiusa": false
+    },
+    "distanza": 2,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "done",
+    "motivo": "none",
+    "semplice": true,
+    "polilinea": {
+      "vertici": [
+        [
+          {
+            "valore": 0.0,
+            "tolleranza": 7.105427357601002e-14
+          },
+          {
+            "valore": 2.0,
+            "tolleranza": 7.105427357601002e-14
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 20.0,
+            "tolleranza": 7.105427357601002e-14
+          },
+          {
+            "valore": 2.0,
+            "tolleranza": 7.105427357601002e-14
+          },
+          {
+            "valore": -1.0,
+            "tolleranza": 3.126388037344441e-13
+          }
+        ],
+        [
+          {
+            "valore": 20.0,
+            "tolleranza": 7.105427357601002e-14
+          },
+          {
+            "valore": -2.0,
+            "tolleranza": 7.105427357601002e-14
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 0.0,
+            "tolleranza": 7.105427357601002e-14
+          },
+          {
+            "valore": -2.0,
+            "tolleranza": 7.105427357601002e-14
+          },
+          "0"
+        ]
+      ],
+      "chiusa": false
+    },
+    "origini": [
+      {
+        "origine": "source",
+        "indice": "0"
+      },
+      {
+        "origine": "gap",
+        "indice": "1"
+      },
+      {
+        "origine": "source",
+        "indice": "1"
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Inversione di 180 gradi con d=2: arco di giunzione semicircolare con bulge -1. Le rette y=d e y=-d sono parallele distinte; tangenti opposte impongono il semicerchio tangente a destra del vertice (20,0). Estremi (20,d),(20,-d), centro (20,0), t=0, bulge = -1 per d positivo, +1 per d negativo. Corda=4; massimo |p|=22 sull’arco, M=20, S=22; errore punti 20*2^-48 ai vertici (max(M,|p|)=20), bulge 4*(22*2^-46)/4=22*2^-46. I pezzi sorgente hanno bulge 0 esatto. Distanza dall’originale 2, tra rette 4, oltre epsilon e 2E; la tangente condivisa soddisfa la tolleranza policy, nessuna sovrapposizione lontana dai vertici. Corda 4 enormemente maggiore dell’errore punti e nessun giro quasi intero; nessuna fascia al dominio. Nessun valore deriva dall’esecuzione di solid-space."
+  }
+}

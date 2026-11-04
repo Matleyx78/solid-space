@@ -1,0 +1,29 @@
+{
+  "versione": 1,
+  "id": "r19-dominio-raggio-esatto",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #22, R19 (#129): Dominio esatto della #149 sul raggio.",
+  "ingresso": {
+    "operazione": "offsetCurve",
+    "curva": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 1125899906842624
+      }
+    },
+    "distanza": -0.125
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "outOfDomain",
+      "dato": "1"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Dominio esatto della #149 sul raggio. R=K=2^50, d=-1/8: R-d=K+1/8>K esattamente. Un eventuale arrotondamento a K non cambia outOfDomain sul dato 1; il centro è (0,0), nessun estremo arrotondato né fascia di m. Nessun valore deriva dall’esecuzione di solid-space."
+  }
+}
