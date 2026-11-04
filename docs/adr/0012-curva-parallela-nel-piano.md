@@ -2,6 +2,8 @@
 
 - **Stato:** Accettato
 - **Data:** 2026-10-29
+- **Corretto:** 2026-11-04 — errore geometrico dell'offset scalato sul pezzo
+  esatto intero, come stabilito nella #181 (punto 7).
 - **Corretto:** 2026-11-04 — limite più stretto per gli estremi degli archi
   di offset e fascia di rappresentabilità espressa in angolo (#177).
 - **Corretto:** 2026-10-31 — due chiarimenti, decisi dal responsabile quando i
@@ -246,18 +248,21 @@ per scriverlo al suo utente. Il testo completo è nella issue #22.
    - polilinee negli **altri casi**: `done` con il risultato dei passi, senza
      autointersezioni e senza incontrare la polilinea di partenza, oppure
      `failed`. Può differire da AutoCAD.
-7. **Errori dichiarati.** Gli estremi dei pezzi curvi, inclusi quelli di
-   giunzione e i vertici condivisi con pezzi dritti, stanno entro
-   2^-51 · max(M, |p|) per coordinata (#177), con il dominio degli errori
-   dell'ADR 0013 e scelta libera del `double`.
+7. **Errori dichiarati.** Per ogni pezzo esatto A, S(A) è il massimo
+   valore assoluto delle coordinate di tutti i suoi punti, inclusi gli
+   estremi interni delle coordinate. La distanza dal pezzo restituito a
+   quello esatto e viceversa è al più E(A) = 2^-46 · max(M, S(A)) (#181).
+   Per `offsetCurve`, A è l'intera curva parallela esatta. Per
+   `offsetPolyline`, A è il pezzo finale dopo tagli o prolungamenti,
+   compresi gli archi di giunzione. Il limite resta costante lungo A.
+   Le fasce usano E(A) per il contatto con l'ingresso e per il punto m,
+   ed E(A) + E(B) per il contatto tra due pezzi.
 
-   Per gli altri vertici vale il limite seguente. I vertici entro `kRelativePointError` (2^-48) ·
-   max(M, |p|, 2^-1022) dai vertici esatti; ogni punto del risultato entro
-   `kRelativeOffsetError` = 2^-46 · max(M, |p|, 2^-1022) dalla curva esatta, e il
-   contrario. 2^-46 è 16 volte sotto la tolleranza relativa dell'ADR 0009. M è
-   la grandezza dei dati e di |`d`|. Il pavimento 2^-1022 è generale in
-   `curves.hpp` (#139, #140): punti entro 2^-1070 e curve entro 2^-1068
-   nei subnormali, senza cambiare le decisioni esatte.
+   M è la grandezza dei dati e di |d|. Per ogni vertice, |p| resta la
+   grandezza del suo valore esatto. Gli estremi curvi, anche condivisi
+   con un pezzo dritto, stanno entro 2^-51 · max(M, |p|) per coordinata
+   (#177). Gli altri vertici stanno entro `kRelativePointError` ·
+   max(M, |p|). Si applica il dominio degli errori dell'ADR 0013.
 8. **Le origini dei pezzi.** Il risultato dice per ogni pezzo da quale pezzo
    di partenza viene, o attorno a quale vertice gira se è un arco di giunzione
    (`OffsetPiece`; con pezzi resi consecutivi da vertici ripetuti eliminati, il

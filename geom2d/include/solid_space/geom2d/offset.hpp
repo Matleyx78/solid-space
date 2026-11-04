@@ -30,11 +30,15 @@
 
 namespace solid_space::geom2d {
 
-/// Largest distance between a returned offset and the exact one, relative to
-/// the magnitude: every point of the returned curve or polyline lies within
-/// kRelativeOffsetError * max(M, |p|) of the exact offset, and every point of
-/// the exact offset within the same distance of the returned one. 2^-46 is
-/// about 1.4e-14, 16 times below the relative tolerance of ADR 0009.
+/// Relative distance bound for each returned piece and its exact counterpart.
+/// For an exact piece A, let S(A) be the largest absolute coordinate over
+/// all points of A, including interior extrema. Each point of either piece
+/// is within E(A) = kRelativeOffsetError * max(M, S(A)) of the other piece.
+/// For offsetCurve, A is the entire exact offset. For offsetPolyline, A is
+/// the exact final piece after trimming or extension, including gap arcs.
+/// This scale is constant along the piece. Vertex error bounds still use
+/// each exact vertex's own magnitude. 2^-46 is about 1.4e-14, 16 times below
+/// the relative tolerance of ADR 0009.
 inline constexpr double kRelativeOffsetError = 0x1p-46;
 
 /// How an offset ended.
@@ -94,8 +98,8 @@ struct CurveOffset {
     /// or less gives vanished.
     ///
     /// failed, with no curve, when the arc of a curved PolylineSegment so
-    /// built has a point farther than kRelativeOffsetError * max(M, |p|)
-    /// from the exact offset, or the exact offset a point that far from it:
+    /// built has a point farther than the exact piece's E(A) from the exact
+    /// offset, or the exact offset has a point that far from it:
     /// its rounded ends turn the chord too much for any bulge. For distinct
     /// rounded ends, never when both distances are within half that bound.
     /// With distinct ends and applicable construction error bounds, an exact
@@ -115,7 +119,7 @@ struct CurveOffset {
     /// The point m of a returned curved
     /// piece is reconstructed from its returned doubles: when a point of the
     /// exact arc has a coordinate whose magnitude exceeds kMaxCoordinate -
-    /// kRelativeOffsetError * max(M, |p|), outOfDomain (input 1) for m is free
+    /// E(A) for that arc, outOfDomain (input 1) for m is free
     /// (as for fillet, tangency.hpp). Elsewhere the outcome is determined.
     Curve curve;
 };
@@ -269,15 +273,14 @@ struct PolylineOffset {
 /// affected.
 ///
 /// The final checks below are exact, but on the returned doubles, which are
-/// free within their errors: so they have bands too. With
-/// E = kRelativeOffsetError * max(M, |p|), these failures are free:
-/// meetsOriginal when the exact result comes within E of the input;
-/// selfIntersection when two exact pieces not consecutive come within 2 E of
-/// each other, or two consecutive ones within 2 E of each other away from
+/// free within their errors: so they have bands too. These failures are free:
+/// meetsOriginal when an exact piece A comes within E(A) of the input;
+/// selfIntersection when two nonconsecutive exact pieces A and B come within
+/// E(A) + E(B) of each other, or two consecutive pieces do so away from
 /// their shared vertex (beyond the coincidence of `policy`); beyondDomain for
 /// the point m of a curved piece in the band of CurveOffset. The simple
-/// cases below hold outside these bands. When every point of the exact result
-/// has |p| at most 8 M, 2 E is at most robust::kRelativeTolerance * M, not
+/// cases below hold outside these bands. When every exact piece has S(A) at
+/// most 8 M, E(A) + E(B) is at most robust::kRelativeTolerance * M, not
 /// above epsilon(M), so their separation keeps them outside the bands of
 /// meetsOriginal and of pieces not consecutive; the band of m near
 /// kMaxCoordinate and the other bands still apply to them.
@@ -307,7 +310,7 @@ struct PolylineOffset {
 ///   input, and the exact final vertices and m reconstructed from the returned
 ///   doubles are within the domain, outside the bands above, the outcome is
 ///   done, simple is true, and the result is the exact one: every vertex within
-///   kRelativePointError and every point within kRelativeOffsetError; or
+///   its applicable vertex error and each piece within its own E(A); or
 ///   failed with notRepresentable under the representability or coincident-end
 ///   conditions of CurveOffset;
 /// - the other cases: done, with the result of the steps above within the same
