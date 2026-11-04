@@ -29,7 +29,7 @@
 //    end and against it at its start; since E - F is perpendicular to both
 //    lines, the arc turns counterclockwise exactly when
 //    cross(E - S, away) > 0. Its sweep is +-pi (the double nearest to it) and
-//    its bulge +-1.
+//    its bulge +-1, or 0 when the corner and the rounded foot coincide (#152).
 // 2. Radius zero: the common points of the two extended curves (intersect()),
 //    chosen as tangentCircleNear chooses. A shared stretch gives
 //    infinitelyMany, no common point none.
@@ -42,13 +42,27 @@
 //    When it is zero, the sign of the dot product tells the same point (the
 //    single point, sweep 0, bulge 0) from the opposite ends of a diameter
 //    (counterclockwise, sweep pi, bulge 1): both points lie on the circle.
+//    Whatever the direction, the bulge is 0 when the returned points of
+//    tangency coincide, while the Arc keeps these rules (tangency.hpp, #152):
+//    for a half turn this is checked on the points; for the other directions
+//    the angle computed from them is then zero.
 //
-// Centres and corners beyond the domain. tangentCandidates() gives the
-// diagnosis outOfDomain about the radius (input 2) when a centre lies beyond
+// Constructions beyond the domain (curves.hpp, decision #149). tangentCandidates()
+// gives the diagnosis outOfDomain about the radius (input 2) when an exact
+// centre or point of tangency of any candidate lies beyond
 // robust::kMaxCoordinate (DECISIONI, 2026-11-01: a tangent circle is never
 // left out silently), and both functions pass it on. In the same way a corner
 // of rule 2 that intersect() omits beyond the domain gives that diagnosis:
-// "none" would claim that no corner exists.
+// "none" would claim that no corner exists. Rule 1 checks its exact centre,
+// foot and radius: the foot lies beyond the domain when the corner is near it
+// and the second line runs out of it. Rules 1 and 3 then check the point m of
+// the bulge form, reconstructed exactly from the returned points and bulge
+// (curves.hpp), not from the exact arc: near the boundary either outcome is
+// permitted (#155, #157), and this is the one the returned doubles give. The
+// boundary rule needs no clamping: every returned coordinate and the radius of
+// rule 1 are correctly rounded, non-decreasing in the exact value, and
+// robust::kMaxCoordinate is a double, so an exact value within it rounds to a
+// double within it.
 //
 // The arc in numbers (ADR 0011, points 6 and 7). With the rounded centre C and
 // points of tangency T1, T2 (each coordinate correctly rounded), v1 = T1 - C
@@ -197,6 +211,12 @@ struct FilletArc {
     double bulge = 0.0;
 };
 
+// True when the returned points of tangency are the same point (-0 and +0
+// alike): the bulge form is then 0, while the Arc keeps its rules (#152).
+bool coincide(Point2 a, Point2 b) noexcept {
+    return a.x == b.x && a.y == b.y;
+}
+
 // The arc of radius `radius` around the rounded centre from `from` to `to`
 // (see the top of this file).
 FilletArc arcBetween(Point2 centre, double radius, Point2 from, Point2 to, Turning turning) {
@@ -207,7 +227,7 @@ FilletArc arcBetween(Point2 centre, double radius, Point2 from, Point2 to, Turni
         case Turning::none:
             return {Arc{centre, radius, start, 0.0}, 0.0};
         case Turning::halfTurn:
-            return {Arc{centre, radius, start, kHalfTurn}, 1.0};
+            return {Arc{centre, radius, start, kHalfTurn}, coincide(from, to) ? 0.0 : 1.0};
         case Turning::counterclockwise:
         case Turning::clockwise:
             break;
@@ -270,6 +290,28 @@ Turning turningOf(const TangentCandidate& candidate) {
     return dot == Sign::positive ? Turning::none : Turning::halfTurn;
 }
 
+// The diagnosis of a construction beyond the domain (input 2).
+Diagnosis constructionBeyond(const char* message) {
+    return Diagnosis{DiagnosisCode::outOfDomain, kRadiusInput, message};
+}
+
+bool beyondCoordinate(const Dyadic& value) {
+    return compare(value.abs(), Dyadic(robust::kMaxCoordinate)) == Sign::positive;
+}
+
+// True when the point m of the bulge form from `from` to `to`, reconstructed
+// exactly from these doubles, lies beyond the domain. A zero bulge has no m.
+bool middleBeyondDomain(Point2 from, Point2 to, double bulge) {
+    if (bulge == 0.0) {
+        return false;
+    }
+    const auto m = detail::arcMidpoint(PolylineSegment{from, to, bulge});
+    return beyondCoordinate(m.x) || beyondCoordinate(m.y);
+}
+
+constexpr const char* kMiddleBeyond =
+    "the point m of the bulge form of the fillet is beyond robust::kMaxCoordinate";
+
 // --- Rule 1: the semicircle ---------------------------------------------------
 
 ExactVector directionOf(const LineMeaning& line) {
@@ -290,8 +332,9 @@ bool parallel(const LineMeaning& a, const LineMeaning& b) {
     return detail::crossSign(directionOf(a), directionOf(b)) == Sign::zero;
 }
 
-Fillet semicircle(const CurveMeaning& first, const LineMeaning& firstLine,
-                  const CurveMeaning& second, const LineMeaning& secondLine, Point2 pickFirst) {
+Result<Fillet> semicircle(const CurveMeaning& first, const LineMeaning& firstLine,
+                          const CurveMeaning& second, const LineMeaning& secondLine,
+                          Point2 pickFirst) {
     Fillet result;
     if (robust::orient2d(secondLine.start, secondLine.end, firstLine.start) == Sign::zero) {
         result.outcome = TangencyOutcome::infinitelyMany;
@@ -314,6 +357,20 @@ Fillet semicircle(const CurveMeaning& first, const LineMeaning& firstLine,
                                         exactCorner.y * squaredLength + footNumerator.y},
                             ExactVector{}, Dyadic(), squaredLength.timesPowerOfTwo(1)};
     const Dyadic cross = direction.x * relative.y - direction.y * relative.x;
+    // The exact values, before rounding (#149): the radius |cross| / (2 sqrt(L))
+    // is beyond K exactly when cross^2 > 4 K^2 L.
+    if (detail::beyondDomain(centre)) {
+        return constructionBeyond("the centre of the semicircle is beyond robust::kMaxCoordinate");
+    }
+    if (detail::beyondDomain(foot)) {
+        return constructionBeyond(
+            "the foot of the perpendicular on the second line is beyond robust::kMaxCoordinate");
+    }
+    const Dyadic limit(robust::kMaxCoordinate);
+    if (compare(cross * cross, limit * limit * squaredLength.timesPowerOfTwo(2)) ==
+        Sign::positive) {
+        return constructionBeyond("the radius of the semicircle is beyond robust::kMaxCoordinate");
+    }
     const double radius =
         detail::correctlyRounded(cross.abs(), Dyadic(), Dyadic(), Dyadic(2.0), squaredLength);
 
@@ -330,7 +387,12 @@ Fillet semicircle(const CurveMeaning& first, const LineMeaning& firstLine,
     result.semicircle = true;
     const double start = robust::atan2(corner.y - result.center.y, corner.x - result.center.x);
     result.arc = Arc{result.center, radius, start, counterclockwise ? kHalfTurn : -kHalfTurn};
-    result.bulge = counterclockwise ? 1.0 : -1.0;
+    if (!coincide(result.onFirst.point, result.onSecond.point)) {
+        result.bulge = counterclockwise ? 1.0 : -1.0;
+    }
+    if (middleBeyondDomain(result.onFirst.point, result.onSecond.point, result.bulge)) {
+        return constructionBeyond(kMiddleBeyond);
+    }
     return result;
 }
 
@@ -427,6 +489,9 @@ Result<Fillet> tangentFillet(const CurveMeaning& firstMeaning, const CurveMeanin
     result.onSecond = circle.onSecond;
     result.arc = arc.arc;
     result.bulge = arc.bulge;
+    if (middleBeyondDomain(result.onFirst.point, result.onSecond.point, result.bulge)) {
+        return constructionBeyond(kMiddleBeyond);
+    }
     return result;
 }
 

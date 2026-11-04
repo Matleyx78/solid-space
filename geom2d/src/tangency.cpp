@@ -78,13 +78,24 @@
 // both pairs (Lift), at most four. A full tower cannot happen; it would still
 // give a diagnosis, never a silent fallback.
 //
-// Centres beyond the domain. Two almost parallel lines meet far away, and the
-// centres of their tangent circles with them, possibly beyond the doubles.
-// tangency.hpp lists no count of omitted circles (unlike
-// PairIntersections::omittedBeyondDomain), and a circle is never left out
-// silently: a centre beyond robust::kMaxCoordinate gives the diagnosis
-// outOfDomain about the radius (input 2), as offsetCurve() does for a point of
-// its result (offset.hpp).
+// Constructions beyond the domain (curves.hpp, decision #149). Two almost
+// parallel lines meet far away, and the centres of their tangent circles with
+// them, possibly beyond the doubles; a centre within the domain can still have
+// a point of tangency beyond it (the foot on a line far along it, or a point of
+// a circle near the boundary). tangency.hpp lists no count of omitted circles
+// (unlike PairIntersections::omittedBeyondDomain), and a circle is never left
+// out silently: an exact centre or point of tangency beyond
+// robust::kMaxCoordinate gives the diagnosis outOfDomain about the radius
+// (input 2), as offsetCurve() does for a point of its result (offset.hpp).
+// The check reads the exact values, in the tower of the pair. In the same way
+// tangentsFrom() checks the exact points it lists, and only those (#151):
+// outOfDomain about the point (input 1).
+//
+// The boundary rule of curves.hpp (an exact value within kMaxCoordinate is
+// never returned beyond it) needs no clamping here: every returned coordinate
+// is correctly rounded, a non-decreasing function of the exact value, and
+// robust::kMaxCoordinate is a double, so an exact value within it rounds to a
+// double within it.
 //
 // Positions of points of the tower (tangency_internal.hpp). The same exact
 // tests as positions.cpp, written for numbers of the tower: the sign of
@@ -827,8 +838,9 @@ TowerPoint tangencyPoint(const Tower& tower, const CurveMeaning& meaning, const 
 
 // beyondDomain() of offset_carriers.hpp, with the filter first: a coordinate
 // whose bound keeps it below robust::kMaxCoordinate is inside (the weight in
-// double is within u of the exact one, hence the margin).
-bool centreBeyondDomain(const Filtered& numbers, const TowerPoint& point) {
+// double is within u of the exact one, hence the margin). Used for the centres
+// and the points of tangency alike.
+bool pointBeyondDomain(const Filtered& numbers, const TowerPoint& point) {
     const double limit = robust::kMaxCoordinate * point.weight.toDouble() * (1.0 - 0x1p-50);
     for (const auto* coordinate : {&point.x, &point.y}) {
         const Wide value = numbers.evaluate(*coordinate);
@@ -996,13 +1008,20 @@ Result<std::vector<TangentCandidate>> pairCandidates(const CurveMeaning& first,
     const Filtered numbers(tower);
     for (const auto& found : meeting->found()) {
         const auto& centre = found.point;
-        if (centreBeyondDomain(numbers, centre)) {
+        if (pointBeyondDomain(numbers, centre)) {
             return Diagnosis{DiagnosisCode::outOfDomain, 2,
                              "the centre of a tangent circle is beyond robust::kMaxCoordinate"};
         }
         TangentCandidate candidate{centre, tangencyPoint(tower, first, onFirst, centre),
                                    tangencyPoint(tower, second, onSecond, centre), TangentCircle{},
                                    Tower()};
+        // The exact points of tangency too (#149), before they are rounded.
+        if (pointBeyondDomain(numbers, candidate.onFirst) ||
+            pointBeyondDomain(numbers, candidate.onSecond)) {
+            return Diagnosis{DiagnosisCode::outOfDomain, 2,
+                             "a point of tangency of a tangent circle is beyond "
+                             "robust::kMaxCoordinate"};
+        }
         candidate.circle.center = nearestIn(numbers, centre);
         candidate.circle.onFirst =
             TangencyPoint{nearestIn(numbers, candidate.onFirst),
@@ -1211,9 +1230,15 @@ Result<TangentsFromPoint> tangentsFrom(Point2 point, const Curve& curve, Extensi
             }
             for (const auto& exact : points) {
                 const auto position = detail::positionOn(meaning, exact);
-                if (detail::takesPart(position.location, extension)) {
-                    result.points.push_back(TangencyPoint{detail::nearestPoint(exact), position});
+                if (!detail::takesPart(position.location, extension)) {
+                    // Not listed, so not checked (#151).
+                    continue;
                 }
+                if (detail::beyondDomain(exact)) {
+                    return Diagnosis{DiagnosisCode::outOfDomain, kPointInput,
+                                     "a listed point of tangency is beyond robust::kMaxCoordinate"};
+                }
+                result.points.push_back(TangencyPoint{detail::nearestPoint(exact), position});
             }
             break;
         }

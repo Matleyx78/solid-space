@@ -44,6 +44,7 @@ using solid_space::geom2d::Circle;
 using solid_space::geom2d::Curve;
 using solid_space::geom2d::DiagnosisCode;
 using solid_space::geom2d::Extension;
+using solid_space::geom2d::kQuarterTurn;
 using solid_space::geom2d::kRelativePointError;
 using solid_space::geom2d::Location;
 using solid_space::geom2d::Placement;
@@ -679,6 +680,102 @@ TEST(TangentCircles, CentreBeyondTheDomain) {
     ASSERT_FALSE(result.hasValue());
     EXPECT_EQ(result.diagnosis().code, DiagnosisCode::outOfDomain);
     EXPECT_EQ(result.diagnosis().input, 2U);
+}
+
+// Decision #149: the exact points of tangency are checked too, not only the
+// centres. With K = robust::kMaxCoordinate = 2^50, the circle of radius 1
+// around (K - 1/2, 0) and the line x = K - 1/2, r = 1/2: the parallel circle of
+// radius 1/2 touches the parallel x = K at the centre (K, 0), within the
+// domain, and that circle touches the given circle from inside at (K + 1/2, 0),
+// beyond it. The whole call fails, whichever curve comes first.
+TEST(TangentCircles, PointOfTangencyBeyondTheDomain) {
+    constexpr double kLimit = solid_space::robust::kMaxCoordinate;
+    const Circle circle{{kLimit - 0.5, 0.0}, 1.0};
+    const Segment line{{kLimit - 0.5, -1.0}, {kLimit - 0.5, 1.0}};
+    for (const bool swapped : {false, true}) {
+        const auto result =
+            swapped ? tangentCircles(line, circle, 0.5) : tangentCircles(circle, line, 0.5);
+        ASSERT_FALSE(result.hasValue());
+        EXPECT_EQ(result.diagnosis().code, DiagnosisCode::outOfDomain);
+        EXPECT_EQ(result.diagnosis().input, 2U);
+    }
+}
+
+// The boundary itself is within the domain. The circle of radius 1 around
+// (K - 1, 0) and the line x = K - 1, r = 1/2: the parallel circle of radius 1/2
+// touches the parallel x = K - 1/2 at (K - 1/2, 0), and that circle touches the
+// given one from inside at exactly (K, 0), which is returned as K. Every other
+// coordinate is below K.
+TEST(TangentCircles, PointOfTangencyOnTheBoundary) {
+    constexpr double kLimit = solid_space::robust::kMaxCoordinate;
+    const auto result = tangentCircles(Circle{{kLimit - 1.0, 0.0}, 1.0},
+                                       Segment{{kLimit - 1.0, -1.0}, {kLimit - 1.0, 1.0}}, 0.5);
+    ASSERT_TRUE(result.hasValue());
+    const auto& circles = result.value().circles;
+    const auto touching = std::find_if(circles.begin(), circles.end(), [&](const TangentCircle& c) {
+        return sameBits(c.center, Point2{kLimit - 0.5, 0.0});
+    });
+    ASSERT_NE(touching, circles.end());
+    EXPECT_TRUE(sameBits(touching->onFirst.point, Point2{kLimit, 0.0}));
+    EXPECT_TRUE(sameBits(touching->onSecond.point, Point2{kLimit - 1.0, 0.0}));
+    for (const auto& c : circles) {
+        for (const Point2 p : {c.center, c.onFirst.point, c.onSecond.point}) {
+            EXPECT_LE(std::fabs(p.x), kLimit);
+            EXPECT_LE(std::fabs(p.y), kLimit);
+        }
+    }
+}
+
+// Decision #151: tangentsFrom checks only the points it lists. From Q = (K, 2)
+// to the circle of radius 1/16 around (K, 0): q = (0, 2), rho = 2^-8, and the
+// points of tangency are (K -+ sqrt(e) / 2, 2^-9) with e = 2^-8 (4 - 2^-8), so
+// x = K -+ 0.0624... The one at K + 0.0624 is beyond the domain, although its
+// nearest double is K itself: the domain is decided on the exact value. The
+// arc of the upper left quarter holds only the other one (at an angle of almost
+// a half turn): with Extension::none it is listed and the call succeeds, and
+// its x, just above the midpoint K - 1/16, is returned as K; with
+// Extension::extended both are listed, and the call fails about the point.
+TEST(TangentsFrom, OnlyListedPointsAreDomainChecked) {
+    constexpr double kLimit = solid_space::robust::kMaxCoordinate;
+    const Point2 point{kLimit, 2.0};
+    const Arc arc{{kLimit, 0.0}, 0.0625, kQuarterTurn, kQuarterTurn};
+    const auto listed = tangentsFrom(point, arc, Extension::none);
+    ASSERT_TRUE(listed.hasValue());
+    EXPECT_EQ(listed.value().placement, Placement::outside);
+    ASSERT_EQ(listed.value().points.size(), 1U);
+    EXPECT_TRUE(sameBits(listed.value().points[0].point.x, kLimit));
+    EXPECT_EQ(listed.value().points[0].position.location, Location::inside);
+    for (const Curve& curve : {Curve{arc}, Curve{Circle{{kLimit, 0.0}, 0.0625}}}) {
+        const auto all = tangentsFrom(point, curve, Extension::extended);
+        ASSERT_FALSE(all.hasValue());
+        EXPECT_EQ(all.diagnosis().code, DiagnosisCode::outOfDomain);
+        EXPECT_EQ(all.diagnosis().input, 1U);
+    }
+    // A Circle lists both points even with Extension::none.
+    const auto circle = tangentsFrom(point, Circle{{kLimit, 0.0}, 0.0625}, Extension::none);
+    ASSERT_FALSE(circle.hasValue());
+    EXPECT_EQ(circle.diagnosis().input, 1U);
+}
+
+// The boundary rule of curves.hpp: an exact value within K is never returned
+// beyond it. From Q = (K - 1, 8) to the unit circle around (K - 1, 0) the
+// points of tangency are (K - 1 +- sqrt(63) / 8, 1/8): x = K - 0.0078..., just
+// below K, whose nearest double is K (the doubles there are 1/8 apart below K,
+// 1/4 above it). It is returned as K, not beyond.
+TEST(TangentsFrom, ExactValueWithinTheDomainIsNeverReturnedBeyondIt) {
+    constexpr double kLimit = solid_space::robust::kMaxCoordinate;
+    const auto result =
+        tangentsFrom(Point2{kLimit - 1.0, 8.0}, Circle{{kLimit - 1.0, 0.0}, 1.0}, Extension::none);
+    ASSERT_TRUE(result.hasValue());
+    const auto& points = result.value().points;
+    ASSERT_EQ(points.size(), 2U);
+    double largest = -kLimit;
+    for (const auto& p : points) {
+        EXPECT_LE(p.point.x, kLimit);
+        EXPECT_TRUE(sameBits(p.point.y, 0.125));
+        largest = std::max(largest, p.point.x);
+    }
+    EXPECT_TRUE(sameBits(largest, kLimit));
 }
 
 TEST(TangentCircles, Diagnoses) {

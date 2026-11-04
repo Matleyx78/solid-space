@@ -116,9 +116,12 @@ struct TangentCandidates {
 /// The circles of the given radius tangent to both curves, each taken with its
 /// extension (tangentCircles() of tangency.hpp, without the checks of its data).
 ///
-/// Diagnosis outOfDomain about the radius (input 2) when a centre lies beyond
-/// robust::kMaxCoordinate (two almost parallel lines): such a circle cannot be
-/// returned within the declared error, and it is never left out silently.
+/// Diagnosis outOfDomain about the radius (input 2) when the exact centre or an
+/// exact point of tangency of any candidate lies beyond robust::kMaxCoordinate
+/// (two almost parallel lines; a point of a circle near the boundary): such a
+/// circle cannot be returned (curves.hpp, decision #149), and it is never left
+/// out silently. Every returned coordinate is correctly rounded, so an exact
+/// value within the domain is never returned beyond it.
 /// Preconditions: neither meaning is degenerate, the radius is positive, finite
 /// and at most robust::kMaxCoordinate.
 [[nodiscard]] Result<TangentCandidates> tangentCandidates(const CurveMeaning& first,

@@ -556,6 +556,140 @@ TEST(Fillet, BeyondTheDomain) {
     }
 }
 
+// Decision #149, with K = robust::kMaxCoordinate = 2^50. The circle of radius 1
+// around (K - 1/2, 0) and the line x = K - 1/2, r = 1/2: every centre lies
+// within the domain, but the circle centred at (K, 0) touches the given circle
+// at (K + 1/2, 0), beyond it. tangentCircleNear and fillet inherit the
+// diagnosis of the whole call (#151), even when the picks would choose
+// another circle.
+TEST(Fillet, PointOfTangencyBeyondTheDomain) {
+    constexpr double kLimit = solid_space::robust::kMaxCoordinate;
+    const Circle circle{{kLimit - 0.5, 0.0}, 1.0};
+    const Segment line{{kLimit - 0.5, -1.0}, {kLimit - 0.5, 1.0}};
+    const Point2 pick{kLimit - 10.0, 5.0};
+    const auto near = tangentCircleNear(circle, pick, line, pick, 0.5);
+    ASSERT_FALSE(near.hasValue());
+    EXPECT_EQ(near.diagnosis().code, DiagnosisCode::outOfDomain);
+    EXPECT_EQ(near.diagnosis().input, 2U);
+    const auto result = fillet(circle, pick, line, pick, 0.5);
+    ASSERT_FALSE(result.hasValue());
+    EXPECT_EQ(result.diagnosis().code, DiagnosisCode::outOfDomain);
+    EXPECT_EQ(result.diagnosis().input, 2U);
+}
+
+// Rule 1 checks its constructed radius on the exact value. The lines
+// x + y = -(2K - 2) and x + y = 2K - 2 are (4K - 4) / sqrt(2) apart: the
+// corner E = (2 - K, -K), the foot (K, K - 2) and the centre (1, -1) are
+// within the domain, but the radius (2K - 2) / sqrt(2), about 1.41 K, is not.
+TEST(Fillet, SemicircleRadiusBeyondTheDomain) {
+    constexpr double kLimit = solid_space::robust::kMaxCoordinate;
+    const Segment first{{-kLimit, 2.0 - kLimit}, {2.0 - kLimit, -kLimit}};
+    const Segment second{{kLimit - 2.0, kLimit}, {kLimit, kLimit - 2.0}};
+    const auto result =
+        fillet(first, Point2{2.0 - kLimit, -kLimit}, second, Point2{kLimit, kLimit - 2.0}, 1.0);
+    ASSERT_FALSE(result.hasValue());
+    EXPECT_EQ(result.diagnosis().code, DiagnosisCode::outOfDomain);
+    EXPECT_EQ(result.diagnosis().input, 2U);
+}
+
+// Rule 1 checks the point m of its bulge form, reconstructed from the returned
+// doubles. The lines y = 0 and y = 200, with the corner E = (K - c, 0) at the
+// end of the first piece: the foot is (K - c, 200), the centre (K - c, 100) and
+// the radius 100, all exact doubles; the semicircle leaves E away from the
+// first piece, in +x, so m = (K - c + 100, 100) exactly. With c = 10 it is
+// beyond the domain, far beyond the band of #157 (kRelativeArcError * K = 16);
+// with c = 200 it is within it.
+TEST(Fillet, SemicircleMiddleBeyondTheDomain) {
+    constexpr double kLimit = solid_space::robust::kMaxCoordinate;
+    const auto semicircle = [&](double c) {
+        const Segment first{{kLimit - 1000.0, 0.0}, {kLimit - c, 0.0}};
+        const Segment second{{kLimit - 1000.0, 200.0}, {kLimit - c, 200.0}};
+        return fillet(first, Point2{kLimit - c - 10.0, 0.0}, second,
+                      Point2{kLimit - c - 10.0, 200.0}, 1.0);
+    };
+    const auto beyond = semicircle(10.0);
+    ASSERT_FALSE(beyond.hasValue());
+    EXPECT_EQ(beyond.diagnosis().code, DiagnosisCode::outOfDomain);
+    EXPECT_EQ(beyond.diagnosis().input, 2U);
+    const auto within = semicircle(200.0);
+    ASSERT_TRUE(within.hasValue());
+    const auto& value = within.value();
+    EXPECT_EQ(value.outcome, TangencyOutcome::found);
+    EXPECT_TRUE(value.semicircle);
+    EXPECT_TRUE(sameBits(value.center, Point2{kLimit - 200.0, 100.0}));
+    EXPECT_TRUE(sameBits(value.onSecond.point, Point2{kLimit - 200.0, 200.0}));
+    EXPECT_TRUE(sameBits(value.radius, 100.0));
+    EXPECT_TRUE(sameBits(std::fabs(value.bulge), 1.0));
+}
+
+// Rule 3 checks the point m of its bulge form too. The line y = 0 and the
+// circle of radius 1 around (K - 80, 1998), r = 1000: the centres lie on
+// y = 1000 at K - 80 +- sqrt(5997) (outside the circle) and K - 80 +-
+// sqrt(1997) (enclosing it), all within the domain, and so do their points of
+// tangency, so tangentCircleNear succeeds. The fillet near the picks is centred
+// at about (K - 157.4, 1000): its arc runs counterclockwise from (K - 157.4, 0)
+// to the top of the small circle, through its point at angle zero, and its
+// middle m is near (K + 842, 962), far beyond the domain.
+TEST(Fillet, ArcMiddleBeyondTheDomain) {
+    constexpr double kLimit = solid_space::robust::kMaxCoordinate;
+    const Segment line{{kLimit - 1000.0, 0.0}, {kLimit, 0.0}};
+    const Circle circle{{kLimit - 80.0, 1998.0}, 1.0};
+    const Point2 pickFirst{kLimit - 160.0, 0.0};
+    const Point2 pickSecond{kLimit - 80.0, 1990.0};
+    const auto near = tangentCircleNear(line, pickFirst, circle, pickSecond, 1000.0);
+    ASSERT_TRUE(near.hasValue());
+    ASSERT_EQ(near.value().outcome, TangencyOutcome::found);
+    EXPECT_LT(near.value().circle.center.x, kLimit - 150.0);
+    const auto result = fillet(line, pickFirst, circle, pickSecond, 1000.0);
+    ASSERT_FALSE(result.hasValue());
+    EXPECT_EQ(result.diagnosis().code, DiagnosisCode::outOfDomain);
+    EXPECT_EQ(result.diagnosis().input, 2U);
+}
+
+// Decision #152: when the returned points of tangency coincide the bulge is 0,
+// while the Arc keeps its own rules. Rule 1 (found in the review of #180): the
+// lines y = x and y = x + d, d = 2^-55, are distinct and parallel; the corner
+// is (1, 1) and the exact foot (1 - d/2, 1 + d/2), which rounds to (1, 1). The
+// Arc keeps its half turn.
+TEST(Fillet, SemicircleWithCoincidentPoints) {
+    constexpr double kGap = 0x1p-55;
+    const Segment first{{0.0, 0.0}, {1.0, 1.0}};
+    const Segment second{{0.0, kGap}, {0.125, 0.125 + kGap}};
+    const auto result = fillet(first, Point2{1.0, 1.0}, second, Point2{0.0, kGap}, 1.0);
+    ASSERT_TRUE(result.hasValue());
+    const auto& value = result.value();
+    ASSERT_EQ(value.outcome, TangencyOutcome::found);
+    EXPECT_TRUE(value.semicircle);
+    ASSERT_TRUE(sameBits(value.onFirst.point, Point2{1.0, 1.0}));
+    ASSERT_TRUE(sameBits(value.onSecond.point, Point2{1.0, 1.0}));
+    EXPECT_TRUE(sameBits(value.bulge, 0.0));
+    EXPECT_EQ(std::fabs(value.arc.sweep), std::numbers::pi);
+}
+
+// The same in rule 3, when the exact points of tangency are opposite ends of a
+// diameter (rule 4: the counterclockwise half turn). The line from (0, 0) to
+// (3, 4) has the unit normal n = (-4, 3) / 5 on its left. With T1 = (3/4, 1),
+// r = 2^-60 and R = 5 * 2^-10 - 2^-59, the circle of radius R around
+// T1 + (2r + R) n = (3/4 - 2^-8, 1 + 3 * 2^-10) is touched at T2 = T1 + 2r n by
+// the circle of radius r around T1 + r n, the only candidate on the sides of
+// the picks. T2 is within 2^-59 of T1, so both round to (3/4, 1).
+TEST(Fillet, HalfTurnWithCoincidentPoints) {
+    constexpr double kRadius = 0x1p-60;
+    const Segment line{{0.0, 0.0}, {3.0, 4.0}};
+    const Circle circle{{0.75 - 0x1p-8, 1.0 + (3.0 * 0x1p-10)}, (5.0 * 0x1p-10) - 0x1p-59};
+    const Point2 tangency{0.75, 1.0};
+    const auto result = fillet(line, tangency, circle, circle.center, kRadius);
+    ASSERT_TRUE(result.hasValue());
+    const auto& value = result.value();
+    ASSERT_EQ(value.outcome, TangencyOutcome::found);
+    EXPECT_FALSE(value.semicircle);
+    ASSERT_TRUE(sameBits(value.onFirst.point, tangency));
+    ASSERT_TRUE(sameBits(value.onSecond.point, tangency));
+    EXPECT_TRUE(sameBits(value.bulge, 0.0));
+    EXPECT_TRUE(sameBits(value.arc.radius, kRadius));
+    EXPECT_EQ(value.arc.sweep, std::numbers::pi);
+}
+
 TEST(Fillet, Diagnoses) {
     const Segment line{{0.0, 0.0}, {1.0, 0.0}};
     const Circle circle{{0.0, 0.0}, 1.0};
