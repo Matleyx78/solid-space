@@ -31,6 +31,8 @@ Value writeOutcome(TangencyOutcome value) {
             return Value::name("infinitelyMany");
         case TangencyOutcome::ambiguousPick:
             return Value::name("ambiguousPick");
+        case TangencyOutcome::radiusTooLarge:
+            return Value::name("radiusTooLarge");
     }
     throw std::runtime_error("TangencyOutcome: unknown enumerator");
 }
