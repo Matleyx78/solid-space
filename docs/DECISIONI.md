@@ -457,3 +457,26 @@ i rimandi ai documenti che cambia.
   assoluto delle coordinate su tutto il pezzo esatto. I limiti dei vertici
   mantengono la scala del singolo vertice. La soglia della #177 si verifica
   con questa scala in P19. I casi R19 restano applicabili.
+
+- **2026-11-04: parte di ciascuna curva tenuta dal raccordo (#184).** Su
+  richiesta della P19 della tappa 0.7 di Tecnigrafo (Matleyx78/tecnigrafo#367),
+  dove l'agente si era fermato: la `Location` dei punti di tangenza non dice se
+  si tiene la parte dall'inizio al punto o dal punto alla fine, né, per un arco
+  con il punto `afterEnd`, quale estremo si prolunga. Il responsabile sceglie la
+  strada B2, il contratto lo dice per ciascuna curva, e decide:
+  1. ogni curva tiene la parte che prosegue l'arco di raccordo nel suo punto di
+     tangenza, come AutoCAD;
+  2. se il punto di tangenza è fuori dalla curva, si prolunga l'estremo che
+     prosegue il raccordo, come AutoCAD (nel caso e di `autocad-raccordi.dxf`
+     è l'inizio dell'arco): non è una regola fissa;
+  3. con raggio zero (spigolo) o punti di tangenza coincidenti, ogni curva
+     tiene la parte dalla parte del punto indicato rispetto allo spigolo, come
+     CHAMFER;
+  4. con le curve scambiate o i versi invertiti, la stessa parte geometrica.
+
+  La forma del dato la propone la pull request del contratto: `KeptPart`
+  (`fromStart`, `toEnd`) e i campi `keepFirst` e `keepSecond` di `Fillet`,
+  decisi esattamente dalla regola 5 di `fillet` in `tangency.hpp`. Correggono
+  l'[ADR 0011](adr/0011-raccordi-e-tangenze-nel-piano.md) (riga **Corretto:**)
+  e la scheda della tappa 0.2 in "Modifiche al piano", che aggiunge R22 (codex)
+  e P22 (claude) per realizzarla; Matleyx78/tecnigrafo#367 aspetta anche P22.

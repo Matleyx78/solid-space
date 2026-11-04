@@ -34,6 +34,18 @@
 - **Corretto:** 2026-11-02 — esattezza delle costruzioni, dominio in basso a
   2^-50, fascia degli esiti liberi e regola dei buchi visibili: vale
   l'[ADR 0013](0013-esatto-dove-serve.md) dove questo ADR dice altro.
+- **Corretto:** 2026-11-04 — la parte di ciascuna curva che il raccordo tiene,
+  che le posizioni dei punti di tangenza non determinavano (issue #184, buco
+  trovato dalla P19 della tappa 0.7 di Tecnigrafo,
+  Matleyx78/tecnigrafo#367), decisa dal responsabile: `Fillet` porta per
+  ciascuna curva la parte tenuta (`KeptPart`, `keepFirst` e `keepSecond`),
+  decisa esattamente (regola 5 di `fillet`). Come AutoCAD, ogni curva tiene la
+  parte che prosegue l'arco nel suo punto di tangenza, e se il punto è fuori
+  dalla curva si prolunga l'estremo che prosegue il raccordo; con raggio zero o
+  punti di tangenza coincidenti, come CHAMFER, la parte dalla parte del punto
+  indicato rispetto allo spigolo, con `ambiguousPick` quando il punto non lo
+  dice; con le curve scambiate o i versi invertiti, la stessa parte geometrica
+  (punti 2, 4 e 5).
 - **Richiesta:** #21 — da Tecnigrafo: tappa 0.7, Matleyx78/tecnigrafo#327
 - **Esito:** 3 pezzo nostro
 - **Tappa:** 0.2 (scheda da scrivere all'apertura)

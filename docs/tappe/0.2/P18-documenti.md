@@ -8,7 +8,7 @@
 - **Riferimenti:** non servono: documentazione e commenti, nessun cambiamento di
   comportamento
 - **Dipende da:** P8 (#49), P11 (#56), P14 (#63), P16 (#70), P17 (#71), P19 (#130),
-  P20 (#145), P21 (#167): i primi quattro chiudono le catene che realizzano le intestazioni del contratto, P17 è
+  P20 (#145), P21 (#167), P22: i primi quattro chiudono le catene che realizzano le intestazioni del contratto, P17 è
   l'ultimo altro pacchetto che tocca `tests/CMakeLists.txt`; P19 completa
   bulge e dominio dell'offset, P20 il dominio delle tangenze
 - **Sblocca in Tecnigrafo:** niente

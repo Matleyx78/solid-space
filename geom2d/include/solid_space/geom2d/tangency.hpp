@@ -15,7 +15,8 @@
 // curves of curves.hpp and the given doubles: whether a tangent circle or a
 // tangent point exists and how many there are, on which side of each curve a
 // tangent circle lies, where each point of tangency lies on each curve
-// (Location), their order, and the direction of a fillet arc. Rounded: the
+// (Location), their order, the direction of a fillet arc and the part of each
+// curve that a fillet keeps (KeptPart). Rounded: the
 // centres and points (within kRelativePointError), the stations (within
 // kRelativeStationError) and the fillet arcs (within kRelativeArcError). Every
 // curve is taken with its extension (the whole line or circle that carries
@@ -153,7 +154,9 @@ enum class TangencyOutcome : std::uint8_t {
     /// choice is among infinitely many circles: nothing is chosen.
     infinitelyMany,
     /// A pick lies exactly on the line or circle of the other curve, so it
-    /// does not tell a side (fillet only).
+    /// does not tell a side; or, for a fillet without an arc to continue, a
+    /// pick lies exactly on the normal of its curve at the corner, so it does
+    /// not tell which part to keep (fillet rule 5; fillet only).
     ambiguousPick,
 };
 
@@ -184,6 +187,30 @@ struct ChosenCircle {
                                                      const Curve& second, Point2 nearSecond,
                                                      double radius);
 
+/// Which part of a curve a fillet keeps, with respect to its exact point of
+/// tangency T. Decided exactly (fillet, rule 5). The kept part replaces the
+/// curve: the curve is cut at T, or extended to T, so that it ends at the
+/// fillet. Parts run in the direction of the curve, on the curve as given and
+/// its extension.
+///
+/// When T is at the kept end, or a straight curve has T on the extension
+/// beyond its kept end (beforeStart with fromStart, afterEnd with toEnd), the
+/// kept part holds no point of the curve as given other than T: it is the
+/// stretch between that end and T, a single point when T is that end. The
+/// value follows rule 5 all the same, and the position of T tells this case
+/// apart. A Circle has no ends: the value says only on which side of T, in the
+/// counterclockwise direction of the circle, the circle continues the fillet.
+enum class KeptPart : std::uint8_t {
+    /// From the start of the curve to T: the end moves to T (cut when T is
+    /// inside, extended when T is afterEnd; for an arc along the rest of its
+    /// circle).
+    fromStart,
+    /// From T to the end of the curve: the start moves to T (cut when T is
+    /// inside, extended when T is beforeStart; for an arc, when T is afterEnd,
+    /// back along the rest of its circle).
+    toEnd,
+};
+
 /// A fillet between two curves.
 struct Fillet {
     TangencyOutcome outcome = TangencyOutcome::none;
@@ -195,10 +222,13 @@ struct Fillet {
     /// The radius asked for; for a semicircle, half the distance between the
     /// two lines, rounded within kRelativeArcError.
     double radius = 0.0;
-    /// The points of tangency. Their positions tell how to cut or extend each
-    /// curve so that it ends at the fillet.
+    /// The points of tangency. With keepFirst and keepSecond, their positions
+    /// tell how to cut or extend each curve so that it ends at the fillet.
     TangencyPoint onFirst;
     TangencyPoint onSecond;
+    /// The part of each curve that the fillet keeps (rule 5 of fillet).
+    KeptPart keepFirst = KeptPart::fromStart;
+    KeptPart keepSecond = KeptPart::fromStart;
     /// True for the semicircle between two parallel straight curves.
     bool semicircle = false;
     /// The fillet arc from onFirst.point to onSecond.point, as Tecnigrafo
@@ -219,8 +249,8 @@ struct Fillet {
 
 /// FILLET: the arc of the given radius tangent to both curves, on the sides
 /// that the picks show. Each curve is taken with its extension, so the curves
-/// need not meet; the positions of onFirst and onSecond tell how to cut or
-/// extend them.
+/// need not meet; keepFirst and keepSecond, with the positions of onFirst and
+/// onSecond, tell how to cut or extend them.
 ///
 /// The rules, in this order:
 /// 1. Both curves straight, on two distinct parallel lines (decided exactly):
@@ -251,6 +281,30 @@ struct Fillet {
 ///    rules above and the given radius. Coincidence may depend on permitted
 ///    point rounding (a band, ADR 0013, point 4); a reference case must not
 ///    require either branch. Both forms still obey kRelativeArcError.
+/// 5. The part of each curve to keep (KeptPart), decided exactly, as AutoCAD
+///    does. Let t be the direction of a curve at its exact point of tangency
+///    (from its start toward its end; a Circle runs counterclockwise).
+///    When the two exact points of tangency differ (rules 1 and 3), let a be
+///    the direction in which the exact fillet arc leaves the point of
+///    tangency of that curve toward the other point. Each curve keeps the
+///    part that continues the arc: toEnd when dot(t, a) < 0, fromStart
+///    when dot(t, a) > 0 (t and a are parallel, so it is never zero). The
+///    path along the kept part of the first curve, the arc and the kept part
+///    of the second has no reversal of direction. When a point of tangency
+///    lies beyond its curve as given, the kept part takes the extension up to
+///    it (KeptPart says when it holds nothing else of the curve).
+///    With radius zero (rule 2), or when the two exact points of tangency
+///    are the same point, there is no arc to continue. As CHAMFER does, each
+///    curve keeps the part on the side of its own pick with respect to the
+///    corner P (rule 2: the centre; otherwise the common point of tangency):
+///    toEnd when dot(pick - P, t) > 0, fromStart when it is < 0. When it is
+///    zero for either curve (the pick lies on the normal of its curve at P):
+///    ambiguousPick. This check comes after the choice of the candidate and
+///    after every domain diagnosis.
+///    For the same fillet arc, swapping the curves swaps keepFirst and
+///    keepSecond, and reversing a curve swaps its value (fromStart and
+///    toEnd): the same geometric part in both cases (rule 1, which depends
+///    on which curve is first, may give another semicircle).
 ///
 /// Diagnosis invalidValue, outOfDomain or degenerateCurve about the first
 /// curve (input 0) or the second (input 1); invalidValue when the radius is
