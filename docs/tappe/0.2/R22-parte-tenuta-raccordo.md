@@ -24,8 +24,8 @@ validi senza le chiavi nuove.
 
 ## Vocabolario
 
-L'operazione `fillet` esiste già (R16a–R16c); si aggiungono due chiavi di
-`atteso`, scritte con il nome del valore di `KeptPart`:
+L'operazione `fillet` esiste già (R16a–R16c). Si aggiunge l'esito
+`radiusTooLarge`, senza geometria, e due chiavi di `atteso` per `found`:
 
 | Operazione | `ingresso` | `atteso`, in più |
 |---|---|---|
@@ -45,20 +45,31 @@ L'operazione `fillet` esiste già (R16a–R16c); si aggiungono due chiavi di
   di ciascuna curva e con le curve scambiate (la stessa parte geometrica:
   `fromStart` e `toEnd` si scambiano invertendo il verso; `parte_prima` e
   `parte_seconda` scambiando le curve).
-- **Punti fuori dalla curva** (regola 2 della #184): segmento con il punto di
-  tangenza `beforeStart` e `afterEnd`; arco con il punto `afterEnd` vicino
-  all'inizio e vicino alla fine, nei due versi dell'arco. Anche i casi in cui
-  la parte tenuta non contiene altro della curva data (un segmento corto tutto
-  tra lo spigolo e il punto di tangenza; il punto di tangenza esattamente
-  all'estremo tenuto).
-- **Regola 1, semicerchio:** le due parti, anche con la seconda linea più
-  corta o spostata oltre il semicerchio.
-- **Regola 2, raggio zero, e punti di tangenza esattamente coincidenti:** la
-  parte dalla parte del punto indicato rispetto allo spigolo, per segmenti e
-  per curve circolari; il punto indicato esattamente sulla normale della sua
-  curva allo spigolo (`ambiguousPick`), e a un ulp da essa da ciascuna parte;
-  `ambiguousPick` dopo una diagnosi di dominio dello spigolo (vince
-  `outOfDomain`, dato 2).
+- **Tangenze fuori curva.** Provare il prolungamento di ciascun estremo
+  su rette e archi, e T esattamente all'estremo conservato (parte puntiforme).
+- **Semicerchi (#186).** L1 (0,0)→(10,0), L2 (0,2)→(10,2), scelte
+  (5,0) e (5,2), raggio 1: la regola 1 sceglie l'estremo x=10;
+  invertendo L1 sceglie x=0. Per la regola 4, segmento
+  (−10,0)→(10,0), cerchio di centro (0,3) e raggio 1, scelte (0,0) e
+  (0,2), raggio di raccordo 1: le tangenze sono (0,0) e (0,2). L'arco
+  antiorario è la metà destra, con `fromStart` sul segmento. Scambiando
+  le curve è la metà sinistra, con `toEnd` sul segmento.
+- **Ritorno oltre l'estremo conservato (#187).** L1 (2,0)→(5,0), L2
+  (0,0)→(0,30), scelte (3,0) e (0,20), raggio 10. La tangenza
+  (10,0) è `afterEnd`; `toEnd` richiederebbe un ritorno verso (5,0).
+  Esito `radiusTooLarge` senza geometria, anche invertendo L1.
+- **Senza arco di raccordo.** Per le rette provare il clic sulla
+  normale (`ambiguousPick`) e a un ulp da ciascun lato. Una diagnosi
+  di dominio dello spigolo ha precedenza.
+- **Archi a raggio zero (#188).** Arco unitario antiorario da (1,0)
+  a (0,1), retta (−1,−2)→(−1,2), scelte (1,0) e (−1,1). Lo
+  spigolo (−1,0) è fuori dall'arco. Entrambe le parti contengono
+  il clic: la fine si prolunga di 90°, l'inizio di 180°. Atteso
+  `fromStart`; invertendo l'arco, `toEnd` con la stessa geometria.
+  In parità esatta, con arco antiorario da (0,−1) a (0,1) e gli
+  stessi spigolo e clic, atteso `ambiguousPick`. Provare anche un
+  arco lungo con il clic oltre l'antipodo dello spigolo e dentro
+  l'arco dato.
 - **Cerchio intero:** il valore nel verso antiorario del cerchio.
 
 ## File
@@ -68,10 +79,10 @@ Solo `tests/corpus/`: casi nuovi in `casi/geom2d/` e
 
 ## Valori attesi e fatto quando
 
-Da aritmetica esatta, mai eseguendo solid-space: il segno di dot(t, a) o di
-dot(pick − P, t) della regola 5, con `fractions` di Python e confronti tra
+Da aritmetica esatta, mai eseguendo solid-space: i segni e i confronti
+angolari della regola 5, con `fractions` di Python e confronti tra
 numeri algebrici (elevamenti al quadrato). Nel `procedimento`, per ogni caso,
-la direzione della curva nel punto di tangenza, il verso dell'arco e il segno
+la direzione della curva nel punto di tangenza, il verso dell'arco e il confronto
 che decide. Punti, archi e bulge, se si scrivono, con la tolleranza del loro
 errore dichiarato. Se il contratto non determina un caso, fermarsi secondo
 AGENTS.md. I casi coprono le voci sopra, passano la validazione e sono
