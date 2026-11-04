@@ -25,7 +25,12 @@
 // 2^-51 max(M, |p|) of the ends of curved pieces (offset.hpp, #177).
 //
 // The bulge and its representability (representArc(); offset.hpp,
-// CurveOffset; #177, #181). The proof of the check follows.
+// CurveOffset; #177, #181). How the check works follows: each branch bounds
+// the Hausdorff distance from above, so the check is sound. That it is also
+// complete (never failed within E(A) / 2, and never failed up to the exact
+// sweep 2 pi - 1/4 of #177, with distinct ends) is verified by the tests of
+// offset_curve_test.cpp and offset_polyline_test.cpp, which reach every
+// branch, not proved here (decision of the maintainer of 2026-11-04, #183).
 //
 // Notation. A is the exact arc: centre C, radius R > 0, exact ends S and E,
 // turning as the input, exact sweep theta in (0, 2 pi). A' is the returned
@@ -98,15 +103,6 @@
 // - sampled, for arcs no longer than 64 T(0) (lemma 6); any other arc is
 //   rejected.
 //
-// Lemma 4 (complete: never failed within E / 2). Let d_H <= E / 2. S(A') <=
-// S(A) + E / 2, and S(A') <= 1.18 S_lo: below |b'| = 1/8 every point of A' is
-// within its sagitta (at most chord / 16, so 0.18 times the largest end
-// coordinate) of its chord; above, S_lo has every extremum but those within
-// 2^-15 radians of an end. So T >= E / 1.182 > 0.84 E. In the radial branch
-// U <= G + 2.6 eta <= E / 2 + 2.6 E / 45 < 0.56 E: accepted. A wrap is
-// excluded by lemma 3. When the radial branch does not apply, d_H <= E / 2
-// leaves only short arcs (lemma 6). So the check never fails within E / 2.
-//
 // Lemma 5 (flat and huge arcs). |b'| < 2^-500 means t > 2^498 in the rule, so
 // C is farther than 2^497 times the chord from the chord of A': a minor exact
 // arc then has a sagitta below 2^-495 times its chord, and d_H <= eta +
@@ -115,48 +111,14 @@
 // the doubles below would overflow, are first scaled down by 2^-600: exact,
 // and the answer does not change.
 //
-// Lemma 6 (short arcs). If the crude test fails and the radial branch does not
-// apply but d_H <= E / 2, both arcs are short: (a) R < 64 eta < 2 E puts A and
-// so A' inside a disk of radius 2.5 E around C; (b) |delta| > R'' / 2 with
-// two minor arcs needs a chord below 18 eta (the bisector of S' E' turns by at
-// most 2 eta / chord around a point within R of C), where the crude test
-// accepts; with A' major, the radial gaps of a half circle of G'' span at
-// least R'' / 3, so R'' <= 6 d_H <= 3 E; with A major and A' minor, the same
-// for A seen from C'' gives min(|delta|, R) <= 4 d_H, so again a disk of a
-// few E. In each case both arcs are shorter than 32 E < 64 T(0). The sampled
-// check reads both arcs in coordinates centred on S', where every double is
-// within a few ulp of 64 E: A and A' by their centres and radii, or by their
-// chords within their sagittas when flatter than 2^-20; 4097 samples of
-// each, the distance of every sample to the other arc, plus half the spacing,
-// the sagittas and the rounding. That bound is within E / 64 of d_H, so it is
-// sound, and it accepts every pair with d_H <= E / 2.
-//
-// Lemma 7 (the threshold of #177). Let theta <= 2 pi - 1/4 and M >= 2^-50.
-// The true end errors are at most e = sqrt(2) 2^-53 S(A), so |rho_S|,
-// |rho_E| <= e. Write delta = lambda c + mu w, with c the unit chord of A'.
-// The rule puts the exact rule centre on the bisector of S' E', so lambda
-// comes from the ends only and mu from the rounding of b' alone:
-// |mu| <= R'' 2^-51. In psi, the angle of u from w, g = (R'' - R) + lambda
-// sin psi + mu cos psi + q, with 0 <= q <= |delta|^2 / (2 (R'' - |delta|)),
-// and the two ends fix the first three terms:
-//     g = rho_m + rho_d sin psi / sin h + mu (cos psi - cos h) + (q - its
-//         interpolation between the ends),
-// rho_m and rho_d the half sum and half difference of rho_E and rho_S. So
-//     G <= e max(1, 1 / sin h) + |mu| (1 - cos h) + q (2 + 1 / sin h).
-// With 2 h within 2 eta / chord of theta, 1 / sin h <= 1 / sin(1/8) < 8.1;
-// R'' (1 - cos h) is at most the chord for |b'| <= 1 and 2 R'' <= 2 sqrt(2)
-// S(A') otherwise (an arc beyond half a turn has a coordinate at least
-// R'' / sqrt(2)), so |mu| (1 - cos h) <= 2^-50 S(A); for theta >= 1/4,
-// |delta| <= eta (1 + cot(1/8)) + |mu| < 10 eta and R'' >= 42 eta in the
-// radial branch (R >= 64 eta, |delta| <= R'' / 2), so q (2 + 1 / sin h) <=
-// 16 eta < 0.36 E; for theta < 1/4 the radial gap of lemma 1 is reached at an
-// end unless mu dominates delta, so G <= e + 3 |mu| (1 - cos h). In every
-// case G < 0.09 E + E / 16 + 0.36 E and G + 2.6 eta < 0.57 E < T: accepted.
-// When the radial branch does not apply, the arcs are within a few E (lemma
-// 6), d_H < 0.57 E, and the sampled bound, within E / 64 of d_H, stays below
-// T: accepted. So no
-// exact sweep up to 2 pi - 1/4 fails the check, in offsetCurve() and in
-// offsetPolyline().
+// Lemma 6 (short arcs). When neither the crude test nor the radial branch
+// decides, the arcs are checked by samples if both are no longer than
+// 64 T(0); a longer arc is rejected. The sampled check reads both arcs in
+// coordinates centred on S', where every double is within a few ulp of the
+// largest coordinate of the two arcs: A and A' by their centres and radii, or
+// by their chords within their sagittas when flatter than 2^-20; 4097 samples
+// of each, the distance of every sample to the other arc, plus half the
+// spacing, the sagittas and the rounding: an upper bound of d_H.
 
 #include "offset_joints.hpp"
 
@@ -726,7 +688,7 @@ constexpr double kMargin = 0x1p-40;
 // Beyond this, representArc() scales the arc down first.
 constexpr double kHugeCoordinate = 0x1p500;
 // The returned bulge underflows only for an arc flatter than any drawing:
-// below this, the flat bound of the proof decides.
+// below this, the flat bound (lemma 5) decides.
 constexpr double kFlatBulge = 0x1p-500;
 // |b'| outside [kNoWrapLow, kNoWrapHigh] means a half sweep 2 h farther than
 // 1.5 from pi (lemma 3 at the top of this file).
@@ -972,6 +934,7 @@ ArcRepresentation representModerate(const Tower& tower, const ExactArc& arc, Poi
     const double extentReturned = size <= 1.0 ? chord : 2.0 * radiusReturned;
     const double extentExact = sideExact == Sign::positive ? chord + 2.0 * eta : 2.0 * radius;
     const double crude = (std::max(extentReturned, extentExact) + eta) * (1.0 + kMargin);
+    result.check = ArcCheck::crude;
     if (std::isfinite(crude) && crude <= boundOf(crude)) {
         result.representable = true;
         return result;
@@ -984,6 +947,7 @@ ArcRepresentation representModerate(const Tower& tower, const ExactArc& arc, Poi
     }
     // Flat: A' is its chord up to its sagitta, and so is A (lemma 5).
     if (size < kFlatBulge) {
+        result.check = ArcCheck::flat;
         if (sideExact != Sign::positive) {
             return result;
         }
@@ -1002,6 +966,7 @@ ArcRepresentation representModerate(const Tower& tower, const ExactArc& arc, Poi
     const bool radial =
         std::isfinite(deltaLength) && deltaLength <= 0.5 * radiusReturned && radius >= 64.0 * eta;
     if (radial) {
+        result.check = ArcCheck::radial;
         // Lemma 3: a returned arc that runs around the complement of A.
         if (sideExact != Sign::zero && sideReturned != Sign::zero && sideExact != sideReturned &&
             (size < kNoWrapLow || size > kNoWrapHigh)) {
@@ -1066,6 +1031,7 @@ ArcRepresentation representModerate(const Tower& tower, const ExactArc& arc, Poi
     }
 
     // Lemma 6: short arcs, sampled in coordinates centred on S'.
+    result.check = ArcCheck::sampled;
     const auto local = [&](const TowerNumber& x, const Dyadic& pointWeight, double origin) {
         return tower.quotientToDouble(x - TowerNumber(Dyadic(origin) * pointWeight), pointWeight);
     };

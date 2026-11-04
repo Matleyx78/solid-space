@@ -649,51 +649,242 @@ double largestCoordinate(g::Point2 p) {
     return std::max(std::fabs(p.x), std::fabs(p.y));
 }
 
-TEST(OffsetPolyline, CutAndExtendedArcsStayWithinTheirErrors) {
-    // A half circle and a segment, cut or extended at their joint by the
-    // offset (the cases r19-arco-tagliato and r19-arco-prolungato, moved,
-    // turned and scaled), and an arc of a circle through the origin.
+// An arc in coordinates centred on a chosen point: centre, radius, start angle
+// and signed sweep. The tract oracle below compares two such arcs point by
+// point, not only their circles, so that an arc on the right circle but cut
+// at the wrong point or running the other way round fails.
+struct LocalArc {
+    g::Point2 center;
+    double radius = 0.0;
+    double start = 0.0;
+    double sweep = 0.0;
+};
+
+g::Point2 pointAt(const LocalArc& arc, double fraction) {
+    const double angle = arc.start + arc.sweep * fraction;
+    return {arc.center.x + arc.radius * std::cos(angle),
+            arc.center.y + arc.radius * std::sin(angle)};
+}
+
+// The distance of p from the arc: radial within its sweep, otherwise to the
+// nearer end.
+double distanceToArc(g::Point2 p, const LocalArc& arc) {
+    const double dx = p.x - arc.center.x;
+    const double dy = p.y - arc.center.y;
+    double along = std::copysign(1.0, arc.sweep) * (std::atan2(dy, dx) - arc.start);
+    along = std::fmod(along, 2.0 * kPi);
+    if (along < 0.0) {
+        along += 2.0 * kPi;
+    }
+    if (along <= std::fabs(arc.sweep)) {
+        return std::fabs(std::hypot(dx, dy) - arc.radius);
+    }
+    const auto first = pointAt(arc, 0.0);
+    const auto last = pointAt(arc, 1.0);
+    return std::min(std::hypot(p.x - first.x, p.y - first.y),
+                    std::hypot(p.x - last.x, p.y - last.y));
+}
+
+// The two-sided distance of two arcs, from samples of each.
+double tractDistance(const LocalArc& a, const LocalArc& b) {
+    constexpr int kTractSamples = 256;
+    double largest = 0.0;
+    for (int k = 0; k <= kTractSamples; ++k) {
+        const double fraction = static_cast<double>(k) / kTractSamples;
+        largest = std::max({largest, distanceToArc(pointAt(a, fraction), b),
+                            distanceToArc(pointAt(b, fraction), a)});
+    }
+    return largest;
+}
+
+// The arc of a bulge between two points, in the same coordinates.
+LocalArc arcOfBulge(g::Point2 start, g::Point2 end, double bulge) {
+    const double vx = end.x - start.x;
+    const double vy = end.y - start.y;
+    const double chord = std::hypot(vx, vy);
+    const double toCenter = (1.0 - bulge * bulge) / (4.0 * bulge);
+    LocalArc arc;
+    arc.center = {(start.x + end.x) / 2.0 - vy * toCenter, (start.y + end.y) / 2.0 + vx * toCenter};
+    arc.radius = chord * (1.0 + bulge * bulge) / (4.0 * std::fabs(bulge));
+    arc.start = std::atan2(start.y - arc.center.y, start.x - arc.center.x);
+    arc.sweep = 4.0 * std::atan(bulge);
+    return arc;
+}
+
+TEST(OffsetPolyline, CutAndExtendedArcsKeepTheirEndsAndTheirTract) {
+    // An arc of centre O from O + (R, 0) to O + (c, +-s) followed by a
+    // segment along an integer direction U with |U| = n, offset by d = q n:
+    // the arc is cut or extended to the joint J where the offset line meets
+    // the offset circle, independently of the code under test:
+    //   w = b + (d / n) (-U.y, U.x) - O,  beta = w . U,
+    //   Delta = beta^2 - n^2 (|w|^2 - R'^2),  J - O = w + tau U,
+    //   tau = (-beta + sign(beta) sqrt(Delta)) / n^2 (the common point nearest
+    //   the vertex b), with R' = R -+ d. Every value is a dyadic number but
+    //   sqrt(Delta), so the errors of the returned ends are computed exactly
+    //   (exact::quadraticToDouble), and the exact arc runs from the moved start
+    //   by the input sweep plus the shortest rotation from its moved end to J.
+    // The returned ends must be within 2^-51 max(M, |p|) per coordinate, and
+    // every point of either arc within E(A) of the other arc, with S(A) over
+    // the exact final piece (#181). Some extensions go far beyond the data and
+    // are placed so that they come back near the origin.
+    struct Direction {
+        int x;
+        int y;
+        int norm;
+    };
+
+    static constexpr std::array<Direction, 20> kDirections{
+        {{3, 4, 5},     {4, 3, 5},   {-3, 4, 5},    {-4, 3, 5},   {3, -4, 5},
+         {4, -3, 5},    {-3, -4, 5}, {-4, -3, 5},   {0, 1, 1},    {1, 0, 1},
+         {0, -1, 1},    {-1, 0, 1},  {5, 12, 13},   {-12, 5, 13}, {12, -5, 13},
+         {-5, -12, 13}, {7, 24, 25}, {-24, -7, 25}, {24, -7, 25}, {-7, 24, 25}}};
+
+    // Bulge t = tan(theta / 4) and the end R (cos theta, sin theta) of the
+    // arc from (R, 0): integers with c^2 + s^2 = R^2; `unit` scales d.
+    struct Sweep {
+        double bulge;
+        int radius;
+        int c;
+        int s;
+        double unit;
+    };
+
+    static constexpr std::array<Sweep, 5> kSweeps{{{0.25, 289, 161, 240, 8.0},
+                                                   {0.5, 25, -7, 24, 1.0},
+                                                   {0.75, 625, -527, 336, 16.0},
+                                                   {1.0, 25, -25, 0, 1.0},
+                                                   {2.0, 25, -7, -24, 1.0}}};
     const auto policy = millimetres();
-    int arcs = 0;
-    for (const double origin : {0.0, 1e6}) {
-        for (const double size : {1.0, 40.0}) {
-            for (const double bulge : {1.0, -1.0, 0.6, 2.5}) {
-                for (const double turnOfSegment : {-0.5, 0.0, 0.4}) {
-                    const g::Point2 a{origin + 5.0 * size, origin};
-                    const g::Point2 b{origin - 5.0 * size, origin};
-                    const g::Point2 c{b.x - 10.0 * size * std::cos(turnOfSegment),
-                                      b.y - 10.0 * size * std::sin(turnOfSegment)};
-                    const auto input = polyline({{a, bulge}, {b, 0.0}, {c, 0.0}});
-                    const auto circle = exactCircleOf({a, b, bulge});
-                    for (const double distance : {size, -size, 0.25 * size}) {
-                        const auto result = g::offsetPolyline(input, distance, policy);
-                        ASSERT_TRUE(result.hasValue());
-                        if (result.value().outcome != g::OffsetOutcome::done) {
+    int cut = 0;
+    int extended = 0;
+    int farAndBack = 0;
+    for (const auto& sweep : kSweeps) {
+        const double theta = 4.0 * std::atan(sweep.bulge);
+        for (const double turn : {1.0, -1.0}) {
+            for (const auto& direction : kDirections) {
+                for (const double q : {0.25, -0.25, 1.0, -1.0, 1.5, -1.5}) {
+                    for (const double k : {1.0, 0x1p14}) {
+                        const double radius = sweep.radius * k;
+                        const double n = direction.norm;
+                        const double ux = direction.x;
+                        const double uy = direction.y;
+                        const double dOverN = q * sweep.unit * k;
+                        const double distance = dOverN * n;
+                        const double movedRadius = radius - turn * distance;
+                        if (std::fabs(distance) >= 0.9 * radius || movedRadius <= 0.05 * radius) {
                             continue;
                         }
-                        const auto& vertices = result.value().polyline.vertices;
-                        const double magnitude = magnitudeOf(input, distance);
-                        const double inward = bulge > 0.0 ? distance : -distance;
-                        for (std::size_t k = 0; k < result.value().origins.size(); ++k) {
-                            const auto& piece = result.value().origins[k];
-                            if (piece.origin != g::PieceOrigin::source || piece.index != 0U) {
+                        // The oracle, in coordinates centred on O.
+                        const double bx = sweep.c * k;
+                        const double by = turn * sweep.s * k;
+                        const Dyadic wx = Dyadic(bx) - Dyadic(dOverN) * Dyadic(uy);
+                        const Dyadic wy = Dyadic(by) + Dyadic(dOverN) * Dyadic(ux);
+                        const Dyadic beta = wx * Dyadic(ux) + wy * Dyadic(uy);
+                        const Dyadic nn(n * n);
+                        const Dyadic delta =
+                            beta * beta -
+                            nn * (wx * wx + wy * wy - Dyadic(movedRadius) * Dyadic(movedRadius));
+                        if (delta.sign() != r::Sign::positive || beta.isZero()) {
+                            continue;
+                        }
+                        const Dyadic sigma(beta.sign() == r::Sign::positive ? 1.0 : -1.0);
+                        const double tau = exact::quadraticToDouble(-beta, sigma, delta, nn);
+                        // The segment ends at b + L U: J must stay before its moved end.
+                        const double length = std::ceil(3.0 * sweep.radius / n) * k;
+                        if (tau >= 0.9 * length) {
+                            continue;
+                        }
+                        const g::Point2 joint{
+                            exact::quadraticToDouble(nn * wx - beta * Dyadic(ux),
+                                                     sigma * Dyadic(ux), delta, nn),
+                            exact::quadraticToDouble(nn * wy - beta * Dyadic(uy),
+                                                     sigma * Dyadic(uy), delta, nn)};
+                        const g::Point2 movedEnd{movedRadius * bx / radius,
+                                                 movedRadius * by / radius};
+                        const double cross = movedEnd.x * joint.y - movedEnd.y * joint.x;
+                        const double dot = movedEnd.x * joint.x + movedEnd.y * joint.y;
+                        const double rotation = turn * std::atan2(cross, dot);
+                        const double exactSweep = theta + rotation;
+                        if (std::fabs(rotation) > kPi - 1e-6 || exactSweep <= 1e-3 ||
+                            exactSweep >= 2.0 * kPi - 0.26) {
+                            continue;
+                        }
+                        const LocalArc exactArc{{0.0, 0.0}, movedRadius, 0.0, turn * exactSweep};
+                        std::vector<g::Point2> origins{{0.0, 0.0}, {1e6, 1e6}};
+                        const bool far = rotation > 1.0;
+                        if (far) {
+                            // The middle of the extension at the origin.
+                            const auto middle =
+                                pointAt(exactArc, (theta + rotation / 2.0) / exactSweep);
+                            origins.push_back({-std::round(middle.x), -std::round(middle.y)});
+                        }
+                        for (std::size_t place = 0; place < origins.size(); ++place) {
+                            const auto o = origins[place];
+                            const g::Point2 a{o.x + radius, o.y};
+                            const g::Point2 b{o.x + bx, o.y + by};
+                            const g::Point2 c{b.x + length * ux, b.y + length * uy};
+                            const auto input =
+                                polyline({{a, turn * sweep.bulge}, {b, 0.0}, {c, 0.0}});
+                            const auto result = g::offsetPolyline(input, distance, policy);
+                            ASSERT_TRUE(result.hasValue());
+                            if (result.value().outcome != g::OffsetOutcome::done) {
                                 continue;
                             }
-                            const g::PolylineSegment arc{
-                                vertices[k].position, vertices[k + 1].position, vertices[k].bulge};
-                            ++arcs;
-                            const auto points = pointsOf(arc, 64);
+                            const auto& origin = result.value().origins;
+                            const auto& vertices = result.value().polyline.vertices;
+                            ASSERT_EQ(origin.size(), 2U);
+                            ASSERT_EQ(origin[0].origin, g::PieceOrigin::source);
+                            ASSERT_EQ(origin[0].index, 0U);
+                            ASSERT_EQ(origin[1].origin, g::PieceOrigin::source);
+                            ASSERT_EQ(origin[1].index, 1U);
+                            const double magnitude = magnitudeOf(input, distance);
+                            const auto returnedStart = vertices[0].position;
+                            const auto returnedJoint = vertices[1].position;
+                            const auto endBound = [&](g::Point2 p) {
+                                return 0x1p-51 * std::max(magnitude, largestCoordinate(p));
+                            };
+                            // The moved start O + (R', 0), exactly.
+                            EXPECT_LE(std::fabs((Dyadic(returnedStart.x) - Dyadic(o.x) -
+                                                 Dyadic(movedRadius))
+                                                    .toDouble()),
+                                      endBound(returnedStart));
+                            EXPECT_LE(std::fabs((Dyadic(returnedStart.y) - Dyadic(o.y)).toDouble()),
+                                      endBound(returnedStart));
+                            // The joint: n^2 (x - J.x) = n^2 (x - O.x - w.x) + beta U.x
+                            // - sign(beta) U.x sqrt(Delta), exactly.
+                            const double jointErrorX = exact::quadraticToDouble(
+                                nn * (Dyadic(returnedJoint.x) - Dyadic(o.x) - wx) +
+                                    beta * Dyadic(ux),
+                                -(sigma * Dyadic(ux)), delta, nn);
+                            const double jointErrorY = exact::quadraticToDouble(
+                                nn * (Dyadic(returnedJoint.y) - Dyadic(o.y) - wy) +
+                                    beta * Dyadic(uy),
+                                -(sigma * Dyadic(uy)), delta, nn);
+                            EXPECT_LE(std::fabs(jointErrorX), endBound(returnedJoint))
+                                << "joint x, place " << place << " rotation " << rotation;
+                            EXPECT_LE(std::fabs(jointErrorY), endBound(returnedJoint))
+                                << "joint y, place " << place << " rotation " << rotation;
+                            // The tract, against E(A) with S(A) over the exact piece.
                             double largest = 0.0;
-                            for (const auto p : points) {
-                                largest = std::max(largest, largestCoordinate(p));
+                            for (int s = 0; s <= 256; ++s) {
+                                const auto p = pointAt(exactArc, s / 256.0);
+                                largest =
+                                    std::max(largest, largestCoordinate({p.x + o.x, p.y + o.y}));
                             }
                             const double bound = 0x1p-46 * std::max(magnitude, largest);
-                            for (const auto p : points) {
-                                EXPECT_LE(std::fabs(gapTo(p, circle) + inward), bound);
+                            const auto returned = arcOfBulge(
+                                {returnedStart.x - o.x, returnedStart.y - o.y},
+                                {returnedJoint.x - o.x, returnedJoint.y - o.y}, vertices[0].bulge);
+                            EXPECT_LE(tractDistance(returned, exactArc), bound)
+                                << "tract, place " << place << " rotation " << rotation << " bulge "
+                                << vertices[0].bulge;
+                            if (rotation < 0.0) {
+                                ++cut;
+                            } else {
+                                ++extended;
                             }
-                            for (const auto p : {arc.start, arc.end}) {
-                                EXPECT_LE(std::fabs(gapTo(p, circle) + inward),
-                                          0x1p-51 * std::max(magnitude, largestCoordinate(p)));
+                            if (place == 2) {
+                                ++farAndBack;
                             }
                         }
                     }
@@ -701,7 +892,9 @@ TEST(OffsetPolyline, CutAndExtendedArcsStayWithinTheirErrors) {
             }
         }
     }
-    EXPECT_GT(arcs, 50);
+    EXPECT_GT(cut, 200);
+    EXPECT_GT(extended, 200);
+    EXPECT_GT(farAndBack, 8);
 }
 
 TEST(OffsetPolyline, GapArcsStayOnTheirCircle) {

@@ -16,6 +16,7 @@
 #include <cstdint>
 #include <limits>
 #include <numbers>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <variant>
@@ -580,6 +581,168 @@ TEST(OffsetCurve, HugeArcsAreScaledExactly) {
         EXPECT_EQ(scaled.representable, plain.representable);
         expectBits(scaled.bulge, plain.bulge);
     }
+}
+
+// An arc in coordinates centred on a chosen point: centre, radius, start angle
+// and signed sweep. The tract oracle of the tests below compares two such
+// arcs point by point, not only their circles.
+struct LocalArc {
+    g::Point2 center;
+    double radius = 0.0;
+    double start = 0.0;
+    double sweep = 0.0;
+};
+
+g::Point2 pointAt(const LocalArc& arc, double fraction) {
+    const double angle = arc.start + arc.sweep * fraction;
+    return {arc.center.x + arc.radius * std::cos(angle),
+            arc.center.y + arc.radius * std::sin(angle)};
+}
+
+// The distance of p from the arc: radial within its sweep, otherwise to the
+// nearer end.
+double distanceToArc(g::Point2 p, const LocalArc& arc) {
+    const double dx = p.x - arc.center.x;
+    const double dy = p.y - arc.center.y;
+    double along = std::copysign(1.0, arc.sweep) * (std::atan2(dy, dx) - arc.start);
+    along = std::fmod(along, 2.0 * kPi);
+    if (along < 0.0) {
+        along += 2.0 * kPi;
+    }
+    if (along <= std::fabs(arc.sweep)) {
+        return std::fabs(std::hypot(dx, dy) - arc.radius);
+    }
+    const auto first = pointAt(arc, 0.0);
+    const auto last = pointAt(arc, 1.0);
+    return std::min(std::hypot(p.x - first.x, p.y - first.y),
+                    std::hypot(p.x - last.x, p.y - last.y));
+}
+
+// The two-sided distance of two arcs, from samples of each.
+double tractDistance(const LocalArc& a, const LocalArc& b) {
+    constexpr int kTractSamples = 512;
+    double largest = 0.0;
+    for (int k = 0; k <= kTractSamples; ++k) {
+        const double fraction = static_cast<double>(k) / kTractSamples;
+        largest = std::max({largest, distanceToArc(pointAt(a, fraction), b),
+                            distanceToArc(pointAt(b, fraction), a)});
+    }
+    return largest;
+}
+
+// The arc of a bulge between two points, in the same coordinates.
+LocalArc arcOfBulge(g::Point2 start, g::Point2 end, double bulge) {
+    const double vx = end.x - start.x;
+    const double vy = end.y - start.y;
+    const double chord = std::hypot(vx, vy);
+    const double toCenter = (1.0 - bulge * bulge) / (4.0 * bulge);
+    LocalArc arc;
+    arc.center = {(start.x + end.x) / 2.0 - vy * toCenter, (start.y + end.y) / 2.0 + vx * toCenter};
+    arc.radius = chord * (1.0 + bulge * bulge) / (4.0 * std::fabs(bulge));
+    arc.start = std::atan2(start.y - arc.center.y, start.x - arc.center.x);
+    arc.sweep = 4.0 * std::atan(bulge);
+    return arc;
+}
+
+// The branch of representArc() that decides the offset of one curved piece,
+// from the same steps as offsetCurve() (as HugeArcsAreScaledExactly).
+detail::ArcCheck branchOf(const g::PolylineSegment& input, double distance) {
+    detail::OffsetSource source;
+    source.pieces.push_back(detail::meaningOf(input));
+    source.distance = distance;
+    source.magnitude = std::max(g::magnitude(input).value(), std::abs(distance));
+    const auto startRecipe = detail::PointRecipe::movedEnd(0, detail::PieceEnd::start);
+    const auto endRecipe = detail::PointRecipe::movedEnd(0, detail::PieceEnd::end);
+    const auto start = detail::roundedPoint(source, startRecipe);
+    const auto end = detail::roundedPoint(source, endRecipe);
+    detail::OffsetScope scope(source);
+    const auto arc = detail::sourceArc(scope, 0, startRecipe, endRecipe);
+    if (!arc) {
+        return detail::ArcCheck::none;
+    }
+    return detail::representArc(scope.tower(), *arc, start.point, end.point, source.magnitude)
+        .check;
+}
+
+TEST(OffsetCurve, ArcsLeftToTheSampledCheckAreDoneWithinTheirError) {
+    // Regression of the review of #183: arcs whose radius is a fraction of
+    // E(A) or a few E(A), so that neither the crude test nor the radial branch
+    // of representArc() decides (R < 64 eta) and the sampled check must. Each
+    // has distinct rounded ends and an exact sweep below 2 pi - 1/4: done,
+    // with both ends within 2^-51 max(M, |p|) of the exact ones and every
+    // point of each arc within E(A) of the other arc (not of its circle).
+    int sampled = 0;
+    for (const double origin : {1.0, 1e6}) {
+        const double unit = 0x1p-46 * origin;  // about E(A) for these arcs
+        for (const double size : {0.6, 1.0, 1.5, 2.5, 4.0}) {
+            for (const double sweep : {0.5, 1.5, 3.0, 4.5, 2.0 * kPi - 0.26}) {
+                for (const double turn : {1.0, -1.0}) {
+                    for (const double start : {0.3, 2.2, 5.0}) {
+                        const double radius = size * unit;
+                        const auto input = arcPiece({origin, origin}, radius, start, turn * sweep);
+                        const double distance = radius / 4.0;
+                        if (branchOf(input, distance) != detail::ArcCheck::sampled) {
+                            continue;
+                        }
+                        ++sampled;
+                        const auto moved = g::offsetCurve(input, distance);
+                        ASSERT_TRUE(moved.hasValue());
+                        ASSERT_EQ(moved.value().outcome, g::OffsetOutcome::done)
+                            << "origin " << origin << " size " << size << " sweep " << sweep
+                            << " turn " << turn << " start " << start;
+                        const auto& result = std::get<g::PolylineSegment>(moved.value().curve);
+                        ASSERT_FALSE(result.start.x == result.end.x &&
+                                     result.start.y == result.end.y);
+                        // Coordinates centred on the exact centre C, from exact
+                        // differences: the arcs are a few E across.
+                        const auto circle = exactCircleOf(input);
+                        const auto local = [&](g::Point2 p) {
+                            return g::Point2{exact::quotientToDouble(
+                                                 Dyadic(p.x) * circle.w - circle.cx, circle.w),
+                                             exact::quotientToDouble(
+                                                 Dyadic(p.y) * circle.w - circle.cy, circle.w)};
+                        };
+                        const double inputRadius = radiusOf(circle);
+                        const double inward = input.bulge > 0.0 ? distance : -distance;
+                        const double movedRadius = inputRadius - inward;
+                        const auto inputStart = local(input.start);
+                        const auto inputEnd = local(input.end);
+                        const LocalArc exactArc{{0.0, 0.0},
+                                                movedRadius,
+                                                std::atan2(inputStart.y, inputStart.x),
+                                                4.0 * std::atan(input.bulge)};
+                        const double magnitude =
+                            std::max(g::magnitude(input).value(), std::abs(distance));
+                        const auto center = centerOf(circle);
+                        double largest = 0.0;
+                        for (int k = 0; k <= 64; ++k) {
+                            const auto p = pointAt(exactArc, k / 64.0);
+                            largest = std::max(largest,
+                                               largestCoordinate({p.x + center.x, p.y + center.y}));
+                        }
+                        const double bound = 0x1p-46 * std::max(magnitude, largest);
+                        const auto returnedStart = local(result.start);
+                        const auto returnedEnd = local(result.end);
+                        const double scale = movedRadius / inputRadius;
+                        for (const auto& [returned, original, point] :
+                             {std::tuple{returnedStart, inputStart, result.start},
+                              std::tuple{returnedEnd, inputEnd, result.end}}) {
+                            const double endBound =
+                                0x1p-51 * std::max(magnitude, largestCoordinate(point));
+                            EXPECT_LE(std::fabs(returned.x - original.x * scale), endBound);
+                            EXPECT_LE(std::fabs(returned.y - original.y * scale), endBound);
+                        }
+                        EXPECT_LE(
+                            tractDistance(arcOfBulge(returnedStart, returnedEnd, result.bulge),
+                                          exactArc),
+                            bound)
+                            << "origin " << origin << " size " << size << " sweep " << sweep;
+                    }
+                }
+            }
+        }
+    }
+    EXPECT_GT(sampled, 50);
 }
 
 TEST(OffsetCurve, AnArcWhoseRoundedEndsCoincideFails) {

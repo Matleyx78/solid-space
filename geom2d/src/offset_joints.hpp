@@ -262,6 +262,11 @@ struct ExactArc {
 [[nodiscard]] std::optional<ExactArc> gapArc(OffsetScope& scope, Point2 vertex, Turn turn,
                                              const PointRecipe& start, const PointRecipe& end);
 
+/// The branch of representArc() that decided (offset_joints.cpp), so that
+/// the tests can reach each one: none when no branch ran (a bulge beyond the
+/// doubles).
+enum class ArcCheck { none, crude, flat, radial, sampled };
+
 /// The answer of representArc().
 struct ArcRepresentation {
     /// True when the arc from the rounded ends with `bulge` lies within E(A)
@@ -270,6 +275,8 @@ struct ArcRepresentation {
     /// The bulge of the rule of CurveOffset, rounded within one ulp; nonzero,
     /// with the sign of the turn. Meaningless when not representable.
     double bulge = 0.0;
+    /// The branch that decided.
+    ArcCheck check = ArcCheck::none;
 };
 
 /// The bulge of an arc of the result from its rounded ends, by the rule of
@@ -278,7 +285,8 @@ struct ArcRepresentation {
 /// kRelativeOffsetError * max(M, S(A)). Sound: representable only when both
 /// distances are within E(A). Complete: always representable when both are
 /// within E(A) / 2, and when the exact sweep is at most 2 pi - 1/4 (offset.hpp,
-/// #177, #181). The proof is at the top of offset_joints.cpp.
+/// #177, #181). The check is described at the top of offset_joints.cpp; its
+/// completeness is verified by the tests (decision of 2026-11-04, #183).
 ///
 /// Preconditions: `start` and `end` are finite, distinct, and each coordinate
 /// is the nearest double to the corresponding exact end (roundedPoint());
