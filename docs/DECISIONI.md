@@ -442,3 +442,11 @@ i rimandi ai documenti che cambia.
   preset `release` (`build/release/compile_commands.json`), senza Build
   Wrapper, con la configurazione in `sonar-project.properties`. L'analisi
   automatica di Sonar è spenta e il token sta nel secret `SONAR_TOKEN`.
+
+- **2026-11-04: rappresentabilità degli archi di offset (#177).** Il responsabile
+  sceglie l'opzione 2: estremi dei pezzi curvi entro 2^-51 · max(M, |p|) per
+  coordinata, anche ai vertici condivisi con un pezzo dritto. Con estremi
+  distinti e limiti d'errore applicabili, fino a 2π − 1/4 radianti il bulge
+  non causa un fallimento di rappresentabilità. P19 dimostra la soglia e
+  prova la fascia oltre di essa. Restano i controlli per estremi coincidenti
+  e gli altri motivi di fallimento. I casi R19 già pubblicati restano validi.

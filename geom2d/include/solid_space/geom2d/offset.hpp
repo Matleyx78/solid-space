@@ -54,8 +54,12 @@ enum class OffsetOutcome : std::uint8_t {
 };
 
 /// The offset of one curve. Every returned vertex (the ends of a Segment or
-/// PolylineSegment, straight or curved) is rounded within kRelativePointError;
-/// which double is returned is not fixed (ADR 0013). Bulges and
+/// PolylineSegment) is rounded within kRelativePointError for a straight
+/// piece. For a curved piece, each end is within 2^-51 * max(M, |p|) of its
+/// exact value in each coordinate (#177). Here M is the offset magnitude
+/// defined above, and |p| is the largest absolute coordinate of the exact end.
+/// The construction error bounds apply for M >= 2^-50 as in curves.hpp.
+/// Which double is returned is not fixed (ADR 0013). Bulges and
 /// representability checks use the returned doubles. Exact
 /// constructed ends and radii in offsetCurve are domain-checked before any
 /// failed outcome below; failed only applies when those exact values are
@@ -73,7 +77,7 @@ struct CurveOffset {
     ///   counterclockwise arc, R + distance for a clockwise one, rounded within
     ///   kRelativeOffsetError;
     /// - curved PolylineSegment: start and end moved along the radius, each
-    ///   within kRelativePointError; the bulge is that of the arc from the
+    ///   within the curved-end bound above; the bulge is that of the arc from the
     ///   returned start to the returned end, turning as the input, whose
     ///   centre is the point of their perpendicular bisector nearest the exact
     ///   centre C of the offset circle. With m the middle of the returned
@@ -93,18 +97,22 @@ struct CurveOffset {
     /// built has a point farther than kRelativeOffsetError * max(M, |p|)
     /// from the exact offset, or the exact offset a point that far from it:
     /// its rounded ends turn the chord too much for any bulge. For distinct
-    /// rounded ends, never when both distances are within half that bound;
-    /// it happens only for an arc near a full turn whose chord spans a few ulp
-    /// of its coordinates. Coincident rounded ends always give failed.
+    /// rounded ends, never when both distances are within half that bound.
+    /// With distinct ends and applicable construction error bounds, an exact
+    /// absolute sweep at most 2 pi - 1/4 radians cannot fail this bulge check
+    /// (#177). Coincident rounded ends always give failed.
     /// A nondegenerate Segment or straight PolylineSegment whose rounded ends
     /// coincide also gives failed, with no curve.
     ///
     /// Bands (curves.hpp; ADR 0013, point 4). Two rounded ends can coincide
     /// only when every coordinate of the two exact ends differs by at most
     /// 2 * kRelativePointError * max(M, |p|), with |p| the larger of the two:
-    /// for those data failed for coincident rounded ends is free. For an arc
-    /// near a full turn whose chord spans a few ulp, failed for a bulge that
-    /// cannot be represented is free too. The point m of a returned curved
+    /// use 2^-51 instead of kRelativePointError for ends of curved pieces.
+    /// For those data failed for coincident rounded ends is free. Above an
+    /// exact absolute sweep of 2 pi - 1/4 radians, representability can depend
+    /// on the chosen ends and bulge. In that band the outcome is free where
+    /// permitted rounding choices change it. The distance bounds still apply.
+    /// The point m of a returned curved
     /// piece is reconstructed from its returned doubles: when a point of the
     /// exact arc has a coordinate whose magnitude exceeds kMaxCoordinate -
     /// kRelativeOffsetError * max(M, |p|), outOfDomain (input 1) for m is free
@@ -231,9 +239,10 @@ struct PolylineOffset {
 ///    vanished.
 ///
 /// Every final vertex, including moved, cut or extended ends, joint points
-/// and gap-arc ends, is rounded within kRelativePointError; which double is
-/// returned is not fixed (ADR 0013). Shared vertices use the same doubles for
-/// both pieces.
+/// and gap-arc ends, is rounded within kRelativePointError. Each end of a
+/// curved piece uses the tighter CurveOffset bound, also when shared with a
+/// straight piece. Which double is returned is not fixed (ADR 0013). Shared
+/// vertices use the same doubles for both pieces.
 /// After rounding, before computing bulges or running final checks, straight
 /// pieces whose rounded ends coincide are dropped, together with their origins
 /// entries, making simple false. Their neighbours already share the same
@@ -299,9 +308,8 @@ struct PolylineOffset {
 ///   doubles are within the domain, outside the bands above, the outcome is
 ///   done, simple is true, and the result is the exact one: every vertex within
 ///   kRelativePointError and every point within kRelativeOffsetError; or
-///   failed with notRepresentable, under the condition of CurveOffset (an
-///   arc near a full turn whose chord spans a few ulp, or coincident rounded
-///   ends of a nonzero exact arc);
+///   failed with notRepresentable under the representability or coincident-end
+///   conditions of CurveOffset;
 /// - the other cases: done, with the result of the steps above within the same
 ///   errors, or failed. They may differ from AutoCAD.
 ///
