@@ -30,3 +30,35 @@ un'altra soglia del contratto si chiude dichiarando la fascia
   dell'intestazione, senza un altro giro di revisione.
 
 Vale anche dentro una revisione con la lista: un caso così non è un buco nuovo.
+
+## A che cosa serve la revisione
+
+Decisione del responsabile del 2026-11-04 ([DECISIONI.md](../DECISIONI.md)).
+
+Il revisore serve a far arrivare il lavoro al merge, non a fermarlo. Blocca solo
+un **errore vero** o una **regola persa**. Se una regola esistente risponde, la
+applica e va avanti; i dubbi di forma li scrive come **non bloccanti**.
+
+## Prima di dichiarare un buco
+
+Prima di dichiarare un buco, il revisore controlla se una regola esistente lo
+decide già, in particolare:
+
+- **dati fuori dominio**: [ADR 0035](https://github.com/Matleyx78/tecnigrafo/blob/main/docs/adr/0035-taglio-offset-raccordi-unione.md)
+  di Tecnigrafo, punto 23;
+- **pezzi degeneri**: [ADR 0036](https://github.com/Matleyx78/tecnigrafo/blob/main/docs/adr/0036-tolleranze-di-tecnigrafo.md)
+  di Tecnigrafo, punto 5;
+- **fasce**: [ADR 0013](../adr/0013-esatto-dove-serve.md), punto 4.
+
+Se una di queste regole lo decide, il revisore lo scrive come **applicazione di
+quella regola**, non come buco, e non blocca il merge. Dati privi di senso
+pratico (lunghezze sotto la tolleranza, ampiezze di un ulp) si trattano con
+queste regole.
+
+## Test, non dimostrazioni
+
+Decisione del responsabile del 2026-11-04 ([DECISIONI.md](../DECISIONI.md)).
+
+Nelle revisioni una garanzia del contratto si verifica **con i test**, non con
+dimostrazioni matematiche. Il revisore che teme un ramo non coperto chiede un
+**test che lo raggiunga**, non un lemma.

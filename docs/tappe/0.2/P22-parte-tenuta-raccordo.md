@@ -1,7 +1,7 @@
 # [0.2-P22] `geom2d`: parte di ciascuna curva tenuta dal raccordo
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
-- **Issue:** da aprire
+- **Issue:** #190
 - **Difficoltà:** impegnativa
 - **Agente:** claude
 - **Modello e impegno:** forte; impegno alto
@@ -10,7 +10,7 @@
 - **Contratto:** `geom2d/include/solid_space/geom2d/tangency.hpp`
   (`KeptPart`, `Fillet::keepFirst` e `Fillet::keepSecond`, regola 5 di
   `fillet`, `TangencyOutcome::ambiguousPick` e `radiusTooLarge`)
-- **Dipende da:** P16 (#70), P20 (#145), R22
+- **Dipende da:** P16 (#70), P20 (#145), R22 (#189)
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#367 (P19, raccordi, con
   P4–P10, P12, P15 e P16): le curve si tagliano e si prolungano con la parte
   tenuta, senza decisioni geometriche di Tecnigrafo
