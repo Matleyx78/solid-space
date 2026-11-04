@@ -9,7 +9,7 @@
   algebrici); scheda [R22](R22-parte-tenuta-raccordo.md)
 - **Contratto:** `geom2d/include/solid_space/geom2d/tangency.hpp`
   (`KeptPart`, `Fillet::keepFirst` e `Fillet::keepSecond`, regola 5 di
-  `fillet`, `TangencyOutcome::ambiguousPick`)
+  `fillet`, `TangencyOutcome::ambiguousPick` e `radiusTooLarge`)
 - **Dipende da:** P16 (#70), P20 (#145), R22
 - **Sblocca in Tecnigrafo:** Matleyx78/tecnigrafo#367 (P19, raccordi, con
   P4–P10, P12, P15 e P16): le curve si tagliano e si prolungano con la parte
@@ -52,16 +52,18 @@ KeptPart keepSecond = KeptPart::fromStart;
   cerchio rispetto alla curva (`sideOfFirst`, `sideOfSecond` del candidato), il
   verso dell'arco (regola 4) e, per una curva circolare, il suo verso. Nessun
   valore arrotondato decide il segno.
-- **Senza un arco da proseguire** (regola 2, raggio zero, e punti di tangenza
-  esatti coincidenti): `toEnd` quando dot(pick − P, t) > 0, `fromStart` quando
-  è < 0, con P lo spigolo esatto (il centro nella regola 2, il punto comune
-  altrimenti) e pick il punto indicato della stessa curva. Il segno si decide
-  esattamente, con P algebrico come lo dà la costruzione. Zero per una delle
-  due curve: `ambiguousPick`, dopo la scelta del candidato e dopo ogni
-  diagnosi di dominio.
-- Per un `Circle`, t è la direzione antioraria; per un segmento di polilinea
-  curvo, quella da `start` a `end` lungo il suo arco.
-- Le altre parti di `fillet` non cambiano: candidati, scelta, diagnosi, errori.
+- Se una curva dritta dovrebbe tornare indietro in T, ossia
+  `beforeStart + fromStart` o `afterEnd + toEnd` con un arco da
+  proseguire, esito `radiusTooLarge` senza geometria (#187).
+- **Senza un arco da proseguire**, usare il segno esatto di
+  dot(pick − P, t) per rette (CHAMFER) e cerchi interi (lato locale).
+  Per archi e segmenti curvi, usare l'appartenenza esatta della
+  direzione del clic alle parti lungo il sostegno. Se P è fuori arco
+  ed entrambe contengono il clic, scegliere il prolungamento angolare
+  minore con confronto esatto, o dare `ambiguousPick` in parità (#188).
+  La regola 5 segue la scelta del candidato e le diagnosi di dominio.
+- La simmetria vale a geometria scelta uguale. Restano le precedenze
+  dei semicerchi nelle regole 1 e 4 (#186).
 
 ### Casi di verifica (per R22)
 
@@ -85,15 +87,16 @@ KeptPart keepSecond = KeptPart::fromStart;
 - Gli esempi della #184: L1 (0,0)→(30,0) scelta in (5,0), L2 (0,0)→(0,30)
   scelta in (0,5), raggio 10: `toEnd` e `toEnd`; il caso e di
   `autocad-raccordi.dxf` (arco e linea, raggio 3): `toEnd` e `toEnd`.
-- Su dati generati in modo deterministico, per ogni coppia di tipi: invertire
-  una curva scambia il suo valore e lascia l'altro; scambiare le curve, quando
-  il raccordo è lo stesso (non la regola 1), scambia `keepFirst` e
-  `keepSecond`; dove la parte tenuta contiene un tratto della curva data, il
-  percorso parte tenuta, arco, parte tenuta non torna indietro nei punti di
-  tangenza.
-- Regola 2 e punti coincidenti: la parte dalla parte del punto indicato; il
-  punto indicato sulla normale (`ambiguousPick`) e a un ulp da essa;
-  `outOfDomain` prima di `ambiguousPick`.
+- Su dati generati in modo deterministico, per ogni coppia di tipi,
+  a geometria scelta uguale: invertire una curva scambia il suo
+  valore e lascia l'altro; scambiare le curve scambia i due campi.
+  Con un arco da proseguire il percorso non torna indietro.
+- Gli esempi #186, #187 e #188 della scheda R22: precedenze dei due
+  semicerchi, `radiusTooLarge` senza geometria, estensione dell'arco
+  nei due versi e parità esatta.
+- Senza arco di raccordo, su rette: clic sulla normale
+  (`ambiguousPick`) e a un ulp da essa. `outOfDomain` ha precedenza
+  sulla scelta della parte.
 - I casi di R22 passano, e quelli già nell'archivio per `fillet` passano
   ancora.
 
