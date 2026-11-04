@@ -34,6 +34,19 @@
 - **Corretto:** 2026-11-02 — esattezza delle costruzioni, dominio in basso a
   2^-50, fascia degli esiti liberi e regola dei buchi visibili: vale
   l'[ADR 0013](0013-esatto-dove-serve.md) dove questo ADR dice altro.
+- **Corretto:** 2026-11-04 — la parte di ciascuna curva che il raccordo tiene,
+  che le posizioni dei punti di tangenza non determinavano (issue #184, buco
+  trovato dalla P19 della tappa 0.7 di Tecnigrafo,
+  Matleyx78/tecnigrafo#367), decisa dal responsabile: `Fillet` porta per
+  ciascuna curva la parte tenuta (`KeptPart`, `keepFirst` e `keepSecond`),
+  decisa esattamente (regola 5 di `fillet`). Se per proseguire il raccordo
+  una curva dritta dovrebbe tornare indietro oltre l'estremo conservato,
+  l'esito è `radiusTooLarge` senza raccordo (#187). Senza un arco di raccordo
+  da proseguire, per le rette vale CHAMFER e per gli archi l'ordine lungo la
+  curva. Se lo spigolo è fuori dall'arco e le due parti contengono il punto
+  indicato, prevale il prolungamento angolare minore, deciso esattamente,
+  con `ambiguousPick` in parità (#188). La simmetria vale a geometria scelta
+  uguale, ferme le precedenze dei semicerchi delle regole 1 e 4 (#186).
 - **Richiesta:** #21 — da Tecnigrafo: tappa 0.7, Matleyx78/tecnigrafo#327
 - **Esito:** 3 pezzo nostro
 - **Tappa:** 0.2 (scheda da scrivere all'apertura)

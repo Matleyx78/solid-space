@@ -15,7 +15,8 @@
 // curves of curves.hpp and the given doubles: whether a tangent circle or a
 // tangent point exists and how many there are, on which side of each curve a
 // tangent circle lies, where each point of tangency lies on each curve
-// (Location), their order, and the direction of a fillet arc. Rounded: the
+// (Location), their order, the direction of a fillet arc and the part of each
+// curve that a fillet keeps (KeptPart). Rounded: the
 // centres and points (within kRelativePointError), the stations (within
 // kRelativeStationError) and the fillet arcs (within kRelativeArcError). Every
 // curve is taken with its extension (the whole line or circle that carries
@@ -152,9 +153,12 @@ enum class TangencyOutcome : std::uint8_t {
     /// The curves lie on the same line or circle, or more generally the
     /// choice is among infinitely many circles: nothing is chosen.
     infinitelyMany,
-    /// A pick lies exactly on the line or circle of the other curve, so it
-    /// does not tell a side (fillet only).
+    /// A pick does not identify a side of the other curve, or does not
+    /// identify a unique part to keep under fillet rule 5.
     ambiguousPick,
+    /// Fillet only: continuing the arc would require a straight curve to
+    /// turn back beyond the end to keep. No fillet is returned.
+    radiusTooLarge,
 };
 
 /// A tangent circle chosen near two picks.
@@ -184,6 +188,28 @@ struct ChosenCircle {
                                                      const Curve& second, Point2 nearSecond,
                                                      double radius);
 
+/// Which part of a curve a fillet keeps, with respect to its exact point of
+/// tangency T. Decided exactly (fillet, rule 5). The kept part replaces the
+/// curve: the curve is cut at T, or extended to T, so that it ends at the
+/// fillet. Parts run in the direction of the curve, on the curve as given and
+/// its extension.
+///
+/// When T is at the kept end the part is a single point. Without a fillet
+/// arc to continue, a straight part can also lie entirely on the extension:
+/// beforeStart with fromStart, or afterEnd with toEnd. It is the stretch
+/// between T and the kept end. A Circle has no ends: the value says only on
+/// which side of T, in its counterclockwise direction, it continues the fillet.
+enum class KeptPart : std::uint8_t {
+    /// From the start of the curve to T: the end moves to T (cut when T is
+    /// inside, extended when T is afterEnd; for an arc along the rest of its
+    /// circle).
+    fromStart,
+    /// From T to the end of the curve: the start moves to T (cut when T is
+    /// inside, extended when T is beforeStart; for an arc, when T is afterEnd,
+    /// back along the rest of its circle).
+    toEnd,
+};
+
 /// A fillet between two curves.
 struct Fillet {
     TangencyOutcome outcome = TangencyOutcome::none;
@@ -195,10 +221,13 @@ struct Fillet {
     /// The radius asked for; for a semicircle, half the distance between the
     /// two lines, rounded within kRelativeArcError.
     double radius = 0.0;
-    /// The points of tangency. Their positions tell how to cut or extend each
-    /// curve so that it ends at the fillet.
+    /// The points of tangency. With keepFirst and keepSecond, their positions
+    /// tell how to cut or extend each curve so that it ends at the fillet.
     TangencyPoint onFirst;
     TangencyPoint onSecond;
+    /// The part of each curve that the fillet keeps (rule 5 of fillet).
+    KeptPart keepFirst = KeptPart::fromStart;
+    KeptPart keepSecond = KeptPart::fromStart;
     /// True for the semicircle between two parallel straight curves.
     bool semicircle = false;
     /// The fillet arc from onFirst.point to onSecond.point, as Tecnigrafo
@@ -219,8 +248,8 @@ struct Fillet {
 
 /// FILLET: the arc of the given radius tangent to both curves, on the sides
 /// that the picks show. Each curve is taken with its extension, so the curves
-/// need not meet; the positions of onFirst and onSecond tell how to cut or
-/// extend them.
+/// need not meet; keepFirst and keepSecond, with the positions of onFirst and
+/// onSecond, tell how to cut or extend them.
 ///
 /// The rules, in this order:
 /// 1. Both curves straight, on two distinct parallel lines (decided exactly):
@@ -251,6 +280,41 @@ struct Fillet {
 ///    rules above and the given radius. Coincidence may depend on permitted
 ///    point rounding (a band, ADR 0013, point 4); a reference case must not
 ///    require either branch. Both forms still obey kRelativeArcError.
+/// 5. The part of each curve to keep (KeptPart), decided exactly, as AutoCAD
+///    does. Let t be the direction of a curve at its exact point of tangency
+///    (from its start toward its end; a Circle runs counterclockwise).
+///    When the two exact points of tangency differ (rules 1 and 3), let a be
+///    the direction in which the exact fillet arc leaves the point of
+///    tangency of that curve toward the other point. Each curve keeps the
+///    part that continues the arc: toEnd when dot(t, a) < 0, fromStart
+///    when dot(t, a) > 0 (t and a are parallel, so it is never zero). The
+///    path along the kept parts and the arc has no reversal. If a straight
+///    curve would turn back at T (beforeStart with fromStart or afterEnd
+///    with toEnd), return radiusTooLarge without a fillet. Otherwise extend
+///    the appropriate end to reach T when T lies outside the given curve.
+///    Without an arc to continue (rule 2 or exactly coincident tangencies),
+///    use the pick of each curve relative to the exact corner P (the centre
+///    in rule 2, the common point of tangency otherwise):
+///    - Straight curves use the CHAMFER rule: toEnd when dot(pick - P, t)
+///      is positive, fromStart when it is negative, ambiguousPick at zero.
+///      A whole circle uses the same sign with its counterclockwise tangent
+///      to identify a local side, since it has no ends.
+///    - For an arc or curved polyline segment, consider the directed parts
+///      from the start to P and from P to the end on its supporting circle.
+///      Compare the radial direction of the pick from the centre with each
+///      part's angular interval, including its ends. Keep the only part
+///      containing that direction. If P lies outside the given arc and both
+///      parts contain the pick direction, keep the one requiring the smaller angular
+///      extension of the given arc, with an exact comparison. Equal
+///      extensions, a pick at the centre, or no uniquely indicated part
+///      in the other cases give ambiguousPick.
+///    These checks follow candidate selection and all domain diagnoses.
+///    For the same selected geometry, swapping the curves swaps their kept
+///    parts and reversing a directed curve swaps its value without changing
+///    its kept geometry. Rule 1 can choose another semicircle on swapping
+///    the curves or reversing the first curve in an endpoint tie. Rule 4
+///    can choose the other semicircle on swapping diametrically opposite
+///    tangencies; its counterclockwise tie-break still applies.
 ///
 /// Diagnosis invalidValue, outOfDomain or degenerateCurve about the first
 /// curve (input 0) or the second (input 1); invalidValue when the radius is
