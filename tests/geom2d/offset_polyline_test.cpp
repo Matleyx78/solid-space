@@ -762,7 +762,7 @@ TEST(OffsetPolyline, CutAndExtendedArcsKeepTheirEndsAndTheirTract) {
         const double theta = 4.0 * std::atan(sweep.bulge);
         for (const double turn : {1.0, -1.0}) {
             for (const auto& direction : kDirections) {
-                for (const double q : {0.25, -0.25, 1.0, -1.0, 1.5, -1.5}) {
+                for (const double q : {0.25, -0.25, 1.0, -1.0, 1.5, -1.5, 2.5, -2.5}) {
                     for (const double k : {1.0, 0x1p14}) {
                         const double radius = sweep.radius * k;
                         const double n = direction.norm;

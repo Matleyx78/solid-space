@@ -265,7 +265,7 @@ struct ExactArc {
 /// The branch of representArc() that decided (offset_joints.cpp), so that
 /// the tests can reach each one: none when no branch ran (a bulge beyond the
 /// doubles).
-enum class ArcCheck { none, crude, flat, radial, sampled };
+enum class ArcCheck : std::uint8_t { none, crude, flat, radial, sampled };
 
 /// The answer of representArc().
 struct ArcRepresentation {
