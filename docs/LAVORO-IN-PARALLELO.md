@@ -179,7 +179,7 @@ All'apertura si creano, nel milestone `vX.Y`:
   issue del lavoro la cita nella riga "Dipende da";
 - se la tappa realizza intestazioni del contratto, la issue `[X.Y-C]` della
   revisione, con le etichette `tappa-X.Y`, `pacchetto`, `contratto`,
-  `difficoltà:impegnativa` e `agente:…` di chi la fa, se non esiste già (di
+  `impegnativa` e `agente:…` di chi la fa, se non esiste già (di
   norma si crea prima, appena gli ADR sono accettati: [CONTRATTI.md](CONTRATTI.md),
   «Quando»). Le issue di riferimenti e di lavoro che realizzano o usano quelle
   intestazioni la citano in «Dipende da».
@@ -192,9 +192,10 @@ stesse etichette.
 Il testo di ogni issue cita la scheda del pacchetto (`docs/tappe/X.Y/PN-<nome>.md`)
 e ne riporta modello e impegno, così l'agente parte da lì.
 
-Le etichette del progetto sono `idea`, `pacchetto`, `riferimenti`, `tappa-X.Y`,
-`facile`, `media`, `impegnativa`, `agente:claude`, `agente:codex`,
-`agente:gemini`, `agente:gemini-argon` e `AA-Presa in carico` (sezione 5).
+Le etichette del progetto sono `idea`, `pacchetto`, `riferimenti`, `contratto`,
+`richiesta`, `proposta`, `tappa-X.Y`, `facile`, `media`, `impegnativa`,
+`agente:claude`, `agente:codex`, `agente:gemini`, `agente:gemini-argon` e
+`AA-Presa in carico` (sezione 5).
 `agente:claude-2` resta solo sulle issue aperte prima della tappa che
 corrisponde alla 0.8 di Tecnigrafo: le prende qualunque sessione di Claude, e
 l'etichetta si elimina quando non ne restano. `agente:gemini-argon` lo mette il

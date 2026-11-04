@@ -127,3 +127,4 @@ Vale ogni riga che corrisponde.
 | ramo `docs/chiusura-X.Y`; il messaggio chiede la chiusura; tocchi `docs/rilasci/` | [chiusura.md](docs/agenti/chiusura.md) |
 | il messaggio dice «pacchetti di riferimenti pronti» o «rivedi le pull request aperte» | [lotti.md](docs/agenti/lotti.md) |
 | leggi o commenti un repository diverso da solid-space | [altro-repository.md](docs/agenti/altro-repository.md) |
+| il messaggio del responsabile è «SITUAZIONE GENERALE» | [situazione-generale.md](https://github.com/Matleyx78/tecnigrafo/blob/main/docs/agenti/situazione-generale.md) di Tecnigrafo |

@@ -495,3 +495,21 @@ i rimandi ai documenti che cambia.
     il punto, si prolunga l'estremo con il prolungamento angolare minore,
     confrontato esattamente. In parità esatta, `ambiguousPick`. Per le
     rette vale CHAMFER.
+
+- **2026-11-04: come si rivede (blocco di P19).** Il responsabile decide due
+  regole per le revisioni, la prima perché fermava P19:
+  1. una garanzia del contratto si verifica con i test, non con dimostrazioni
+     matematiche: il revisore che teme un ramo non coperto chiede un test che lo
+     raggiunga, non un lemma (lo stesso nella #489 di Tecnigrafo);
+  2. il revisore serve a far arrivare il lavoro al merge, non a fermarlo: blocca
+     solo un errore vero o una regola persa. Se una regola esistente risponde, la
+     applica e va avanti; i dubbi di forma li scrive come non bloccanti. Prima di
+     dichiarare un buco controlla se una regola esistente lo decide già (dati
+     fuori dominio, ADR 0035 di Tecnigrafo, punto 23; pezzi degeneri, ADR 0036 di
+     Tecnigrafo, punto 5; fasce, [ADR 0013](adr/0013-esatto-dove-serve.md), punto
+     4): se sì, lo scrive come applicazione di quella regola, non come buco, e non
+     blocca il merge. Dati privi di senso pratico (lunghezze sotto la tolleranza,
+     ampiezze di un ulp) si trattano con queste regole.
+
+  Regole in [revisione.md](agenti/revisione.md) («A che cosa serve la revisione»,
+  «Prima di dichiarare un buco», «Test, non dimostrazioni»).

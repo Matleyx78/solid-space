@@ -1,7 +1,7 @@
 # [0.2-R22] Riferimenti: parte di ciascuna curva tenuta dal raccordo
 
 - **Tappa:** 0.2 — [piano](../0.2-geometria-del-piano.md)
-- **Issue:** da aprire
+- **Issue:** #189
 - **Agente:** codex
 - **Difficoltà:** impegnativa
 - **Modello e impegno:** forte; impegno alto
