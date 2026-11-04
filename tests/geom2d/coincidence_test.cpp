@@ -6,9 +6,12 @@
 #include <gtest/gtest.h>
 
 #include <array>
+#include <bit>
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <utility>
+#include <vector>
 
 namespace {
 
@@ -107,6 +110,110 @@ TEST(Coincidence, ExactlyDegenerateCurvesAndStraightPiecesStaySo) {
         expectTrue(geom2d::isStraight({point, point, 3.0}, policy));
         expectTrue(geom2d::isStraight({point, {point.x + 1.0, point.y - 2.0}, -0.0}, policy));
     }
+}
+
+bool samePoint(geom2d::Point2 a, geom2d::Point2 b) {
+    return std::bit_cast<std::uint64_t>(a.x) == std::bit_cast<std::uint64_t>(b.x) &&
+           std::bit_cast<std::uint64_t>(a.y) == std::bit_cast<std::uint64_t>(b.y);
+}
+
+void expectJoined(const geom2d::Result<geom2d::Segment>& result, geom2d::Point2 start,
+                  geom2d::Point2 end) {
+    ASSERT_TRUE(result.hasValue()) << result.diagnosis().message;
+    EXPECT_TRUE(samePoint(result.value().start, start))
+        << result.value().start.x << ", " << result.value().start.y;
+    EXPECT_TRUE(samePoint(result.value().end, end))
+        << result.value().end.x << ", " << result.value().end.y;
+}
+
+void expectDiagnosis(const geom2d::Result<geom2d::Segment>& result, geom2d::DiagnosisCode code,
+                     std::size_t input) {
+    ASSERT_FALSE(result.hasValue());
+    EXPECT_EQ(result.diagnosis().code, code);
+    EXPECT_EQ(result.diagnosis().input, input);
+}
+
+TEST(JoinAligned, SourceWinsTheTieOfTheExampleOfIssue158) {
+    const geom2d::Segment source{{0.0, 0.0}, {10.0, 0.0}};
+    const std::array<geom2d::Segment, 1> others{geom2d::Segment{{0.0, 5e-7}, {5.0, 0.0}}};
+    expectJoined(geom2d::joinAligned(source, others), {0.0, 0.0}, {10.0, 0.0});
+}
+
+TEST(JoinAligned, AmongOthersTheFirstInInputOrderWinsTheTie) {
+    const geom2d::Segment source{{0.0, 0.0}, {10.0, 0.0}};
+    const geom2d::Segment a{{12.0, 1e-7}, {20.0, 0.0}};
+    const geom2d::Segment b{{20.0, 2e-7}, {15.0, 0.0}};
+    expectJoined(geom2d::joinAligned(source, std::array{a, b}), {0.0, 0.0}, {20.0, 0.0});
+    expectJoined(geom2d::joinAligned(source, std::array{b, a}), {0.0, 0.0}, {20.0, 2e-7});
+}
+
+TEST(JoinAligned, GapsAndExtensionsBeforeTheStartAreIncluded) {
+    const geom2d::Segment source{{0.0, 0.0}, {10.0, 0.0}};
+    expectJoined(geom2d::joinAligned(source, std::array{geom2d::Segment{{20.0, 0.0}, {30.0, 0.0}}}),
+                 {0.0, 0.0}, {30.0, 0.0});
+    expectJoined(geom2d::joinAligned(source, std::array{geom2d::Segment{{-5.0, 0.0}, {-1.0, 0.0}}}),
+                 {-5.0, 0.0}, {10.0, 0.0});
+    expectJoined(geom2d::joinAligned(source, {}), source.start, source.end);
+}
+
+TEST(JoinAligned, ReversingTheSourceReversesTheResultAndEndsComeFromTheInputs) {
+    Generator generator;
+    constexpr std::array<double, 3> kScales{0x1p-40, 1.0, 0x1p20};
+    for (int i = 0; i < 400; ++i) {
+        const double scale = kScales.at(static_cast<std::size_t>(i) % kScales.size());
+        const auto point = [&] {
+            return geom2d::Point2{generator.coordinate() * scale, generator.coordinate() * scale};
+        };
+        const geom2d::Point2 start = point();
+        const geom2d::Segment source{start, {start.x + scale, start.y + 0.5 * scale}};
+        std::vector<geom2d::Segment> others;
+        const auto count = static_cast<std::size_t>(i) % 5U;
+        for (std::size_t j = 0; j < count; ++j) {
+            // Every third other repeats an end of source, to provoke exact ties.
+            const geom2d::Point2 first = j % 3U == 2U ? source.end : point();
+            geom2d::Point2 second = point();
+            if (samePoint(first, second)) {
+                second.x += scale;
+            }
+            others.push_back({first, second});
+        }
+        const auto forward = geom2d::joinAligned(source, others);
+        const auto backward = geom2d::joinAligned({source.end, source.start}, others);
+        ASSERT_TRUE(forward.hasValue());
+        expectJoined(backward, forward.value().end, forward.value().start);
+        EXPECT_FALSE(samePoint(forward.value().start, forward.value().end));
+        const auto isInputEnd = [&](geom2d::Point2 p) {
+            bool found = samePoint(p, source.start) || samePoint(p, source.end);
+            for (const auto& other : others) {
+                found = found || samePoint(p, other.start) || samePoint(p, other.end);
+            }
+            return found;
+        };
+        EXPECT_TRUE(isInputEnd(forward.value().start));
+        EXPECT_TRUE(isInputEnd(forward.value().end));
+    }
+}
+
+TEST(JoinAligned, DiagnosesTheFirstBadSegmentInInputOrder) {
+    using Code = geom2d::DiagnosisCode;
+    const double nan = std::numeric_limits<double>::quiet_NaN();
+    const double far = 0x1p60;
+    const geom2d::Segment good{{0.0, 0.0}, {10.0, 0.0}};
+    const geom2d::Segment point{{1.0, 1.0}, {1.0, 1.0}};
+    const geom2d::Segment invalid{{0.0, 0.0}, {nan, 1.0}};
+    const geom2d::Segment outside{{0.0, 0.0}, {far, 0.0}};
+    const geom2d::Segment invalidAndOutside{{far, 0.0}, {nan, 0.0}};
+
+    expectDiagnosis(geom2d::joinAligned(point, std::array{invalid}), Code::degenerateCurve, 0);
+    expectDiagnosis(geom2d::joinAligned(good, std::array{invalid}), Code::invalidValue, 1);
+    expectDiagnosis(geom2d::joinAligned(good, std::array{outside}), Code::outOfDomain, 1);
+    expectDiagnosis(geom2d::joinAligned(good, std::array{good, point}), Code::degenerateCurve, 2);
+    expectDiagnosis(geom2d::joinAligned(good, std::array{outside, invalid}), Code::outOfDomain, 1);
+    expectDiagnosis(geom2d::joinAligned(good, std::array{point, outside}), Code::degenerateCurve,
+                    1);
+    expectDiagnosis(geom2d::joinAligned(good, std::array{invalidAndOutside}), Code::invalidValue,
+                    1);
+    expectDiagnosis(geom2d::joinAligned(outside, std::array{point}), Code::outOfDomain, 0);
 }
 
 }  // namespace
