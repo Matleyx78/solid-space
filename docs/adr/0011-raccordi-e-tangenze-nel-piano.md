@@ -39,13 +39,14 @@
   trovato dalla P19 della tappa 0.7 di Tecnigrafo,
   Matleyx78/tecnigrafo#367), decisa dal responsabile: `Fillet` porta per
   ciascuna curva la parte tenuta (`KeptPart`, `keepFirst` e `keepSecond`),
-  decisa esattamente (regola 5 di `fillet`). Come AutoCAD, ogni curva tiene la
-  parte che prosegue l'arco nel suo punto di tangenza, e se il punto è fuori
-  dalla curva si prolunga l'estremo che prosegue il raccordo; con raggio zero o
-  punti di tangenza coincidenti, come CHAMFER, la parte dalla parte del punto
-  indicato rispetto allo spigolo, con `ambiguousPick` quando il punto non lo
-  dice; con le curve scambiate o i versi invertiti, la stessa parte geometrica
-  (punti 2, 4 e 5).
+  decisa esattamente (regola 5 di `fillet`). Se per proseguire il raccordo
+  una curva dritta dovrebbe tornare indietro oltre l'estremo conservato,
+  l'esito è `radiusTooLarge` senza raccordo (#187). Senza un arco di raccordo
+  da proseguire, per le rette vale CHAMFER e per gli archi l'ordine lungo la
+  curva. Se lo spigolo è fuori dall'arco e le due parti contengono il punto
+  indicato, prevale il prolungamento angolare minore, deciso esattamente,
+  con `ambiguousPick` in parità (#188). La simmetria vale a geometria scelta
+  uguale, ferme le precedenze dei semicerchi delle regole 1 e 4 (#186).
 - **Richiesta:** #21 — da Tecnigrafo: tappa 0.7, Matleyx78/tecnigrafo#327
 - **Esito:** 3 pezzo nostro
 - **Tappa:** 0.2 (scheda da scrivere all'apertura)
