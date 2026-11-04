@@ -1,0 +1,53 @@
+{
+  "versione": 1,
+  "id": "r21-traslata-milione-differenza-esatta-minima-sorgente-inversa",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #23, R21 (#166): Sorgente obliqua traslata a 1e6: d=(1000000,1000001), candidato B+(-2^-32,+2^-32).",
+  "ingresso": {
+    "operazione": "joinAligned",
+    "sorgente": {
+      "segmento": {
+        "inizio": [
+          2000000.0,
+          2000001.0
+        ],
+        "fine": [
+          1000000.0,
+          1000000.0
+        ]
+      }
+    },
+    "altri": [
+      {
+        "segmento": {
+          "inizio": [
+            "0x1.e847fffffffffp+20",
+            "0x1.e848100000001p+20"
+          ],
+          "fine": [
+            1000000.0,
+            1000000.0
+          ]
+        }
+      }
+    ]
+  },
+  "atteso": {
+    "curva": {
+      "segmento": {
+        "inizio": [
+          "8589934591999999/4294967296",
+          "8589938886967297/4294967296"
+        ],
+        "fine": [
+          "1000000",
+          "1000000"
+        ]
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Sorgente obliqua traslata a 1e6: d=(1000000,1000001), candidato B+(-2^-32,+2^-32). La differenza esatta di proiezione è 2^-32, positiva ma molto minore dell’ulp del prodotto scalare circa 2*10^12; vince il candidato distinto, non la sorgente. Sorgente invertita: gli stessi punti devono uscire invertiti, senza cambiare la precedenza tra altri. Formula esatta: d=(-1000000,-1000001), t(p)=(p-A)·d. Nell’ordine inizio/fine della sorgente, poi inizio/fine degli altri, le proiezioni sono [0, 2000002000001, -1/4294967296, 2000002000001]. Minimo all’indice 2, massimo all’indice 1 (indici da 0): a ogni pareggio si conserva il primo nell’ordine, anche per il massimo. I due estremi attesi sono quindi [['0x1.e847fffffffffp+20', '0x1.e848100000001p+20'], [1000000.0, 1000000.0]]. Calcolo con Fraction su ogni double effettivo, compresi i letterali esadecimali; differenze e prodotti non vengono arrotondati e non si normalizza d. L’allineamento non è un controllo di questa funzione. Nessuna esecuzione di solid-space. I punti sono copiati dagli ingressi senza costruzione: attesi razionali esatti, nessuna tolleranza."
+  }
+}

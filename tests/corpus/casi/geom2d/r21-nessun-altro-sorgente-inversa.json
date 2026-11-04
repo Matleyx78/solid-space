@@ -1,0 +1,40 @@
+{
+  "versione": 1,
+  "id": "r21-nessun-altro-sorgente-inversa",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #23, R21 (#166): Lista vuota: la sorgente è restituita esattamente, anche se obliqua.",
+  "ingresso": {
+    "operazione": "joinAligned",
+    "sorgente": {
+      "segmento": {
+        "inizio": [
+          -1,
+          7
+        ],
+        "fine": [
+          3,
+          -2
+        ]
+      }
+    },
+    "altri": []
+  },
+  "atteso": {
+    "curva": {
+      "segmento": {
+        "inizio": [
+          "-1",
+          "7"
+        ],
+        "fine": [
+          "3",
+          "-2"
+        ]
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Lista vuota: la sorgente è restituita esattamente, anche se obliqua. Sorgente invertita: gli stessi punti devono uscire invertiti, senza cambiare la precedenza tra altri. Formula esatta: d=(4,-9), t(p)=(p-A)·d. Nell’ordine inizio/fine della sorgente, poi inizio/fine degli altri, le proiezioni sono [0, 97]. Minimo all’indice 0, massimo all’indice 1 (indici da 0): a ogni pareggio si conserva il primo nell’ordine, anche per il massimo. I due estremi attesi sono quindi [[-1, 7], [3, -2]]. Calcolo con Fraction su ogni double effettivo, compresi i letterali esadecimali; differenze e prodotti non vengono arrotondati e non si normalizza d. L’allineamento non è un controllo di questa funzione. Nessuna esecuzione di solid-space. I punti sono copiati dagli ingressi senza costruzione: attesi razionali esatti, nessuna tolleranza."
+  }
+}

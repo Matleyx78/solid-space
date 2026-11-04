@@ -1,0 +1,69 @@
+{
+  "versione": 1,
+  "id": "r21-diagnosi-terzo-altro-infinito",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #23, R21 (#166): Terzo altro con infinito negativo: invalidValue sul dato 3.",
+  "ingresso": {
+    "operazione": "joinAligned",
+    "sorgente": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          10,
+          0
+        ]
+      }
+    },
+    "altri": [
+      {
+        "segmento": {
+          "inizio": [
+            20,
+            0
+          ],
+          "fine": [
+            30,
+            0
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            -5,
+            0
+          ],
+          "fine": [
+            -1,
+            0
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            "-inf"
+          ],
+          "fine": [
+            1,
+            0
+          ]
+        }
+      }
+    ]
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "invalidValue",
+      "dato": "3"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Terzo altro con infinito negativo: invalidValue sul dato 3. Non si confrontano proiezioni di dati non validi. Controlli in ordine di ingresso (sorgente 0, altri[i] dato i+1), e per ogni segmento invalidValue prima di outOfDomain prima di degenerateCurve, come curves.hpp. Nessuna esecuzione di solid-space. I punti sono copiati dagli ingressi senza costruzione: attesi razionali esatti, nessuna tolleranza."
+  }
+}

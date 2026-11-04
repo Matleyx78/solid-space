@@ -1,0 +1,65 @@
+{
+  "versione": 1,
+  "id": "r21-pareggi-estremi-stesso-altro-sorgente-inversa",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #23, R21 (#166): Segmenti perpendicolari alla sorgente: le due estremità di ciascuno hanno la stessa proiezione, vince l’inizio del segmento sia al minimo sia al massimo.",
+  "ingresso": {
+    "operazione": "joinAligned",
+    "sorgente": {
+      "segmento": {
+        "inizio": [
+          10,
+          0
+        ],
+        "fine": [
+          0,
+          0
+        ]
+      }
+    },
+    "altri": [
+      {
+        "segmento": {
+          "inizio": [
+            -5,
+            3
+          ],
+          "fine": [
+            -5,
+            -3
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            20,
+            4
+          ],
+          "fine": [
+            20,
+            -4
+          ]
+        }
+      }
+    ]
+  },
+  "atteso": {
+    "curva": {
+      "segmento": {
+        "inizio": [
+          "20",
+          "4"
+        ],
+        "fine": [
+          "-5",
+          "3"
+        ]
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Segmenti perpendicolari alla sorgente: le due estremità di ciascuno hanno la stessa proiezione, vince l’inizio del segmento sia al minimo sia al massimo. Sorgente invertita: gli stessi punti devono uscire invertiti, senza cambiare la precedenza tra altri. Formula esatta: d=(-10,0), t(p)=(p-A)·d. Nell’ordine inizio/fine della sorgente, poi inizio/fine degli altri, le proiezioni sono [0, 100, 150, 150, -100, -100]. Minimo all’indice 4, massimo all’indice 2 (indici da 0): a ogni pareggio si conserva il primo nell’ordine, anche per il massimo. I due estremi attesi sono quindi [[20, 4], [-5, 3]]. Calcolo con Fraction su ogni double effettivo, compresi i letterali esadecimali; differenze e prodotti non vengono arrotondati e non si normalizza d. L’allineamento non è un controllo di questa funzione. Nessuna esecuzione di solid-space. I punti sono copiati dagli ingressi senza costruzione: attesi razionali esatti, nessuna tolleranza."
+  }
+}

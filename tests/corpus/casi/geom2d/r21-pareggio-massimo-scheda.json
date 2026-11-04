@@ -1,0 +1,65 @@
+{
+  "versione": 1,
+  "id": "r21-pareggio-massimo-scheda",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #23, R21 (#166): Esempio di pareggio al massimo della scheda P21: vince la fine del primo altro anche se il secondo altro comincia alla stessa proiezione.",
+  "ingresso": {
+    "operazione": "joinAligned",
+    "sorgente": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          10,
+          0
+        ]
+      }
+    },
+    "altri": [
+      {
+        "segmento": {
+          "inizio": [
+            12,
+            1e-07
+          ],
+          "fine": [
+            20,
+            0
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            20,
+            2e-07
+          ],
+          "fine": [
+            15,
+            0
+          ]
+        }
+      }
+    ]
+  },
+  "atteso": {
+    "curva": {
+      "segmento": {
+        "inizio": [
+          "0",
+          "0"
+        ],
+        "fine": [
+          "20",
+          "0"
+        ]
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Esempio di pareggio al massimo della scheda P21: vince la fine del primo altro anche se il secondo altro comincia alla stessa proiezione. Formula esatta: d=(10,0), t(p)=(p-A)·d. Nell’ordine inizio/fine della sorgente, poi inizio/fine degli altri, le proiezioni sono [0, 100, 120, 200, 200, 150]. Minimo all’indice 0, massimo all’indice 3 (indici da 0): a ogni pareggio si conserva il primo nell’ordine, anche per il massimo. I due estremi attesi sono quindi [[0, 0], [20, 0]]. Calcolo con Fraction su ogni double effettivo, compresi i letterali esadecimali; differenze e prodotti non vengono arrotondati e non si normalizza d. L’allineamento non è un controllo di questa funzione. Nessuna esecuzione di solid-space. I punti sono copiati dagli ingressi senza costruzione: attesi razionali esatti, nessuna tolleranza."
+  }
+}

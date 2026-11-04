@@ -1,0 +1,65 @@
+{
+  "versione": 1,
+  "id": "r21-minimo-un-ulp-sorgente-inversa",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #23, R21 (#166): Minimo un ulp prima del candidato precedente: vince il candidato successivo più indietro, senza tolleranza.",
+  "ingresso": {
+    "operazione": "joinAligned",
+    "sorgente": {
+      "segmento": {
+        "inizio": [
+          10,
+          0
+        ],
+        "fine": [
+          0,
+          0
+        ]
+      }
+    },
+    "altri": [
+      {
+        "segmento": {
+          "inizio": [
+            -5,
+            0
+          ],
+          "fine": [
+            -1,
+            0
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            "-0x1.4000000000001p+2",
+            1e-07
+          ],
+          "fine": [
+            -2,
+            0
+          ]
+        }
+      }
+    ]
+  },
+  "atteso": {
+    "curva": {
+      "segmento": {
+        "inizio": [
+          "10",
+          "0"
+        ],
+        "fine": [
+          "-5629499534213121/1125899906842624",
+          "944473296573929/9444732965739290427392"
+        ]
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Minimo un ulp prima del candidato precedente: vince il candidato successivo più indietro, senza tolleranza. Sorgente invertita: gli stessi punti devono uscire invertiti, senza cambiare la precedenza tra altri. Formula esatta: d=(-10,0), t(p)=(p-A)·d. Nell’ordine inizio/fine della sorgente, poi inizio/fine degli altri, le proiezioni sono [0, 100, 150, 110, 84442493013196805/562949953421312, 120]. Minimo all’indice 0, massimo all’indice 4 (indici da 0): a ogni pareggio si conserva il primo nell’ordine, anche per il massimo. I due estremi attesi sono quindi [[10, 0], ['-0x1.4000000000001p+2', 1e-07]]. Calcolo con Fraction su ogni double effettivo, compresi i letterali esadecimali; differenze e prodotti non vengono arrotondati e non si normalizza d. L’allineamento non è un controllo di questa funzione. Nessuna esecuzione di solid-space. I punti sono copiati dagli ingressi senza costruzione: attesi razionali esatti, nessuna tolleranza."
+  }
+}

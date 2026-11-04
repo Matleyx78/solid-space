@@ -1,0 +1,32 @@
+{
+  "versione": 1,
+  "id": "r21-diagnosi-invalid-prima-dominio",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #23, R21 (#166): Nello stesso segmento sorgente NaN e coordinata fuori dominio: vince invalidValue 0.",
+  "ingresso": {
+    "operazione": "joinAligned",
+    "sorgente": {
+      "segmento": {
+        "inizio": [
+          1125899906842624.2,
+          0
+        ],
+        "fine": [
+          "nan",
+          0
+        ]
+      }
+    },
+    "altri": []
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "invalidValue",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Nello stesso segmento sorgente NaN e coordinata fuori dominio: vince invalidValue 0. Non si confrontano proiezioni di dati non validi. Controlli in ordine di ingresso (sorgente 0, altri[i] dato i+1), e per ogni segmento invalidValue prima di outOfDomain prima di degenerateCurve, come curves.hpp. Nessuna esecuzione di solid-space. I punti sono copiati dagli ingressi senza costruzione: attesi razionali esatti, nessuna tolleranza."
+  }
+}
