@@ -480,3 +480,18 @@ i rimandi ai documenti che cambia.
   l'[ADR 0011](adr/0011-raccordi-e-tangenze-nel-piano.md) (riga **Corretto:**)
   e la scheda della tappa 0.2 in "Modifiche al piano", che aggiunge R22 (codex)
   e P22 (claude) per realizzarla; Matleyx78/tecnigrafo#367 aspetta anche P22.
+
+- **2026-11-04: precisazioni al contratto di `fillet` (#185).**
+  - **#186:** la simmetria della #184 vale a parità di geometria scelta.
+    Restano il pareggio a favore della fine nella regola 1 e il verso
+    antiorario dalla prima alla seconda tangenza nella regola 4.
+  - **#187:** se la parte che prosegue il raccordo richiederebbe di far
+    tornare indietro la curva oltre l'estremo da conservare, `fillet` dà
+    `radiusTooLarge` senza raccordo. Tecnigrafo mostra «Radius is too large.»
+    e lascia il disegno com'è.
+  - **#188:** con raggio zero o tangenze esattamente coincidenti, per un
+    arco si tiene la parte che contiene il punto indicato, secondo l'ordine
+    lungo la curva. Se lo spigolo è fuori dall'arco e le due parti contengono
+    il punto, si prolunga l'estremo con il prolungamento angolare minore,
+    confrontato esattamente. In parità esatta, `ambiguousPick`. Per le
+    rette vale CHAMFER.
