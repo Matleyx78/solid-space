@@ -7,8 +7,11 @@
 #include "exact/quadratic.hpp"
 
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <optional>
+#include <span>
+#include <utility>
 #include <variant>
 
 namespace solid_space::geom2d {
@@ -156,6 +159,43 @@ Result<bool> areAligned(const Segment& first, const Segment& second,
            nearLine(first.end, second, epsilonSquared) &&
            nearLine(second.start, first, epsilonSquared) &&
            nearLine(second.end, first, epsilonSquared);
+}
+
+Result<Segment> joinAligned(const Segment& source, std::span<const Segment> others) {
+    if (const auto diagnosis = detail::check(source, 0)) {
+        return *diagnosis;
+    }
+    for (std::size_t i = 0; i < others.size(); ++i) {
+        if (const auto diagnosis = detail::check(others[i], i + 1)) {
+            return *diagnosis;
+        }
+    }
+    // The position along the source, (p - source.start) . d, exactly: no
+    // rounding and no division, so equal values are true ties.
+    const auto direction = difference(source.end, source.start);
+    const auto along = [&](Point2 point) {
+        const auto offset = difference(point, source.start);
+        return offset.x * direction.x + offset.y * direction.y;
+    };
+    Segment joined = source;
+    Dyadic firstValue;  // the start of source is at zero
+    Dyadic lastValue = normSquared(direction);
+    // Only a strictly smaller (larger) value replaces the current end, so the
+    // first end in input order wins every tie.
+    for (const auto& other : others) {
+        for (const Point2 end : std::array{other.start, other.end}) {
+            auto value = along(end);
+            if (exact::compare(value, firstValue) == Sign::negative) {
+                joined.start = end;
+                firstValue = value;
+            }
+            if (exact::compare(value, lastValue) == Sign::positive) {
+                joined.end = end;
+                lastValue = std::move(value);
+            }
+        }
+    }
+    return joined;
 }
 
 Result<bool> areConcentric(const Curve& first, const Curve& second,

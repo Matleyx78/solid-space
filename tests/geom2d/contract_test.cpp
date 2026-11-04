@@ -72,6 +72,9 @@ static_assert(std::is_same_v<decltype(&geom2d::areConcentric),
 static_assert(std::is_same_v<decltype(&geom2d::onSameCircle),
                              geom2d::Result<bool> (*)(const geom2d::Curve&, const geom2d::Curve&,
                                                       const robust::TolerancePolicy&)>);
+static_assert(std::is_same_v<decltype(&geom2d::joinAligned),
+                             geom2d::Result<geom2d::Segment> (*)(
+                                 const geom2d::Segment&, std::span<const geom2d::Segment>)>);
 
 // Tangency (ADR 0011).
 static_assert(std::is_same_v<decltype(&geom2d::tangentsFrom),
