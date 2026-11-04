@@ -1,13 +1,23 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 The solid-space authors
 
-// offsetPolyline (offset.hpp; ADR 0012; stage 0.2, package P14).
+// offsetPolyline (offset.hpp; ADR 0012; stage 0.2, packages P14 and P19).
 //
 // The four steps run on the exact values (offset_joints.hpp); this file keeps
 // the pieces left after each step, decides which joints change, assembles the
-// result and checks it on its own doubles before returning done. The check
-// compares every pair of pieces with intersect() (ADR 0012, point 11): a
-// structure that skips pairs is not needed yet.
+// result and checks it on its own doubles before returning done. Assembling,
+// in the order of offset.hpp (#148-#150, #154):
+// 1. every vertex rounded to the nearest double, once for the two pieces that
+//    share it;
+// 2. straight pieces whose rounded ends coincide dropped with their origins
+//    entries (simple false); none left gives notRepresentable;
+// 3. the bulge of every arc, source or gap, by representArc(): coincident
+//    ends of an arc, or an arc it rejects, give notRepresentable;
+// 4. the final checks, the first failure deciding: the exact ends of the
+//    pieces left and the point m of every arc against the domain
+//    (beyondDomain), then the intersections, then the original polyline.
+// The check compares every pair of pieces with intersect() (ADR 0012, point
+// 11): a structure that skips pairs is not needed yet.
 
 #include "curve_meaning.hpp"
 #include "exact/dyadic.hpp"
@@ -46,8 +56,8 @@ struct LivePiece {
     /// The joint with the next piece (in a closed polyline the last piece is
     /// followed by the first); none for the last piece of an open polyline.
     JointKind jointAfter = JointKind::none;
-    /// With an arc joint, its bulge.
-    double gapBulge = 0.0;
+    /// With an arc joint, the direction in which it turns.
+    detail::Turn gapTurn = detail::Turn::counterclockwise;
     /// The joint with the next piece must be decided (again).
     bool jointPending = true;
     /// The course must be decided (again): an end changed.
@@ -59,12 +69,16 @@ struct LivePiece {
 struct ResultPiece {
     PointRecipe start;
     PointRecipe end;
-    /// The bulge, already rounded; for a source piece whose ends were cut or
-    /// extended, it is computed when the result is assembled.
+    /// True for an arc: a curved source piece or a gap arc. Its bulge comes
+    /// from representArc() once its ends are rounded.
+    bool curved = false;
+    /// A straight piece keeps the bulge of its source (0 or -0).
     double bulge = 0.0;
-    bool bulgePending = false;
     OffsetPiece origin;
     std::size_t slot = 0;
+    /// A gap arc: the vertex it turns around, and how.
+    Point2 vertex;
+    detail::Turn turn = detail::Turn::counterclockwise;
 };
 
 Diagnosis towerFull() {
@@ -90,8 +104,6 @@ OffsetFailure failureOf(StepStatus status) {
     switch (status) {
         case StepStatus::openJoint:
             return OffsetFailure::openJoint;
-        case StepStatus::beyondDomain:
-            return OffsetFailure::beyondDomain;
         case StepStatus::selfIntersection:
         case StepStatus::done:
         case StepStatus::towerFull:
@@ -197,7 +209,7 @@ StepStatus PolylineSteps::joinPending() {
             first.coursePending = true;
             second.coursePending = true;
         } else if (joint.kind == JointKind::arc) {
-            first.gapBulge = joint.bulge;
+            first.gapTurn = joint.turn;
         }
     }
     return StepStatus::done;
@@ -294,23 +306,18 @@ Result<PolylineOffset> PolylineSteps::assemble(const robust::TolerancePolicy& po
             result.origin = {PieceOrigin::source, piece.source};
             result.slot = piece.slot;
             const auto& meaning = m_source.pieces[piece.slot];
-            const bool movedEnds = piece.start.kind == PointRecipe::Kind::moved &&
-                                   piece.end.kind == PointRecipe::Kind::moved;
-            if (std::holds_alternative<detail::LineMeaning>(meaning.support) || movedEnds) {
-                // A straight piece keeps its bulge (0 or -0); a curved one that
-                // was not cut keeps it too, as offsetCurve() does.
-                result.bulge = std::get<PolylineSegment>(meaning.curve).bulge;
-            } else {
-                result.bulgePending = true;
-            }
+            result.curved = std::holds_alternative<detail::ArcMeaning>(meaning.support);
+            result.bulge = std::get<PolylineSegment>(meaning.curve).bulge;
             pieces.push_back(result);
         }
         if (piece.jointAfter == JointKind::arc) {
             ResultPiece gap;
             gap.start = piece.end;
             gap.end = m_live[(k + 1) % count].start;
-            gap.bulge = piece.gapBulge;
+            gap.curved = true;
             gap.origin = {PieceOrigin::gap, vertexAfter(piece.source)};
+            gap.vertex = m_polyline->vertices[vertexAfter(piece.source)].position;
+            gap.turn = piece.gapTurn;
             pieces.push_back(gap);
         }
     }
@@ -320,32 +327,90 @@ Result<PolylineOffset> PolylineSteps::assemble(const robust::TolerancePolicy& po
     if (closed() && pieces.size() == 1) {
         return failedOffset(OffsetFailure::openJoint, m_simple);
     }
+    // Rounding: the start of every piece and the end of an open polyline, so
+    // that shared vertices have the same doubles for both pieces. The end of
+    // a piece is the same exact point as the start of the next one.
+    const std::size_t total = pieces.size();
+    std::vector<detail::RoundedPoint> rounded;
+    rounded.reserve(total + 1);
+    for (const auto& piece : pieces) {
+        rounded.push_back(detail::roundedPoint(m_source, piece.start));
+    }
+    if (!closed()) {
+        rounded.push_back(detail::roundedPoint(m_source, pieces.back().end));
+    }
+    if (std::ranges::any_of(rounded, [](const detail::RoundedPoint& point) {
+            return point.status == StepStatus::towerFull;
+        })) {
+        return towerFull();
+    }
+    const auto after = [&](std::size_t k) -> const detail::RoundedPoint& {
+        return rounded[closed() ? (k + 1) % total : k + 1];
+    };
+    const auto coincide = [](Point2 a, Point2 b) {
+        return std::isfinite(a.x) && std::isfinite(a.y) && a.x == b.x && a.y == b.y;
+    };
+    // Straight pieces collapsed by rounding go, with their origins entries;
+    // their neighbours already share the vertex.
+    std::vector<std::size_t> kept;
+    kept.reserve(total);
+    for (std::size_t k = 0; k < total; ++k) {
+        if (!pieces[k].curved && coincide(rounded[k].point, after(k).point)) {
+            m_simple = false;
+            continue;
+        }
+        kept.push_back(k);
+    }
+    if (kept.empty()) {
+        return failedOffset(OffsetFailure::notRepresentable, m_simple);
+    }
+    // The bulge of every arc, from its rounded ends (offset.hpp).
+    std::vector<double> bulges(total, 0.0);
+    for (const std::size_t k : kept) {
+        const auto& piece = pieces[k];
+        if (!piece.curved) {
+            bulges[k] = piece.bulge;
+            continue;
+        }
+        const Point2 start = rounded[k].point;
+        const Point2 end = after(k).point;
+        const bool finite = std::isfinite(start.x) && std::isfinite(start.y) &&
+                            std::isfinite(end.x) && std::isfinite(end.y);
+        if (!finite || coincide(start, end)) {
+            return failedOffset(OffsetFailure::notRepresentable, m_simple);
+        }
+        detail::OffsetScope scope(m_source);
+        const auto arc =
+            piece.origin.origin == PieceOrigin::gap
+                ? detail::gapArc(scope, piece.vertex, piece.turn, piece.start, piece.end)
+                : detail::sourceArc(scope, piece.slot, piece.start, piece.end);
+        if (!arc) {
+            return towerFull();
+        }
+        const auto representation =
+            detail::representArc(scope.tower(), *arc, start, end, m_source.magnitude);
+        if (!representation.representable) {
+            return failedOffset(OffsetFailure::notRepresentable, m_simple);
+        }
+        bulges[k] = representation.bulge;
+    }
+    // The first final check: the exact ends of the pieces left, both
+    // precursors of a shared vertex included (#149, #154).
+    for (const std::size_t k : kept) {
+        if (rounded[k].beyondDomain || after(k).beyondDomain) {
+            return failedOffset(OffsetFailure::beyondDomain, m_simple);
+        }
+    }
     PolylineOffset result;
     result.outcome = OffsetOutcome::done;
     result.simple = m_simple;
     result.polyline.closed = closed();
-    for (const auto& piece : pieces) {
-        const auto start = detail::roundedPoint(m_source, piece.start);
-        if (start.status != StepStatus::done) {
-            return stopped(start.status, m_simple);
-        }
-        double bulge = piece.bulge;
-        if (piece.bulgePending) {
-            const auto computed = detail::arcBulge(m_source, piece.slot, piece.start, piece.end);
-            if (computed.status != StepStatus::done) {
-                return stopped(computed.status, m_simple);
-            }
-            bulge = computed.bulge;
-        }
-        result.polyline.vertices.push_back({start.point, bulge});
-        result.origins.push_back(piece.origin);
+    for (const std::size_t k : kept) {
+        result.polyline.vertices.push_back({rounded[k].point, bulges[k]});
+        result.origins.push_back(pieces[k].origin);
     }
     if (!closed()) {
-        const auto end = detail::roundedPoint(m_source, pieces.back().end);
-        if (end.status != StepStatus::done) {
-            return stopped(end.status, m_simple);
-        }
-        result.polyline.vertices.push_back({end.point, 0.0});
+        result.polyline.vertices.push_back({after(kept.back()).point, 0.0});
     }
     return check(std::move(result), policy);
 }
@@ -392,25 +457,18 @@ Result<PolylineOffset> PolylineSteps::check(PolylineOffset result,
                                             const robust::TolerancePolicy& policy) const {
     const auto own = pieces(result.polyline);
     const std::size_t count = own.size();
-    // A piece whose rounded ends are the same point has no extent of its own:
-    // its neighbours share that point, and the pairs below see it. A piece
-    // beyond the domain of the data (its point m, with a bulge near a whole
-    // turn) cannot be returned.
-    std::vector<bool> point(count, false);
-    for (std::size_t i = 0; i < count; ++i) {
-        if (const auto problem = detail::check(own[i], 0)) {
-            if (problem->code != DiagnosisCode::degenerateCurve) {
-                return failedOffset(OffsetFailure::beyondDomain, result.simple);
-            }
-            point[i] = true;
+    // Still the domain: the point m of every curved piece, reconstructed
+    // exactly from the returned doubles (the exact ends are already checked).
+    // No piece is a single point: straight ones were dropped and curved ones
+    // with coincident ends gave notRepresentable.
+    for (const auto& piece : own) {
+        if (detail::checkData(piece, 0)) {
+            return failedOffset(OffsetFailure::beyondDomain, result.simple);
         }
     }
     const auto& vertices = result.polyline.vertices;
     for (std::size_t i = 0; i < count; ++i) {
-        for (std::size_t j = i + 1; j < count && !point[i]; ++j) {
-            if (point[j]) {
-                continue;
-            }
+        for (std::size_t j = i + 1; j < count; ++j) {
             std::vector<Point2> shared;
             if (j == i + 1) {
                 shared.push_back(vertices[j].position);
@@ -429,15 +487,12 @@ Result<PolylineOffset> PolylineSteps::check(PolylineOffset result,
         }
     }
     const auto input = pieces(*m_polyline);
-    for (std::size_t i = 0; i < count; ++i) {
-        if (point[i]) {
-            continue;
-        }
+    for (const auto& piece : own) {
         for (std::size_t j = 0; j < input.size(); ++j) {
             if (m_dropped[j]) {
                 continue;
             }
-            const auto meeting = intersect(own[i], Extension::none, input[j], Extension::none);
+            const auto meeting = intersect(piece, Extension::none, input[j], Extension::none);
             if (!meeting.hasValue() || !apart(meeting.value())) {
                 return failedOffset(OffsetFailure::meetsOriginal, result.simple);
             }
@@ -501,6 +556,10 @@ Result<PolylineOffset> offsetPolyline(const Polyline& polyline, double distance,
         return failedOffset(OffsetFailure::meetsOriginal, true);
     }
     source.distance = distance;
+    source.magnitude = std::abs(distance);
+    for (const auto& piece : input) {
+        source.magnitude = std::max(source.magnitude, detail::magnitudeOf(Curve{piece}));
+    }
     PolylineSteps steps(polyline, std::move(sources), std::move(dropped), std::move(source));
     return steps.run(policy);
 }
