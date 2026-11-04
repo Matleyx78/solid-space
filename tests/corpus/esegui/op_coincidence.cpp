@@ -5,9 +5,11 @@
 #include "plane_data.hpp"
 #include "solid_space/geom2d/coincidence.hpp"
 
+#include <cstddef>
 #include <stdexcept>
 #include <string>
 #include <variant>
+#include <vector>
 
 namespace solid_space::corpus {
 namespace {
@@ -29,12 +31,17 @@ Value writeAnswer(const geom2d::Result<bool>& result) {
 }
 
 template <typename T>
-T readAs(const Value& input, const char* key) {
-    const auto curve = readCurve(field(input, key), key);
-    if (const auto* value = std::get_if<T>(&curve)) {
-        return *value;
+T curveAs(const Value& value, const std::string& path) {
+    const auto curve = readCurve(value, path);
+    if (const auto* typed = std::get_if<T>(&curve)) {
+        return *typed;
     }
-    throw std::runtime_error(std::string(key) + ": unexpected curve type");
+    throw std::runtime_error(path + ": unexpected curve type");
+}
+
+template <typename T>
+T readAs(const Value& input, const char* key) {
+    return curveAs<T>(field(input, key), key);
 }
 
 Value degenerateOperation(const Value& input) {
@@ -64,11 +71,31 @@ Value sameCircleOperation(const Value& input) {
     return writeAnswer(geom2d::onSameCircle(first, second, policyOf(input)));
 }
 
+Value joinAlignedOperation(const Value& input) {
+    const auto source = readAs<geom2d::Segment>(input, "sorgente");
+    const auto& list = field(input, "altri");
+    if (list.kind() != Value::Kind::list) {
+        throw std::runtime_error("altri: expected a list of segments");
+    }
+    const auto& items = list.asList();
+    std::vector<geom2d::Segment> others;
+    others.reserve(items.size());
+    for (std::size_t i = 0; i < items.size(); ++i) {
+        others.push_back(curveAs<geom2d::Segment>(items[i], "altri[" + std::to_string(i) + "]"));
+    }
+    const auto result = geom2d::joinAligned(source, others);
+    if (!result.hasValue()) {
+        return writeDiagnosis(result.diagnosis());
+    }
+    return Value::group({{"curva", writeCurve(result.value())}});
+}
+
 const Registration kDegenerate("isDegenerate", degenerateOperation);
 const Registration kStraight("isStraight", straightOperation);
 const Registration kAligned("areAligned", alignedOperation);
 const Registration kConcentric("areConcentric", concentricOperation);
 const Registration kSameCircle("onSameCircle", sameCircleOperation);
+const Registration kJoinAligned("joinAligned", joinAlignedOperation);
 
 }  // namespace
 }  // namespace solid_space::corpus
