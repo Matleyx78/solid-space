@@ -30,11 +30,15 @@
 
 namespace solid_space::geom2d {
 
-/// Largest distance between a returned offset and the exact one, relative to
-/// the magnitude: every point of the returned curve or polyline lies within
-/// kRelativeOffsetError * max(M, |p|) of the exact offset, and every point of
-/// the exact offset within the same distance of the returned one. 2^-46 is
-/// about 1.4e-14, 16 times below the relative tolerance of ADR 0009.
+/// Relative distance bound for each returned piece and its exact counterpart.
+/// For an exact piece A, let S(A) be the largest absolute coordinate over
+/// all points of A, including interior extrema. Each point of either piece
+/// is within E(A) = kRelativeOffsetError * max(M, S(A)) of the other piece.
+/// For offsetCurve, A is the entire exact offset. For offsetPolyline, A is
+/// the exact final piece after trimming or extension, including gap arcs.
+/// This scale is constant along the piece. Vertex error bounds still use
+/// each exact vertex's own magnitude. 2^-46 is about 1.4e-14, 16 times below
+/// the relative tolerance of ADR 0009.
 inline constexpr double kRelativeOffsetError = 0x1p-46;
 
 /// How an offset ended.
@@ -54,8 +58,12 @@ enum class OffsetOutcome : std::uint8_t {
 };
 
 /// The offset of one curve. Every returned vertex (the ends of a Segment or
-/// PolylineSegment, straight or curved) is rounded within kRelativePointError;
-/// which double is returned is not fixed (ADR 0013). Bulges and
+/// PolylineSegment) is rounded within kRelativePointError for a straight
+/// piece. For a curved piece, each end is within 2^-51 * max(M, |p|) of its
+/// exact value in each coordinate (#177). Here M is the offset magnitude
+/// defined above, and |p| is the largest absolute coordinate of the exact end.
+/// The construction error bounds apply for M >= 2^-50 as in curves.hpp.
+/// Which double is returned is not fixed (ADR 0013). Bulges and
 /// representability checks use the returned doubles. Exact
 /// constructed ends and radii in offsetCurve are domain-checked before any
 /// failed outcome below; failed only applies when those exact values are
@@ -73,7 +81,7 @@ struct CurveOffset {
     ///   counterclockwise arc, R + distance for a clockwise one, rounded within
     ///   kRelativeOffsetError;
     /// - curved PolylineSegment: start and end moved along the radius, each
-    ///   within kRelativePointError; the bulge is that of the arc from the
+    ///   within the curved-end bound above; the bulge is that of the arc from the
     ///   returned start to the returned end, turning as the input, whose
     ///   centre is the point of their perpendicular bisector nearest the exact
     ///   centre C of the offset circle. With m the middle of the returned
@@ -90,24 +98,28 @@ struct CurveOffset {
     /// or less gives vanished.
     ///
     /// failed, with no curve, when the arc of a curved PolylineSegment so
-    /// built has a point farther than kRelativeOffsetError * max(M, |p|)
-    /// from the exact offset, or the exact offset a point that far from it:
+    /// built has a point farther than the exact piece's E(A) from the exact
+    /// offset, or the exact offset has a point that far from it:
     /// its rounded ends turn the chord too much for any bulge. For distinct
-    /// rounded ends, never when both distances are within half that bound;
-    /// it happens only for an arc near a full turn whose chord spans a few ulp
-    /// of its coordinates. Coincident rounded ends always give failed.
+    /// rounded ends, never when both distances are within half that bound.
+    /// With distinct ends and applicable construction error bounds, an exact
+    /// absolute sweep at most 2 pi - 1/4 radians cannot fail this bulge check
+    /// (#177). Coincident rounded ends always give failed.
     /// A nondegenerate Segment or straight PolylineSegment whose rounded ends
     /// coincide also gives failed, with no curve.
     ///
     /// Bands (curves.hpp; ADR 0013, point 4). Two rounded ends can coincide
     /// only when every coordinate of the two exact ends differs by at most
     /// 2 * kRelativePointError * max(M, |p|), with |p| the larger of the two:
-    /// for those data failed for coincident rounded ends is free. For an arc
-    /// near a full turn whose chord spans a few ulp, failed for a bulge that
-    /// cannot be represented is free too. The point m of a returned curved
+    /// use 2^-51 instead of kRelativePointError for ends of curved pieces.
+    /// For those data failed for coincident rounded ends is free. Above an
+    /// exact absolute sweep of 2 pi - 1/4 radians, representability can depend
+    /// on the chosen ends and bulge. In that band the outcome is free where
+    /// permitted rounding choices change it. The distance bounds still apply.
+    /// The point m of a returned curved
     /// piece is reconstructed from its returned doubles: when a point of the
     /// exact arc has a coordinate whose magnitude exceeds kMaxCoordinate -
-    /// kRelativeOffsetError * max(M, |p|), outOfDomain (input 1) for m is free
+    /// E(A) for that arc, outOfDomain (input 1) for m is free
     /// (as for fillet, tangency.hpp). Elsewhere the outcome is determined.
     Curve curve;
 };
@@ -231,9 +243,10 @@ struct PolylineOffset {
 ///    vanished.
 ///
 /// Every final vertex, including moved, cut or extended ends, joint points
-/// and gap-arc ends, is rounded within kRelativePointError; which double is
-/// returned is not fixed (ADR 0013). Shared vertices use the same doubles for
-/// both pieces.
+/// and gap-arc ends, is rounded within kRelativePointError. Each end of a
+/// curved piece uses the tighter CurveOffset bound, also when shared with a
+/// straight piece. Which double is returned is not fixed (ADR 0013). Shared
+/// vertices use the same doubles for both pieces.
 /// After rounding, before computing bulges or running final checks, straight
 /// pieces whose rounded ends coincide are dropped, together with their origins
 /// entries, making simple false. Their neighbours already share the same
@@ -260,15 +273,14 @@ struct PolylineOffset {
 /// affected.
 ///
 /// The final checks below are exact, but on the returned doubles, which are
-/// free within their errors: so they have bands too. With
-/// E = kRelativeOffsetError * max(M, |p|), these failures are free:
-/// meetsOriginal when the exact result comes within E of the input;
-/// selfIntersection when two exact pieces not consecutive come within 2 E of
-/// each other, or two consecutive ones within 2 E of each other away from
+/// free within their errors: so they have bands too. These failures are free:
+/// meetsOriginal when an exact piece A comes within E(A) of the input;
+/// selfIntersection when two nonconsecutive exact pieces A and B come within
+/// E(A) + E(B) of each other, or two consecutive pieces do so away from
 /// their shared vertex (beyond the coincidence of `policy`); beyondDomain for
 /// the point m of a curved piece in the band of CurveOffset. The simple
-/// cases below hold outside these bands. When every point of the exact result
-/// has |p| at most 8 M, 2 E is at most robust::kRelativeTolerance * M, not
+/// cases below hold outside these bands. When every exact piece has S(A) at
+/// most 8 M, E(A) + E(B) is at most robust::kRelativeTolerance * M, not
 /// above epsilon(M), so their separation keeps them outside the bands of
 /// meetsOriginal and of pieces not consecutive; the band of m near
 /// kMaxCoordinate and the other bands still apply to them.
@@ -298,10 +310,9 @@ struct PolylineOffset {
 ///   input, and the exact final vertices and m reconstructed from the returned
 ///   doubles are within the domain, outside the bands above, the outcome is
 ///   done, simple is true, and the result is the exact one: every vertex within
-///   kRelativePointError and every point within kRelativeOffsetError; or
-///   failed with notRepresentable, under the condition of CurveOffset (an
-///   arc near a full turn whose chord spans a few ulp, or coincident rounded
-///   ends of a nonzero exact arc);
+///   its applicable vertex error and each piece within its own E(A); or
+///   failed with notRepresentable under the representability or coincident-end
+///   conditions of CurveOffset;
 /// - the other cases: done, with the result of the steps above within the same
 ///   errors, or failed. They may differ from AutoCAD.
 ///
