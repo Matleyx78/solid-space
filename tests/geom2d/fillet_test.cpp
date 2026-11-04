@@ -646,6 +646,50 @@ TEST(Fillet, ArcMiddleBeyondTheDomain) {
     EXPECT_EQ(result.diagnosis().input, 2U);
 }
 
+// Decision #152: when the returned points of tangency coincide the bulge is 0,
+// while the Arc keeps its own rules. Rule 1 (found in the review of #180): the
+// lines y = x and y = x + d, d = 2^-55, are distinct and parallel; the corner
+// is (1, 1) and the exact foot (1 - d/2, 1 + d/2), which rounds to (1, 1). The
+// Arc keeps its half turn.
+TEST(Fillet, SemicircleWithCoincidentPoints) {
+    constexpr double kGap = 0x1p-55;
+    const Segment first{{0.0, 0.0}, {1.0, 1.0}};
+    const Segment second{{0.0, kGap}, {0.125, 0.125 + kGap}};
+    const auto result = fillet(first, Point2{1.0, 1.0}, second, Point2{0.0, kGap}, 1.0);
+    ASSERT_TRUE(result.hasValue());
+    const auto& value = result.value();
+    ASSERT_EQ(value.outcome, TangencyOutcome::found);
+    EXPECT_TRUE(value.semicircle);
+    ASSERT_TRUE(sameBits(value.onFirst.point, Point2{1.0, 1.0}));
+    ASSERT_TRUE(sameBits(value.onSecond.point, Point2{1.0, 1.0}));
+    EXPECT_TRUE(sameBits(value.bulge, 0.0));
+    EXPECT_EQ(std::fabs(value.arc.sweep), std::numbers::pi);
+}
+
+// The same in rule 3, when the exact points of tangency are opposite ends of a
+// diameter (rule 4: the counterclockwise half turn). The line from (0, 0) to
+// (3, 4) has the unit normal n = (-4, 3) / 5 on its left. With T1 = (3/4, 1),
+// r = 2^-60 and R = 5 * 2^-10 - 2^-59, the circle of radius R around
+// T1 + (2r + R) n = (3/4 - 2^-8, 1 + 3 * 2^-10) is touched at T2 = T1 + 2r n by
+// the circle of radius r around T1 + r n, the only candidate on the sides of
+// the picks. T2 is within 2^-59 of T1, so both round to (3/4, 1).
+TEST(Fillet, HalfTurnWithCoincidentPoints) {
+    constexpr double kRadius = 0x1p-60;
+    const Segment line{{0.0, 0.0}, {3.0, 4.0}};
+    const Circle circle{{0.75 - 0x1p-8, 1.0 + (3.0 * 0x1p-10)}, (5.0 * 0x1p-10) - 0x1p-59};
+    const Point2 tangency{0.75, 1.0};
+    const auto result = fillet(line, tangency, circle, circle.center, kRadius);
+    ASSERT_TRUE(result.hasValue());
+    const auto& value = result.value();
+    ASSERT_EQ(value.outcome, TangencyOutcome::found);
+    EXPECT_FALSE(value.semicircle);
+    ASSERT_TRUE(sameBits(value.onFirst.point, tangency));
+    ASSERT_TRUE(sameBits(value.onSecond.point, tangency));
+    EXPECT_TRUE(sameBits(value.bulge, 0.0));
+    EXPECT_TRUE(sameBits(value.arc.radius, kRadius));
+    EXPECT_EQ(value.arc.sweep, std::numbers::pi);
+}
+
 TEST(Fillet, Diagnoses) {
     const Segment line{{0.0, 0.0}, {1.0, 0.0}};
     const Circle circle{{0.0, 0.0}, 1.0};

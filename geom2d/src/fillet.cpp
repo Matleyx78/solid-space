@@ -29,7 +29,7 @@
 //    end and against it at its start; since E - F is perpendicular to both
 //    lines, the arc turns counterclockwise exactly when
 //    cross(E - S, away) > 0. Its sweep is +-pi (the double nearest to it) and
-//    its bulge +-1.
+//    its bulge +-1, or 0 when the corner and the rounded foot coincide (#152).
 // 2. Radius zero: the common points of the two extended curves (intersect()),
 //    chosen as tangentCircleNear chooses. A shared stretch gives
 //    infinitelyMany, no common point none.
@@ -42,6 +42,10 @@
 //    When it is zero, the sign of the dot product tells the same point (the
 //    single point, sweep 0, bulge 0) from the opposite ends of a diameter
 //    (counterclockwise, sweep pi, bulge 1): both points lie on the circle.
+//    Whatever the direction, the bulge is 0 when the returned points of
+//    tangency coincide, while the Arc keeps these rules (tangency.hpp, #152):
+//    for a half turn this is checked on the points; for the other directions
+//    the angle computed from them is then zero.
 //
 // Constructions beyond the domain (curves.hpp, decision #149). tangentCandidates()
 // gives the diagnosis outOfDomain about the radius (input 2) when an exact
@@ -207,6 +211,12 @@ struct FilletArc {
     double bulge = 0.0;
 };
 
+// True when the returned points of tangency are the same point (-0 and +0
+// alike): the bulge form is then 0, while the Arc keeps its rules (#152).
+bool coincide(Point2 a, Point2 b) noexcept {
+    return a.x == b.x && a.y == b.y;
+}
+
 // The arc of radius `radius` around the rounded centre from `from` to `to`
 // (see the top of this file).
 FilletArc arcBetween(Point2 centre, double radius, Point2 from, Point2 to, Turning turning) {
@@ -217,7 +227,7 @@ FilletArc arcBetween(Point2 centre, double radius, Point2 from, Point2 to, Turni
         case Turning::none:
             return {Arc{centre, radius, start, 0.0}, 0.0};
         case Turning::halfTurn:
-            return {Arc{centre, radius, start, kHalfTurn}, 1.0};
+            return {Arc{centre, radius, start, kHalfTurn}, coincide(from, to) ? 0.0 : 1.0};
         case Turning::counterclockwise:
         case Turning::clockwise:
             break;
@@ -377,7 +387,9 @@ Result<Fillet> semicircle(const CurveMeaning& first, const LineMeaning& firstLin
     result.semicircle = true;
     const double start = robust::atan2(corner.y - result.center.y, corner.x - result.center.x);
     result.arc = Arc{result.center, radius, start, counterclockwise ? kHalfTurn : -kHalfTurn};
-    result.bulge = counterclockwise ? 1.0 : -1.0;
+    if (!coincide(result.onFirst.point, result.onSecond.point)) {
+        result.bulge = counterclockwise ? 1.0 : -1.0;
+    }
     if (middleBeyondDomain(result.onFirst.point, result.onSecond.point, result.bulge)) {
         return constructionBeyond(kMiddleBeyond);
     }
