@@ -68,10 +68,12 @@ del 2026-11-02):
   per `offsetCurve`, `failed` con `notRepresentable` per `offsetPolyline`,
   senza eliminare l'arco come pezzo puntiforme;
 - **non rappresentabile:** se l'arco restituito ha un punto più lontano di
-  `kRelativeOffsetError · max(M, |p|)` dall'offset esatto, o l'offset esatto un
+  E(A) = `kRelativeOffsetError` · max(M, S(A)) dall'offset esatto, o l'offset esatto un
   punto così lontano dall'arco, `offsetCurve` dà `failed` (senza curva) e
   `offsetPolyline` `failed` con `notRepresentable`, deciso mentre si compone il
-  risultato, prima degli altri controlli. Con estremi distinti, mai `failed`
+  risultato, prima degli altri controlli. S(A) è la massima coordinata in
+  valore assoluto su tutti i punti del pezzo finale esatto, non solo sugli
+  estremi (#181). Con estremi distinti, mai `failed`
   quando entrambe le distanze stanno entro metà di quel limite: il controllo
   può essere calcolato in `double` con il suo margine, scritto e dimostrato in
   testa al file;
@@ -118,7 +120,9 @@ Esiti determinati (fuori dalle fasce):
 - **#153**, K = 2^50, t = 3·2^-34: segmento (K, 0)–(K−1/8, t),
   d = −2^26: `offsetCurve` dà `outOfDomain`, dato 1, prima del collasso.
 - Su dati generati vicino all'origine e a 1e6, verificare il limite più stretto
-  dei vertici e l'errore dell'arco restituito. Dimostrare la soglia #177 di
+  dei vertici e l'errore dell'arco restituito rispetto alla E(A) del pezzo.
+  Includere archi prolungati lontano dai dati, con parti che tornano vicino
+  all'origine. Dimostrare la soglia #177 di
   2π − 1/4 radianti per la rappresentabilità con estremi distinti e limiti
   d'errore applicabili. Provare i casi immediatamente sotto e sopra la soglia: entro la soglia
   il bulge non dà `failed` / `notRepresentable`; oltre, verificare le
