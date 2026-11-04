@@ -2,6 +2,8 @@
 
 - **Stato:** Accettato
 - **Data:** 2026-11-02
+- **Corretto:** 2026-11-04 — limite più stretto per gli estremi degli archi
+  di offset e fascia di rappresentabilità espressa in angolo (#177).
 - **Corregge:** ADR 0010, 0011 e 0012, che rimandano qui con una riga
   **Corretto:**; i loro punti sulle costruzioni si leggono con questo ADR
 - **Nasce da:** operazione snellimento, issue #160
@@ -94,12 +96,14 @@ risultati tra versioni.
    - **Curva parallela** (`offset.hpp`). Due estremi arrotondati possono
      coincidere solo se gli estremi esatti hanno le coordinate che differiscono
      ciascuna al più di 2 · `kRelativePointError` · max(M, |p|), con |p|
-     il maggiore dei due. In quella fascia sono liberi lo scarto di un pezzo
+     il maggiore dei due. Per gli estremi dei pezzi curvi si usa 2^-51 al
+     posto di `kRelativePointError` (#177). In quella fascia sono liberi lo scarto di un pezzo
      dritto collassato dall'arrotondamento (con `simple`, `origins` e
      `notRepresentable` quando non resta nessun pezzo) e il `failed` di un arco
      con gli estremi arrotondati coincidenti. Il `failed` di un bulge non
-     rappresentabile è libero per gli archi quasi interi con la corda di pochi
-     ulp, la condizione che `CurveOffset` già scrive. I passi esatti della curva
+     rappresentabile può dipendere dall'arrotondamento per archi di ampiezza
+     assoluta oltre 2π − 1/4 radianti (#177). In quella fascia l'esito è
+     libero dove cambia tra scelte lecite. Restano validi i limiti d'errore. I passi esatti della curva
      parallela, compresi i pezzi che spariscono o si tolgono, non cambiano.
    - **Raccordi** (`tangency.hpp`). Il bulge 0 quando i punti di tangenza
      restituiti coincidono (#152) e il punto m ricostruito al confine di
