@@ -21,7 +21,9 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <initializer_list>
 #include <limits>
+#include <numbers>
 #include <string>
 #include <variant>
 #include <vector>
@@ -527,6 +529,290 @@ TEST(OffsetPolyline, SlantedPiecesShareTheirRoots) {
         ASSERT_EQ(result.outcome, g::OffsetOutcome::done);
         EXPECT_TRUE(passesCheck(input, result, policy));
         EXPECT_TRUE(jointsAtDistance(input, distance, result));
+    }
+}
+
+// Package P19: rounding, bulges, collapsed pieces and the exact domain.
+
+constexpr double kLimit = r::kMaxCoordinate;
+constexpr double kPi = std::numbers::pi;
+
+void expectFailure(const g::PolylineOffset& result,
+                   std::initializer_list<g::OffsetFailure> allowed) {
+    EXPECT_EQ(result.outcome, g::OffsetOutcome::failed);
+    EXPECT_TRUE(std::ranges::find(allowed, result.failure) != allowed.end())
+        << static_cast<int>(result.failure);
+}
+
+TEST(OffsetPolyline, OnlyTheExactEndsOfThePiecesLeftAreCheckedAgainstTheDomain) {
+    // #149: x = K - 1/8 moved right by 1/4 is beyond K exactly.
+    expectFailure(
+        offset(polyline({{{kLimit - 0.125, 0.0}, 0.0}, {{kLimit - 0.125, 16.0}, 0.0}}), -0.25),
+        {g::OffsetFailure::beyondDomain});
+    // #153 with a polyline: the only piece collapses inside its band, so it is
+    // dropped (no piece left: notRepresentable) or kept (beyondDomain).
+    constexpr double kT = 0x1.8p-33;
+    expectFailure(offset(polyline({{{kLimit, 0.0}, 0.0}, {{kLimit - 0.125, kT}, 0.0}}), -0x1p26),
+                  {g::OffsetFailure::notRepresentable, g::OffsetFailure::beyondDomain});
+    // #154: if the first piece is dropped, its exact start beyond K does not
+    // count, and the one piece left starts at (K, 2^26).
+    const auto joined = offset(polyline({{{kLimit, 0.0}, 0.0},
+                                         {{kLimit - 0.125, kT}, 0.0},
+                                         {{kLimit - 0.125 - 0x1p17, kT * (1.0 + 0x1p20)}, 0.0}}),
+                               -0x1p26);
+    if (joined.outcome == g::OffsetOutcome::done) {
+        EXPECT_FALSE(joined.simple);
+        ASSERT_EQ(joined.polyline.vertices.size(), 2U);
+        EXPECT_EQ(joined.polyline.vertices[0].position.x, kLimit);
+        EXPECT_EQ(joined.polyline.vertices[0].position.y, 0x1p26);
+        ASSERT_EQ(joined.origins.size(), 1U);
+        EXPECT_EQ(joined.origins[0].origin, g::PieceOrigin::source);
+        EXPECT_EQ(joined.origins[0].index, 1U);
+    } else {
+        expectFailure(joined, {g::OffsetFailure::beyondDomain});
+    }
+}
+
+TEST(OffsetPolyline, StraightPiecesCollapsedByRoundingGoWithTheirOrigins) {
+    // #148: the piece (0, 0)-(2^-60, 2^-60) moved by 1, inside its band.
+    const g::Point2 a{0.0, 0.0};
+    const g::Point2 b{0x1p-60, 0x1p-60};
+    const auto alone = offset(polyline({{a, 0.0}, {b, 0.0}}), 1.0);
+    if (alone.outcome != g::OffsetOutcome::done) {
+        expectFailure(alone, {g::OffsetFailure::notRepresentable});
+    }
+    // Between two long pieces: dropped (with simple false and no entry for it)
+    // or kept; never a piece reduced to a point.
+    const auto between =
+        offset(polyline({{{-10.0, -10.0}, 0.0}, {a, 0.0}, {b, 0.0}, {{10.0, 0.0}, 0.0}}), 1.0);
+    ASSERT_EQ(between.outcome, g::OffsetOutcome::done);
+    const auto& vertices = between.polyline.vertices;
+    ASSERT_EQ(between.origins.size() + 1U, vertices.size());
+    for (std::size_t k = 0; k + 1 < vertices.size(); ++k) {
+        EXPECT_FALSE(vertices[k].position.x == vertices[k + 1].position.x &&
+                     vertices[k].position.y == vertices[k + 1].position.y)
+            << "piece " << k;
+    }
+    const bool dropped = std::ranges::none_of(between.origins, [](const g::OffsetPiece& piece) {
+        return piece.origin == g::PieceOrigin::source && piece.index == 1U;
+    });
+    if (dropped) {
+        EXPECT_FALSE(between.simple);
+    }
+}
+
+// The exact circle of a curved input piece, and the radial gap of a point
+// from it once moved by `inward`, from exact numbers (an oracle independent
+// of the code under test).
+struct ExactCircle {
+    Dyadic cx;
+    Dyadic cy;
+    Dyadic w;
+    Dyadic rho;
+};
+
+ExactCircle exactCircleOf(const g::PolylineSegment& piece) {
+    const auto meaning = detail::meaningOf(piece);
+    const auto& circle = std::get<detail::ArcMeaning>(meaning.support).circle;
+    return {circle.centerX, circle.centerY, circle.weight, circle.radiusSquared};
+}
+
+double gapTo(g::Point2 p, const ExactCircle& circle) {
+    const Dyadic dx = Dyadic(p.x) * circle.w - circle.cx;
+    const Dyadic dy = Dyadic(p.y) * circle.w - circle.cy;
+    const Dyadic power = dx * dx + dy * dy;
+    const Dyadic squaredWeight = circle.w * circle.w;
+    const double distance = std::sqrt(exact::quotientToDouble(power, squaredWeight));
+    const double radius = std::sqrt(exact::quotientToDouble(circle.rho, squaredWeight));
+    return exact::quotientToDouble(power - circle.rho, squaredWeight * Dyadic(distance + radius));
+}
+
+// Points of a returned arc: by its centre near a whole turn, otherwise in the
+// frame of its chord.
+std::vector<g::Point2> pointsOf(const g::PolylineSegment& piece, int count) {
+    std::vector<g::Point2> points;
+    const double phi = 4.0 * std::atan(piece.bulge);
+    const double dx = piece.end.x - piece.start.x;
+    const double dy = piece.end.y - piece.start.y;
+    for (int k = 0; k <= count; ++k) {
+        const double fraction = static_cast<double>(k) / count;
+        const double scale = std::sin(phi * fraction / 2.0) / std::sin(phi / 2.0);
+        const double angle = phi * (fraction - 1.0) / 2.0;
+        const double zx = scale * std::cos(angle);
+        const double zy = scale * std::sin(angle);
+        points.push_back({piece.start.x + dx * zx - dy * zy, piece.start.y + dx * zy + dy * zx});
+    }
+    return points;
+}
+
+double largestCoordinate(g::Point2 p) {
+    return std::max(std::fabs(p.x), std::fabs(p.y));
+}
+
+TEST(OffsetPolyline, CutAndExtendedArcsStayWithinTheirErrors) {
+    // A half circle and a segment, cut or extended at their joint by the
+    // offset (the cases r19-arco-tagliato and r19-arco-prolungato, moved,
+    // turned and scaled), and an arc of a circle through the origin.
+    const auto policy = millimetres();
+    int arcs = 0;
+    for (const double origin : {0.0, 1e6}) {
+        for (const double size : {1.0, 40.0}) {
+            for (const double bulge : {1.0, -1.0, 0.6, 2.5}) {
+                for (const double turnOfSegment : {-0.5, 0.0, 0.4}) {
+                    const g::Point2 a{origin + 5.0 * size, origin};
+                    const g::Point2 b{origin - 5.0 * size, origin};
+                    const g::Point2 c{b.x - 10.0 * size * std::cos(turnOfSegment),
+                                      b.y - 10.0 * size * std::sin(turnOfSegment)};
+                    const auto input = polyline({{a, bulge}, {b, 0.0}, {c, 0.0}});
+                    const auto circle = exactCircleOf({a, b, bulge});
+                    for (const double distance : {size, -size, 0.25 * size}) {
+                        const auto result = g::offsetPolyline(input, distance, policy);
+                        ASSERT_TRUE(result.hasValue());
+                        if (result.value().outcome != g::OffsetOutcome::done) {
+                            continue;
+                        }
+                        const auto& vertices = result.value().polyline.vertices;
+                        const double magnitude = magnitudeOf(input, distance);
+                        const double inward = bulge > 0.0 ? distance : -distance;
+                        for (std::size_t k = 0; k < result.value().origins.size(); ++k) {
+                            const auto& piece = result.value().origins[k];
+                            if (piece.origin != g::PieceOrigin::source || piece.index != 0U) {
+                                continue;
+                            }
+                            const g::PolylineSegment arc{
+                                vertices[k].position, vertices[k + 1].position, vertices[k].bulge};
+                            ++arcs;
+                            const auto points = pointsOf(arc, 64);
+                            double largest = 0.0;
+                            for (const auto p : points) {
+                                largest = std::max(largest, largestCoordinate(p));
+                            }
+                            const double bound = 0x1p-46 * std::max(magnitude, largest);
+                            for (const auto p : points) {
+                                EXPECT_LE(std::fabs(gapTo(p, circle) + inward), bound);
+                            }
+                            for (const auto p : {arc.start, arc.end}) {
+                                EXPECT_LE(std::fabs(gapTo(p, circle) + inward),
+                                          0x1p-51 * std::max(magnitude, largestCoordinate(p)));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    EXPECT_GT(arcs, 50);
+}
+
+TEST(OffsetPolyline, GapArcsStayOnTheirCircle) {
+    // The reversals of r19-giunzione-semicircolare-*, turned and scaled: the
+    // gap arc is a half circle of radius |d| around the vertex.
+    const auto policy = millimetres();
+    for (const double origin : {0.0, 1e6}) {
+        for (const double angle : {0.0, 0.3, 1.9}) {
+            const g::Point2 v{origin + 20.0 * std::cos(angle), origin + 20.0 * std::sin(angle)};
+            const auto input =
+                polyline({{{origin, origin}, 0.0}, {v, 0.0}, {{origin, origin}, 0.0}});
+            for (const double distance : {2.0, -2.0, 0.5}) {
+                const auto result = g::offsetPolyline(input, distance, policy);
+                ASSERT_TRUE(result.hasValue());
+                ASSERT_EQ(result.value().outcome, g::OffsetOutcome::done);
+                const auto& vertices = result.value().polyline.vertices;
+                ASSERT_EQ(result.value().origins.size(), 3U);
+                ASSERT_EQ(result.value().origins[1].origin, g::PieceOrigin::gap);
+                const g::PolylineSegment gap{vertices[1].position, vertices[2].position,
+                                             vertices[1].bulge};
+                const double magnitude = magnitudeOf(input, distance);
+                const double bound = 0x1p-46 * std::max(magnitude, largestCoordinate(v) + 2.0);
+                // The exact circle of the gap: centre v, radius |d|.
+                const ExactCircle circle{Dyadic(v.x), Dyadic(v.y), Dyadic(1.0),
+                                         Dyadic(distance) * Dyadic(distance)};
+                for (const auto p : pointsOf(gap, 64)) {
+                    EXPECT_LE(std::fabs(gapTo(p, circle)), bound);
+                }
+                EXPECT_NEAR(gap.bulge, distance > 0.0 ? -1.0 : 1.0,
+                            4.0 * bound / std::fabs(2.0 * distance));
+            }
+        }
+    }
+}
+
+TEST(OffsetPolyline, NearlyWholeArcsOfIssues127And132) {
+    constexpr double kUlp = 0x1p-33;
+    for (const auto& input :
+         {polyline({{{1e6, 0.0}, 0x1p32}, {{1e6 + kUlp, 0.0}, 0.0}}),
+          polyline({{{1e6, 1e6}, 0x1p32}, {{1e6 + kUlp, 1e6 + 2.0 * kUlp}, 0.0}})}) {
+        const auto result = offset(input, -0.03125);
+        if (result.outcome != g::OffsetOutcome::done) {
+            expectFailure(result, {g::OffsetFailure::notRepresentable});
+            continue;
+        }
+        EXPECT_TRUE(result.simple);
+        ASSERT_EQ(result.polyline.vertices.size(), 2U);
+        const auto circle = exactCircleOf(g::pieces(input)[0]);
+        const auto& vertices = result.polyline.vertices;
+        const g::PolylineSegment arc{vertices[0].position, vertices[1].position, vertices[0].bulge};
+        // Points of a nearly whole arc, by its own centre and radius.
+        const auto meaning = detail::meaningOf(arc);
+        const auto& own = std::get<detail::ArcMeaning>(meaning.support).circle;
+        const double cx = exact::quotientToDouble(own.centerX, own.weight);
+        const double cy = exact::quotientToDouble(own.centerY, own.weight);
+        const double radius =
+            std::sqrt(exact::quotientToDouble(own.radiusSquared, own.weight * own.weight));
+        EXPECT_NEAR(radius, 0.15625, 1e-3);
+        const double bound = 0x1p-46 * (1e6 + 1.0);
+        for (int k = 0; k < 64; ++k) {
+            const double angle = 2.0 * kPi * k / 64.0;
+            const g::Point2 p{cx + radius * std::cos(angle), cy + radius * std::sin(angle)};
+            EXPECT_LE(std::fabs(gapTo(p, circle) - 0.03125), bound);
+        }
+    }
+}
+
+TEST(OffsetPolyline, AnArcWhoseRoundedEndsCoincideIsNotDroppedAsAPoint) {
+    // The arc of OffsetCurve.AnArcWhoseRoundedEndsCoincideFails: a nonzero
+    // exact arc whose rounded ends coincide gives notRepresentable, not a
+    // point dropped by step 4 (#132).
+    const double radius = 0x1p-14 + 0x1p-54;
+    const auto result =
+        offset(polyline({{{1e6, 1e6 - 0x1p-33}, 0x1p20}, {{1e6, 1e6 + 0x1p-33}, 0.0}}),
+               radius * 15.0 / 16.0);
+    expectFailure(result, {g::OffsetFailure::notRepresentable});
+}
+
+TEST(OffsetPolyline, OnePieceAgreesWithOffsetCurveBitForBit) {
+    Generator generator(19);
+    for (int trial = 0; trial < 200; ++trial) {
+        const double scale = trial % 2 == 0 ? 1.0 : 1e6;
+        const g::Point2 start{scale + generator.between(-40, 40) / 8.0,
+                              generator.between(-40, 40) / 8.0};
+        const g::Point2 end{start.x + generator.between(1, 40) / 4.0,
+                            start.y + generator.between(-40, 40) / 4.0};
+        const double bulge = generator.between(-24, 24) / 8.0;
+        const double distance = generator.between(-16, 16) / 16.0;
+        const g::PolylineSegment piece{start, end, bulge};
+        const auto curve = g::offsetCurve(piece, distance);
+        const auto poly =
+            g::offsetPolyline(polyline({{start, bulge}, {end, 0.0}}), distance, millimetres());
+        ASSERT_TRUE(curve.hasValue());
+        ASSERT_TRUE(poly.hasValue());
+        if (curve.value().outcome != g::OffsetOutcome::done ||
+            poly.value().outcome != g::OffsetOutcome::done) {
+            continue;
+        }
+        const auto& moved = std::get<g::PolylineSegment>(curve.value().curve);
+        const auto& vertices = poly.value().polyline.vertices;
+        ASSERT_EQ(vertices.size(), 2U);
+        EXPECT_EQ(std::bit_cast<std::uint64_t>(vertices[0].position.x),
+                  std::bit_cast<std::uint64_t>(moved.start.x));
+        EXPECT_EQ(std::bit_cast<std::uint64_t>(vertices[0].position.y),
+                  std::bit_cast<std::uint64_t>(moved.start.y));
+        EXPECT_EQ(std::bit_cast<std::uint64_t>(vertices[1].position.x),
+                  std::bit_cast<std::uint64_t>(moved.end.x));
+        EXPECT_EQ(std::bit_cast<std::uint64_t>(vertices[1].position.y),
+                  std::bit_cast<std::uint64_t>(moved.end.y));
+        EXPECT_EQ(std::bit_cast<std::uint64_t>(vertices[0].bulge),
+                  std::bit_cast<std::uint64_t>(moved.bulge));
     }
 }
 

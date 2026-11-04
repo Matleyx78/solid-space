@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 The solid-space authors
 
+#include "curve_meaning.hpp"
+#include "exact/dyadic.hpp"
+#include "offset_joints.hpp"
 #include "solid_space/geom2d/offset.hpp"
+#include "solid_space/robust/tolerance.hpp"
 
 #include <gtest/gtest.h>
 
@@ -11,12 +15,19 @@
 #include <cmath>
 #include <cstdint>
 #include <limits>
+#include <numbers>
 #include <type_traits>
+#include <utility>
 #include <variant>
+#include <vector>
 
 namespace {
 
 namespace g = solid_space::geom2d;
+namespace detail = solid_space::geom2d::detail;
+namespace exact = solid_space::geom2d::exact;
+
+using exact::Dyadic;
 
 void expectBits(double actual, double expected) {
     EXPECT_EQ(std::bit_cast<std::uint64_t>(actual), std::bit_cast<std::uint64_t>(expected));
@@ -176,19 +187,412 @@ TEST(OffsetCurve, IrrationalRadiusIsComparedBeforeRounding) {
     EXPECT_EQ(tiny.value().outcome, g::OffsetOutcome::done);
 }
 
-TEST(OffsetCurve, DomainChecksUseExactCoordinatesAndOnlyTheActualArc) {
-    constexpr double kLimit = solid_space::robust::kMaxCoordinate;
-    const auto roundedBoundary = g::offsetCurve(g::Segment{{kLimit, 0.0}, {kLimit, 1.0}}, -0x1p-20);
-    ASSERT_FALSE(roundedBoundary.hasValue());
-    EXPECT_EQ(roundedBoundary.diagnosis().code, g::DiagnosisCode::outOfDomain);
-    EXPECT_EQ(roundedBoundary.diagnosis().input, 1U);
+constexpr double kLimit = solid_space::robust::kMaxCoordinate;
+constexpr double kPi = std::numbers::pi;
+
+void expectOutOfDomainOnDistance(const g::Result<g::CurveOffset>& result) {
+    ASSERT_FALSE(result.hasValue());
+    EXPECT_EQ(result.diagnosis().code, g::DiagnosisCode::outOfDomain);
+    EXPECT_EQ(result.diagnosis().input, 1U);
+}
+
+TEST(OffsetCurve, DomainChecksUseExactDataValuesNotTheExtent) {
+    expectOutOfDomainOnDistance(g::offsetCurve(g::Segment{{kLimit, 0.0}, {kLimit, 1.0}}, -0x1p-20));
     // Left arc: its support extends outside the domain on the right.
     const auto arc = g::offsetCurve(g::Arc{{kLimit, 0.0}, 1.0, 2.0, 2.0}, -1.0);
     ASSERT_TRUE(arc.hasValue());
     EXPECT_EQ(arc.value().outcome, g::OffsetOutcome::done);
+    // A circle is its centre and its radius, both within the domain: its
+    // extent beyond it is not checked (#144).
     const auto circle = g::offsetCurve(g::Circle{{kLimit, 0.0}, 1.0}, -1.0);
-    ASSERT_FALSE(circle.hasValue());
-    EXPECT_EQ(circle.diagnosis().code, g::DiagnosisCode::outOfDomain);
+    ASSERT_TRUE(circle.hasValue());
+    ASSERT_EQ(circle.value().outcome, g::OffsetOutcome::done);
+    EXPECT_EQ(std::get<g::Circle>(circle.value().curve).radius, 2.0);
+    // #149: the exact radius K + 1/8 is beyond K, even though it rounds to K.
+    expectOutOfDomainOnDistance(g::offsetCurve(g::Circle{{0.0, 0.0}, kLimit}, -0.125));
+    // #149: the segment x = K - 1/8 moved right by 1/4.
+    expectOutOfDomainOnDistance(
+        g::offsetCurve(g::Segment{{kLimit - 0.125, 0.0}, {kLimit - 0.125, 16.0}}, -0.25));
+    // #153: the exact start is beyond K; its rounded ends may coincide, but the
+    // domain decides first.
+    expectOutOfDomainOnDistance(
+        g::offsetCurve(g::Segment{{kLimit, 0.0}, {kLimit - 0.125, 0x1.8p-33}}, -0x1p26));
+    // An exact value within K is never returned beyond it: K - 2^-10 and K
+    // itself both give K.
+    for (const double distance : {-0.25, -0.25 + 0x1p-10, -0.25 + 0x1p-30}) {
+        const auto moved =
+            g::offsetCurve(g::Segment{{kLimit - 0.25, 0.0}, {kLimit - 0.25, 16.0}}, distance);
+        ASSERT_TRUE(moved.hasValue());
+        ASSERT_EQ(moved.value().outcome, g::OffsetOutcome::done);
+        const auto& segment = std::get<g::Segment>(moved.value().curve);
+        EXPECT_EQ(segment.start.x, kLimit);
+        EXPECT_EQ(segment.end.x, kLimit);
+    }
+}
+
+// The exact circle of a curved piece (curve_meaning.hpp): centre (cx, cy) / w
+// and squared radius rho / w^2. The oracle of the tests below works on it
+// with exact numbers, not with the code under test.
+struct ExactCircle {
+    Dyadic cx;
+    Dyadic cy;
+    Dyadic w;
+    Dyadic rho;
+};
+
+ExactCircle exactCircleOf(const g::PolylineSegment& piece) {
+    const auto meaning = detail::meaningOf(piece);
+    const auto& circle = std::get<detail::ArcMeaning>(meaning.support).circle;
+    return {circle.centerX, circle.centerY, circle.weight, circle.radiusSquared};
+}
+
+double radiusOf(const ExactCircle& circle) {
+    return std::sqrt(exact::quotientToDouble(circle.rho, circle.w * circle.w));
+}
+
+g::Point2 centerOf(const ExactCircle& circle) {
+    return {exact::quotientToDouble(circle.cx, circle.w),
+            exact::quotientToDouble(circle.cy, circle.w)};
+}
+
+// |p - C| - R, from exact numbers: no cancellation.
+double gapTo(g::Point2 p, const ExactCircle& circle) {
+    const Dyadic dx = Dyadic(p.x) * circle.w - circle.cx;
+    const Dyadic dy = Dyadic(p.y) * circle.w - circle.cy;
+    const Dyadic power = dx * dx + dy * dy;
+    const Dyadic squaredWeight = circle.w * circle.w;
+    const double distance = std::sqrt(exact::quotientToDouble(power, squaredWeight));
+    return exact::quotientToDouble(power - circle.rho,
+                                   squaredWeight * Dyadic(distance + radiusOf(circle)));
+}
+
+// The distance of p from the ray from C through q, from exact numbers.
+double acrossRay(g::Point2 p, g::Point2 q, const ExactCircle& circle) {
+    const Dyadic px = Dyadic(p.x) * circle.w - circle.cx;
+    const Dyadic py = Dyadic(p.y) * circle.w - circle.cy;
+    const Dyadic qx = Dyadic(q.x) * circle.w - circle.cx;
+    const Dyadic qy = Dyadic(q.y) * circle.w - circle.cy;
+    const double qDistance =
+        std::sqrt(exact::quotientToDouble(qx * qx + qy * qy, circle.w * circle.w));
+    return std::fabs(
+        exact::quotientToDouble(px * qy - py * qx, circle.w * circle.w * Dyadic(qDistance)));
+}
+
+double largestCoordinate(g::Point2 p) {
+    return std::max(std::fabs(p.x), std::fabs(p.y));
+}
+
+// Points of the arc of a curved piece moved by `inward` towards its centre:
+// near a whole turn by the centre and an angle, otherwise in the frame of the
+// chord, (start + (end - start) z) with z on the standard arc, which stays
+// accurate for flat arcs.
+std::vector<g::Point2> pointsOf(const g::PolylineSegment& piece, double inward, int count) {
+    std::vector<g::Point2> points;
+    const auto circle = exactCircleOf(piece);
+    const double phi = 4.0 * std::atan(piece.bulge);
+    if (std::fabs(piece.bulge) > 1.0) {
+        const auto center = centerOf(circle);
+        const double radius = radiusOf(circle) - inward;
+        const double start = std::atan2(piece.start.y - center.y, piece.start.x - center.x);
+        for (int k = 0; k <= count; ++k) {
+            const double angle = start + phi * k / count;
+            points.push_back(
+                {center.x + radius * std::cos(angle), center.y + radius * std::sin(angle)});
+        }
+        return points;
+    }
+    const double dx = piece.end.x - piece.start.x;
+    const double dy = piece.end.y - piece.start.y;
+    for (int k = 0; k <= count; ++k) {
+        const double fraction = static_cast<double>(k) / count;
+        const double scale = std::sin(phi * fraction / 2.0) / std::sin(phi / 2.0);
+        const double angle = phi * (fraction - 1.0) / 2.0;
+        const double zx = scale * std::cos(angle);
+        const double zy = scale * std::sin(angle);
+        g::Point2 q{piece.start.x + dx * zx - dy * zy, piece.start.y + dx * zy + dy * zx};
+        if (inward != 0.0) {
+            // Towards the centre: (C - q) / R from exact numbers.
+            const double radius = radiusOf(circle);
+            const double ux =
+                exact::quotientToDouble(circle.cx - Dyadic(q.x) * circle.w, circle.w) / radius;
+            const double uy =
+                exact::quotientToDouble(circle.cy - Dyadic(q.y) * circle.w, circle.w) / radius;
+            q = {q.x + inward * ux, q.y + inward * uy};
+        }
+        points.push_back(q);
+    }
+    return points;
+}
+
+// Samples of each arc in the oracle: enough to catch an arc beyond its
+// error, which differs from the exact one over a large part of it.
+constexpr int kOracleSamples = 64;
+
+// The offset of a curved piece against its exact offset: each end within
+// 2^-51 max(M, |p|) of its exact value, every point of either arc within
+// E(A) of the circle of the other, and the same sweep (no wrap).
+void expectWithinErrors(const g::PolylineSegment& input, double distance,
+                        const g::PolylineSegment& result) {
+    const auto circle = exactCircleOf(input);
+    const double inward = input.bulge > 0.0 ? distance : -distance;
+    const double magnitude = std::max(g::magnitude(input).value(), std::abs(distance));
+    const auto exactPoints = pointsOf(input, inward, kOracleSamples);
+    double largest = 0.0;
+    for (const auto p : exactPoints) {
+        largest = std::max(largest, largestCoordinate(p));
+    }
+    // Samples miss part of S(A): a bound below E(A) is stricter.
+    const double bound = 0x1p-46 * std::max(magnitude, largest) * (1.0 - 0x1p-10);
+    for (const auto& [returned, original] :
+         {std::pair{result.start, input.start}, std::pair{result.end, input.end}}) {
+        const double radial = gapTo(returned, circle) + inward;
+        const double across = acrossRay(returned, original, circle);
+        EXPECT_LE(std::sqrt(radial * radial + across * across),
+                  0x1p-51 * std::max(magnitude, largestCoordinate(returned)));
+    }
+    for (const auto p : pointsOf(result, 0.0, kOracleSamples)) {
+        EXPECT_LE(std::fabs(gapTo(p, circle) + inward), bound);
+    }
+    const auto returnedCircle = exactCircleOf(result);
+    for (const auto p : exactPoints) {
+        EXPECT_LE(std::fabs(gapTo(p, returnedCircle)), bound);
+    }
+    // No wrap: the included angle changes only by the rounding of the ends
+    // across the chord (offset.hpp), here bounded generously.
+    const double chord = std::hypot(result.end.x - result.start.x, result.end.y - result.start.y);
+    const double endError = 0x1p-51 * std::max({magnitude, largestCoordinate(result.start),
+                                                largestCoordinate(result.end)});
+    EXPECT_NEAR(std::atan(result.bulge), std::atan(input.bulge),
+                std::max(0x1p-20, 8.0 * endError / chord));
+}
+
+g::PolylineSegment arcPiece(g::Point2 center, double radius, double start, double sweep) {
+    return {
+        {center.x + radius * std::cos(start), center.y + radius * std::sin(start)},
+        {center.x + radius * std::cos(start + sweep), center.y + radius * std::sin(start + sweep)},
+        std::tan(sweep / 4.0)};
+}
+
+TEST(OffsetCurve, CurvedPiecesOfEveryAmplitudeStayWithinTheirErrors) {
+    const std::array<double, 12> sweeps{0.001, 0.05, 0.3, 1.0, 2.0, 3.0,
+                                        kPi,   3.5,  4.5, 5.5, 6.0, 2.0 * kPi - 0.26};
+    for (const double origin : {0.0, 1e6}) {
+        for (const double radius : {0.75, 3.0, 100.0}) {
+            // A centre near the data, and one whose circle passes through the
+            // origin, so that the arc comes back near it.
+            for (const g::Point2 center :
+                 {g::Point2{origin + 0.3, origin - 0.2}, g::Point2{origin + radius, origin}}) {
+                for (const double start : {0.1, 2.9, 4.4}) {
+                    for (const double sweep : sweeps) {
+                        for (const double turn : {1.0, -1.0}) {
+                            const auto input = arcPiece(center, radius, start, turn * sweep);
+                            for (const double distance :
+                                 {-radius / 8.0, radius / 4.0, -2.5 * radius}) {
+                                const double inward = turn > 0.0 ? distance : -distance;
+                                if (inward >= 0.9 * radius) {
+                                    continue;
+                                }
+                                const auto moved = g::offsetCurve(input, distance);
+                                ASSERT_TRUE(moved.hasValue());
+                                ASSERT_EQ(moved.value().outcome, g::OffsetOutcome::done)
+                                    << "sweep " << sweep << " radius " << radius << " origin "
+                                    << origin;
+                                expectWithinErrors(
+                                    input, distance,
+                                    std::get<g::PolylineSegment>(moved.value().curve));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+TEST(OffsetCurve, RepresentabilityHoldsUpToTheThresholdOf177) {
+    for (const double origin : {0.0, 1e6}) {
+        for (const double start : {0.3, 2.0, 4.1}) {
+            // Below 2 pi - 1/4 the bulge never fails.
+            for (const double gap : {0.25 + 0x1p-10, 0.26, 0.3}) {
+                const auto input = arcPiece({origin, origin}, 1.1, start, 2.0 * kPi - gap);
+                for (const double distance : {0.125, -0.125, 0.5}) {
+                    const auto moved = g::offsetCurve(input, distance);
+                    ASSERT_TRUE(moved.hasValue());
+                    ASSERT_EQ(moved.value().outcome, g::OffsetOutcome::done) << gap;
+                    expectWithinErrors(input, distance,
+                                       std::get<g::PolylineSegment>(moved.value().curve));
+                }
+            }
+            // Above it the outcome is free (offset.hpp, bands); done still
+            // keeps the errors.
+            for (const double gap : {0.2, 0.05, 0.01, 1e-3, 1e-5, 1e-8}) {
+                const auto input = arcPiece({origin, origin}, 1.1, start, 2.0 * kPi - gap);
+                for (const double distance : {0.125, -0.125}) {
+                    const auto moved = g::offsetCurve(input, distance);
+                    ASSERT_TRUE(moved.hasValue());
+                    if (moved.value().outcome == g::OffsetOutcome::done) {
+                        expectWithinErrors(input, distance,
+                                           std::get<g::PolylineSegment>(moved.value().curve));
+                    } else {
+                        EXPECT_EQ(moved.value().outcome, g::OffsetOutcome::failed);
+                    }
+                }
+            }
+        }
+    }
+}
+
+TEST(OffsetCurve, ExactHalfCirclesKeepBulgeOneWithinItsTolerance) {
+    for (const double origin : {0.0, 1e6}) {
+        for (const double bulge : {1.0, -1.0}) {
+            const g::PolylineSegment input{{origin, origin}, {origin + 8.0, origin}, bulge};
+            for (const double distance : {1.0, -1.0, 0.5, 3.0, -7.0}) {
+                if ((bulge > 0.0 ? distance : -distance) >= 4.0) {
+                    continue;  // the radius 4 vanishes
+                }
+                const auto moved = g::offsetCurve(input, distance);
+                ASSERT_TRUE(moved.hasValue());
+                ASSERT_EQ(moved.value().outcome, g::OffsetOutcome::done);
+                const auto& result = std::get<g::PolylineSegment>(moved.value().curve);
+                const double chord =
+                    std::hypot(result.end.x - result.start.x, result.end.y - result.start.y);
+                const double magnitude =
+                    std::max({g::magnitude(input).value(), std::abs(distance),
+                              largestCoordinate(result.start), largestCoordinate(result.end)});
+                // 4 E / chord, as the cases of R19 declare it.
+                EXPECT_NEAR(result.bulge, bulge, 4.0 * 0x1p-46 * magnitude / chord);
+                expectWithinErrors(input, distance, result);
+            }
+        }
+    }
+}
+
+TEST(OffsetCurve, CollapsedStraightPiecesAreFreeInsideTheirBand) {
+    // #148: the exact ends differ by 2^-60 per coordinate, inside the band
+    // 2 kRelativePointError max(M, |p|): done with distinct ends, or failed.
+    const g::Point2 a{0.0, 0.0};
+    const g::Point2 b{0x1p-60, 0x1p-60};
+    for (const g::Curve& curve :
+         {g::Curve(g::Segment{a, b}), g::Curve(g::PolylineSegment{a, b, 0.0})}) {
+        const auto moved = g::offsetCurve(curve, 1.0);
+        ASSERT_TRUE(moved.hasValue());
+        if (moved.value().outcome == g::OffsetOutcome::done) {
+            const auto ends = g::endpoints(moved.value().curve);
+            ASSERT_TRUE(ends.hasValue());
+            EXPECT_FALSE(ends.value().start.x == ends.value().end.x &&
+                         ends.value().start.y == ends.value().end.y);
+        } else {
+            EXPECT_EQ(moved.value().outcome, g::OffsetOutcome::failed);
+        }
+    }
+}
+
+TEST(OffsetCurve, NearlyWholeArcsOfIssues127And132) {
+    // #127: a chord of one ulp at x = 1e6; with done, the radius is about
+    // 0.15625 and every point within its error.
+    const g::PolylineSegment first{{1e6, 0.0}, {1e6 + 0x1p-33, 0.0}, 0x1p32};
+    // #132: the chord (u, 2u) at (1e6, 1e6).
+    constexpr double kUlp = 0x1p-33;
+    const g::PolylineSegment second{{1e6, 1e6}, {1e6 + kUlp, 1e6 + 2.0 * kUlp}, 0x1p32};
+    for (const auto& input : {first, second}) {
+        const auto moved = g::offsetCurve(input, -0.03125);
+        ASSERT_TRUE(moved.hasValue());
+        if (moved.value().outcome != g::OffsetOutcome::done) {
+            EXPECT_EQ(moved.value().outcome, g::OffsetOutcome::failed);
+            continue;
+        }
+        const auto& result = std::get<g::PolylineSegment>(moved.value().curve);
+        EXPECT_NEAR(radiusOf(exactCircleOf(result)), radiusOf(exactCircleOf(input)) + 0.03125,
+                    1e-6);
+        expectWithinErrors(input, -0.03125, result);
+    }
+}
+
+TEST(OffsetCurve, SmallAndFlatArcsKeepTheirErrorsToo) {
+    // Circles of a few E at 1e6 (E is about 1.4e-8 there): the crude, sampled
+    // and radial branches of representArc() (offset_joints.cpp, lemma 6).
+    for (const double radius : {1e-9, 1e-8, 3e-8, 1e-7}) {
+        for (const double sweep : {1.0, 3.0, 6.0}) {
+            const auto input = arcPiece({1e6, 1e6}, radius, 0.0, sweep);
+            const auto moved = g::offsetCurve(input, radius / 4.0);
+            ASSERT_TRUE(moved.hasValue());
+            ASSERT_EQ(moved.value().outcome, g::OffsetOutcome::done) << radius << " " << sweep;
+            const auto& result = std::get<g::PolylineSegment>(moved.value().curve);
+            if (radius >= 1e-8) {
+                expectWithinErrors(input, radius / 4.0, result);
+            }
+        }
+    }
+    // Arcs far flatter than any drawing (lemma 5), and nearly flat ones.
+    for (const double bulge : {1e-200, -1e-200, 1e-12, -1e-6}) {
+        const g::PolylineSegment input{{0.0, 0.0}, {10.0, 0.0}, bulge};
+        for (const double distance : {1.0, -1.0}) {
+            const auto moved = g::offsetCurve(input, distance);
+            ASSERT_TRUE(moved.hasValue());
+            ASSERT_EQ(moved.value().outcome, g::OffsetOutcome::done);
+            const auto& result = std::get<g::PolylineSegment>(moved.value().curve);
+            // The ends move along radii tilted by at most 4 |bulge|.
+            EXPECT_NEAR(result.start.y, distance, 1e-9);
+            EXPECT_NEAR(result.end.y, distance, 1e-9);
+            EXPECT_TRUE(result.bulge != 0.0 && std::signbit(result.bulge) == std::signbit(bulge));
+        }
+    }
+}
+
+TEST(OffsetCurve, HugeArcsAreScaledExactly) {
+    // representArc() on an arc and on the same arc times 2^600 (beyond the
+    // doubles of its computation): the same bulge and the same answer.
+    for (const double sweep : {1.0, 4.0, 2.0 * kPi - 0.01}) {
+        const auto input = arcPiece({3.0, -2.0}, 1.5, 0.7, sweep);
+        detail::OffsetSource source;
+        source.pieces.push_back(detail::meaningOf(input));
+        source.distance = 0.25;
+        source.magnitude = std::max(g::magnitude(input).value(), 0.25);
+        const auto start =
+            detail::roundedPoint(source, detail::PointRecipe::movedEnd(0, detail::PieceEnd::start));
+        const auto end =
+            detail::roundedPoint(source, detail::PointRecipe::movedEnd(0, detail::PieceEnd::end));
+        detail::OffsetScope scope(source);
+        const auto arc =
+            detail::sourceArc(scope, 0, detail::PointRecipe::movedEnd(0, detail::PieceEnd::start),
+                              detail::PointRecipe::movedEnd(0, detail::PieceEnd::end));
+        if (!arc) {
+            FAIL() << "the roots of one arc fit in a tower";
+        }
+        const detail::ExactArc& exactArc = *arc;
+        const auto plain =
+            detail::representArc(scope.tower(), exactArc, start.point, end.point, source.magnitude);
+        auto huge = exactArc;
+        constexpr int kGrow = 600;
+        constexpr std::int64_t kGrowExact = 600;
+        huge.circle.centerX = exactArc.circle.centerX.timesPowerOfTwo(kGrowExact);
+        huge.circle.centerY = exactArc.circle.centerY.timesPowerOfTwo(kGrowExact);
+        huge.circle.radiusSquared = exactArc.circle.radiusSquared.timesPowerOfTwo(2 * kGrowExact);
+        huge.start = {exactArc.start.x.timesPowerOfTwo(kGrowExact),
+                      exactArc.start.y.timesPowerOfTwo(kGrowExact), exactArc.start.weight};
+        huge.end = {exactArc.end.x.timesPowerOfTwo(kGrowExact),
+                    exactArc.end.y.timesPowerOfTwo(kGrowExact), exactArc.end.weight};
+        const auto scaled = detail::representArc(
+            scope.tower(), huge,
+            {std::ldexp(start.point.x, kGrow), std::ldexp(start.point.y, kGrow)},
+            {std::ldexp(end.point.x, kGrow), std::ldexp(end.point.y, kGrow)},
+            std::ldexp(source.magnitude, kGrow));
+        EXPECT_EQ(scaled.representable, plain.representable);
+        expectBits(scaled.bulge, plain.bulge);
+    }
+}
+
+TEST(OffsetCurve, AnArcWhoseRoundedEndsCoincideFails) {
+    // A chord of two ulp at (1e6, 1e6), symmetric about y = 1e6, nearly a
+    // whole turn of radius R = 2^-14 + 2^-54; moved inwards to R / 16, both
+    // ends round to the same double. A nonzero exact arc must not become a
+    // point: failed, not a degenerate curve.
+    const g::PolylineSegment input{{1e6, 1e6 - 0x1p-33}, {1e6, 1e6 + 0x1p-33}, 0x1p20};
+    const double radius = 0x1p-14 + 0x1p-54;
+    ASSERT_EQ(radiusOf(exactCircleOf(input)), radius);
+    const auto moved = g::offsetCurve(input, radius * 15.0 / 16.0);
+    ASSERT_TRUE(moved.hasValue());
+    EXPECT_EQ(moved.value().outcome, g::OffsetOutcome::failed);
 }
 
 }  // namespace
