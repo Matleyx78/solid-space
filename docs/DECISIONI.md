@@ -531,3 +531,11 @@ i rimandi ai documenti che cambia.
   Le impostazioni di GitHub le applica il responsabile; l'elenco dei controlli
   obbligatori resta quello di `docs/MANUTENZIONE.md` di Tecnigrafo, da
   aggiornare con le regole nuove.
+
+- **2026-11-05: runner di Windows e macOS.** Il responsabile decide che i
+  runner di Windows e macOS restano `windows-latest` e `macos-latest`, non
+  fissati a `windows-2022` e `macos-15`: il codice è scritto per le immagini
+  attuali e su quelle precedenti la CI fallisce (prova nella pull request #199,
+  chiusa senza unire). Se una migrazione delle immagini rende rossa la CI, si
+  corregge il codice o si fissa l'immagine con una nuova decisione. Registrata
+  nell'[ADR 0006](adr/0006-build-ci-e-sottomoduli.md), riga **Corretto:**.
