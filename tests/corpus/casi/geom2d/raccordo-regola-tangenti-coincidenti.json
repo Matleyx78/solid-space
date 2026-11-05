@@ -2,7 +2,7 @@
   "versione": 1,
   "id": "raccordo-regola-tangenti-coincidenti",
   "componente": "geom2d",
-  "descrizione": "Regole del contratto fillet: tangenti-coincidenti.",
+  "descrizione": "Fillet con tangenze coincidenti e clic senza una parte indicata (regola 5, #190).",
   "ingresso": {
     "operazione": "fillet",
     "prima": {
@@ -37,73 +37,10 @@
     "raggio": 0.5
   },
   "atteso": {
-    "esito": "found",
-    "centro": [
-      {
-        "valore": 0,
-        "tolleranza": 3.552713678800501e-14
-      },
-      {
-        "valore": 0.5,
-        "tolleranza": 3.552713678800501e-14
-      }
-    ],
-    "raggio": "1/2",
-    "sulla_prima": {
-      "punto": [
-        {
-          "valore": 0,
-          "tolleranza": 3.552713678800501e-14
-        },
-        {
-          "valore": 1,
-          "tolleranza": 3.552713678800501e-14
-        }
-      ],
-      "sulla_curva": {
-        "posizione": "inside"
-      }
-    },
-    "sulla_seconda": {
-      "punto": [
-        {
-          "valore": 0,
-          "tolleranza": 3.552713678800501e-14
-        },
-        {
-          "valore": 1,
-          "tolleranza": 3.552713678800501e-14
-        }
-      ],
-      "sulla_curva": {
-        "posizione": "inside"
-      }
-    },
-    "semicerchio": false,
-    "arco": {
-      "arco": {
-        "centro": [
-          {
-            "valore": 0,
-            "tolleranza": 3.552713678800501e-14
-          },
-          {
-            "valore": 0.5,
-            "tolleranza": 3.552713678800501e-14
-          }
-        ],
-        "raggio": "1/2",
-        "angolo_iniziale": {
-          "valore": 1.5707963267948966,
-          "tolleranza": 2.8421709430404007e-13
-        },
-        "ampiezza": "0"
-      }
-    },
-    "bulge": "0"
+    "esito": "ambiguousPick"
   },
   "provenienza": {
-    "tipo": "calcolo-a-mano",
-    "procedimento": "Regola3: il clic sulla seconda curva sta sotto y=1, il clic sulla prima è dentro il cerchio; unico candidato di raggio1/2 sui lati right/left, centro(0,1/2). Entrambi i punti di tangenza sono(0,1). Regola4 impone sweep0 e bulge0. M=10, angoli entro E/r, arco nullo entro E."
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Regola 3. Il secondo clic ha y=0<1, lato right del segmento orientato verso destra. Il primo clic ha distanza al quadrato dal centro del cerchio pari a 1/4<1, lato left del cerchio antiorario. I luoghi dei centri sono la retta y=1−1/2=1/2 e il cerchio concentrico di raggio 1−1/2=1/2. Sostituendo y=1/2 in x²+y²=1/4 si ottiene x²=0, quindi il solo centro è C=(0,1/2). Il piede sulla retta y=1 e il punto del cerchio sulla semiretta da (0,0) per C coincidono in P=(0,1). Per la regola 4 l'arco si riduce a P, quindi la regola 5 usa i clic rispetto a P. Sul segmento (0,−1/2)·(20,0)=0. Sul cerchio il clic è il centro e (0,−1)·(−1,0)=0, con (−1,0) tangente antioraria in P. L'esito è ambiguousPick e l'atteso contiene solo l'esito."
   }
 }
