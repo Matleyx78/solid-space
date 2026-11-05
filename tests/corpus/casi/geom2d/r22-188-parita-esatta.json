@@ -1,0 +1,50 @@
+{
+  "versione": 1,
+  "id": "r22-188-parita-esatta",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #21, R22 (#189). #188: stesso angolo di prolungamento sui due estremi.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "pezzo": {
+        "inizio": [
+          0,
+          -1
+        ],
+        "fine": [
+          0,
+          1
+        ],
+        "bulge": 1
+      }
+    },
+    "punto_prima": [
+      1,
+      0
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          -1,
+          -2
+        ],
+        "fine": [
+          -1,
+          2
+        ]
+      }
+    },
+    "punto_seconda": [
+      -1,
+      1
+    ],
+    "raggio": 0
+  },
+  "atteso": {
+    "esito": "ambiguousPick"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Il bulge 1 dà il semicerchio destro antiorario esatto, evitando approssimazioni trigonometriche sugli estremi del caso di parità. Lo spigolo P=(−1,0) è fuori dal pezzo. La direzione (1,0) appartiene sia alla parte sud→ovest sia alla parte ovest→nord nel verso antiorario. I due angoli di prolungamento sono retti: entrambi i prodotti fra i raggi unitari di P e degli estremi sono 0. La tangente del pezzo in P è (0,−1); la retta ha tangente (0,1) e prodotto +1. Non c'è arco da proseguire e la parità esatta è ambigua."
+  }
+}

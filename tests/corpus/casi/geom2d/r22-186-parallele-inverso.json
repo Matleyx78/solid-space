@@ -1,0 +1,62 @@
+{
+  "versione": 1,
+  "id": "r22-186-parallele-inverso",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #21, R22 (#189). #186, regola 1: in parità il semicerchio è costruito alla fine del primo segmento.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          10,
+          0
+        ],
+        "fine": [
+          0,
+          0
+        ]
+      }
+    },
+    "punto_prima": [
+      5,
+      0
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          0,
+          2
+        ],
+        "fine": [
+          10,
+          2
+        ]
+      }
+    },
+    "punto_seconda": [
+      5,
+      2
+    ],
+    "raggio": 1
+  },
+  "atteso": {
+    "esito": "found",
+    "parte_prima": "fromStart",
+    "parte_seconda": "toEnd",
+    "semicerchio": true,
+    "sulla_prima": {
+      "sulla_curva": {
+        "posizione": "atEnd"
+      }
+    },
+    "sulla_seconda": {
+      "sulla_curva": {
+        "posizione": "atStart"
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Le distanze quadratiche del clic dagli estremi sono entrambe 25. La fine del primo segmento decide la tangenza e il piede sulla seconda retta ha la stessa ascissa. Il semicerchio è all'esterno della prima curva. Con x=0 è la metà sinistra, percorsa in senso orario. Le due uscite sono (−1,0), t1=(−1,0), t2=(1,0): prodotti +1 e −1."
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "versione": 1,
+  "id": "r22-186-diametro-diretto",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #21, R22 (#189). #186, regola 4: l'ordine delle tangenze diametrali decide la metà antioraria.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          -10,
+          0
+        ],
+        "fine": [
+          10,
+          0
+        ]
+      }
+    },
+    "punto_prima": [
+      0,
+      0
+    ],
+    "seconda": {
+      "cerchio": {
+        "centro": [
+          0,
+          3
+        ],
+        "raggio": 1
+      }
+    },
+    "punto_seconda": [
+      0,
+      2
+    ],
+    "raggio": 1
+  },
+  "atteso": {
+    "esito": "found",
+    "parte_prima": "fromStart",
+    "parte_seconda": "fromStart",
+    "semicerchio": false,
+    "sulla_prima": {
+      "sulla_curva": {
+        "posizione": "inside"
+      }
+    },
+    "sulla_seconda": {
+      "sulla_curva": {
+        "posizione": "inside"
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Il centro sta sulla retta y=1 e a distanza 2 dal centro (0,3); x²+4=4 dà x=0. I clic sono le tangenze, con raggi opposti del raccordo: il pareggio della regola 4 sceglie l'arco antiorario. La tangente del segmento e quella del cerchio al suo fondo sono entrambe (1,0). Dal basso all'alto, metà destra: le due uscite sono (1,0), prodotti +1."
+  }
+}
