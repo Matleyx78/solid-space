@@ -1,0 +1,61 @@
+{
+  "versione": 1,
+  "id": "r22-interno-segmento-segmento-id-diretto",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #21, R22 (#189). Regole 3–5, segmento e segmento: tangenze interne, ordine diretto.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          2,
+          0
+        ],
+        "fine": [
+          -2,
+          0
+        ]
+      }
+    },
+    "punto_prima": [
+      0,
+      0
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          1,
+          -1
+        ],
+        "fine": [
+          1,
+          3
+        ]
+      }
+    },
+    "punto_seconda": [
+      1,
+      1
+    ],
+    "raggio": 1
+  },
+  "atteso": {
+    "esito": "found",
+    "parte_prima": "toEnd",
+    "parte_seconda": "toEnd",
+    "sulla_prima": {
+      "sulla_curva": {
+        "posizione": "inside"
+      }
+    },
+    "sulla_seconda": {
+      "sulla_curva": {
+        "posizione": "inside"
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Il sostegno A è retta y=0, B è retta x=1. I clic sono le tangenze A=(0,0), B=(1,1). Il centro C=(0,1) sta sopra y=0 oppure fuori dal cerchio A, e a sinistra di x=1 oppure fuori dal cerchio B, come richiedono i clic opposti. Le normali x=0 e y=1 si incrociano solo in C: questo è l'unico candidato con somma dei quadrati nulla. Con due rette non ci sono altri centri sui lati scelti. Quando uno o due sostegni sono circolari, l'altro centro sui lati scelti è rispettivamente (6,1) con B circolare, (0,−5) con A circolare o (3,−2) con entrambi: almeno una tangenza si sposta di due unità o più, perciò l'errore delle tangenze non cambia la scelta. Sugli archi gli estremi hanno almeno π/4 di margine e sui pezzi curvi il bulge unitario dà un semicerchio esatto. det(A−C,B−C)=1 e, nell'ordine dato, il raccordo è antiorario. Le direzioni uscenti verso l'altra tangenza sono aA=(1,0) e aB=(0,−1), anche nell'ordine inverso. tA=(-1, 0), tB=(0, 1). I prodotti scalari esatti (Fraction) nell'ordine della chiamata sono -1 e -1."
+  }
+}

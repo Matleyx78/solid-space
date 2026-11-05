@@ -1,0 +1,60 @@
+{
+  "versione": 1,
+  "id": "r22-prolunga-arco-inizio",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #21, R22 (#189). La tangenza sul sostegno dell'arco è esterna all'intervallo dato.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "arco": {
+        "centro": [
+          0,
+          -2
+        ],
+        "raggio": 2,
+        "angolo_iniziale": 2.356194490192345,
+        "ampiezza": 0.7853981633974483
+      }
+    },
+    "punto_prima": [
+      0,
+      0
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          1,
+          -1
+        ],
+        "fine": [
+          1,
+          3
+        ]
+      }
+    },
+    "punto_seconda": [
+      1,
+      1
+    ],
+    "raggio": 1
+  },
+  "atteso": {
+    "esito": "found",
+    "parte_prima": "toEnd",
+    "parte_seconda": "toEnd",
+    "sulla_prima": {
+      "sulla_curva": {
+        "posizione": "afterEnd"
+      }
+    },
+    "sulla_seconda": {
+      "sulla_curva": {
+        "posizione": "inside"
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "C=(0,1) è l'unico centro di raggio 1 con tangenze nei due clic A=(0,0), B=(1,1) e sui lati indicati: le normali sono x=0 e y=1. È quindi l'unico candidato a distanza quadratica zero. det(A−C,B−C)=1, raccordo antiorario; le uscite sono (1,0) e (0,−1). La seconda tangente è (0,1), prodotto −1. La direzione radiale di A ha angolo π/2, fuori dall'intervallo [3π/4,π] con margine di almeno π/4. La tangente in A è (−1,0) per il verso antiorario, prodotto −1."
+  }
+}

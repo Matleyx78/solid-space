@@ -1,0 +1,61 @@
+{
+  "versione": 1,
+  "id": "r22-prolunga-retta-inizio",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #21, R22 (#189). La tangenza fuori dal segmento prolunga l'estremo che raggiunge il raccordo.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          -2,
+          0
+        ],
+        "fine": [
+          -4,
+          0
+        ]
+      }
+    },
+    "punto_prima": [
+      0,
+      0
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          1,
+          -1
+        ],
+        "fine": [
+          1,
+          3
+        ]
+      }
+    },
+    "punto_seconda": [
+      1,
+      1
+    ],
+    "raggio": 1
+  },
+  "atteso": {
+    "esito": "found",
+    "parte_prima": "toEnd",
+    "parte_seconda": "toEnd",
+    "sulla_prima": {
+      "sulla_curva": {
+        "posizione": "beforeStart"
+      }
+    },
+    "sulla_seconda": {
+      "sulla_curva": {
+        "posizione": "inside"
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "C=(0,1) è l'unico centro di raggio 1 con tangenze nei due clic A=(0,0), B=(1,1) e sui lati indicati: le normali sono x=0 e y=1. È quindi l'unico candidato a distanza quadratica zero. det(A−C,B−C)=1, raccordo antiorario; le uscite sono (1,0) e (0,−1). La seconda tangente è (0,1), prodotto −1. Sul primo segmento t=(−1,0), prodotto −1; x=0 precede l'inizio x=−2."
+  }
+}

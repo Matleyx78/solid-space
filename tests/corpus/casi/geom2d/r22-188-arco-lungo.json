@@ -1,0 +1,60 @@
+{
+  "versione": 1,
+  "id": "r22-188-arco-lungo",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #21, R22 (#189). #188: il clic è oltre l'antipodo dello spigolo e dentro l'arco dato.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "arco": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 1,
+        "angolo_iniziale": -1.5707963267948966,
+        "ampiezza": 5.497787143782138
+      }
+    },
+    "punto_prima": [
+      -2,
+      -1
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          1,
+          -2
+        ],
+        "fine": [
+          1,
+          2
+        ]
+      }
+    },
+    "punto_seconda": [
+      1,
+      1
+    ],
+    "raggio": 0
+  },
+  "atteso": {
+    "esito": "found",
+    "parte_prima": "toEnd",
+    "parte_seconda": "toEnd",
+    "sulla_prima": {
+      "sulla_curva": {
+        "posizione": "inside"
+      }
+    },
+    "sulla_seconda": {
+      "sulla_curva": {
+        "posizione": "inside"
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "La retta x=1 è tangente al cerchio in P=(1,0). L'arco va da sud a sudovest, passando per P e per l'antipodo (−1,0). La direzione (−2,−1) è strettamente fra ovest e sudovest (det(−1,0;−2,−1)=1, det(−2,−1;−1,−1)=1), quindi è solo nella parte P→fine. Le tangenti in P sono entrambe (0,1); sulla retta il prodotto è +1. Il raccordo ha raggio zero e nessun verso."
+  }
+}

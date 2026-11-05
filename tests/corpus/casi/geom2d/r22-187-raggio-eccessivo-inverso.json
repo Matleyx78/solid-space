@@ -1,0 +1,49 @@
+{
+  "versione": 1,
+  "id": "r22-187-raggio-eccessivo-inverso",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #21, R22 (#189). #187: proseguire il raccordo richiederebbe un ritorno oltre l'estremo conservato.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          5,
+          0
+        ],
+        "fine": [
+          2,
+          0
+        ]
+      }
+    },
+    "punto_prima": [
+      3,
+      0
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          0,
+          30
+        ]
+      }
+    },
+    "punto_seconda": [
+      0,
+      20
+    ],
+    "raggio": 10
+  },
+  "atteso": {
+    "esito": "radiusTooLarge"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "I lati dei clic danno il centro (10,10) e le tangenze (10,0) e (0,10). Il determinante è −100 e l'arco orario lascia le tangenze verso (−1,0) e (0,−1). La seconda tangente (0,1) ha prodotto −1. La prima ha t=(−1,0), prodotto +1: fromStart con x=10 prima dell'inizio x=5."
+  }
+}

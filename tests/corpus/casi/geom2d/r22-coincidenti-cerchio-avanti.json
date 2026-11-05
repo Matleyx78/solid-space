@@ -1,0 +1,58 @@
+{
+  "versione": 1,
+  "id": "r22-coincidenti-cerchio-avanti",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #21, R22 (#189). Tangenze esattamente coincidenti con raggio positivo: la parte sul cerchio è un lato locale.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          -2,
+          0
+        ],
+        "fine": [
+          2,
+          0
+        ]
+      }
+    },
+    "punto_prima": [
+      1,
+      1
+    ],
+    "seconda": {
+      "cerchio": {
+        "centro": [
+          0,
+          2
+        ],
+        "raggio": 2
+      }
+    },
+    "punto_seconda": [
+      2,
+      2
+    ],
+    "raggio": 1
+  },
+  "atteso": {
+    "esito": "found",
+    "parte_prima": "toEnd",
+    "parte_seconda": "toEnd",
+    "sulla_prima": {
+      "sulla_curva": {
+        "posizione": "inside"
+      }
+    },
+    "sulla_seconda": {
+      "sulla_curva": {
+        "posizione": "inside"
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Il secondo clic sta sopra y=0 e il primo è dentro al cerchio (1²+1²<2²). Il centro C ha y=1 e distanza 1 da (0,2), dunque x=0. Le tangenze coincidono in P=(0,0); il raccordo è un punto senza verso. Sulla retta e sul cerchio antiorario al fondo la tangente è (1,0). I prodotti esatti dei clic rispetto a P sono +1 e 2."
+  }
+}

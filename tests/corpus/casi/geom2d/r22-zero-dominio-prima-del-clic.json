@@ -1,0 +1,52 @@
+{
+  "versione": 1,
+  "id": "r22-zero-dominio-prima-del-clic",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #21, R22 (#189). Il dominio dello spigolo precede l'ambiguità del clic.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          1125899906842622,
+          562949953421309
+        ],
+        "fine": [
+          1125899906842623,
+          562949953421310
+        ]
+      }
+    },
+    "punto_prima": [
+      1125899906842624,
+      562949953421313
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          1125899906842622,
+          562949953421315
+        ],
+        "fine": [
+          1125899906842623,
+          562949953421314
+        ]
+      }
+    },
+    "punto_seconda": [
+      1125899906842623,
+      562949953421314
+    ],
+    "raggio": 0
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "outOfDomain",
+      "dato": "2"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Con K=2^50 e H=K/2, risolvere y−H=x−K−1 e y−H=K+1−x dà P=(K+1,H). P è fuori dominio e non c'è arco. La prima tangente è (1,1) e il primo clic dista da P di (−1,1), prodotto zero. La seconda tangente è (1,−1) e il suo prodotto vale −4. La diagnosi della costruzione precede la regola 5."
+  }
+}

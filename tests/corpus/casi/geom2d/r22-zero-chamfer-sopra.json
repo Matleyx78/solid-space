@@ -1,0 +1,61 @@
+{
+  "versione": 1,
+  "id": "r22-zero-chamfer-sopra",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #21, R22 (#189). Raggio zero: clic sulla normale o a un ulp, misurato nel verso della prima retta.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          -1,
+          0
+        ],
+        "fine": [
+          3,
+          0
+        ]
+      }
+    },
+    "punto_prima": [
+      "0x1.0000000000001p+0",
+      1
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          1,
+          -2
+        ],
+        "fine": [
+          1,
+          2
+        ]
+      }
+    },
+    "punto_seconda": [
+      1,
+      1
+    ],
+    "raggio": 0
+  },
+  "atteso": {
+    "esito": "found",
+    "parte_prima": "toEnd",
+    "parte_seconda": "toEnd",
+    "sulla_prima": {
+      "sulla_curva": {
+        "posizione": "inside"
+      }
+    },
+    "sulla_seconda": {
+      "sulla_curva": {
+        "posizione": "inside"
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Le rette si incontrano in P=(1,0). Il raccordo è un punto, senza verso. Con tangenti (1,0) e (0,1), i prodotti (clic−P)·t sono 1/4503599627370496 e 1 (Fraction sui double): positivo tiene toEnd, negativo fromStart, zero è ambiguo."
+  }
+}

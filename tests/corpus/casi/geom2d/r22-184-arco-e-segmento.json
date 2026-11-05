@@ -1,0 +1,60 @@
+{
+  "versione": 1,
+  "id": "r22-184-arco-e-segmento",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #21, R22 (#189). #184, caso e di autocad-raccordi.dxf: il raccordo prolunga l'inizio dell'arco.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "arco": {
+        "centro": [
+          230,
+          0
+        ],
+        "raggio": 10,
+        "angolo_iniziale": 0,
+        "ampiezza": 3.141592653589793
+      }
+    },
+    "punto_prima": [
+      238.6603,
+      5
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          215,
+          -5
+        ],
+        "fine": [
+          250,
+          -5
+        ]
+      }
+    },
+    "punto_seconda": [
+      245,
+      -5
+    ],
+    "raggio": 3
+  },
+  "atteso": {
+    "esito": "found",
+    "parte_prima": "toEnd",
+    "parte_seconda": "toEnd",
+    "sulla_prima": {
+      "sulla_curva": {
+        "posizione": "afterEnd"
+      }
+    },
+    "sulla_seconda": {
+      "sulla_curva": {
+        "posizione": "inside"
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Il clic della linea è esterno al cerchio (15²+5²>10²), quello dell'arco sta sopra y=−5. I centri sono (230±√165,−2) dal sistema y=−2, distanza dal centro dell'arco 13. Entrambi i clic hanno x>230: quello col segno + ha distanza quadratica minore su entrambe le tangenze, per simmetria. Il raggio del raccordo verso la prima tangenza è −3(√165,−2)/13; quello verso la seconda è (0,−3). Il determinante è 9√165/13>0, arco antiorario. La tangente antioraria dell'arco dato è parallela a (2,√165), opposta all'uscita dal raccordo. Sulla retta t=(1,0) e l'uscita è (−1,0). Entrambi i segni sono negativi. La prima tangenza è nel quadrante IV, fuori arco con margine; la seconda ha x=230+√165 tra 215 e 250 (12²<165<13²)."
+  }
+}

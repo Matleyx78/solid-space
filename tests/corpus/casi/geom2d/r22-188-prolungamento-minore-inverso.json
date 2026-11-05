@@ -1,0 +1,60 @@
+{
+  "versione": 1,
+  "id": "r22-188-prolungamento-minore-inverso",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #21, R22 (#189). #188: entrambe le parti contengono la direzione del clic e il prolungamento minore decide.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "arco": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 1,
+        "angolo_iniziale": 1.5707963267948966,
+        "ampiezza": -1.5707963267948966
+      }
+    },
+    "punto_prima": [
+      1,
+      "0x1.0000000000000p-50"
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          -1,
+          -2
+        ],
+        "fine": [
+          -1,
+          2
+        ]
+      }
+    },
+    "punto_seconda": [
+      -1,
+      1
+    ],
+    "raggio": 0
+  },
+  "atteso": {
+    "esito": "found",
+    "parte_prima": "toEnd",
+    "parte_seconda": "toEnd",
+    "sulla_prima": {
+      "sulla_curva": {
+        "posizione": "afterEnd"
+      }
+    },
+    "sulla_seconda": {
+      "sulla_curva": {
+        "posizione": "inside"
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "La retta x=−1 è tangente al cerchio unitario in P=(−1,0), unico spigolo. Non c'è arco di raccordo. La tangente antioraria in P è (0,−1), cambiata di segno invertendo l'arco; sulla retta è (0,1) e il clic ha prodotto +1. La direzione del primo clic è appena oltre 0, spostata di 2^-50 dal clic della scheda per stare all'interno di entrambe le parti anche con l'errore di sinCos. I due prolungamenti sono rispettivamente circa π/2 (estremo in alto) e π (estremo a destra). Il confronto esatto segue dai quadranti e resta stretto: il coseno dell'angolo minore è vicino a 0 e quello del maggiore a −1. L'estremo alto è l'inizio nel verso invertito."
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "versione": 1,
+  "id": "r22-184-due-segmenti",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #21, R22 (#189). #184: entrambe le rette tengono la parte verso la fine.",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          30,
+          0
+        ]
+      }
+    },
+    "punto_prima": [
+      5,
+      0
+    ],
+    "seconda": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          0,
+          30
+        ]
+      }
+    },
+    "punto_seconda": [
+      0,
+      5
+    ],
+    "raggio": 10
+  },
+  "atteso": {
+    "esito": "found",
+    "parte_prima": "toEnd",
+    "parte_seconda": "toEnd",
+    "sulla_prima": {
+      "sulla_curva": {
+        "posizione": "inside"
+      }
+    },
+    "sulla_seconda": {
+      "sulla_curva": {
+        "posizione": "inside"
+      }
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "I lati dei clic danno il centro (10,10) e tangenze A=(10,0), B=(0,10). Il determinante dei raggi da C è −100, quindi il raccordo è orario. Le direzioni uscenti sono (−1,0) e (0,−1); le tangenti delle rette sono (1,0) e (0,1), dunque entrambi i prodotti sono −1."
+  }
+}
