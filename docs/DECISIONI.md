@@ -513,3 +513,21 @@ i rimandi ai documenti che cambia.
 
   Regole in [revisione.md](agenti/revisione.md) («A che cosa serve la revisione»,
   «Prima di dichiarare un buco», «Test, non dimostrazioni»).
+
+- **2026-11-05: impostazioni dei repository e README in inglese.** Il
+  responsabile decide che solid-space e Tecnigrafo abbiano le stesse protezioni,
+  salvo i controlli di stato che differiscono (Qt, verifica):
+  1. si unisce solo con squash; il ruleset di `main` richiede i controlli di
+     stato, una pull request senza approvazioni obbligatorie e la cronologia
+     lineare, e l'amministratore lo aggira solo tramite pull request, non con un
+     push diretto; un ruleset sui tag `v*` vieta di cancellarli o spostarli,
+     senza eccezioni;
+  2. segnalazione privata delle vulnerabilità e avvisi Dependabot attivi (non gli
+     aggiornamenti automatici dei sottomoduli, fissati di proposito); la scheda
+     del repository ha descrizione e topic;
+  3. il README si apre con un paragrafo in inglese: eccezione alla regola
+     «documenti in italiano», limitata a quel paragrafo.
+
+  Le impostazioni di GitHub le applica il responsabile; l'elenco dei controlli
+  obbligatori resta quello di `docs/MANUTENZIONE.md` di Tecnigrafo, da
+  aggiornare con le regole nuove.
