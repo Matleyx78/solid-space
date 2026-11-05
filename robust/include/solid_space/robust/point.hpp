@@ -3,9 +3,7 @@
 
 #pragma once
 
-// Draft contract (ADR 0007, point 15): see ADR 0009 and ADR 0010. Nothing
-// declared in this header may be used before the package that implements it
-// is merged.
+// Contract with Tecnigrafo (ADR 0007, point 15): see ADR 0009 and ADR 0010.
 
 namespace solid_space::robust {
 

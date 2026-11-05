@@ -3,9 +3,8 @@
 
 #pragma once
 
-// Draft contract (ADR 0007, point 15): see ADR 0010, which fixes the exact
-// meaning of the curves, and ADR 0009. Declarations only: nothing here may be
-// used before the package that implements it is merged.
+// Contract with Tecnigrafo (ADR 0007, point 15): see ADR 0010, which fixes the exact
+// meaning of the curves, and ADR 0009.
 //
 // Every curve has an exact meaning, fixed below from its doubles. All the
 // decisions of geom2d (intersections, positions, order, side) are exact

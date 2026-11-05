@@ -3,7 +3,7 @@
 
 #pragma once
 
-// Draft contract (ADR 0007, point 15): see ADR 0008 (point 7), ADR 0009 and
+// Contract with Tecnigrafo (ADR 0007, point 15): see ADR 0008 (point 7), ADR 0009 and
 // ADR 0010.
 
 #include "solid_space/robust/result.hpp"

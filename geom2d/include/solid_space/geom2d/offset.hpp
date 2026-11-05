@@ -3,9 +3,7 @@
 
 #pragma once
 
-// Draft contract (ADR 0007, point 15): see ADR 0012, request #22.
-// Declarations only: nothing here may be used before the package that
-// implements it is merged.
+// Contract with Tecnigrafo (ADR 0007, point 15): see ADR 0012, request #22.
 //
 // The parallel curve (offset) of a curve or of a polyline, as OFFSET of
 // AutoCAD with OFFSETGAPTYPE = 0.

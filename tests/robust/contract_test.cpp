@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 The solid-space authors
 
-// The draft contract of robust (ADR 0007, point 15; ADR 0009 and ADR 0010):
-// the public headers compile, and the declared functions have the declared
-// signatures. Nothing declared is called, because nothing is implemented yet;
-// Result, the only definition, is tested at run time.
+// The contract signatures of robust (ADR 0007, point 15; ADR 0009 and ADR 0010):
+// the public headers compile and the declared functions have the declared
+// signatures. Result, the only definition, is tested at run time.
 
 #include "solid_space/robust/diagnosis.hpp"
 #include "solid_space/robust/point.hpp"

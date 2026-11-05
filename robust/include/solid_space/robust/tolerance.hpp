@@ -3,9 +3,8 @@
 
 #pragma once
 
-// Draft contract (ADR 0007, point 15): see ADR 0009, the single rule for
-// coincidence and tolerance in the plane. Declarations only: nothing here may
-// be used before the package that implements it is merged.
+// Contract with Tecnigrafo (ADR 0007, point 15): see ADR 0009, the single rule for
+// coincidence and tolerance in the plane.
 //
 // Two different questions are kept apart (ADR 0009, point 1):
 // - what the data are: exact decisions (predicates.hpp, geom2d), which never

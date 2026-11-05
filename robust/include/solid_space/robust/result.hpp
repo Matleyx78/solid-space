@@ -3,7 +3,7 @@
 
 #pragma once
 
-// Draft contract (ADR 0007, point 15): see ADR 0008, point 7. This vocabulary
+// Contract with Tecnigrafo (ADR 0007, point 15): see ADR 0008, point 7. This vocabulary
 // type is complete here, because a class template lives in its header; it
 // does no floating-point arithmetic (ADR 0008, point 5).
 

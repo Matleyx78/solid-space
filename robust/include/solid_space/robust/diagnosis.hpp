@@ -3,7 +3,7 @@
 
 #pragma once
 
-// Draft contract (ADR 0007, point 15): see ADR 0009.
+// Contract with Tecnigrafo (ADR 0007, point 15): see ADR 0009.
 
 #include <cstdint>
 #include <string>

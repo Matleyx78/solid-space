@@ -3,9 +3,7 @@
 
 #pragma once
 
-// Draft contract (ADR 0007, point 15): see ADR 0011, request #21.
-// Declarations only: nothing here may be used before the package that
-// implements it is merged.
+// Contract with Tecnigrafo (ADR 0007, point 15): see ADR 0011, request #21.
 //
 // Tangent lines from a point, circles tangent to two curves, and fillets
 // between two curves of the plane: the constructions behind FILLET, the

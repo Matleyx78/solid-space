@@ -3,9 +3,7 @@
 
 #pragma once
 
-// Draft contract (ADR 0007, point 15): see ADR 0010, request #20.
-// Declarations only: nothing here may be used before the package that
-// implements it is merged.
+// Contract with Tecnigrafo (ADR 0007, point 15): see ADR 0010, request #20.
 //
 // What is exact and what is rounded. Every decision below is exact about the
 // curves as defined in curves.hpp: how many common points there are, whether

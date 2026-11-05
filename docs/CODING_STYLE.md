@@ -50,6 +50,17 @@ I nomi dicono che cosa fanno, non come: `orient2d`, non `computeDet3`.
 - Mai confrontare due `double` con `==`, né con una soglia scritta a mano, per
   decidere un fatto geometrico: le decisioni discrete (orientamento, "dentro o
   fuori") passano dai predicati e dalla politica delle tolleranze di `robust`.
+- Tutto il calcolo in virgola mobile di `robust` e `geom2d` sta nei `.cpp`, mai
+  nelle funzioni `inline` o `constexpr` delle intestazioni pubbliche. Di
+  `<cmath>` si usano solo le funzioni correttamente arrotondate (`sqrt`, `fma`,
+  `fabs` e simili); seno, coseno e arcotangente vengono da `robust`
+  ([ADR 0008](adr/0008-componente-geom2d.md), punti 5.1 e 5.3).
+- Le decisioni sono esatte sui `double`; le costruzioni dichiarano l'errore
+  nell'intestazione; le tolleranze si applicano solo nelle funzioni che le
+  nominano ([ADR 0008](adr/0008-componente-geom2d.md), punto 6;
+  [ADR 0009](adr/0009-regola-delle-tolleranze-del-piano.md), punto 1).
+- Il calcolo esatto non dipende dall'intervallo degli esponenti dei `double`
+  ([tappa 0.2](tappe/0.2-geometria-del-piano.md), sezione 4).
 - Il sistema di coordinate del 3D si fissa nell'ADR della tappa che porta OCCT. Nel 2D le
   convenzioni sono quelle di Tecnigrafo (Y verso l'alto, angoli antiorari da +X).
 
