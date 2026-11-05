@@ -2,11 +2,11 @@
 // Copyright (C) 2026 The solid-space authors
 
 // The cases of tangentCircleNear() and fillet() (stage 0.2, package P16;
-// references [0.2-R16a], [0.2-R16b] and [0.2-R16c]). The keys are those of the
-// package sheet: a chosen circle is written as an element of `cerchi` of
-// tangentCircles (op_tangency.cpp), a fillet with its centre, radius, points
-// of tangency, the semicircle flag, the arc in the form of curves and the
-// bulge.
+// references [0.2-R16a], [0.2-R16b] and [0.2-R16c]; package P22, [0.2-R22]).
+// The keys are those of the package sheets: a chosen circle is written as an
+// element of `cerchi` of tangentCircles (op_tangency.cpp), a fillet with its
+// centre, radius, points of tangency, the part of each curve it keeps, the
+// semicircle flag, the arc in the form of curves and the bulge.
 
 #include "operations.hpp"
 #include "plane_data.hpp"
@@ -17,6 +17,7 @@
 namespace solid_space::corpus {
 namespace {
 
+using geom2d::KeptPart;
 using geom2d::TangencyOutcome;
 using geom2d::TangencyPoint;
 using geom2d::TangentCircle;
@@ -35,6 +36,16 @@ Value writeOutcome(TangencyOutcome value) {
             return Value::name("radiusTooLarge");
     }
     throw std::runtime_error("TangencyOutcome: unknown enumerator");
+}
+
+Value writeKeptPart(KeptPart value) {
+    switch (value) {
+        case KeptPart::fromStart:
+            return Value::name("fromStart");
+        case KeptPart::toEnd:
+            return Value::name("toEnd");
+    }
+    throw std::runtime_error("KeptPart: unknown enumerator");
 }
 
 // As in op_tangency.cpp.
@@ -87,6 +98,8 @@ Value filletOperation(const Value& input) {
                          {"raggio", Value::number(fillet.radius)},
                          {"sulla_prima", writeTangencyPoint(fillet.onFirst)},
                          {"sulla_seconda", writeTangencyPoint(fillet.onSecond)},
+                         {"parte_prima", writeKeptPart(fillet.keepFirst)},
+                         {"parte_seconda", writeKeptPart(fillet.keepSecond)},
                          {"semicerchio", Value::boolean(fillet.semicircle)},
                          {"arco", writeCurve(fillet.arc)},
                          {"bulge", Value::number(fillet.bulge)}});

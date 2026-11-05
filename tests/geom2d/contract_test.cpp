@@ -15,6 +15,7 @@
 
 #include <gtest/gtest.h>
 
+#include <cstdint>
 #include <span>
 #include <type_traits>
 #include <variant>
@@ -92,6 +93,14 @@ static_assert(
                                                   const geom2d::Curve&, geom2d::Point2,
                                                   const geom2d::Curve&, geom2d::Point2, double)>);
 
+// The part of each curve a fillet keeps (decision #184): two values in one
+// byte, and both fields of Fillet hold one.
+static_assert(std::is_same_v<std::underlying_type_t<geom2d::KeptPart>, std::uint8_t>);
+static_assert(static_cast<int>(geom2d::KeptPart::fromStart) == 0);
+static_assert(static_cast<int>(geom2d::KeptPart::toEnd) == 1);
+static_assert(std::is_same_v<decltype(geom2d::Fillet::keepFirst), geom2d::KeptPart>);
+static_assert(std::is_same_v<decltype(geom2d::Fillet::keepSecond), geom2d::KeptPart>);
+
 // Offset (ADR 0012).
 static_assert(
     std::is_same_v<decltype(&geom2d::offsetCurve),
@@ -135,6 +144,8 @@ TEST(Geom2dContract, ChoicesStartWithNothingFound) {
     // A default result never claims a construction that was not made.
     EXPECT_EQ(geom2d::ChosenCircle{}.outcome, geom2d::TangencyOutcome::none);
     EXPECT_EQ(geom2d::Fillet{}.outcome, geom2d::TangencyOutcome::none);
+    EXPECT_EQ(geom2d::Fillet{}.keepFirst, geom2d::KeptPart::fromStart);
+    EXPECT_EQ(geom2d::Fillet{}.keepSecond, geom2d::KeptPart::fromStart);
     EXPECT_EQ(geom2d::PolylineOffset{}.outcome, geom2d::OffsetOutcome::failed);
     EXPECT_EQ(geom2d::PolylineOffset{}.failure, geom2d::OffsetFailure::none);
     EXPECT_FALSE(geom2d::TangentCircles{}.infinitelyMany);

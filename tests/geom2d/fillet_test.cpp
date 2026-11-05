@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 The solid-space authors
 
-// Unit tests of tangentCircleNear and fillet (stage 0.2, package P16).
+// Unit tests of tangentCircleNear and fillet (stage 0.2, packages P16 and
+// P22).
 //
 // The properties of the package sheet are checked on data generated
 // deterministically (a fixed SplitMix64 sequence, with its own conversion to
@@ -10,9 +11,13 @@
 // to the picks; the ends of its arc coincide with the points of tangency, also
 // for the rule of ADR 0009; the Arc and the bulge describe the same arc;
 // swapping the curves and the picks gives the same circle with the arc
-// reversed. The exact expectations of the cases of the request and of
-// AutoCAD are in tests/corpus/ ([0.2-R16a], [0.2-R16b], [0.2-R16c]); the few
-// hand-made cases here have their answer worked out in the comments.
+// reversed. The parts kept (rule 5, package P22) are checked for every pair of
+// kinds of curve: reversing a curve swaps its value and keeps the other,
+// swapping the curves swaps the two fields, and with an arc to continue the
+// path does not turn back. The exact expectations of the cases of the request
+// and of AutoCAD are in tests/corpus/ ([0.2-R16a], [0.2-R16b], [0.2-R16c],
+// [0.2-R22], [0.2-R22b]); the few hand-made cases here have their answer
+// worked out in the comments.
 
 #include "solid_space/geom2d/curves.hpp"
 #include "solid_space/geom2d/intersection.hpp"
@@ -31,6 +36,8 @@
 #include <cstdint>
 #include <limits>
 #include <numbers>
+#include <optional>
+#include <variant>
 #include <vector>
 
 namespace {
@@ -43,6 +50,7 @@ using solid_space::geom2d::DiagnosisCode;
 using solid_space::geom2d::Extension;
 using solid_space::geom2d::Fillet;
 using solid_space::geom2d::fillet;
+using solid_space::geom2d::KeptPart;
 using solid_space::geom2d::kRelativeArcError;
 using solid_space::geom2d::kRelativePointError;
 using solid_space::geom2d::Location;
@@ -167,30 +175,19 @@ public:
                       m_origin.y + m_sequence.uniform(limit)};
     }
 
+    // The kinds of curve: segment, straight piece, circle, arc, curved piece.
+    static constexpr std::size_t kKinds = 5;
+
     Curve curve(double limit) {
         const Point2 start = point(limit);
-        Point2 end = point(limit);
-        if (start.x == end.x && start.y == end.y) {
-            end.x = above(end.x);
-        }
-        switch (m_sequence.index(5)) {
-            case 0:
-                return Segment{start, end};
-            case 1:
-                return PolylineSegment{start, end, 0.0};
-            case 2:
-                return Circle{start, m_sequence.between(limit / 20.0, limit)};
-            case 3:
-                return Arc{start, m_sequence.between(limit / 20.0, limit), m_sequence.uniform(4.0),
-                           m_sequence.uniform(7.0)};
-            default:
-                break;
-        }
-        double bulge = m_sequence.uniform(2.0);
-        if (bulge == 0.0) {
-            bulge = 0.5;
-        }
-        return PolylineSegment{start, end, bulge};
+        const Point2 end = point(limit);
+        return shaped(m_sequence.index(kKinds), start, end, limit);
+    }
+
+    Curve curveOfKind(std::size_t kind, double limit) {
+        const Point2 start = point(limit);
+        const Point2 end = point(limit);
+        return shaped(kind, start, end, limit);
     }
 
     Call call(double limit) {
@@ -204,6 +201,15 @@ public:
         }
         return Call{curve(limit), point(limit), curve(limit), point(limit),
                     m_sequence.between(limit / 100.0, limit / 2.0)};
+    }
+
+    // A call with curves of the given kinds.
+    Call callOfKinds(std::size_t first, std::size_t second, double limit) {
+        const Curve a = curveOfKind(first, limit);
+        const Point2 pickFirst = point(limit);
+        const Curve b = curveOfKind(second, limit);
+        const Point2 pickSecond = point(limit);
+        return Call{a, pickFirst, b, pickSecond, m_sequence.between(limit / 100.0, limit / 2.0)};
     }
 
     // A line above a circle at about 2 r from it, with the picks between them:
@@ -238,6 +244,30 @@ public:
     Sequence& sequence() { return m_sequence; }
 
 private:
+    Curve shaped(std::size_t kind, Point2 start, Point2 end, double limit) {
+        if (start.x == end.x && start.y == end.y) {
+            end.x = above(end.x);
+        }
+        switch (kind) {
+            case 0:
+                return Segment{start, end};
+            case 1:
+                return PolylineSegment{start, end, 0.0};
+            case 2:
+                return Circle{start, m_sequence.between(limit / 20.0, limit)};
+            case 3:
+                return Arc{start, m_sequence.between(limit / 20.0, limit), m_sequence.uniform(4.0),
+                           m_sequence.uniform(7.0)};
+            default:
+                break;
+        }
+        double bulge = m_sequence.uniform(2.0);
+        if (bulge == 0.0) {
+            bulge = 0.5;
+        }
+        return PolylineSegment{start, end, bulge};
+    }
+
     Sequence m_sequence;
     Point2 m_origin;
 };
@@ -364,6 +394,202 @@ void checkFillets(Point2 origin, double limit) {
     }
     EXPECT_GT(found, 150U);
     EXPECT_GT(swapped, 100U);
+}
+
+// --- The parts kept (rule 5) --------------------------------------------------
+
+KeptPart opposite(KeptPart part) {
+    return part == KeptPart::fromStart ? KeptPart::toEnd : KeptPart::fromStart;
+}
+
+// The same curve run the other way, when its geometry stays the same bit for
+// bit: an Arc only when the start angle of the reversed one, the rounded sum
+// a + s, gives back a when s is subtracted (its D0 and D1 are then those of
+// the original swapped). A Circle has no direction to reverse.
+std::optional<Curve> reversed(const Curve& curve) {
+    if (const auto* segment = std::get_if<Segment>(&curve)) {
+        return Segment{segment->end, segment->start};
+    }
+    if (const auto* piece = std::get_if<PolylineSegment>(&curve)) {
+        return PolylineSegment{piece->end, piece->start, -piece->bulge};
+    }
+    if (const auto* arc = std::get_if<Arc>(&curve)) {
+        const double start = arc->startAngle + arc->sweep;
+        if (start + (-arc->sweep) != arc->startAngle) {
+            return std::nullopt;
+        }
+        return Arc{arc->center, arc->radius, start, -arc->sweep};
+    }
+    return std::nullopt;
+}
+
+Point2 quarterTurn(Point2 vector) {
+    return Point2{-vector.y, vector.x};
+}
+
+Point2 scaled(Point2 vector, double factor) {
+    return Point2{vector.x * factor, vector.y * factor};
+}
+
+Point2 minus(Point2 a, Point2 b) {
+    return Point2{a.x - b.x, a.y - b.y};
+}
+
+double dotOf(Point2 a, Point2 b) {
+    return (a.x * b.x) + (a.y * b.y);
+}
+
+// The direction of travel of a curve at a point of its carrier, in doubles:
+// enough for the signs here, where it is parallel to a vector of the same
+// length scale. The centre of a curved piece is m + (b^2 - 1) / (4 b) times the
+// chord turned clockwise.
+Point2 travelAt(const Curve& curve, Point2 at) {
+    if (const auto* segment = std::get_if<Segment>(&curve)) {
+        return minus(segment->end, segment->start);
+    }
+    if (const auto* circle = std::get_if<Circle>(&curve)) {
+        return quarterTurn(minus(at, circle->center));
+    }
+    if (const auto* arc = std::get_if<Arc>(&curve)) {
+        return scaled(quarterTurn(minus(at, arc->center)), arc->sweep > 0.0 ? 1.0 : -1.0);
+    }
+    const auto& piece = std::get<PolylineSegment>(curve);
+    const Point2 chord = minus(piece.end, piece.start);
+    if (piece.bulge == 0.0) {
+        return chord;
+    }
+    const double b = piece.bulge;
+    const double k = ((b * b) - 1.0) / (4.0 * b);
+    const Point2 centre{((piece.start.x + piece.end.x) / 2.0) + (k * chord.y),
+                        ((piece.start.y + piece.end.y) / 2.0) - (k * chord.x)};
+    return scaled(quarterTurn(minus(at, centre)), b > 0.0 ? 1.0 : -1.0);
+}
+
+bool isStraight(const Curve& curve) {
+    if (std::holds_alternative<Segment>(curve)) {
+        return true;
+    }
+    const auto* piece = std::get_if<PolylineSegment>(&curve);
+    return piece != nullptr && piece->bulge == 0.0;
+}
+
+// With an arc to continue the path does not turn back: the kept part of the
+// first curve runs into its point of tangency in the direction in which the
+// arc leaves it, and the arc reaches the second point in the direction in
+// which the kept part of the second curve leaves it. A straight curve keeps a
+// part that contains its point of tangency.
+void checkContinues(const Call& call, const Fillet& result) {
+    const double turn = result.arc.sweep > 0.0 ? 1.0 : -1.0;
+    const Point2 first = result.onFirst.point;
+    const Point2 second = result.onSecond.point;
+    const Point2 leaving = scaled(quarterTurn(minus(first, result.center)), turn);
+    const Point2 reaching = scaled(quarterTurn(minus(second, result.center)), turn);
+    const Point2 alongFirst = travelAt(call.first, first);
+    const Point2 alongSecond = travelAt(call.second, second);
+    const Point2 intoFirst =
+        result.keepFirst == KeptPart::fromStart ? alongFirst : scaled(alongFirst, -1.0);
+    const Point2 outOfSecond =
+        result.keepSecond == KeptPart::toEnd ? alongSecond : scaled(alongSecond, -1.0);
+    EXPECT_GT(dotOf(intoFirst, leaving), 0.0);
+    EXPECT_GT(dotOf(reaching, outOfSecond), 0.0);
+    const auto keepsItsPoint = [](const Curve& curve, Location location, KeptPart part) {
+        if (!isStraight(curve)) {
+            return true;
+        }
+        const bool turnsBack = (location == Location::beforeStart && part == KeptPart::fromStart) ||
+                               (location == Location::afterEnd && part == KeptPart::toEnd);
+        return !turnsBack;
+    };
+    EXPECT_TRUE(keepsItsPoint(call.first, result.onFirst.position.location, result.keepFirst));
+    EXPECT_TRUE(keepsItsPoint(call.second, result.onSecond.position.location, result.keepSecond));
+}
+
+bool sameGeometry(const Fillet& a, const Fillet& b) {
+    return a.semicircle == b.semicircle && sameBits(a.center, b.center) &&
+           sameBits(a.radius, b.radius) && sameBits(a.onFirst.point, b.onFirst.point) &&
+           sameBits(a.onSecond.point, b.onSecond.point);
+}
+
+struct KeptCounts {
+    std::size_t found = 0;
+    std::size_t continued = 0;
+    std::size_t tooLarge = 0;
+    std::size_t reversed = 0;
+    std::size_t swapped = 0;
+};
+
+Fillet filletOf(const Call& call) {
+    const auto result =
+        fillet(call.first, call.pickFirst, call.second, call.pickSecond, call.radius);
+    EXPECT_TRUE(result.hasValue());
+    return result.hasValue() ? result.value() : Fillet{};
+}
+
+// Reversing one curve, when the same geometry is chosen, swaps its value and
+// keeps the other; swapping the curves swaps the two fields.
+void checkKeptParts(const Call& call, KeptCounts& counts) {
+    const Fillet value = filletOf(call);
+    if (value.outcome == TangencyOutcome::radiusTooLarge) {
+        ++counts.tooLarge;
+        return;
+    }
+    if (value.outcome != TangencyOutcome::found) {
+        return;
+    }
+    ++counts.found;
+    if (value.arc.sweep != 0.0) {
+        ++counts.continued;
+        checkContinues(call, value);
+    }
+    for (const bool ofFirst : {true, false}) {
+        const auto other = reversed(ofFirst ? call.first : call.second);
+        if (!other.has_value()) {
+            continue;
+        }
+        Call changed = call;
+        (ofFirst ? changed.first : changed.second) = *other;
+        const Fillet again = filletOf(changed);
+        if (again.outcome != TangencyOutcome::found || !sameGeometry(again, value)) {
+            continue;
+        }
+        ++counts.reversed;
+        EXPECT_EQ(again.keepFirst, ofFirst ? opposite(value.keepFirst) : value.keepFirst);
+        EXPECT_EQ(again.keepSecond, ofFirst ? value.keepSecond : opposite(value.keepSecond));
+    }
+    const Fillet swapped =
+        filletOf(Call{call.second, call.pickSecond, call.first, call.pickFirst, call.radius});
+    if (swapped.outcome == TangencyOutcome::found && swapped.semicircle == value.semicircle &&
+        sameBits(swapped.center, value.center) &&
+        sameBits(swapped.onFirst.point, value.onSecond.point) &&
+        sameBits(swapped.onSecond.point, value.onFirst.point)) {
+        ++counts.swapped;
+        EXPECT_EQ(swapped.keepFirst, value.keepSecond);
+        EXPECT_EQ(swapped.keepSecond, value.keepFirst);
+    }
+}
+
+// Every pair of kinds of curve, with a radius and with radius zero (rule 2).
+void checkKeptPartsOfKinds(Point2 origin, double limit) {
+    Generator generator(origin);
+    KeptCounts counts;
+    KeptCounts corners;
+    for (std::size_t first = 0; first < Generator::kKinds; ++first) {
+        for (std::size_t second = 0; second < Generator::kKinds; ++second) {
+            for (int i = 0; i < 40; ++i) {
+                Call call = generator.callOfKinds(first, second, limit);
+                checkKeptParts(call, counts);
+                call.radius = 0.0;
+                checkKeptParts(call, corners);
+            }
+        }
+    }
+    EXPECT_GT(counts.continued, 300U);
+    EXPECT_GT(counts.tooLarge, 100U);
+    EXPECT_GT(counts.reversed, 450U);
+    EXPECT_GT(counts.swapped, 300U);
+    EXPECT_GT(corners.found, 300U);
+    EXPECT_GT(corners.reversed, 500U);
+    EXPECT_GT(corners.swapped, 300U);
 }
 
 // --- tangentCircleNear -------------------------------------------------------
@@ -498,11 +724,19 @@ TEST(Fillet, CornerNearestThePicks) {
     ASSERT_TRUE(common.hasValue());
     ASSERT_EQ(common.value().points.size(), 2U);
     EXPECT_TRUE(sameBits(common.value().points[1].point, value.center));
+    // Rule 5 without an arc: the picks lie before the corner (5, 0) on the
+    // line, (-1, 1) . (20, 0) < 0, and on the counterclockwise circle,
+    // (1, -1) . (0, 5) < 0.
+    EXPECT_EQ(value.keepFirst, KeptPart::fromStart);
+    EXPECT_EQ(value.keepSecond, KeptPart::fromStart);
     // The other picks choose the other corner; -0 is a radius of zero too.
     const auto other = fillet(line, Point2{-4.0, 1.0}, circle, Point2{-6.0, -1.0}, -0.0);
     ASSERT_TRUE(other.hasValue());
     ASSERT_EQ(other.value().outcome, TangencyOutcome::found);
     EXPECT_EQ(other.value().center.x, -5.0);
+    // At (-5, 0): (1, 1) . (20, 0) > 0 and (-1, -1) . (0, -5) > 0.
+    EXPECT_EQ(other.value().keepFirst, KeptPart::toEnd);
+    EXPECT_EQ(other.value().keepSecond, KeptPart::toEnd);
 }
 
 TEST(Fillet, TinyRadius) {
@@ -688,6 +922,182 @@ TEST(Fillet, HalfTurnWithCoincidentPoints) {
     EXPECT_TRUE(sameBits(value.bulge, 0.0));
     EXPECT_TRUE(sameBits(value.arc.radius, kRadius));
     EXPECT_EQ(value.arc.sweep, std::numbers::pi);
+}
+
+// --- The parts kept (rule 5) --------------------------------------------------
+
+TEST(Fillet, KeptPartsOnEveryPairOfKinds) {
+    checkKeptPartsOfKinds(Point2{0.0, 0.0}, 50.0);
+}
+
+TEST(Fillet, KeptPartsOnEveryPairOfKindsFarAway) {
+    checkKeptPartsOfKinds(Point2{1.0e6, -3.0e5}, 50.0);
+}
+
+void expectParts(const Call& call, KeptPart first, KeptPart second) {
+    const Fillet value = filletOf(call);
+    ASSERT_EQ(value.outcome, TangencyOutcome::found);
+    EXPECT_EQ(value.keepFirst, first);
+    EXPECT_EQ(value.keepSecond, second);
+}
+
+void expectOutcome(const Call& call, TangencyOutcome outcome) {
+    const Fillet value = filletOf(call);
+    EXPECT_EQ(value.outcome, outcome);
+}
+
+// The examples of #184. Two segments from the origin along the axes, r = 10:
+// the centre is (10, 10) and the clockwise arc leaves (10, 0) in -x and
+// reaches (0, 10) in -y; the first segment keeps (10, 0) -> (30, 0), the
+// second (0, 10) -> (0, 30). The arc and the line of autocad-raccordi.dxf,
+// r = 3: the circle of radius 13 around (230, 0) meets y = -2 at the centre
+// (230 + sqrt(165), -2); the point of tangency on the arc is at angle
+// -asin(2/13), before its start, and the arc keeps it with the part toward
+// its end (the start moves back); on the line the fillet continues toward
+// x = 250.
+TEST(Fillet, KeptPartsOfTheRequest) {
+    expectParts(Call{Segment{{0.0, 0.0}, {30.0, 0.0}}, Point2{5.0, 0.0},
+                     Segment{{0.0, 0.0}, {0.0, 30.0}}, Point2{0.0, 5.0}, 10.0},
+                KeptPart::toEnd, KeptPart::toEnd);
+    expectParts(Call{Arc{{230.0, 0.0}, 10.0, 0.0, std::numbers::pi}, Point2{238.6603, 5.0},
+                     Segment{{215.0, -5.0}, {250.0, -5.0}}, Point2{245.0, -5.0}, 3.0},
+                KeptPart::toEnd, KeptPart::toEnd);
+}
+
+// #186. The lines y = 0 and y = 4 from x = 0 to x = 12, picks nearer x = 12:
+// the semicircle around (12, 2) leaves (12, 0) in +x, away from the first
+// curve, and leaves (12, 4) toward it in +x as well; both keep the part from
+// their start, and reversing the second keeps the part toward its end. A line
+// and a circle touched at the ends of a diameter: the counterclockwise half
+// turn of rule 4 around (0, 1) leaves (0, 0) in +x and reaches (0, 2) in -x;
+// swapped, it leaves (0, 2) in -x and reaches (0, 0) in +x.
+TEST(Fillet, KeptPartsOfHalfTurns) {
+    const Segment lower{{0.0, 0.0}, {12.0, 0.0}};
+    const Segment upper{{0.0, 4.0}, {12.0, 4.0}};
+    const Segment upperBack{{12.0, 4.0}, {0.0, 4.0}};
+    expectParts(Call{lower, Point2{10.0, 0.0}, upper, Point2{10.0, 4.0}, 1.0}, KeptPart::fromStart,
+                KeptPart::fromStart);
+    expectParts(Call{lower, Point2{10.0, 0.0}, upperBack, Point2{10.0, 4.0}, 1.0},
+                KeptPart::fromStart, KeptPart::toEnd);
+    const Segment line{{-10.0, 0.0}, {10.0, 0.0}};
+    const Circle circle{{0.0, 3.0}, 1.0};
+    expectParts(Call{line, Point2{0.0, 0.0}, circle, Point2{0.0, 2.0}, 1.0}, KeptPart::fromStart,
+                KeptPart::fromStart);
+    expectParts(Call{circle, Point2{0.0, 2.0}, line, Point2{0.0, 0.0}, 1.0}, KeptPart::toEnd,
+                KeptPart::toEnd);
+}
+
+// #187. The first segment runs from x = 2 to x = 5 on y = 0, the second up
+// the y axis, r = 10: the centre is (10, 10) and the first point of tangency
+// (10, 0) lies beyond the end of the first segment, but the clockwise arc
+// leaves it in -x, so the first segment would have to turn back there. The
+// same reversed: the point lies before its start and the part kept would be
+// the one from the start. A longer first segment makes the fillet.
+TEST(Fillet, RadiusTooLargeWhenALineWouldTurnBack) {
+    const Segment axis{{0.0, 0.0}, {0.0, 30.0}};
+    for (const Segment& first :
+         {Segment{{2.0, 0.0}, {5.0, 0.0}}, Segment{{5.0, 0.0}, {2.0, 0.0}}}) {
+        const auto result = fillet(first, Point2{3.0, 0.0}, axis, Point2{0.0, 20.0}, 10.0);
+        ASSERT_TRUE(result.hasValue());
+        const auto& value = result.value();
+        EXPECT_EQ(value.outcome, TangencyOutcome::radiusTooLarge);
+        EXPECT_EQ(value.radius, 0.0);
+        EXPECT_FALSE(value.semicircle);
+        EXPECT_EQ(value.bulge, 0.0);
+    }
+    expectParts(
+        Call{Segment{{2.0, 0.0}, {15.0, 0.0}}, Point2{3.0, 0.0}, axis, Point2{0.0, 20.0}, 10.0},
+        KeptPart::toEnd, KeptPart::toEnd);
+}
+
+// #188. The counterclockwise quarter of the unit circle from angle 0 to pi/2
+// and the line y = -1, r = 0: the corner (0, -1) is at angle 3 pi/2 from the
+// start, beyond the end. A pick at angle pi/4 lies in both parts: extending
+// the end costs pi, moving the start back pi/2, so the part toward the end.
+// A pick at angle pi lies only in the part from the start, one at about
+// 5 pi/3 (beyond the corner) only in the part toward the end. On the line the picks lie after the
+// corner. The arc reversed (start pi/2, sweep -pi/2, which gives back 0
+// exactly) swaps the value of the arc.
+TEST(Fillet, ArcExtendedTheShorterWay) {
+    const Arc quarter{{0.0, 0.0}, 1.0, 0.0, std::numbers::pi / 2.0};
+    const Arc back{{0.0, 0.0}, 1.0, std::numbers::pi / 2.0, -std::numbers::pi / 2.0};
+    const Segment line{{-2.0, -1.0}, {2.0, -1.0}};
+    const Point2 onLine{1.0, -1.0};
+    expectParts(Call{quarter, Point2{0.5, 0.5}, line, onLine, 0.0}, KeptPart::toEnd,
+                KeptPart::toEnd);
+    expectParts(Call{quarter, Point2{-1.0, 0.0}, line, onLine, 0.0}, KeptPart::fromStart,
+                KeptPart::toEnd);
+    expectParts(Call{quarter, Point2{0.5, -0.9}, line, onLine, 0.0}, KeptPart::toEnd,
+                KeptPart::toEnd);
+    expectParts(Call{back, Point2{0.5, 0.5}, line, onLine, 0.0}, KeptPart::fromStart,
+                KeptPart::toEnd);
+    expectParts(Call{back, Point2{-1.0, 0.0}, line, onLine, 0.0}, KeptPart::toEnd, KeptPart::toEnd);
+}
+
+// #188, exact parity. The counterclockwise half of the circle of radius 2
+// from (0, -2) through (2, 0) to (0, 2), and the line x = -2, r = 0: the corner
+// (-2, 0) is at angle 3 pi/2 from the start, pi/2 beyond the end and pi/2
+// before the start. The pick at (2, 0) lies on the given arc, in both parts:
+// the two extensions are equal, and no part is shown. A pick at the centre of
+// the arc has no direction.
+TEST(Fillet, EqualExtensionsAreAmbiguous) {
+    const PolylineSegment half{{0.0, -2.0}, {0.0, 2.0}, 1.0};
+    const Segment line{{-2.0, -3.0}, {-2.0, 3.0}};
+    expectOutcome(Call{half, Point2{2.0, 0.0}, line, Point2{-2.0, 1.0}, 0.0},
+                  TangencyOutcome::ambiguousPick);
+    expectOutcome(Call{half, Point2{0.0, 0.0}, line, Point2{-2.0, 1.0}, 0.0},
+                  TangencyOutcome::ambiguousPick);
+    // At angle 5 pi/4 from the start, between the end and the corner, the pick
+    // lies only in the part from the start.
+    expectParts(Call{half, Point2{-1.0, 1.0}, line, Point2{-2.0, 1.0}, 0.0}, KeptPart::fromStart,
+                KeptPart::toEnd);
+}
+
+// Without an arc, on lines: the segments y = x and y = 4 - x cross at (2, 2).
+// The pick (3, 1) lies on the normal to the first at the corner, so it shows
+// no part; one ulp to the right it shows the part toward the end, one ulp to
+// the left the part from the start. On the second, (3, 1) lies after the
+// corner.
+TEST(Fillet, PickOnTheNormalOfACorner) {
+    const Segment rising{{0.0, 0.0}, {4.0, 4.0}};
+    const Segment falling{{0.0, 4.0}, {4.0, 0.0}};
+    const Point2 onFalling{3.0, 1.0};
+    expectOutcome(Call{rising, Point2{3.0, 1.0}, falling, onFalling, 0.0},
+                  TangencyOutcome::ambiguousPick);
+    expectParts(Call{rising, Point2{std::nextafter(3.0, kInfinity), 1.0}, falling, onFalling, 0.0},
+                KeptPart::toEnd, KeptPart::toEnd);
+    expectParts(Call{rising, Point2{std::nextafter(3.0, 0.0), 1.0}, falling, onFalling, 0.0},
+                KeptPart::fromStart, KeptPart::toEnd);
+}
+
+// The domain comes before the pick. With A = 2^50 - 2 and B = 2^49 - 3 the
+// lines y = x - A + B and y = A + B + 6 - x cross at (A + 3, B + 3), beyond
+// the domain; the pick (A + 2, B + 4) would lie on the normal to the first.
+TEST(Fillet, DomainBeforeThePick) {
+    constexpr double kA = 0x1p50 - 2.0;
+    constexpr double kB = 0x1p49 - 3.0;
+    const Segment first{{kA, kB}, {kA + 1.0, kB + 1.0}};
+    const Segment second{{kA, kB + 6.0}, {kA + 1.0, kB + 5.0}};
+    const auto result =
+        fillet(first, Point2{kA + 2.0, kB + 4.0}, second, Point2{kA + 1.0, kB + 5.0}, 0.0);
+    ASSERT_FALSE(result.hasValue());
+    EXPECT_EQ(result.diagnosis().code, DiagnosisCode::outOfDomain);
+    EXPECT_EQ(result.diagnosis().input, 2U);
+}
+
+// Rule 3 with the same exact point of tangency twice ([0.2-R22b]): the line
+// y = 1 touches the unit circle at (0, 1), and so does the circle of radius
+// 1/2 around (0, 1/2). There is no arc, and the picks show the parts with
+// respect to (0, 1): on the normal and at the centre they show none; the picks
+// (1/4, 1/2) and (-1/2, 0), on the same sides, lie after it on the line and
+// on the counterclockwise circle.
+TEST(Fillet, CoincidentTangenciesUseThePicks) {
+    const Segment line{{-10.0, 1.0}, {10.0, 1.0}};
+    const Circle circle{{0.0, 0.0}, 1.0};
+    expectOutcome(Call{line, Point2{0.0, 0.5}, circle, Point2{0.0, 0.0}, 0.5},
+                  TangencyOutcome::ambiguousPick);
+    expectParts(Call{line, Point2{0.25, 0.5}, circle, Point2{-0.5, 0.0}, 0.5}, KeptPart::toEnd,
+                KeptPart::toEnd);
 }
 
 TEST(Fillet, Diagnoses) {
