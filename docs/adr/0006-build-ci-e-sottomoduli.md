@@ -6,6 +6,9 @@
   punti 1 e 6, alternative) sono sostituite dall'evento che le fa nascere, perché
   le tappe del piano iniziale non esistono più
   ([ADR 0007](0007-tappe-su-richiesta.md)); lo decide il responsabile.
+- **Corretto:** 2026-11-05 — i runner sono fissati (`windows-2022`, `macos-15`)
+  invece di `latest` e la riga «da confermare» delle conseguenze è sostituita
+  dalla decisione; lo decide il responsabile.
 
 ## Contesto
 
@@ -66,6 +69,7 @@ vale anche per una libreria.
 - Le due opzioni e i preset sono parte dell'interfaccia di build: cambiarli è una
   decisione condivisa con Tecnigrafo, che incorporerà la libreria.
 - I nomi dei controlli sono stabili: il ruleset di `main` li elenca per nome.
-- **Da confermare quando si scrive P3:** compilatori e versioni dei runner
-  (si parte da `ubuntu-24.04`, `windows-latest`, `macos-latest`, come in Tecnigrafo
-  per Linux).
+- **Runner fissati:** `ubuntu-24.04`, `windows-2022` e `macos-15`, come in
+  Tecnigrafo. Con `latest` il compilatore può cambiare senza che nessuno tocchi il
+  codice e la CI diventare rossa da un giorno all'altro; passare a una versione
+  nuova è una scelta, e si fa in una pull request a parte.
