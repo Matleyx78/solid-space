@@ -539,3 +539,11 @@ i rimandi ai documenti che cambia.
   chiusa senza unire). Se una migrazione delle immagini rende rossa la CI, si
   corregge il codice o si fissa l'immagine con una nuova decisione. Registrata
   nell'[ADR 0006](adr/0006-build-ci-e-sottomoduli.md), riga **Corretto:**.
+
+- **2026-11-05: runner fissati alle immagini più recenti.** Il responsabile
+  corregge la decisione precedente sui runner: Windows e macOS non restano su
+  `latest` ma sono fissati a `windows-2025-vs2026` e `macos-26`, le più recenti,
+  così il compilatore cambia solo quando lo decide lui. Linux resta
+  `ubuntu-24.04`. L'allineamento di Tecnigrafo alle stesse immagini è una
+  decisione di quel repository. Nell'[ADR 0006](adr/0006-build-ci-e-sottomoduli.md),
+  seconda riga **Corretto:**.
