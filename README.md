@@ -9,6 +9,16 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Language: C++20](https://img.shields.io/badge/Language-C%2B%2B20-orange.svg)]()
 
+> **In English.** solid-space is a C++20 library that gives
+> [Tecnigrafo](https://github.com/Matleyx78/tecnigrafo), a free 2D/3D CAD, its
+> geometric foundations: robust 2D geometry, a constraint solver, stable
+> topological naming and solid modeling on top of Open CASCADE. It grows in
+> small, verifiable steps. Today only `robust` and `geom2d` contain code, and
+> their contracts may still change; the other components are skeletons. It has
+> no dependencies beyond the standard library for those two, builds with CMake
+> 3.24 or newer, and is licensed under GPL-3.0-or-later. Documentation is in
+> Italian; code, comments and commit messages are in English.
+
 ## In breve
 
 **solid-space** è una libreria C++20 che dà a Tecnigrafo, un CAD libero 2D e 3D, le
@@ -64,9 +74,9 @@ recente. `robust` e `geom2d` non hanno altre dipendenze: non servono OCCT né Qt
 Non abilitare `-ffast-math` né `/fp:fast` per i target di solid-space: la
 configurazione controlla questi requisiti.
 
-Non ci sono ancora versioni pubblicate: fissa il tuo progetto a un commit preciso.
-Ogni pacchetto unito lascia `main` utilizzabile e con la CI verde. Il modo più
-semplice è un sottomodulo, come fa Tecnigrafo:
+Non esiste ancora una versione con gli algoritmi: fissa il tuo progetto a un
+commit preciso di `main`. Ogni pacchetto unito lascia `main` utilizzabile e con la
+CI verde. Il modo più semplice è un sottomodulo, come fa Tecnigrafo:
 
 ```sh
 git submodule add https://github.com/Matleyx78/solid-space third_party/solid-space
