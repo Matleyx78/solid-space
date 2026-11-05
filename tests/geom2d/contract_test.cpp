@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 The solid-space authors
 
-// The draft contract of geom2d (ADR 0007, point 15; ADR 0009 to ADR 0012):
+// The contract signatures of geom2d (ADR 0007, point 15; ADR 0009 to ADR 0012):
 // the public headers compile, and the declared functions have the declared
-// signatures. Nothing declared is called, because nothing is implemented yet.
+// signatures.
 
 #include "solid_space/geom2d/coincidence.hpp"
 #include "solid_space/geom2d/curves.hpp"

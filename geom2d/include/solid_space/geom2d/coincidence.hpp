@@ -3,9 +3,8 @@
 
 #pragma once
 
-// Draft contract (ADR 0007, point 15): see ADR 0009, request #23. The rule
-// of robust/tolerance.hpp applied to curves. Declarations only: nothing here
-// may be used before the package that implements it is merged.
+// Contract with Tecnigrafo (ADR 0007, point 15): see ADR 0009, request #23. The rule
+// of robust/tolerance.hpp applied to curves.
 //
 // Every answer here is "what the user meant", not "what the data are": it is
 // used to change the data (join two entities, drop a degenerate piece, set a

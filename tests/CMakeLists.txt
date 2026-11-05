@@ -60,9 +60,8 @@ target_link_libraries(solid_space_banco_prestazioni PRIVATE solid_space::geom2d)
 ss_configure_target(solid_space_banco_prestazioni)
 ss_configure_determinism(solid_space_banco_prestazioni)
 
-# Draft contracts (ADR 0007, point 15): the public headers of robust and
-# geom2d compile and keep their declared signatures. They call nothing that is
-# not implemented yet.
+# Contract tests (ADR 0007, point 15): compile the public headers of robust and
+# geom2d and check their declared signatures.
 add_executable(solid_space_contract_test robust/contract_test.cpp geom2d/contract_test.cpp)
 target_link_libraries(solid_space_contract_test PRIVATE
   solid_space::robust solid_space::geom2d GTest::gtest_main)

@@ -3,9 +3,7 @@
 
 #pragma once
 
-// Draft contract (ADR 0007, point 15): see ADR 0008 (point 5) and ADR 0010.
-// Declarations only: nothing here may be used before the package that
-// implements it is merged.
+// Contract with Tecnigrafo (ADR 0007, point 15): see ADR 0008 (point 5) and ADR 0010.
 //
 // The standard library gives different last bits for sin, cos and atan2 on
 // MSVC, glibc and macOS. These functions give the same bits everywhere,

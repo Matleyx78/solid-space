@@ -48,6 +48,9 @@ misure dimostrano che serve.
 Ogni componente si compila da solo: il CAD 2D di Tecnigrafo userà `robust`,
 `geom2d` e `solver` senza avere OCCT. La mappa completa è in
 [docs/ARCHITETTURA.md](docs/ARCHITETTURA.md).
+I target di solid-space richiedono piattaforme a 64 bit: non abilitate
+`-ffast-math` né `/fp:fast` per questi target; la configurazione controlla
+questi requisiti.
 
 ## Cosa non è
 

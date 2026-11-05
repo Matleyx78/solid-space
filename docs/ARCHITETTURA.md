@@ -64,6 +64,7 @@ salvataggio si fissano con l'ADR della tappa che porta il naming.
 <componente>/CMakeLists.txt                    target e dipendenze
 <componente>/include/solid_space/<componente>/ interfaccia pubblica
 <componente>/src/                              implementazione (anche intestazioni private)
+geom2d/src/exact/                              implementazioni interne esatte
 tests/<componente>/                            test del componente
 tests/corpus/                                  archivio dei casi di verifica (ADR 0004)
 third_party/                                   OCCT e SolveSpace, sottomoduli fissati e non modificati
@@ -71,8 +72,8 @@ docs/                                          visione, architettura, roadmap, t
 ```
 
 Ogni componente ha la sua cartella con `CMakeLists.txt` e `src/`; le intestazioni
-pubbliche nascono con la tappa che le porta. `robust` e `geom2d` hanno già le
-intestazioni del contratto con Tecnigrafo, in bozza e non ancora realizzate
+pubbliche nascono con la tappa che le porta. `robust` e `geom2d` hanno realizzato
+nella tappa 0.2 le intestazioni del contratto con Tecnigrafo
 ([ADR 0007](adr/0007-tappe-su-richiesta.md), punto 15).
 
 ## Dipendenze esterne

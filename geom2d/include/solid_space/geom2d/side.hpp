@@ -3,9 +3,7 @@
 
 #pragma once
 
-// Draft contract (ADR 0007, point 15): see ADR 0010, request #20.
-// Declarations only: nothing here may be used before the package that
-// implements it is merged.
+// Contract with Tecnigrafo (ADR 0007, point 15): see ADR 0010, request #20.
 
 #include "solid_space/geom2d/curves.hpp"
 #include "solid_space/geom2d/diagnosis.hpp"

@@ -3,8 +3,7 @@
 
 #pragma once
 
-// Draft contract (ADR 0007, point 15): see ADR 0010. Declarations only:
-// nothing here may be used before the package that implements it is merged.
+// Contract with Tecnigrafo (ADR 0007, point 15): see ADR 0010.
 
 #include "solid_space/robust/point.hpp"
 
