@@ -1,0 +1,111 @@
+{
+  "versione": 1,
+  "id": "raccordo-regola-tangenti-coincidenti-con-parte",
+  "componente": "geom2d",
+  "descrizione": "Fillet con tangenze coincidenti e parte indicata da entrambi i clic (regola 5, #190).",
+  "ingresso": {
+    "operazione": "fillet",
+    "prima": {
+      "segmento": {
+        "inizio": [
+          -10,
+          1
+        ],
+        "fine": [
+          10,
+          1
+        ]
+      }
+    },
+    "punto_prima": [
+      0.25,
+      0.5
+    ],
+    "seconda": {
+      "cerchio": {
+        "centro": [
+          0,
+          0
+        ],
+        "raggio": 1
+      }
+    },
+    "punto_seconda": [
+      -0.5,
+      0
+    ],
+    "raggio": 0.5
+  },
+  "atteso": {
+    "esito": "found",
+    "centro": [
+      {
+        "valore": 0,
+        "tolleranza": 3.552713678800501e-14
+      },
+      {
+        "valore": 0.5,
+        "tolleranza": 3.552713678800501e-14
+      }
+    ],
+    "raggio": "1/2",
+    "sulla_prima": {
+      "punto": [
+        {
+          "valore": 0,
+          "tolleranza": 3.552713678800501e-14
+        },
+        {
+          "valore": 1,
+          "tolleranza": 3.552713678800501e-14
+        }
+      ],
+      "sulla_curva": {
+        "posizione": "inside"
+      }
+    },
+    "sulla_seconda": {
+      "punto": [
+        {
+          "valore": 0,
+          "tolleranza": 3.552713678800501e-14
+        },
+        {
+          "valore": 1,
+          "tolleranza": 3.552713678800501e-14
+        }
+      ],
+      "sulla_curva": {
+        "posizione": "inside"
+      }
+    },
+    "semicerchio": false,
+    "arco": {
+      "arco": {
+        "centro": [
+          {
+            "valore": 0,
+            "tolleranza": 3.552713678800501e-14
+          },
+          {
+            "valore": 0.5,
+            "tolleranza": 3.552713678800501e-14
+          }
+        ],
+        "raggio": "1/2",
+        "angolo_iniziale": {
+          "valore": 1.5707963267948966,
+          "tolleranza": 2.8421709430404007e-13
+        },
+        "ampiezza": "0"
+      }
+    },
+    "bulge": "0",
+    "parte_prima": "toEnd",
+    "parte_seconda": "toEnd"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Regola 3. Il secondo clic ha y=0<1, lato right del segmento orientato verso destra. Il primo clic ha distanza al quadrato dal centro del cerchio pari a (1/4)²+(1/2)²=5/16<1, lato left del cerchio antiorario. I luoghi dei centri sono la retta y=1−1/2=1/2 e il cerchio concentrico di raggio 1−1/2=1/2. Sostituendo y=1/2 in x²+y²=1/4 si ottiene x²=0, quindi il solo centro è C=(0,1/2). Il piede sulla retta y=1 e il punto del cerchio sulla semiretta da (0,0) per C coincidono in P=(0,1). P è interno al segmento perché −10<0<10 e appartiene al cerchio intero. Per la regola 4 l'arco ha raggio 1/2, angolo iniziale π/2 dalla direzione P−C=(0,1/2), ampiezza e bulge zero. La regola 1 sul semicerchio non si applica perché la seconda curva è un cerchio. Per la regola 5 i prodotti scalari rispetto a P sono (1/4,−1/2)·(20,0)=5 e (−1/2,−1)·(−1,0)=1/2, entrambi positivi, quindi entrambe le parti sono toEnd. Con M=10 la tolleranza per le coordinate è 10·2^−48. Per l'angolo iniziale si usa 10·2^−46/(1/2) radianti."
+  }
+}
