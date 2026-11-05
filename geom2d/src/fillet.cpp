@@ -46,6 +46,34 @@
 //    tangency coincide, while the Arc keeps these rules (tangency.hpp, #152):
 //    for a half turn this is checked on the points; for the other directions
 //    the angle computed from them is then zero.
+// 5. The part of each curve to keep (package P22, decision #184 and
+//    #186-#188), decided after every domain diagnosis, with exact signs only.
+//    With an arc to continue (rule 1, and rule 3 with distinct points of
+//    tangency), t is the direction of the curve at its exact point of tangency
+//    T and a the direction in which the exact arc leaves T toward the other
+//    point: a is the radius T - C (C the exact centre) turned a quarter turn, counterclockwise at
+//    the first point of a counterclockwise arc (and of a half turn) and at the
+//    second point of a clockwise one, clockwise otherwise. The sign of
+//    dot(t, a) is computed in the tower of the candidate, from the exact T and
+//    C; for a circular curve t is its own radius T - O turned in its direction
+//    of travel. For the semicircle the arc leaves both points in the same
+//    direction, away from the first curve (its points are symmetric about the
+//    centre), so the signs are dot products of dyadic directions. A straight
+//    curve that would turn back at T gives radiusTooLarge (#187).
+//    Without an arc (rule 2, and rule 3 with the same exact point of tangency
+//    twice), the corner P is an exact point of the tower: for rule 2 the
+//    common point of the carriers that intersect() returns, found again with
+//    meet() in the same exact order. Straight curves and Circles use the sign
+//    of dot(pick - P, t). Arcs and curved pieces compare angles measured from
+//    their start D0 in their direction of travel (curve_meaning.hpp, sectorOf
+//    and compareTurns): the pick direction lies in the part from the start to
+//    P when its angle is at most that of P, and in the part from P to the end
+//    when it is at least that of P and at most that of D1 (or, with P beyond
+//    the end, when it is at least that of P or at most that of D1; a whole
+//    arc ends at D0, at a full turn). Two angles measured from different
+//    directions, the extensions D1 -> P and P -> D0 of #188, are compared as
+//    the directions (r . v, cross(r, v)), each the angle from r to v seen from
+//    (1, 0): one more product, no root.
 //
 // Constructions beyond the domain (curves.hpp, decision #149). tangentCandidates()
 // gives the diagnosis outOfDomain about the radius (input 2) when an exact
@@ -99,6 +127,7 @@
 #include "solid_space/robust/trigonometry.hpp"
 #include "tangency_internal.hpp"
 
+#include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <cstddef>
@@ -112,14 +141,20 @@
 namespace solid_space::geom2d {
 namespace {
 
+using detail::ArcMeaning;
+using detail::ArcSpan;
+using detail::CircleSupport;
 using detail::CurveMeaning;
 using detail::Dyadic;
 using detail::ExactPoint;
 using detail::ExactVector;
 using detail::LineMeaning;
 using detail::TangentCandidate;
+using detail::Tower;
 using detail::TowerNumber;
 using detail::TowerPoint;
+using detail::Turn;
+using detail::TurnSector;
 using robust::Sign;
 
 // The inputs of tangency.hpp.
@@ -312,13 +347,271 @@ bool middleBeyondDomain(Point2 from, Point2 to, double bulge) {
 constexpr const char* kMiddleBeyond =
     "the point m of the bulge form of the fillet is beyond robust::kMaxCoordinate";
 
-// --- Rule 1: the semicircle ---------------------------------------------------
+// --- Rule 5: the part of each curve to keep ----------------------------------
 
 ExactVector directionOf(const LineMeaning& line) {
     const auto start = detail::exactVector(line.start);
     const auto end = detail::exactVector(line.end);
     return {end.x - start.x, end.y - start.y};
 }
+
+// A vector whose coordinates are numbers of a tower.
+struct TowerVector {
+    TowerNumber x;
+    TowerNumber y;
+};
+
+TowerVector towerVector(const ExactVector& vector) {
+    return {TowerNumber(vector.x), TowerNumber(vector.y)};
+}
+
+// The vector turned a quarter turn counterclockwise.
+TowerVector quarterTurn(const TowerVector& vector) {
+    return {-vector.y, vector.x};
+}
+
+TowerVector negated(const TowerVector& vector) {
+    return {-vector.x, -vector.y};
+}
+
+TowerNumber dot(const Tower& tower, const TowerVector& a, const TowerVector& b) {
+    return tower.product(a.x, b.x) + tower.product(a.y, b.y);
+}
+
+TowerNumber cross(const Tower& tower, const TowerVector& a, const TowerVector& b) {
+    return tower.product(a.x, b.y) - tower.product(a.y, b.x);
+}
+
+bool isZero(const Tower& tower, const TowerVector& vector) {
+    return tower.sign(vector.x) == Sign::zero && tower.sign(vector.y) == Sign::zero;
+}
+
+// a - b, scaled by the product of their (positive) weights.
+TowerVector difference(const TowerPoint& a, const TowerPoint& b) {
+    return {(a.x * b.weight) - (b.x * a.weight), (a.y * b.weight) - (b.y * a.weight)};
+}
+
+// The point minus the centre of the circle, scaled by positive weights.
+TowerVector fromCentre(const TowerPoint& point, const CircleSupport& circle) {
+    return {(point.x * circle.weight) - TowerNumber(circle.centerX * point.weight),
+            (point.y * circle.weight) - TowerNumber(circle.centerY * point.weight)};
+}
+
+// The direction t of a curve at a point of its carrier, scaled by a positive
+// factor: from the start to the end of a straight curve; on a circular one its
+// radius turned a quarter turn in its direction of travel (a Circle runs
+// counterclockwise).
+TowerVector directionAt(const CurveMeaning& curve, const TowerPoint& point) {
+    if (const auto* line = std::get_if<LineMeaning>(&curve.support)) {
+        return towerVector(directionOf(*line));
+    }
+    const auto& arc = std::get<ArcMeaning>(curve.support);
+    const auto tangent = quarterTurn(fromCentre(point, arc.circle));
+    return arc.turn == Turn::counterclockwise ? tangent : negated(tangent);
+}
+
+// The part that continues the arc, from the sign of dot(t, a). The two
+// directions are parallel and not zero, so the sign is never zero.
+KeptPart continuing(Sign dotOfDirections) {
+    assert(dotOfDirections != Sign::zero && "t and a are parallel");
+    return dotOfDirections == Sign::positive ? KeptPart::fromStart : KeptPart::toEnd;
+}
+
+// With an arc to continue: the part of a curve whose exact point of tangency
+// is `touching`, for the exact centre of the arc and the direction in which the
+// arc leaves that point, counterclockwise or clockwise around the centre.
+KeptPart continuingAt(const Tower& tower, const CurveMeaning& curve, const TowerPoint& touching,
+                      const TowerPoint& centre, Turn leaving) {
+    const auto radius = quarterTurn(difference(touching, centre));
+    const auto away = leaving == Turn::counterclockwise ? radius : negated(radius);
+    return continuing(tower.sign(dot(tower, directionAt(curve, touching), away)));
+}
+
+// True when a straight curve would turn back at its point of tangency to
+// continue the arc (#187): beforeStart with fromStart, afterEnd with toEnd.
+bool turnsBack(const CurveMeaning& curve, Location location, KeptPart part) {
+    if (!std::holds_alternative<LineMeaning>(curve.support)) {
+        return false;
+    }
+    return (location == Location::beforeStart && part == KeptPart::fromStart) ||
+           (location == Location::afterEnd && part == KeptPart::toEnd);
+}
+
+// The CHAMFER rule: toEnd when dot(pick - P, t) is positive, fromStart when it
+// is negative, nothing (ambiguousPick) at zero.
+std::optional<KeptPart> keptBySign(Sign dotOfPick) {
+    switch (dotOfPick) {
+        case Sign::positive:
+            return KeptPart::toEnd;
+        case Sign::negative:
+            return KeptPart::fromStart;
+        case Sign::zero:
+            break;
+    }
+    return std::nullopt;
+}
+
+// The sector of a direction from the start D0 of an arc, in its direction of
+// travel. Precondition: the direction is not zero.
+TurnSector sectorFromStart(const Tower& tower, const ArcMeaning& arc,
+                           const TowerVector& direction) {
+    const auto start = towerVector(arc.startDirection);
+    return detail::sectorOf(detail::oriented(arc.turn, tower.sign(cross(tower, start, direction))),
+                            tower.sign(dot(tower, start, direction)));
+}
+
+// A direction with its sector from D0.
+struct Angle {
+    TowerVector direction;
+    TurnSector sector = TurnSector::zero;
+};
+
+// The sign of angle(u) - angle(v), both measured from D0 in the direction of
+// the arc, in [0, 2 pi).
+Sign compareFromStart(const Tower& tower, const ArcMeaning& arc, const Angle& u, const Angle& v) {
+    if (u.sector != v.sector) {
+        return detail::compareTurns(u.sector, v.sector, Sign::zero);
+    }
+    return detail::compareTurns(
+        u.sector, v.sector,
+        detail::oriented(arc.turn, tower.sign(cross(tower, u.direction, v.direction))));
+}
+
+// The angle from r to v in the direction of the arc, written as the direction
+// that has that angle from (1, 0) counterclockwise: (r . v, cross(r, v)), the
+// cross product oriented in the direction of the arc. Its length is
+// |r| |v|, which does not change its angle.
+TowerVector angleBetween(const Tower& tower, const ArcMeaning& arc, const TowerVector& r,
+                         const TowerVector& v) {
+    const auto turned = cross(tower, r, v);
+    return {dot(tower, r, v), arc.turn == Turn::counterclockwise ? turned : -turned};
+}
+
+// The sign of angle(u) - angle(v) for two directions written by angleBetween(),
+// both measured from (1, 0) counterclockwise in [0, 2 pi).
+Sign compareAngles(const Tower& tower, const TowerVector& u, const TowerVector& v) {
+    const auto sectorOf = [&tower](const TowerVector& w) {
+        return detail::sectorOf(tower.sign(w.y), tower.sign(w.x));
+    };
+    const auto su = sectorOf(u);
+    const auto sv = sectorOf(v);
+    if (su != sv) {
+        return detail::compareTurns(su, sv, Sign::zero);
+    }
+    return detail::compareTurns(su, sv, tower.sign(cross(tower, u, v)));
+}
+
+// The rule of #188 for an arc or a curved piece: the part, along its circle,
+// that contains the direction of the pick from the centre. `corner` and
+// `pick` are directions from the centre; the corner is not zero.
+std::optional<KeptPart> keptOnArc(const Tower& tower, const ArcMeaning& arc,
+                                  const TowerVector& corner, const TowerVector& pick) {
+    if (isZero(tower, pick)) {
+        return std::nullopt;
+    }
+    const Angle atCorner{corner, sectorFromStart(tower, arc, corner)};
+    const Angle atPick{pick, sectorFromStart(tower, arc, pick)};
+    const Sign pickFromCorner = compareFromStart(tower, arc, atPick, atCorner);
+    // The part from the start to P: angles from 0 to that of P.
+    const bool inFromStart = pickFromCorner != Sign::positive;
+    bool inToEnd = false;
+    bool cornerBeyond = false;
+    if (arc.span == ArcSpan::whole) {
+        // From P to the end, which is D0 after a full turn.
+        inToEnd = pickFromCorner != Sign::negative || atPick.sector == TurnSector::zero;
+    } else {
+        assert(arc.span == ArcSpan::partial);
+        const Angle atEnd{towerVector(arc.endDirection), arc.endSector};
+        const bool pickOnArc = compareFromStart(tower, arc, atPick, atEnd) != Sign::positive;
+        cornerBeyond = compareFromStart(tower, arc, atCorner, atEnd) == Sign::positive;
+        // From P to the end: back to D0 and on to D1 when P is beyond the end.
+        inToEnd = cornerBeyond ? (pickFromCorner != Sign::negative || pickOnArc)
+                               : (pickFromCorner != Sign::negative && pickOnArc);
+    }
+    if (inFromStart && inToEnd) {
+        if (!cornerBeyond) {
+            return std::nullopt;
+        }
+        // The smaller extension: the end moves from D1 to P (fromStart), or
+        // the start back from D0 to P (toEnd); equal ones give nothing.
+        const auto towardCorner = angleBetween(tower, arc, towerVector(arc.endDirection), corner);
+        const auto backToStart = angleBetween(tower, arc, corner, towerVector(arc.startDirection));
+        switch (compareAngles(tower, towardCorner, backToStart)) {
+            case Sign::negative:
+                return KeptPart::fromStart;
+            case Sign::positive:
+                return KeptPart::toEnd;
+            case Sign::zero:
+                return std::nullopt;
+        }
+    }
+    if (inFromStart) {
+        return KeptPart::fromStart;
+    }
+    if (inToEnd) {
+        return KeptPart::toEnd;
+    }
+    return std::nullopt;
+}
+
+// Without an arc to continue: the part of a curve shown by its pick with
+// respect to the exact corner (a number of `tower`); nothing when the pick
+// does not show a unique part (ambiguousPick).
+std::optional<KeptPart> keptByPick(const Tower& tower, const CurveMeaning& curve,
+                                   const TowerPoint& corner, Point2 pick) {
+    const auto picked = detail::towerPoint(pick);
+    const auto* arc = std::get_if<ArcMeaning>(&curve.support);
+    if (arc == nullptr || arc->span == ArcSpan::circle) {
+        return keptBySign(
+            tower.sign(dot(tower, difference(picked, corner), directionAt(curve, corner))));
+    }
+    return keptOnArc(tower, *arc, fromCentre(corner, arc->circle), fromCentre(picked, arc->circle));
+}
+
+// A fillet that cannot be made without turning a straight curve back (#187).
+Fillet tooLarge() {
+    Fillet result;
+    result.outcome = TangencyOutcome::radiusTooLarge;
+    return result;
+}
+
+// A fillet whose picks do not show a part to keep.
+Fillet ambiguous() {
+    Fillet result;
+    result.outcome = TangencyOutcome::ambiguousPick;
+    return result;
+}
+
+// Sets the parts of a found fillet with an arc to continue, or tells that a
+// straight curve would turn back.
+Result<Fillet> withContinuingParts(Fillet result, const CurveMeaning& first,
+                                   const CurveMeaning& second, KeptPart keepFirst,
+                                   KeptPart keepSecond) {
+    if (turnsBack(first, result.onFirst.position.location, keepFirst) ||
+        turnsBack(second, result.onSecond.position.location, keepSecond)) {
+        return tooLarge();
+    }
+    result.keepFirst = keepFirst;
+    result.keepSecond = keepSecond;
+    return result;
+}
+
+// Sets the parts of a found fillet without an arc, from the picks.
+Result<Fillet> withPickedParts(Fillet result, const Tower& tower, const CurveMeaning& first,
+                               const TowerPoint& onFirst, Point2 pickFirst,
+                               const CurveMeaning& second, const TowerPoint& onSecond,
+                               Point2 pickSecond) {
+    const auto keepFirst = keptByPick(tower, first, onFirst, pickFirst);
+    const auto keepSecond = keptByPick(tower, second, onSecond, pickSecond);
+    if (!keepFirst.has_value() || !keepSecond.has_value()) {
+        return ambiguous();
+    }
+    result.keepFirst = *keepFirst;
+    result.keepSecond = *keepSecond;
+    return result;
+}
+
+// --- Rule 1: the semicircle ---------------------------------------------------
 
 Dyadic squaredDistance(Point2 a, Point2 b) {
     const auto exactA = detail::exactVector(a);
@@ -393,12 +686,33 @@ Result<Fillet> semicircle(const CurveMeaning& first, const LineMeaning& firstLin
     if (middleBeyondDomain(result.onFirst.point, result.onSecond.point, result.bulge)) {
         return constructionBeyond(kMiddleBeyond);
     }
-    return result;
+    // Rule 5: the arc leaves both E and F in the direction `away` (F is the
+    // reflection of E through the centre, where the direction of travel is
+    // reversed, and leaving F toward E reverses it again).
+    return withContinuingParts(result, first, second, atEnd ? KeptPart::fromStart : KeptPart::toEnd,
+                               continuing(detail::dotSign(direction, away)));
 }
 
 // --- Rule 2: the corner -------------------------------------------------------
 
-Result<Fillet> corner(const Curve& first, Point2 pickFirst, const Curve& second,
+// The exact common points of the two extended carriers, in the order of
+// intersect() with Extension::extended: every point of meet() takes part, and
+// they are sorted exactly along the first curve (intersection.cpp). Only when
+// the carriers are not the same and no point is beyond the domain.
+std::vector<ExactPoint> exactCorners(const CurveMeaning& first, const CurveMeaning& second) {
+    const auto meeting = detail::meet(detail::carrierOf(first), detail::carrierOf(second));
+    std::vector<ExactPoint> points;
+    for (const auto& point : meeting.found()) {
+        points.push_back(point.point);
+    }
+    std::sort(points.begin(), points.end(), [&first](const ExactPoint& a, const ExactPoint& b) {
+        return detail::compareAlong(first, a, b) == Sign::negative;
+    });
+    return points;
+}
+
+Result<Fillet> corner(const CurveMeaning& firstMeaning, const CurveMeaning& secondMeaning,
+                      const Curve& first, Point2 pickFirst, const Curve& second,
                       Point2 pickSecond) {
     const auto common = intersect(first, Extension::extended, second, Extension::extended);
     if (!common.hasValue()) {
@@ -420,11 +734,11 @@ Result<Fillet> corner(const Curve& first, Point2 pickFirst, const Curve& second,
         result.outcome = TangencyOutcome::none;
         return result;
     }
-    const auto& point =
-        found.points[nearestOf(found.points.size(), pickFirst, pickSecond, [&](std::size_t i) {
-            const Point2 p = found.points[i].point;
-            return std::pair<Point2, Point2>{p, p};
-        })];
+    const auto index = nearestOf(found.points.size(), pickFirst, pickSecond, [&](std::size_t i) {
+        const Point2 p = found.points[i].point;
+        return std::pair<Point2, Point2>{p, p};
+    });
+    const auto& point = found.points[index];
     result.outcome = TangencyOutcome::found;
     result.center = point.point;
     result.radius = 0.0;
@@ -432,7 +746,23 @@ Result<Fillet> corner(const Curve& first, Point2 pickFirst, const Curve& second,
     result.onSecond = TangencyPoint{point.point, point.onSecond};
     result.arc = Arc{point.point, 0.0, 0.0, 0.0};
     result.bulge = 0.0;
-    return result;
+
+    // Rule 5, without an arc: the exact corner.
+    const auto corners = exactCorners(firstMeaning, secondMeaning);
+    assert(corners.size() == found.points.size() && "the same points as intersect()");
+    const auto& exact = corners[index];
+    assert(detail::nearestPoint(exact).x == point.point.x &&
+           detail::nearestPoint(exact).y == point.point.y && "the same corner as intersect()");
+    Tower tower;
+    const auto exactCorner = detail::towerPoint(tower, exact);
+    if (!exactCorner.has_value()) {
+        // An empty tower always has room for the one root of an exact point.
+        assert(false && "an empty tower takes one root");
+        return Diagnosis{DiagnosisCode::outOfDomain, kRadiusInput,
+                         "the exact corner needs more roots than a tower holds"};
+    }
+    return withPickedParts(result, tower, firstMeaning, *exactCorner, pickFirst, secondMeaning,
+                           *exactCorner, pickSecond);
 }
 
 // --- Rule 3: the tangent circle -----------------------------------------------
@@ -480,8 +810,9 @@ Result<Fillet> tangentFillet(const CurveMeaning& firstMeaning, const CurveMeanin
             return std::pair<Point2, Point2>{circle.onFirst.point, circle.onSecond.point};
         })];
     const auto& circle = chosen.circle;
-    const auto arc = arcBetween(circle.center, radius, circle.onFirst.point, circle.onSecond.point,
-                                turningOf(chosen));
+    const Turning turning = turningOf(chosen);
+    const auto arc =
+        arcBetween(circle.center, radius, circle.onFirst.point, circle.onSecond.point, turning);
     result.outcome = TangencyOutcome::found;
     result.center = circle.center;
     result.radius = radius;
@@ -492,7 +823,21 @@ Result<Fillet> tangentFillet(const CurveMeaning& firstMeaning, const CurveMeanin
     if (middleBeyondDomain(result.onFirst.point, result.onSecond.point, result.bulge)) {
         return constructionBeyond(kMiddleBeyond);
     }
-    return result;
+    // Rule 5.
+    const auto& tower = chosen.tower;
+    if (turning == Turning::none) {
+        return withPickedParts(result, tower, firstMeaning, chosen.onFirst, pickFirst,
+                               secondMeaning, chosen.onSecond, pickSecond);
+    }
+    // A half turn is counterclockwise (rule 4). The arc leaves the second
+    // point toward the first against its direction of travel.
+    const Turn atFirst = turning == Turning::clockwise ? Turn::clockwise : Turn::counterclockwise;
+    const Turn atSecond =
+        atFirst == Turn::counterclockwise ? Turn::clockwise : Turn::counterclockwise;
+    return withContinuingParts(
+        result, firstMeaning, secondMeaning,
+        continuingAt(tower, firstMeaning, chosen.onFirst, chosen.center, atFirst),
+        continuingAt(tower, secondMeaning, chosen.onSecond, chosen.center, atSecond));
 }
 
 }  // namespace
@@ -556,7 +901,7 @@ Result<Fillet> fillet(const Curve& first, Point2 pickFirst, const Curve& second,
         return semicircle(meaningOfFirst, *firstLine, meaningOfSecond, *secondLine, pickFirst);
     }
     if (radius == 0.0) {
-        return corner(first, pickFirst, second, pickSecond);
+        return corner(meaningOfFirst, meaningOfSecond, first, pickFirst, second, pickSecond);
     }
     return tangentFillet(meaningOfFirst, meaningOfSecond, first, pickFirst, second, pickSecond,
                          radius);
