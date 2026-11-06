@@ -1,0 +1,147 @@
+{
+  "versione": 1,
+  "id": "parallela-polilinea-autocad-caso-g-conca-d2",
+  "componente": "geom2d",
+  "descrizione": "#22, caso g di autocad-offset.dxf (conca aperta con un arco di raggio 3, da 3-offset.scr), d=+2: l'arco diventa di raggio 1 e due archi di giunzione di raggio 2 lo raccordano ai segmenti; coincide con ciò che AutoCAD ha disegnato (handle 275).",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          450,
+          0,
+          0
+        ],
+        [
+          470,
+          0,
+          1
+        ],
+        [
+          476,
+          0,
+          0
+        ],
+        [
+          496,
+          0,
+          0
+        ]
+      ],
+      "chiusa": false
+    },
+    "distanza": 2,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "done",
+    "motivo": "none",
+    "semplice": true,
+    "polilinea": {
+      "vertici": [
+        [
+          {
+            "valore": 450.0,
+            "tolleranza": 1.7621459846850485e-12
+          },
+          {
+            "valore": 2.0,
+            "tolleranza": 1.7621459846850485e-12
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 470.0,
+            "tolleranza": 1.7621459846850485e-12
+          },
+          {
+            "valore": 2.0,
+            "tolleranza": 1.7621459846850485e-12
+          },
+          {
+            "valore": -0.41421356237309515,
+            "tolleranza": 9.968203001691552e-12
+          }
+        ],
+        [
+          {
+            "valore": 472.0,
+            "tolleranza": 1.7621459846850485e-12
+          },
+          {
+            "valore": 0.0,
+            "tolleranza": 1.7621459846850485e-12
+          },
+          {
+            "valore": 1.0,
+            "tolleranza": 1.4097167877480388e-11
+          }
+        ],
+        [
+          {
+            "valore": 474.0,
+            "tolleranza": 1.7621459846850485e-12
+          },
+          {
+            "valore": 0.0,
+            "tolleranza": 1.7621459846850485e-12
+          },
+          {
+            "valore": -0.41421356237309515,
+            "tolleranza": 9.968203001691552e-12
+          }
+        ],
+        [
+          {
+            "valore": 476.0,
+            "tolleranza": 1.7621459846850485e-12
+          },
+          {
+            "valore": 2.0,
+            "tolleranza": 1.7621459846850485e-12
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 496.0,
+            "tolleranza": 1.7621459846850485e-12
+          },
+          {
+            "valore": 2.0,
+            "tolleranza": 1.7621459846850485e-12
+          },
+          "0"
+        ]
+      ],
+      "chiusa": false
+    },
+    "origini": [
+      {
+        "origine": "source",
+        "indice": "0"
+      },
+      {
+        "origine": "gap",
+        "indice": "1"
+      },
+      {
+        "origine": "source",
+        "indice": "1"
+      },
+      {
+        "origine": "gap",
+        "indice": "2"
+      },
+      {
+        "origine": "source",
+        "indice": "2"
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Ingresso dallo script 3-offset.scr (copia in tests/corpus/esterni/): PLINE 450,0 470,0, arco di centro 473,0 fino a 476,0 (in senso antiorario, semicerchio che passa per (473,-3): bulge 1; il DXF autocad-offset.dxf, handle 274, lo scrive 0.9999999999999998), segmento fino a 496,0. Il punto indicato (480,10) è a sinistra: d positiva. Per un arco antiorario la sinistra è l'interno: il raggio diventa 3-d. Passo 1: pezzo 0 su y=2 da (450,2) a (470,2); pezzo 1 arco di centro (473,0) e raggio 1 da (472,0) a (474,0) passando per (473,-1); pezzo 2 su y=2 da (476,2) a (496,2). Passo 2, vertice 1 (470,0): la retta y=2 non incontra il cerchio di centro (473,0) e raggio 1 (|y|<=1); i pezzi di partenza sono consecutivi, quindi arco di raggio 2 centrato in (470,0) da (470,2) a (472,0); nel vertice la tangente passa da +x a -y, svolta oraria: quarto di giro orario, bulge tan(-pi/8) = -(sqrt(2)-1). Vertice 2 (476,0), allo stesso modo: arco orario di raggio 2 da (474,0) a (476,2) (tangente da +y a +x), bulge -(sqrt(2)-1). Gli estremi delle giunzioni distano esattamente 2 dal vertice. Passo 3: nessun pezzo è tagliato né gira al contrario; passo 4: nessun punto. Semplice vero; origini source 0, gap 1, source 1, gap 2, source 2. Controlli finali: i pezzi consecutivi sono tangenti nel vertice comune (retta y=2 e cerchio di raggio 2 con centro a quota 0; cerchi di raggio 2 e 1 con centri a distanza 3); i pezzi non consecutivi sono disgiunti (i segmenti su y=2 occupano x in [450,470] e [476,496]); il risultato non tocca la polilinea di partenza (il cerchio di giunzione in (470,0) incontra quello di raggio 3 solo in (1412/3, ±sqrt(32)/3), il punto con y>0 non è sull'arco di partenza e quello con y<0 non è sulla giunzione). Tolleranze: M = 496 (estremi e punto m (473,-3) dell'ingresso; |d|=2); vertici 2^-48*M = 1.7621459846850485e-12. Bulge costruiti con la regola dell'ADR 0013 (#160) usata dai casi dell'asola: 4E/corda con E = 2^-46*S e S = max(M,|p|) = 496 su ogni arco; giunzioni, corda sqrt(8): 9.968203001691552e-12; arco di raggio 1, corda 2: 1.4097167877480388e-11; arrotondati per eccesso. Bulge 0 dei segmenti esatti. Confronto con AutoCAD (handle 275): sei vertici (450,2) (470,2) (472,-3e-16) (474,3e-16) (476,2) (496,2) con bulge -0.4142135623730951, 1.0, -0.4142135623730951 e 0: stessi valori entro la precisione del file, nessuna divergenza. Nessun valore ricavato eseguendo solid-space."
+  }
+}

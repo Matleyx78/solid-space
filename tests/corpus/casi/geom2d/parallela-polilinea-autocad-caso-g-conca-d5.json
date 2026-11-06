@@ -1,0 +1,45 @@
+{
+  "versione": 1,
+  "id": "parallela-polilinea-autocad-caso-g-conca-d5",
+  "componente": "geom2d",
+  "descrizione": "#22, caso g di autocad-offset.dxf (conca aperta con un arco di raggio 3, da 3-offset.scr), d=+5: l'arco sparisce e i due segmenti spostati stanno sulla stessa retta, quindi la giunzione resta aperta (#97). AutoCAD fa diversamente: disegna due archi di raggio 5 centrati in (470,0) e (476,0) che si incontrano in (473,4) (handle 276).",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          450,
+          0,
+          0
+        ],
+        [
+          470,
+          0,
+          1
+        ],
+        [
+          476,
+          0,
+          0
+        ],
+        [
+          496,
+          0,
+          0
+        ]
+      ],
+      "chiusa": false
+    },
+    "distanza": 5,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "failed",
+    "motivo": "openJoint",
+    "semplice": false
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Ingresso dallo script 3-offset.scr (copia in tests/corpus/esterni/): PLINE 450,0 470,0, arco di centro 473,0 fino a 476,0 (in senso antiorario, semicerchio che passa per (473,-3): bulge 1; il DXF autocad-offset.dxf, handle 274, lo scrive 0.9999999999999998), segmento fino a 496,0. Il punto indicato (480,10) è a sinistra: d positiva. Per un arco antiorario la sinistra è l'interno: il raggio diventa 3-d. Passo 1: l'arco ha raggio 3-5 = -2 <= 0 e sparisce; i segmenti vanno su y=5, da (450,5) a (470,5) e da (476,5) a (496,5). Passo 2: i pezzi 0 e 2 restano vicini, con estremi diversi; i loro prolungamenti sono la stessa retta y=5, che si sovrappone e non si incontra in punti isolati (ADR 0012, punto 4); i pezzi di partenza 0 e 2 non sono consecutivi (il pezzo 1 è sparito, non è un punto scartato), quindi non c'è arco di giunzione: failed con openJoint. Semplice falso perché un pezzo è sparito. AutoCAD (handle 276) disegna invece cinque vertici (450,5) (470,5) (473,4) (476,5) (496,5) con due archi di bulge -0.16227766 centrati negli estremi (470,0) e (476,0) dell'arco sparito: 3^2+4^2 = 5^2. Atteso deciso dal responsabile il 2026-10-31 (issue #60), come nella scheda P14. Nessun valore ricavato eseguendo solid-space."
+  }
+}
