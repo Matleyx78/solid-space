@@ -8,6 +8,9 @@
   ([ADR 0007](0007-tappe-su-richiesta.md)); lo decide il responsabile.
 - **Corretto:** 2026-11-05 — i runner di Windows e macOS restano `windows-latest`
   e `macos-latest`, per scelta e non per dimenticanza; lo decide il responsabile.
+- **Corretto:** 2026-11-05 (seconda correzione) — i runner di Windows e macOS sono
+  fissati alle immagini più recenti, `windows-2025-vs2026` e `macos-26`, invece di
+  `latest`; lo decide il responsabile.
 
 ## Contesto
 
@@ -68,15 +71,15 @@ vale anche per una libreria.
 - Le due opzioni e i preset sono parte dell'interfaccia di build: cambiarli è una
   decisione condivisa con Tecnigrafo, che incorporerà la libreria.
 - I nomi dei controlli sono stabili: il ruleset di `main` li elenca per nome.
-- **Runner:** Linux resta fissato a `ubuntu-24.04`; Windows e macOS restano
-  `windows-latest` e `macos-latest`. Fissarli a `windows-2022` e `macos-15` è stato
-  provato (pull request #199) e fa fallire la CI: il codice è scritto per le immagini
-  attuali (Visual Studio 2026 dall'8–15 giugno 2026, macOS 26 da metà giugno 2026,
-  secondo l'[annuncio di GitHub](https://github.blog/changelog/2026-05-14-github-actions-upcoming-image-migrations))
-  e non compila sulle precedenti. Su `windows-2022` l'errore è C2220 (un avviso
-  trattato come errore) in `tests/robust/tolerance_test.cpp`; su `macos-15` manca
-  una `std::from_chars` adatta a `double` in `tests/corpus/esegui/plane_data.cpp`.
-  Sono tutti due nei test, non nella libreria. Il rischio accettato è che
-  un'ulteriore migrazione delle immagini renda la CI rossa senza che nessuno tocchi
-  il codice: in quel caso si corregge il codice o si fissa l'immagine con una nuova
-  correzione di questo ADR.
+- **Runner:** `ubuntu-24.04` (`ubuntu-26.04` è ancora in anteprima),
+  `windows-2025-vs2026` e `macos-26`: le immagini più recenti, fissate, non
+  `latest`. Il codice è scritto per queste (Visual Studio 2026 e macOS 26, che
+  `latest` indicava già, secondo l'[annuncio di GitHub](https://github.blog/changelog/2026-05-14-github-actions-upcoming-image-migrations)),
+  e non compila sulle precedenti: provato nella pull request #199 (chiusa senza
+  unire), `windows-2022` dà l'errore C2220 (un avviso trattato come errore) in
+  `tests/robust/tolerance_test.cpp` e `macos-15` non ha una `std::from_chars`
+  adatta a `double` in `tests/corpus/esegui/plane_data.cpp`; sono due punti nei
+  test, non nella libreria. Fissare serve a non far cambiare il compilatore senza
+  che nessuno lo decida: una versione nuova si adotta con una correzione di questo
+  ADR, dopo averla provata. Tecnigrafo, che compila la libreria con i propri
+  runner, andrebbe allineato a queste stesse immagini: è una sua decisione.
