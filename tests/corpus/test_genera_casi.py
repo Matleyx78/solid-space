@@ -11,7 +11,11 @@ import unittest
 
 from genera_casi import generate, value_cpp
 
-EXECUTABLE = sys.argv.pop(1) if len(sys.argv) > 1 else None
+# CMake passes the corpus executable as the first argument when it runs this
+# file as a script. Read it only then: under another runner (pytest,
+# python -m unittest) sys.argv holds that runner's options, not the executable,
+# and the test that needs it is skipped.
+EXECUTABLE = sys.argv.pop(1) if __name__ == '__main__' and len(sys.argv) > 1 else None
 
 
 class GeneratorTest(unittest.TestCase):
