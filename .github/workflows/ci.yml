@@ -168,7 +168,7 @@ jobs:
     name: Windows (MSVC)
     needs: references
     if: needs.references.outputs.build == 'true'
-    runs-on: windows-latest
+    runs-on: windows-2025-vs2026
     defaults:
       run:
         shell: bash
@@ -194,7 +194,7 @@ jobs:
     name: macOS (Apple Clang)
     needs: references
     if: needs.references.outputs.build == 'true'
-    runs-on: macos-latest
+    runs-on: macos-26
     steps:
       - uses: actions/checkout@v4
         with:
