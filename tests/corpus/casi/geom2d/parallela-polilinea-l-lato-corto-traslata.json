@@ -1,0 +1,73 @@
+{
+  "versione": 1,
+  "id": "parallela-polilinea-l-lato-corto-traslata",
+  "componente": "geom2d",
+  "descrizione": "#22, caso 3 (tabella dell'ADR 0012): L aperta con il lato corto (4) minore di d=5 verso l'interno; il lato corto gira al contrario e si toglie, l'estremo libero del lato lungo conserva il taglio della giunzione (PR #99). Coordinate traslate di 1e6 su entrambi gli assi (#22, caso 6).",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          1000000,
+          1000000,
+          0
+        ],
+        [
+          1000004,
+          1000000,
+          0
+        ],
+        [
+          1000004,
+          1000020,
+          0
+        ]
+      ],
+      "chiusa": false
+    },
+    "distanza": 5,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "done",
+    "motivo": "none",
+    "semplice": false,
+    "polilinea": {
+      "vertici": [
+        [
+          {
+            "valore": 999999.0,
+            "tolleranza": 3.552784733074077e-09
+          },
+          {
+            "valore": 1000005.0,
+            "tolleranza": 3.552784733074077e-09
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": 999999.0,
+            "tolleranza": 3.552784733074077e-09
+          },
+          {
+            "valore": 1000020.0,
+            "tolleranza": 3.552784733074077e-09
+          },
+          "0"
+        ]
+      ],
+      "chiusa": false
+    },
+    "origini": [
+      {
+        "origine": "source",
+        "indice": "1"
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Pezzi di partenza: 0 da (1000000,1000000) a (1000004,1000000) in direzione +x, 1 da (1000004,1000000) a (1000004,1000020) in direzione +y. Con d=+5 (a sinistra) il passo 1 sposta il pezzo 0 sulla retta y=1000005, da (1000000,1000005) a (1000004,1000005), e il pezzo 1 sulla retta x=999999, da (999999,1000000) a (999999,1000020). Passo 2: le due rette si incontrano nel solo punto (999999,1000005); il pezzo 0 dovrebbe finire lì, prima del suo inizio (1000000,1000005) lungo +x, il pezzo 1 comincia lì. Passo 3: il pezzo 0 gira al contrario e si toglie; il pezzo 1 resta senza vicino e conserva il taglio, quindi va da (999999,1000005) a (999999,1000020), origine source 1. Nessun pezzo ridotto a un punto; semplice falso perché un pezzo è stato tolto. Controlli finali: un solo pezzo, dentro il dominio; la sua distanza minima dalla polilinea di partenza è sqrt(26) (da (999999,1000005) a (1000000,1000000)), quindi non la incontra. M = max(magnitudine dell'ingresso, |d|) = 1000020; i vertici hanno tolleranza 2^-48*max(M,|p|) = 1000020*2^-48 = 3.552784733074077e-09, esatta in binary64. I bulge 0 dei segmenti sono esatti. Conferma indipendente: il test di unità OffsetPolyline.FreeEndKeepsItsCut (caso base). Nessun valore ricavato eseguendo solid-space."
+  }
+}

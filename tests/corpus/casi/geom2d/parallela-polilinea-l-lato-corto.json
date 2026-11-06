@@ -1,0 +1,73 @@
+{
+  "versione": 1,
+  "id": "parallela-polilinea-l-lato-corto",
+  "componente": "geom2d",
+  "descrizione": "#22, caso 3 (tabella dell'ADR 0012): L aperta con il lato corto (4) minore di d=5 verso l'interno; il lato corto gira al contrario e si toglie, l'estremo libero del lato lungo conserva il taglio della giunzione (PR #99).",
+  "ingresso": {
+    "operazione": "offsetPolyline",
+    "polilinea": {
+      "vertici": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          20,
+          0
+        ]
+      ],
+      "chiusa": false
+    },
+    "distanza": 5,
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "done",
+    "motivo": "none",
+    "semplice": false,
+    "polilinea": {
+      "vertici": [
+        [
+          {
+            "valore": -1.0,
+            "tolleranza": 7.105427357601002e-14
+          },
+          {
+            "valore": 5.0,
+            "tolleranza": 7.105427357601002e-14
+          },
+          "0"
+        ],
+        [
+          {
+            "valore": -1.0,
+            "tolleranza": 7.105427357601002e-14
+          },
+          {
+            "valore": 20.0,
+            "tolleranza": 7.105427357601002e-14
+          },
+          "0"
+        ]
+      ],
+      "chiusa": false
+    },
+    "origini": [
+      {
+        "origine": "source",
+        "indice": "1"
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Pezzi di partenza: 0 da (0,0) a (4,0) in direzione +x, 1 da (4,0) a (4,20) in direzione +y. Con d=+5 (a sinistra) il passo 1 sposta il pezzo 0 sulla retta y=5, da (0,5) a (4,5), e il pezzo 1 sulla retta x=-1, da (-1,0) a (-1,20). Passo 2: le due rette si incontrano nel solo punto (-1,5); il pezzo 0 dovrebbe finire lì, prima del suo inizio (0,5) lungo +x, il pezzo 1 comincia lì. Passo 3: il pezzo 0 gira al contrario e si toglie; il pezzo 1 resta senza vicino e conserva il taglio, quindi va da (-1,5) a (-1,20), origine source 1. Nessun pezzo ridotto a un punto; semplice falso perché un pezzo è stato tolto. Controlli finali: un solo pezzo, dentro il dominio; la sua distanza minima dalla polilinea di partenza è sqrt(26) (da (-1,5) a (0,0)), quindi non la incontra. M = max(magnitudine dell'ingresso, |d|) = 20; i vertici hanno tolleranza 2^-48*max(M,|p|) = 20*2^-48 = 7.105427357601002e-14, esatta in binary64. I bulge 0 dei segmenti sono esatti. Conferma indipendente: il test di unità OffsetPolyline.FreeEndKeepsItsCut (caso base). Nessun valore ricavato eseguendo solid-space."
+  }
+}
