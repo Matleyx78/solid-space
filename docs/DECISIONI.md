@@ -547,3 +547,60 @@ i rimandi ai documenti che cambia.
   `ubuntu-24.04`. L'allineamento di Tecnigrafo alle stesse immagini è una
   decisione di quel repository. Nell'[ADR 0006](adr/0006-build-ci-e-sottomoduli.md),
   seconda riga **Corretto:**.
+
+- **2026-11-07: la pausa tra le tappe e le decisioni della pausa dopo la 0.2.**
+  Il responsabile decide, nella pausa dopo la 0.2 di solid-space e la 0.7 di
+  Tecnigrafo (in Tecnigrafo la decisione gemella, con la parte che riguarda
+  solo quel progetto: interfaccia, ambienti, idee). Qui vale questo:
+  - **La pausa tra le tappe.** Chiuse le tappe, con tutto fermo, il
+    responsabile decide le idee aperte, le proposte di metodo e le correzioni
+    dei documenti; una pull request di soli documenti per repository le
+    applica; solo dopo si apre la tappa successiva. La pull request di chiusura
+    non le decide ([ROADMAP.md](ROADMAP.md), "Chiudere una tappa";
+    [LAVORO-IN-PARALLELO.md](LAVORO-IN-PARALLELO.md), sezione 8).
+  - **Proposte di metodo** (#169): si applicano tutte, con lo stesso testo di
+    Tecnigrafo, perché gli agenti di solid-space leggono solo i documenti di
+    solid-space:
+    - una dipendenza da una pull request si scrive come la issue che quella
+      pull request chiude (LAVORO-IN-PARALLELO.md, sezione 1);
+    - prefissi `PS`/`RS`/`CS` per solid-space e `PT`/`RT`/`CT` per Tecnigrafo,
+      dalla tappa che corrisponde alla 0.8 di Tecnigrafo, senza rinominare
+      l'esistente (LAVORO-IN-PARALLELO.md, "Come leggere i riferimenti");
+    - prima di fermarsi per un dubbio anche chi realizza cerca le regole
+      esistenti ([AGENTS.md](../AGENTS.md), "Quando fermarsi");
+    - chi rivede usa un modello diverso dall'autore, e chi scrive i riferimenti
+      un modello diverso da chi realizza; pull request e verbali dicono il
+      modello (AGENTS.md, "Commit e pull request"; LAVORO-IN-PARALLELO.md,
+      "Chi fa cosa" e sezione 6; [agenti/revisione.md](agenti/revisione.md));
+    - i riferimenti delicati (curve parallele, raccordi, intersezioni) a un
+      agente di fascia forte; a Gemini 3.8 Flash solo i riferimenti ordinari
+      (LAVORO-IN-PARALLELO.md, "Modello e impegno");
+    - chi trova riferimenti che gli sembrano sbagliati li guarda tutti e si
+      ferma una volta sola, con un solo commento
+      ([agenti/pacchetto.md](agenti/pacchetto.md));
+    - **«Symmetric» di `intersection.hpp` si tiene**, senza modifiche:
+      costa quasi niente, il corpus la controlla con gli argomenti scambiati e
+      l'[ADR 0013](adr/0013-esatto-dove-serve.md) la lascia (valutazione nella
+      #169);
+    - il commit di solid-space a cui punta Tecnigrafo lo scrive e lo
+      controlla Tecnigrafo, in sola lettura su questo repository;
+      `scripts/ci-attendi.sh` qui filtra già su `ci.yml`.
+  - **Immagini della CI.** Restano `windows-2025-vs2026` e `macos-26`, con
+    Linux `ubuntu-24.04` (decisione del 2026-11-05 sui runner fissati alle
+    immagini più recenti, che supera quella su `latest`): ora valgono anche per
+    Tecnigrafo.
+  - **Lavori che toccano solid-space** dalla tappa 0.7.5 di Tecnigrafo
+    ([scheda](https://github.com/Matleyx78/tecnigrafo/blob/main/docs/tappe/0.7.5-correzione-di-rotta.md),
+    sezione 5): `actions/checkout` allineato a quello di Tecnigrafo (qui
+    `@v4`, là `@v5`); il controllo incrociato simmetrico con Tecnigrafo
+    (`tecnigrafo-core.yml` e il suo gemello); i prefissi nuovi in
+    `tests/corpus/valida_corpus.py`; la riga del modello in
+    `.github/pull_request_template.md`. Non sono richieste e non portano
+    contratto: si fanno **fuori tappa**, come la #202, senza una tappa
+    corrispondente. Interfaccia, ambienti e documenti multipli della stessa tappa
+    non riguardano solid-space.
+  - **Documenti da sistemare.** La #192 è vuota: si chiude senza correzioni.
+  - **Una chat su due repository.** Per questa pausa il responsabile ha
+    autorizzato la chat di Tecnigrafo a scrivere anche qui (commenti, chiusura
+    di issue, questa pull request), in deroga ad [AGENTS.md](../AGENTS.md),
+    "Dove puoi scrivere", che non cambia.
