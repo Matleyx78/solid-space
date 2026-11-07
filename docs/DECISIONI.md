@@ -596,7 +596,8 @@ i rimandi ai documenti che cambia.
     (`tecnigrafo-core.yml` e il suo gemello); i prefissi nuovi in
     `tests/corpus/valida_corpus.py`; la riga del modello in
     `.github/pull_request_template.md`. Non sono richieste e non portano
-    contratto. Interfaccia, ambienti e documenti multipli della stessa tappa
+    contratto: si fanno **fuori tappa**, come la #202, senza una tappa
+    corrispondente. Interfaccia, ambienti e documenti multipli della stessa tappa
     non riguardano solid-space.
   - **Documenti da sistemare.** La #192 è vuota: si chiude senza correzioni.
   - **Una chat su due repository.** Per questa pausa il responsabile ha
