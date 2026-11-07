@@ -78,6 +78,11 @@ stesso controllo non passa ancora: non aspettare la CI, togli l'etichetta e
 termina. Per un caso di riferimento sbagliato scrivi nella issue
 ([pacchetto.md](docs/agenti/pacchetto.md)).
 
+Prima di fermarti per un dubbio (un buco, un caso che sembra sbagliato),
+controlla se una regola esistente lo decide già, come fa chi rivede
+([revisione.md](docs/agenti/revisione.md), «A che cosa serve la revisione»): se
+sì, applicala, scrivilo nella pull request e vai avanti.
+
 **Un buco nel contratto** (un punto che intestazione, ADR e scheda non
 determinano, o su cui si contraddicono): **fermati subito**, prima di scrivere
 codice o casi, non scegliere tu e apri la issue come dice
@@ -109,6 +114,9 @@ fascia (ADR 0013, punto 4), e nessun caso lo impone.
 - Niente `git commit -s`: il `Signed-off-by` lo aggiunge il responsabile, che ne
   risponde.
 - Nel commit `Assisted-by: <strumento>`, o la `Co-Authored-By` del tuo strumento.
+- Nella sezione sull'uso dell'IA della pull request scrivi lo strumento **e il
+  modello** (per esempio «Claude Code, Claude Opus 5.5»); lo stesso nei verbali
+  di revisione.
 - Una pull request per pacchetto, da `main` aggiornato, con che cosa cambia, quali
   file, che cosa non hai verificato; chiude la issue con `Closes #<numero>`
   («Chiude» non basta).

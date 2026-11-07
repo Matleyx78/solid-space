@@ -71,12 +71,14 @@ Chi scrive i casi segue [riferimenti.md](riferimenti.md).
 ### In un pacchetto di lavoro
 
 - Non modificare i casi in `tests/corpus/` che non sono del tuo pacchetto.
-- Se un caso ti sembra sbagliato, **fermati del tutto**, subito, anche se il
-  resto è pronto:
+- Se un caso ti sembra sbagliato, non fermarti al primo: guarda **tutti** i
+  casi del pacchetto, senza cambiare nulla, e poi **fermati del tutto una volta
+  sola**, anche se il resto è pronto:
   1. non adattare il codice al riferimento che ritieni sbagliato né il
      riferimento al codice; il caso resta com'è;
   2. non aprire la pull request e non avviare la CI;
-  3. scrivi nella issue (e all'utente) il nome del caso, il valore atteso,
+  3. scrivi nella issue (e all'utente), **in un solo commento** per tutti i
+     casi che ti sembrano sbagliati, il nome di ciascuno, il valore atteso,
      quello che dà il programma e perché il riferimento ti sembra sbagliato;
   4. se hai lavoro non pubblicato, pubblica il ramo **senza** pull request e
      scrivi nel commento il nome del ramo;

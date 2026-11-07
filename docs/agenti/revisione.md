@@ -39,6 +39,11 @@ Il revisore serve a far arrivare il lavoro al merge, non a fermarlo. Blocca solo
 un **errore vero** o una **regola persa**. Se una regola esistente risponde, la
 applica e va avanti; i dubbi di forma li scrive come **non bloccanti**.
 
+Il revisore usa un **modello diverso** da quello dell'autore, che la pull
+request dichiara nella sezione sull'uso dell'IA: se è il suo stesso modello,
+non la rivede e lo dice al responsabile. Il suo verbale dice il modello usato
+([DECISIONI.md](../DECISIONI.md), 2026-11-07).
+
 ## Prima di dichiarare un buco
 
 Prima di dichiarare un buco, il revisore controlla se una regola esistente lo

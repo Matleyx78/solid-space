@@ -34,6 +34,15 @@ indicare una issue o una pull request.
 Il documento della tappa (`docs/tappe/…`) riporta per ogni pacchetto il numero
 della sua issue; ogni pull request riporta in alto la issue che chiude.
 
+**Prefissi dei due progetti, dalla tappa di Tecnigrafo 0.8.** Perché nelle chat
+non ci siano due «P20» (uno di Tecnigrafo e uno di solid-space), i pacchetti di
+solid-space si scrivono `PS`, `RS`, `CS` (`[0.3-PS5]`, `[0.3-RS5]`, `[0.3-CS]`)
+e quelli di Tecnigrafo `PT`, `RT`, `CT`; i rami seguono (`ps0.3-05-…`). Le
+tappe già chiuse restano con `P`, `R`, `C`, e nulla si rinomina. Valgono dopo il
+pacchetto della tappa 0.7.5 di Tecnigrafo che adegua script e controlli della
+CI, anche `tests/corpus/valida_corpus.py` ([DECISIONI.md](DECISIONI.md),
+2026-11-07).
+
 ## Chi fa cosa
 
 | Chi | Etichetta | Lavoro |
@@ -51,7 +60,10 @@ usano la stessa etichetta: `AA-Presa in carico` basta perché due sessioni non
 prendano la stessa issue. Le issue aperte prima con `agente:claude-2` le prende
 qualunque sessione di Claude; per le nuove l'etichetta non si usa più.
 
-Chi lavora a un pacchetto non scrive i suoi riferimenti, e viceversa. Le
+Chi lavora a un pacchetto non scrive i suoi riferimenti, e viceversa. Vale
+anche per i **modelli**: chi scrive i riferimenti usa un modello diverso da chi
+realizza il pacchetto, e chi rivede una pull request un modello diverso da chi
+l'ha scritta; pull request e verbali dicono il modello usato. Le
 etichette servono perché gli agenti lavorano tutti attraverso l'account GitHub
 del responsabile, e non si possono distinguere in altro modo. La lista delle
 issue filtrata per etichetta mostra in ogni momento chi sta facendo cosa.
@@ -83,7 +95,9 @@ dice, per ogni pacchetto:
   possono partire insieme. Nessuna eccezione: nemmeno l'elenco dei casi in
   attesa è un file condiviso, perché è la cartella `tests/corpus/in-attesa/` con
   un file per blocco di riferimenti, che il pacchetto di riferimenti aggiunge e
-  quello di lavoro cancella (ADR 0005, punto 4).
+  quello di lavoro cancella (ADR 0005, punto 4). Una dipendenza da una pull
+  request si scrive come la issue che quella pull request chiude: GitHub non
+  accetta una issue «bloccata da» una pull request.
 
 ### La revisione del contratto
 
@@ -148,9 +162,11 @@ la allinea anche nell'altro.
 | **leggero** | pacchetti facili: documentazione, note di rilascio, piccoli ritocchi; riferimenti ordinari e revisioni | Haiku 5.5 alto (38) o Sonnet 5.5 medio (41) | luna alto (32) o sol light (42) | 3.8 Flash medio (40) o alto (41) |
 
 Gemini 3.8 Flash sta nella fascia leggera: i riferimenti con calcoli delicati
-(predicati, tolleranze, casi limite geometrici) li scrive un agente di fascia
-forte, diverso da chi farà il pacchetto di lavoro: di norma Codex per i
-pacchetti di Claude, e Claude per quelli di Codex. Gemini 4 Argon (53) ha una
+(predicati, tolleranze, casi limite geometrici; in particolare curve parallele,
+raccordi e intersezioni) li scrive un agente di fascia forte, diverso da chi
+farà il pacchetto di lavoro: di norma Codex per i pacchetti di Claude, e Claude
+per quelli di Codex. A Gemini 3.8 Flash vanno solo i riferimenti ordinari: i
+casi senza calcoli delicati. Gemini 4 Argon (53) ha una
 capacità da fascia forte secondo la stessa misura, ma una quota settimanale che
 basta a uno o due pacchetti di riferimenti: il piano non gli assegna niente, e
 il responsabile gli passa un pacchetto quando è disponibile.
@@ -332,8 +348,8 @@ un agente senza pacchetto preciso sconfina.
 - Se due pacchetti toccano lo stesso file comune (per esempio
   `tests/CMakeLists.txt`), vale una regola fissa: **chi arriva dopo si aggiorna**.
   Si chiede all'agente di quella pull request di risolvere il conflitto.
-- Quando possibile, una pull request scritta da un modello viene rivista da un
-  modello diverso prima del merge: di norma Gemini rivede le pull request di
+- Una pull request scritta da un modello viene rivista da un modello diverso
+  prima del merge, mai dallo stesso: di norma Gemini rivede le pull request di
   Claude e di Codex. Le pull request impegnative di Claude il responsabile può
   farle rivedere anche a Copilot, che consuma i crediti mensili di Copilot Pro:
   solo dove una seconda opinione forte conta (guida del responsabile, in
@@ -362,3 +378,11 @@ la **pull request di chiusura**, sul ramo `docs/chiusura-X.Y`, che:
 Il responsabile esegue la prova manuale (sezione 7 del documento della tappa),
 compila la tabella, unisce la pull request e pubblica la versione (regole in
 [ROADMAP.md](ROADMAP.md), "Chiudere una tappa").
+
+La pull request di chiusura non decide le regole di metodo né le idee: lo si fa
+dopo, nella **pausa tra le tappe**. Con tutto fermo, il responsabile decide le
+idee aperte, le proposte della issue «[X.Y] Proposte di metodo» e le correzioni
+dei documenti, che si applicano in una pull request di soli documenti; solo
+dopo si apre la tappa successiva (guida del responsabile, in Tecnigrafo:
+[GUIDA-RESPONSABILE.md](https://github.com/Matleyx78/tecnigrafo/blob/main/docs/GUIDA-RESPONSABILE.md),
+B13).

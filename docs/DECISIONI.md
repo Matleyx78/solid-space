@@ -547,3 +547,53 @@ i rimandi ai documenti che cambia.
   `ubuntu-24.04`. L'allineamento di Tecnigrafo alle stesse immagini è una
   decisione di quel repository. Nell'[ADR 0006](adr/0006-build-ci-e-sottomoduli.md),
   seconda riga **Corretto:**.
+
+- **2026-11-07: la pausa tra le tappe e le decisioni della pausa dopo la 0.2.**
+  Gemella della decisione dello stesso giorno in Tecnigrafo
+  ([DECISIONI.md di Tecnigrafo](https://github.com/Matleyx78/tecnigrafo/blob/main/docs/DECISIONI.md)).
+  Il responsabile decide:
+  - **Immagini della CI.** I due progetti stanno su `windows-2025-vs2026` e
+    `macos-26`, con Linux `ubuntu-24.04`: in solid-space resta la decisione
+    precedente sui runner fissati alle immagini più recenti, che supera quella
+    su `windows-latest` e `macos-latest`. Tecnigrafo si allinea nella sua
+    tappa 0.7.5, che annulla la scelta della sua #526 (`windows-2025` e
+    `macos-15`).
+  - **La pausa tra le tappe.** Chiuse le tappe, con tutto fermo, il
+    responsabile decide le idee aperte, le proposte di metodo e le correzioni
+    dei documenti; una pull request di soli documenti per repository le
+    applica; solo dopo si apre la tappa successiva. La pull request di chiusura
+    non le decide ([ROADMAP.md](ROADMAP.md), "Chiudere una tappa";
+    [LAVORO-IN-PARALLELO.md](LAVORO-IN-PARALLELO.md), sezione 8).
+  - **Proposte di metodo** (#169): si applicano tutte, con lo stesso testo di
+    Tecnigrafo per le voci comuni:
+    - una dipendenza da una pull request si scrive come la issue che quella
+      pull request chiude (LAVORO-IN-PARALLELO.md, sezione 1);
+    - prefissi `PS`/`RS`/`CS` per solid-space e `PT`/`RT`/`CT` per Tecnigrafo,
+      dalla tappa che corrisponde alla 0.8 di Tecnigrafo, senza rinominare
+      l'esistente, dopo il pacchetto della 0.7.5 di Tecnigrafo che adegua
+      script e controlli, anche `tests/corpus/valida_corpus.py`
+      (LAVORO-IN-PARALLELO.md, "Come leggere i riferimenti");
+    - prima di fermarsi per un dubbio anche chi realizza cerca le regole
+      esistenti ([AGENTS.md](../AGENTS.md), "Quando fermarsi");
+    - chi rivede usa un modello diverso dall'autore, e chi scrive i riferimenti
+      un modello diverso da chi realizza; pull request e verbali dicono il
+      modello (AGENTS.md, "Commit e pull request"; LAVORO-IN-PARALLELO.md,
+      "Chi fa cosa" e sezione 6; [agenti/revisione.md](agenti/revisione.md));
+    - i riferimenti delicati (curve parallele, raccordi, intersezioni) a un
+      agente di fascia forte; a Gemini 3.8 Flash solo i riferimenti ordinari
+      (LAVORO-IN-PARALLELO.md, "Modello e impegno");
+    - chi trova riferimenti che gli sembrano sbagliati li guarda tutti e si
+      ferma una volta sola, con un solo commento
+      ([agenti/pacchetto.md](agenti/pacchetto.md));
+    - **«Symmetric» di `intersection.hpp` si tiene**, senza modifiche:
+      costa quasi niente, il corpus la controlla con gli argomenti scambiati e
+      l'[ADR 0013](adr/0013-esatto-dove-serve.md) la lascia (valutazione nella
+      #169);
+    - il commit del sottomodulo di solid-space in Tecnigrafo lo scrive e lo
+      controlla Tecnigrafo, nella sua 0.7.5, senza scrivere in solid-space;
+      `scripts/ci-attendi.sh` qui filtra già su `ci.yml`.
+  - **Documenti da sistemare.** La #192 è vuota: si chiude senza correzioni.
+  - **Una chat su due repository.** Per questa pausa il responsabile ha
+    autorizzato la chat di Tecnigrafo a scrivere anche qui (commenti, chiusura
+    di issue, questa pull request), in deroga ad [AGENTS.md](../AGENTS.md),
+    "Dove puoi scrivere", che non cambia.
