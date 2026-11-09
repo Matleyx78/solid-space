@@ -345,7 +345,9 @@ Result<PolylineOffset> PolylineSteps::assemble(const robust::TolerancePolicy& po
         return towerFull();
     }
     const auto after = [&](std::size_t k) -> const detail::RoundedPoint& {
-        return rounded[closed() ? (k + 1) % total : k + 1];
+        // The point after the last piece of a closed polyline is the first one.
+        const std::size_t next = k + 1;
+        return rounded[closed() && next == total ? 0 : next];
     };
     const auto coincide = [](Point2 a, Point2 b) {
         return std::isfinite(a.x) && std::isfinite(a.y) && a.x == b.x && a.y == b.y;
