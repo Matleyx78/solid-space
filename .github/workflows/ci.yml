@@ -26,7 +26,7 @@ jobs:
       build: ${{ steps.changes.outputs.build }}
       base: ${{ steps.changes.outputs.base }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           submodules: false
@@ -87,7 +87,7 @@ jobs:
     needs: references
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: false
       - run: sudo apt-get update && sudo apt-get install -y clang-format-18
@@ -116,7 +116,7 @@ jobs:
     env:
       SS_BASE_REF: ${{ needs.references.outputs.base }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           submodules: false
@@ -156,7 +156,7 @@ jobs:
           grep -q 'discovery_probe.cpp' "$trial/log"
           grep -q 'discovery_probe_test.cpp' "$trial/log"
           ctest --test-dir "$trial/glob" -R DiscoveryProbe --output-on-failure --no-tests=error
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: risultati-linux
           path: |
@@ -173,7 +173,7 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: false
       - uses: ilammy/msvc-dev-cmd@v1
@@ -182,7 +182,7 @@ jobs:
           scripts/controlla.sh --solo compila 2>&1 | scripts/ci-annota.sh
           scripts/controlla.sh --solo test 2>&1 | scripts/ci-annota.sh
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: risultati-windows
           path: |
@@ -196,7 +196,7 @@ jobs:
     if: needs.references.outputs.build == 'true'
     runs-on: macos-26
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: false
       - run: |
@@ -204,7 +204,7 @@ jobs:
           scripts/controlla.sh --solo compila 2>&1 | scripts/ci-annota.sh
           scripts/controlla.sh --solo test 2>&1 | scripts/ci-annota.sh
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: risultati-macos
           path: |
@@ -222,7 +222,7 @@ jobs:
       ASAN_OPTIONS: detect_leaks=1:halt_on_error=1
       UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: false
       - run: sudo apt-get update && sudo apt-get install -y ninja-build libgtest-dev clang-format-18
@@ -234,10 +234,10 @@ jobs:
     if: needs.references.outputs.build == 'true'
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: false
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: risultati-*
           path: risultati

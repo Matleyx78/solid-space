@@ -26,10 +26,10 @@ jobs:
   tecnigrafo-core:
     name: Tecnigrafo core (Linux)
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 60
     steps:
       - name: Check out Tecnigrafo main
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: Matleyx78/tecnigrafo
           ref: main
@@ -39,7 +39,7 @@ jobs:
 
       # Replace the uninitialised submodule with the exact PR revision.
       - name: Check out solid-space from this pull request
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.sha }}
@@ -50,16 +50,30 @@ jobs:
       - name: Install build tools
         run: sudo apt-get update && sudo apt-get install -y ninja-build libgtest-dev
 
-      # The "ci" preset of Tecnigrafo is the configuration its own CI guarantees
-      # (Debug, warnings as errors): Release with -Werror is not guaranteed.
-      - name: Configure Tecnigrafo without the desktop application
+      # The same two builds that Tecnigrafo runs towards solid-space
+      # (Tecnigrafo docs/adr/0038, point 6): its "ci" preset (Debug) and its
+      # "ci-release" preset (Release), both with warnings as errors, without
+      # the desktop application.
+      - name: Configure Tecnigrafo (Debug) without the desktop application
         working-directory: tecnigrafo
         run: cmake --preset ci -DTG_BUILD_APP=OFF
 
-      - name: Build Tecnigrafo
+      - name: Build Tecnigrafo (Debug)
         working-directory: tecnigrafo
-        run: cmake --build --preset ci --parallel 2
+        run: cmake --build --preset ci --parallel "$(nproc)"
 
-      - name: Test Tecnigrafo
+      - name: Test Tecnigrafo (Debug)
         working-directory: tecnigrafo
-        run: ctest --preset ci --no-tests=error
+        run: ctest --preset ci --no-tests=error -j "$(nproc)"
+
+      - name: Configure Tecnigrafo (Release) without the desktop application
+        working-directory: tecnigrafo
+        run: cmake --preset ci-release -DTG_BUILD_APP=OFF
+
+      - name: Build Tecnigrafo (Release)
+        working-directory: tecnigrafo
+        run: cmake --build --preset ci-release --parallel "$(nproc)"
+
+      - name: Test Tecnigrafo (Release)
+        working-directory: tecnigrafo
+        run: ctest --preset ci-release --no-tests=error -j "$(nproc)"

@@ -182,7 +182,10 @@ e **tutti e soli** questi campi:
 Elenca i casi già scritti ma non ancora obbligatori. Un caso in attesa non fa
 fallire i test. Ogni pacchetto di riferimenti scrive **un file** nella cartella,
 con il nome del suo blocco, `<X.Y>-R<N>[lettera].txt` (per `[0.2-R4a]`:
-`in-attesa/0.2-R4a.txt`), e in ogni file una riga per caso:
+`in-attesa/0.2-R4a.txt`), oppure `<X.Y>-RS<N>[lettera].txt` dalla tappa che
+serve la 0.8 di Tecnigrafo (per `[0.3-RS5]`: `in-attesa/0.3-RS5.txt`;
+[LAVORO-IN-PARALLELO.md](../../docs/LAVORO-IN-PARALLELO.md), «Prefissi dei due
+progetti»), e in ogni file una riga per caso:
 
 ```text
 <componente>/<id> #<numero della issue>
@@ -233,7 +236,7 @@ validatore e il validatore non li guarda.
 4. Aggiungi i casi limite: valori nulli, punti coincidenti o quasi allineati, facce
    tangenti, spessori minimi.
 5. Se il codice che lo supera non c'è ancora, aggiungi la riga nel file del tuo blocco,
-   `in-attesa/<X.Y>-R<N>.txt`.
+   `in-attesa/<X.Y>-R<N>.txt` (`<X.Y>-RS<N>.txt` con i prefissi nuovi).
 6. Esegui il validatore. Una pull request di riferimenti tocca solo
    `tests/corpus/` (ADR 0005, punto 7).
 
