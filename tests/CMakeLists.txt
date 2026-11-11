@@ -62,7 +62,8 @@ ss_configure_determinism(solid_space_banco_prestazioni)
 
 # Contract tests (ADR 0007, point 15): compile the public headers of robust and
 # geom2d and check their declared signatures.
-add_executable(solid_space_contract_test robust/contract_test.cpp geom2d/contract_test.cpp)
+add_executable(solid_space_contract_test robust/contract_test.cpp geom2d/contract_test.cpp
+  geom2d/ellipse_contract_test.cpp)
 target_link_libraries(solid_space_contract_test PRIVATE
   solid_space::robust solid_space::geom2d GTest::gtest_main)
 ss_configure_target(solid_space_contract_test)
@@ -71,7 +72,7 @@ gtest_discover_tests(solid_space_contract_test DISCOVERY_MODE PRE_TEST)
 # Globs keep parallel stage packages from editing shared CMake files.
 foreach(component robust geom2d)
   file(GLOB ss_unit_sources CONFIGURE_DEPENDS ${component}/*_test.cpp)
-  list(FILTER ss_unit_sources EXCLUDE REGEX "/contract_test\\.cpp$")
+  list(FILTER ss_unit_sources EXCLUDE REGEX "contract_test\\.cpp$")
   if(ss_unit_sources)
     set(ss_unit_target solid_space_${component}_unit_test)
     add_executable(${ss_unit_target} ${ss_unit_sources})
