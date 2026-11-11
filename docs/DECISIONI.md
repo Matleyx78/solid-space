@@ -604,3 +604,36 @@ i rimandi ai documenti che cambia.
     autorizzato la chat di Tecnigrafo a scrivere anche qui (commenti, chiusura
     di issue, questa pull request), in deroga ad [AGENTS.md](../AGENTS.md),
     "Dove puoi scrivere", che non cambia.
+- **2026-11-11 — La pausa dopo la 0.7.5 di Tecnigrafo.** Nella chat del
+  2026-11-11, dopo l'analisi delle issue aperte dei due repository (qui non ce
+  n'erano), il responsabile decide per tutti e due i progetti; le voci comuni
+  hanno lo stesso testo di
+  [DECISIONI.md di Tecnigrafo](https://github.com/Matleyx78/tecnigrafo/blob/main/docs/DECISIONI.md):
+  - **Regole dei pacchetti medi** (Matleyx78/tecnigrafo#442, approvate il
+    2026-11-10): valgono anche qui. La misura conta il codice (al massimo una
+    quindicina di file e circa 600 righe; test, documenti e casi non contano);
+    un pacchetto con meno di circa 150 righe si unisce a un vicino, salvo che
+    sia un'unità che si verifica da sola; si divide solo per un motivo scritto
+    nel piano; la fascia forte va a chi prende decisioni delicate, e il codice
+    che traduce decisioni già scritte e coperte da riferimenti forti è medio,
+    con una revisione mirata; ogni `RN` al suo `PN`, con blocchi a lettera
+    dove servono casi delicati e ordinari
+    ([LAVORO-IN-PARALLELO.md](LAVORO-IN-PARALLELO.md), «Pacchetti leggeri» e
+    «Modello e impegno»; [tappe/0000-modello.md](tappe/0000-modello.md);
+    [tappe/0000-pacchetto.md](tappe/0000-pacchetto.md)).
+  - **Agenti**: dal 19 novembre Gemini (3.8 Flash e 4 Argon) e Copilot non ci
+    sono più, e gli agenti sono Claude e Codex. Ogni pacchetto fa un giro a
+    tre: un agente scrive i riferimenti, l'altro realizza il pacchetto, e chi
+    ha scritto i riferimenti rivede la pull request (Codex, Claude, Codex
+    oppure Claude, Codex, Claude). Riferimenti e revisioni si possono fare a
+    lotti; la pull request di chiusura della tappa passa a Codex. Le etichette
+    `agente:gemini`, `agente:gemini-argon` e `agente:copilot` restano, ma non
+    si assegnano.
+  - **Funzioni trigonometriche** (Matleyx78/tecnigrafo#620): Tecnigrafo usa
+    quelle di `robust`, scritte senza librerie esterne; `tan`, `acos` e
+    `hypot`, che ancora mancano, arriveranno come richiesta con il piano della
+    0.8 di Tecnigrafo.
+  - **Una chat su due repository.** Per questa pausa il responsabile ha
+    autorizzato la chat di Tecnigrafo a scrivere anche qui (questa pull
+    request), in deroga ad [AGENTS.md](../AGENTS.md), "Dove puoi scrivere",
+    che non cambia.

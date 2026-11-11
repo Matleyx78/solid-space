@@ -51,6 +51,10 @@ formatterebbe il codice in modo diverso da quello che la CI accetta.
 
 ## 3. Antigravity CLI (Gemini)
 
+> **Non usato dal 2026-11-11.** Gli agenti sono solo Claude e Codex
+> ([DECISIONI.md](DECISIONI.md)); la sezione resta per un eventuale ritorno di
+> Gemini.
+
 Antigravity si installa e si configura una volta per PC, con una sola lista di
 permessi valida per Tecnigrafo e solid-space. Le istruzioni sono in
 [AMBIENTE-SVILUPPO.md di Tecnigrafo](https://github.com/Matleyx78/tecnigrafo/blob/main/docs/AMBIENTE-SVILUPPO.md), sezione 6.
