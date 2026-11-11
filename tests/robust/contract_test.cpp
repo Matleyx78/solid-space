@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 The solid-space authors
 
-// The contract signatures of robust (ADR 0007, point 15; ADR 0009 and ADR 0010):
+// The contract signatures of robust (ADR 0007, point 15; ADR 0009, ADR 0010 and
+// ADR 0016):
 // the public headers compile and the declared functions have the declared
 // signatures. Result, the only definition, is tested at run time.
 
 #include "solid_space/robust/diagnosis.hpp"
+#include "solid_space/robust/elementary.hpp"
 #include "solid_space/robust/point.hpp"
 #include "solid_space/robust/predicates.hpp"
 #include "solid_space/robust/result.hpp"
@@ -29,6 +31,9 @@ static_assert(
                    robust::Sign (*)(robust::Point2, robust::Point2, robust::Point2) noexcept>);
 static_assert(std::is_same_v<decltype(&robust::sinCos), robust::SinCos (*)(double) noexcept>);
 static_assert(std::is_same_v<decltype(&robust::atan2), double (*)(double, double) noexcept>);
+static_assert(std::is_same_v<decltype(&robust::tan), double (*)(double) noexcept>);
+static_assert(std::is_same_v<decltype(&robust::acos), double (*)(double) noexcept>);
+static_assert(std::is_same_v<decltype(&robust::hypot), double (*)(double, double) noexcept>);
 static_assert(
     std::is_same_v<decltype(&robust::TolerancePolicy::forUnit),
                    robust::Result<robust::TolerancePolicy, robust::Diagnosis> (*)(double)>);
@@ -53,6 +58,8 @@ static_assert(static_cast<std::int8_t>(robust::Sign::positive) == 1);
 // The constants of the contract.
 static_assert(robust::kMaxCoordinate == 1125899906842624.0);  // 2^50
 static_assert(robust::kMaxTrigArgument == 1048576.0);         // 2^20
+static_assert(robust::kMaxHypotArgument == 0x1p1023);
+static_assert(robust::kElementaryMaxErrorUlps == 2.0);
 static_assert(robust::kRelativeTolerance == 0x1p-42);
 static_assert(robust::kPhysicalFloorMeters == 1e-9);
 
