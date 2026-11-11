@@ -1,15 +1,18 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 The solid-space authors
 
-// The contract signatures of geom2d (ADR 0007, point 15; ADR 0009 to ADR 0012):
+// The contract signatures of geom2d (ADR 0007, point 15; ADR 0009 to ADR 0012,
+// ADR 0014):
 // the public headers compile, and the declared functions have the declared
 // signatures.
 
+#include "solid_space/geom2d/boundary.hpp"
 #include "solid_space/geom2d/coincidence.hpp"
 #include "solid_space/geom2d/curves.hpp"
 #include "solid_space/geom2d/diagnosis.hpp"
 #include "solid_space/geom2d/intersection.hpp"
 #include "solid_space/geom2d/offset.hpp"
+#include "solid_space/geom2d/region.hpp"
 #include "solid_space/geom2d/side.hpp"
 #include "solid_space/geom2d/tangency.hpp"
 
@@ -109,6 +112,20 @@ static_assert(std::is_same_v<decltype(&geom2d::offsetPolyline),
                              geom2d::Result<geom2d::PolylineOffset> (*)(
                                  const geom2d::Polyline&, double, const robust::TolerancePolicy&)>);
 
+// Boundaries and regions (ADR 0014).
+static_assert(std::variant_size_v<geom2d::Loop> == 2);
+static_assert(std::is_same_v<std::variant_alternative_t<0, geom2d::Loop>, geom2d::Circle>);
+static_assert(std::is_same_v<std::variant_alternative_t<1, geom2d::Loop>, geom2d::Polyline>);
+static_assert(std::is_same_v<decltype(&geom2d::detectBoundary),
+                             geom2d::Result<geom2d::DetectedBoundary> (*)(
+                                 geom2d::Point2, std::span<const geom2d::Curve>,
+                                 const robust::TolerancePolicy&)>);
+static_assert(std::is_same_v<decltype(&geom2d::nestContours),
+                             geom2d::ContourNesting (*)(std::span<const geom2d::Loop>)>);
+static_assert(std::is_same_v<std::underlying_type_t<geom2d::BoundaryOutcome>, std::uint8_t>);
+static_assert(std::is_same_v<std::underlying_type_t<geom2d::LoopPieceSource>, std::uint8_t>);
+static_assert(std::is_same_v<std::underlying_type_t<geom2d::ContourConflictKind>, std::uint8_t>);
+
 // The constants of the contract: the angle limits are the doubles nearest to
 // pi / 2, 3 pi / 2 and 2 pi, and the construction errors stay well below the
 // relative tolerance (ADR 0009, point 5).
@@ -123,6 +140,8 @@ static_assert(geom2d::kRelativeArcError == 0x1p-46);
 static_assert(geom2d::kRelativeOffsetError == 0x1p-46);
 static_assert(16 * geom2d::kRelativeArcError == robust::kRelativeTolerance);
 static_assert(16 * geom2d::kRelativeOffsetError == robust::kRelativeTolerance);
+static_assert(geom2d::kRelativeLoopError == 0x1p-44);
+static_assert(4 * geom2d::kRelativeLoopError == robust::kRelativeTolerance);
 
 }  // namespace
 
@@ -149,4 +168,22 @@ TEST(Geom2dContract, ChoicesStartWithNothingFound) {
     EXPECT_EQ(geom2d::PolylineOffset{}.outcome, geom2d::OffsetOutcome::failed);
     EXPECT_EQ(geom2d::PolylineOffset{}.failure, geom2d::OffsetFailure::none);
     EXPECT_FALSE(geom2d::TangentCircles{}.infinitelyMany);
+}
+
+TEST(Geom2dContract, BoundaryResultsStartWithNothingFound) {
+    // A default detection encloses nothing and lists nothing.
+    const geom2d::DetectedBoundary boundary;
+    EXPECT_EQ(boundary.outcome, geom2d::BoundaryOutcome::notEnclosed);
+    EXPECT_TRUE(boundary.loops.empty());
+    EXPECT_TRUE(boundary.openEnds.empty());
+    EXPECT_TRUE(boundary.skipped.empty());
+    EXPECT_EQ(geom2d::RegionLoop{}.depth, 0U);
+    EXPECT_EQ(geom2d::LoopPieceOrigin{}.source, geom2d::LoopPieceSource::curve);
+    EXPECT_TRUE(geom2d::ContourNesting{}.depth.empty());
+}
+
+TEST(Geom2dContract, LoopsAreCirclesOrPolylines) {
+    const geom2d::Loop loop = geom2d::Circle{{1.0, 2.0}, 3.0};
+    ASSERT_TRUE(std::holds_alternative<geom2d::Circle>(loop));
+    EXPECT_EQ(std::get<geom2d::Circle>(loop).radius, 3.0);
 }
