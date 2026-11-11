@@ -1,6 +1,6 @@
 # ADR 0015: Parti di una curva dentro una regione del piano con le sue isole
 
-- **Stato:** Proposto
+- **Stato:** Accettato
 - **Data:** 2026-11-11
 - **Richiesta:** #215 — da Tecnigrafo: tappa 0.8, Matleyx78/tecnigrafo#661
 - **Esito:** 3 pezzo nostro
