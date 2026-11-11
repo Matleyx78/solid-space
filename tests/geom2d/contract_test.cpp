@@ -2,11 +2,12 @@
 // Copyright (C) 2026 The solid-space authors
 
 // The contract signatures of geom2d (ADR 0007, point 15; ADR 0009 to ADR 0012,
-// ADR 0014):
+// ADR 0014, ADR 0015):
 // the public headers compile, and the declared functions have the declared
 // signatures.
 
 #include "solid_space/geom2d/boundary.hpp"
+#include "solid_space/geom2d/clipping.hpp"
 #include "solid_space/geom2d/coincidence.hpp"
 #include "solid_space/geom2d/curves.hpp"
 #include "solid_space/geom2d/diagnosis.hpp"
@@ -126,6 +127,14 @@ static_assert(std::is_same_v<std::underlying_type_t<geom2d::BoundaryOutcome>, st
 static_assert(std::is_same_v<std::underlying_type_t<geom2d::LoopPieceSource>, std::uint8_t>);
 static_assert(std::is_same_v<std::underlying_type_t<geom2d::ContourConflictKind>, std::uint8_t>);
 
+// Curves cut on a region (ADR 0015).
+static_assert(
+    std::is_same_v<decltype(&geom2d::clipToRegion),
+                   geom2d::RegionClipping (*)(std::span<const geom2d::Curve>, geom2d::Extension,
+                                              std::span<const geom2d::Loop>)>);
+static_assert(std::is_same_v<decltype(geom2d::StretchEnd{}.onHost), geom2d::CurvePosition>);
+static_assert(std::is_same_v<decltype(geom2d::BoundaryStretch{}.regionSide), geom2d::Side>);
+
 // The constants of the contract: the angle limits are the doubles nearest to
 // pi / 2, 3 pi / 2 and 2 pi, and the construction errors stay well below the
 // relative tolerance (ADR 0009, point 5).
@@ -186,4 +195,16 @@ TEST(Geom2dContract, LoopsAreCirclesOrPolylines) {
     const geom2d::Loop loop = geom2d::Circle{{1.0, 2.0}, 3.0};
     ASSERT_TRUE(std::holds_alternative<geom2d::Circle>(loop));
     EXPECT_EQ(std::get<geom2d::Circle>(loop).radius, 3.0);
+}
+
+TEST(Geom2dContract, ClippingResultsStartWithNothingFound) {
+    // A default clipping keeps no stretch and lists nothing.
+    const geom2d::RegionClipping clipping;
+    EXPECT_TRUE(clipping.hosts.empty());
+    EXPECT_TRUE(clipping.skippedHosts.empty());
+    EXPECT_TRUE(clipping.skippedLoops.empty());
+    const geom2d::ClippedHost host;
+    EXPECT_TRUE(host.inside.empty());
+    EXPECT_TRUE(host.boundary.empty());
+    EXPECT_EQ(geom2d::BoundaryStretch{}.regionSide, geom2d::Side::left);
 }
