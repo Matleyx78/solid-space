@@ -1,6 +1,6 @@
 # ADR 0016: Tangente, arcocoseno e lunghezza di un vettore uguali su tutti i sistemi
 
-- **Stato:** Proposto
+- **Stato:** Accettato
 - **Data:** 2026-11-11
 - **Richiesta:** #216 — da Tecnigrafo: tappa 0.8, Matleyx78/tecnigrafo#661
   (decisione in Matleyx78/tecnigrafo#620)
