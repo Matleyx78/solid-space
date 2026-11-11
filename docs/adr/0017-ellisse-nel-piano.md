@@ -1,6 +1,6 @@
 # ADR 0017: Distanza, punto più vicino e intersezioni dell'ellisse e dell'arco d'ellisse
 
-- **Stato:** Proposto
+- **Stato:** Accettato
 - **Data:** 2026-11-11
 - **Richiesta:** #217 — da Tecnigrafo: tappa 0.8, Matleyx78/tecnigrafo#661
 - **Esito:** 3 pezzo nostro
