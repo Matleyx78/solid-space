@@ -36,8 +36,11 @@ _WORDS = r"[a-z0-9]+(?:-[a-z0-9]+)*"
 NAME_RE = re.compile(_WORDS)
 PENDING_RE = re.compile(rf"({_WORDS})/({_WORDS}) #([1-9][0-9]*)")
 PENDING_DIR = "in-attesa"
-# One file per block of references, named after the tag of its package: 0.2-R4a.txt.
-PENDING_FILE_RE = re.compile(r"[0-9]+\.[0-9]+-R[0-9]+[a-z]?\.txt")
+# One file per block of references, named after the tag of its package: 0.2-R4a.txt,
+# or with the prefix RS of solid-space from the stage that serves stage 0.8 of
+# Tecnigrafo (0.3-RS5.txt, 0.3-RS14a.txt; docs/LAVORO-IN-PARALLELO.md, "Prefissi dei
+# due progetti"). Closed stages keep R, and nothing is renamed.
+PENDING_FILE_RE = re.compile(r"[0-9]+\.[0-9]+-RS?[0-9]+[a-z]?\.txt")
 FRACTION_RE = re.compile(r"-?(?:0|[1-9][0-9]*)(?:/[1-9][0-9]*)?")
 ENUM_NAME_RE = re.compile(r"[a-z][A-Za-z0-9]*")
 ZERO_DENOMINATOR_RE = re.compile(r"-?[0-9]+/0+")
@@ -398,8 +401,8 @@ def load_pending_dir(directory, known_cases, name: str = PENDING_DIR):
         file_name = f"{name}/{path.name}"
         if not path.is_file() or not PENDING_FILE_RE.fullmatch(path.name):
             out.append(Problem(file_name, "(file)",
-                               'expected a file named "<X.Y>-R<N>[a-z].txt", after the tag '
-                               "of its block of references"))
+                               'expected a file named "<X.Y>-R<N>[a-z].txt" or '
+                               '"<X.Y>-RS<N>[a-z].txt", after the tag of its block of references'))
             continue
         seen, problems = load_pending_file(path, known_cases, file_name)
         out += problems

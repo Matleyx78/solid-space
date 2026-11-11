@@ -28,5 +28,5 @@ Closes #<!-- numero della issue del pacchetto o del bug -->
 ## Uso dell'IA
 
 - [ ] Nessuna IA usata
-- [ ] IA usata: <!-- strumento --> — ho letto e capito ogni riga, ne rispondo io,
+- [ ] IA usata: <!-- strumento e modello, es. Claude Code, Claude Opus 5.5 --> — ho letto e capito ogni riga, ne rispondo io,
       e i commit riportano una riga di attribuzione

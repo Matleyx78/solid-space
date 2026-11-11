@@ -347,21 +347,29 @@ class PendingDirectoryTest(CorpusTestCase):
     def test_file_name_must_be_the_tag_of_its_block(self):
         directory = self.tmp() / "in-attesa"
         directory.mkdir()
-        for name in ("notes.txt", "0.2-r4a.txt", "R4a.txt", "0.2-R4.md", "0.2-R4aa.txt",
-                     "0.2-R4a.txt.bak"):
+        wrong = ("notes.txt", "0.2-r4a.txt", "R4a.txt", "0.2-R4.md", "0.2-R4aa.txt",
+                 "0.2-R4a.txt.bak", "0.3-rs5.txt", "0.3-RT5.txt", "0.3-PS5.txt",
+                 "0.3-SR5.txt", "0.3-RS.txt")
+        for name in wrong:
             self.write(directory, name, "kernel/a #1\n")
         (directory / "0.2-R9.txt").mkdir()
         problems = vc.validate_pending_dir(directory, self.KNOWN)
         self.assertEqual(sorted(p.file for p in problems),
-                         sorted(f"in-attesa/{n}" for n in (
-                             "notes.txt", "0.2-r4a.txt", "R4a.txt", "0.2-R4.md",
-                             "0.2-R4aa.txt", "0.2-R4a.txt.bak", "0.2-R9.txt")))
+                         sorted(f"in-attesa/{n}" for n in wrong + ("0.2-R9.txt",)))
         self.assertEqual({p.field for p in problems}, {"(file)"})
 
     def test_file_names_with_and_without_a_letter_are_accepted(self):
         directory = self.tmp() / "in-attesa"
         directory.mkdir()
         for index, name in enumerate(("0.2-R9.txt", "0.2-R10a.txt", "1.0-R1c.txt")):
+            self.write(directory, name, f"kernel/{'abc'[index]} #{index + 1}\n")
+        self.assertEqual(vc.validate_pending_dir(directory, self.KNOWN), [])
+
+    def test_file_names_with_the_prefix_of_solid_space_are_accepted(self):
+        # RS from the stage that serves stage 0.8 of Tecnigrafo (DECISIONI.md, 2026-11-07).
+        directory = self.tmp() / "in-attesa"
+        directory.mkdir()
+        for index, name in enumerate(("0.3-RS5.txt", "0.3-RS14a.txt", "1.0-RS1c.txt")):
             self.write(directory, name, f"kernel/{'abc'[index]} #{index + 1}\n")
         self.assertEqual(vc.validate_pending_dir(directory, self.KNOWN), [])
 
