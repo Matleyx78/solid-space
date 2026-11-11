@@ -20,9 +20,8 @@ SS_PRESET=asan scripts/controlla.sh      # AddressSanitizer e UBSan
 
 Servono gli strumenti di [AMBIENTE-SVILUPPO.md](../AMBIENTE-SVILUPPO.md).
 `SS_PRESET` vale `release` se omesso; `SS_BUILD_SUFFIX` separa le cartelle di build,
-così più agenti sullo stesso PC non si bloccano a vicenda: usa la tua (`-claude`,
-`-codex`, `-gemini`, `-gemini-argon`; una seconda sessione di Claude sullo stesso
-PC usa `-claude-2`).
+così più agenti sullo stesso PC non si bloccano a vicenda: usa la tua (`-claude`
+o `-codex`; una seconda sessione di Claude sullo stesso PC usa `-claude-2`).
 `--solo` presuppone che i passi precedenti siano già stati eseguiti.
 Per l'analisi dei file modificati il riferimento è `origin/main`; si può scegliere
 un altro commit con `SS_BASE_REF`. Se cambia la configurazione dell'analisi, si

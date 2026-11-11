@@ -2,8 +2,7 @@
 
 Si legge insieme al nucleo, [AGENTS.md](../../AGENTS.md), quando ti chiedono la
 pull request di chiusura della tappa, quando il ramo è `docs/chiusura-X.Y`,
-oppure quando il lavoro tocca `docs/rilasci/`. Di norma la fa Gemini
-([GEMINI.md](../../GEMINI.md)).
+oppure quando il lavoro tocca `docs/rilasci/`. Di norma la fa Codex.
 
 Le regole non si ripetono qui, stanno in due posti:
 

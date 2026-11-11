@@ -70,11 +70,20 @@ lavoro sono in [LAVORO-IN-PARALLELO.md](../LAVORO-IN-PARALLELO.md), sezione
 | Pacchetto | Scheda | Issue | Dipende da | Riferimenti | Difficoltà | Agente | Modello | Impegno |
 |---|---|---|---|---|---|---|---|---|
 | C Revisione del contratto | [C](X.Y/C-contratto.md) | #… | — | non servono: non cambia il comportamento | impegnativa | codex | forte | alto |
-| P1 Titolo | [P1](X.Y/P1-nome.md) | #… | C (#…) | R1 (gemini) / non servono: motivo | facile / media / impegnativa | claude / codex / gemini / … | leggero / medio / forte | basso / medio / alto |
+| P1 Titolo | [P1](X.Y/P1-nome.md) | #… | C (#…) | R1 (codex) / non servono: motivo | facile / media / impegnativa | claude / codex | leggero / medio / forte | basso / medio / alto |
 
 L'**ordine delle righe** è l'ordine in cui gli agenti prendono "il prossimo
 pacchetto" (AGENTS.md). Le issue di riferimenti `[X.Y-RN]` hanno una riga
-ciascuna, prima del loro pacchetto di lavoro.
+ciascuna, prima del loro pacchetto di lavoro; i riferimenti di un pacchetto li
+scrive l'altro agente, che poi ne rivede la pull request (Codex per i pacchetti
+di Claude, Claude per quelli di Codex).
+
+**Motivi, sotto la tabella.** Una riga per ogni pacchetto che resta
+impegnativo (perché la fascia forte serve lì) e una per ogni divisione (supera
+la misura; toglie una parte da una catena di file comuni o fa partire prima un
+pacchetto che Tecnigrafo aspetta; separa le decisioni dal codice). Regole in
+[LAVORO-IN-PARALLELO.md](../LAVORO-IN-PARALLELO.md), «Pacchetti leggeri» e
+«Modello e impegno».
 
 **File comuni.** I file che più pacchetti toccano nello stesso periodo (di norma
 i `CMakeLists.txt` e `AGENTS.md`): ognuno aggiunge solo le sue righe, in ordine
