@@ -1,0 +1,88 @@
+{
+  "versione": 1,
+  "id": "contorni-richiesta-annidati",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #214, ADR 0014: caso 6a: rettangolo, due cerchi dentro e una polilinea chiusa in uno dei due: profondita' 0, 1, 1, 2 (vicino all'origine).",
+  "ingresso": {
+    "operazione": "nestContours",
+    "contorni": [
+      {
+        "vertici": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            20,
+            0,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ],
+          [
+            0,
+            10,
+            0
+          ]
+        ],
+        "chiusa": true
+      },
+      {
+        "cerchio": {
+          "centro": [
+            5,
+            5
+          ],
+          "raggio": 3
+        }
+      },
+      {
+        "cerchio": {
+          "centro": [
+            15,
+            5
+          ],
+          "raggio": 3
+        }
+      },
+      {
+        "vertici": [
+          [
+            14,
+            4,
+            0
+          ],
+          [
+            16,
+            4,
+            0
+          ],
+          [
+            15,
+            6,
+            0
+          ]
+        ],
+        "chiusa": true
+      }
+    ]
+  },
+  "atteso": {
+    "profondita": [
+      "0",
+      "1",
+      "1",
+      "2"
+    ],
+    "conflitti": [],
+    "scartati": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente (mai solid-space), lo stesso di RS10a: per ogni coppia A, B i pezzi di B tagliati sul solo A (tagli esatti in numeri a+b*sqrt(d) con fractions, parti fra tagli distinti, regola pari-dispari in un punto interno di ogni parte fuori da A); racchiude, same e crossing come dice nestContours; profondita' senza i conflitti."
+  }
+}

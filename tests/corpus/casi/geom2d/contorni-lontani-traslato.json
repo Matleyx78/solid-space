@@ -1,0 +1,67 @@
+{
+  "versione": 1,
+  "id": "contorni-lontani-traslato",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #214, ADR 0014: due cerchi e un quadrato lontani fra loro: tutte le profondita' 0, nessun conflitto (traslato di 1e5).",
+  "ingresso": {
+    "operazione": "nestContours",
+    "contorni": [
+      {
+        "cerchio": {
+          "centro": [
+            100000,
+            100000
+          ],
+          "raggio": 1
+        }
+      },
+      {
+        "cerchio": {
+          "centro": [
+            100050,
+            100000
+          ],
+          "raggio": 2
+        }
+      },
+      {
+        "vertici": [
+          [
+            100020,
+            100020,
+            0
+          ],
+          [
+            100030,
+            100020,
+            0
+          ],
+          [
+            100030,
+            100030,
+            0
+          ],
+          [
+            100020,
+            100030,
+            0
+          ]
+        ],
+        "chiusa": true
+      }
+    ]
+  },
+  "atteso": {
+    "profondita": [
+      "0",
+      "0",
+      "0"
+    ],
+    "conflitti": [],
+    "scartati": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente (mai solid-space), lo stesso di RS10a: per ogni coppia A, B i pezzi di B tagliati sul solo A (tagli esatti in numeri a+b*sqrt(d) con fractions, parti fra tagli distinti, regola pari-dispari in un punto interno di ogni parte fuori da A); racchiude, same e crossing come dice nestContours; profondita' senza i conflitti."
+  }
+}

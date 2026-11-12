@@ -1,0 +1,15 @@
+# [0.3-RS10b] contorni scelti: casi della richiesta e ordinari; obbligatori con PS10 (#260)
+geom2d/contorni-richiesta-annidati #260
+geom2d/contorni-richiesta-annidati-traslato #260
+geom2d/contorni-richiesta-annidati-altro-ordine #260
+geom2d/contorni-richiesta-annidati-altro-ordine-traslato #260
+geom2d/contorni-richiesta-si-intersecano #260
+geom2d/contorni-richiesta-si-intersecano-traslato #260
+geom2d/contorni-cerchio-e-quadrato-si-intersecano #260
+geom2d/contorni-cerchio-e-quadrato-si-intersecano-traslato #260
+geom2d/contorni-lontani #260
+geom2d/contorni-lontani-traslato #260
+geom2d/contorni-catena-di-quattro #260
+geom2d/contorni-catena-di-quattro-traslato #260
+geom2d/contorni-scarti-in-mezzo #260
+geom2d/contorni-scarti-tutti #260
