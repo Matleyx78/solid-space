@@ -1,0 +1,36 @@
+{
+  "versione": 1,
+  "id": "ellipse-nearest-punto-fuori-dominio",
+  "componente": "geom2d",
+  "descrizione": "#217: punto fuori dominio.",
+  "ingresso": {
+    "operazione": "nearest",
+    "ellisse": {
+      "centro": [
+        0,
+        0
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    },
+    "punto": [
+      1125899906842625,
+      0
+    ]
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "outOfDomain",
+      "dato": "1"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Il dato 1 supera kMaxCoordinate=2^50."
+  }
+}

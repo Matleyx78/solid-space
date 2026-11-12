@@ -1,0 +1,47 @@
+{
+  "versione": 1,
+  "id": "ellipse-nearest-km-evoluta-dopo",
+  "componente": "geom2d",
+  "descrizione": "#217: km evoluta dopo.",
+  "ingresso": {
+    "operazione": "nearest",
+    "ellisse": {
+      "centro": [
+        100000,
+        100000
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    },
+    "punto": [
+      100007.5000038147,
+      100000
+    ]
+  },
+  "atteso": {
+    "punto": [
+      {
+        "valore": 100010.0,
+        "tolleranza": 5.684768211939099e-09
+      },
+      {
+        "valore": 100000.0,
+        "tolleranza": 5.684768211939099e-09
+      }
+    ],
+    "distanza": {
+      "valore": 2.4999961853027344,
+      "tolleranza": 5.684768211939099e-09
+    },
+    "posizione": "inside"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "La quadratica 75u²-20hu+h²+25 ha il minimo vincolato in u=1 per h>7.5. Rimangono solo i vertici; quello positivo è più vicino. Tolleranza 2^-44 N, N=max delle coordinate assolute del centro, dell’asse maggiore e del punto, arrotondata per eccesso. Coordinate e distanze in Decimal a 100 cifre."
+  }
+}

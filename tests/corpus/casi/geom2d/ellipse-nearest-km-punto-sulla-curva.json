@@ -1,0 +1,47 @@
+{
+  "versione": 1,
+  "id": "ellipse-nearest-km-punto-sulla-curva",
+  "componente": "geom2d",
+  "descrizione": "#217: km punto sulla curva.",
+  "ingresso": {
+    "operazione": "nearest",
+    "ellisse": {
+      "centro": [
+        100000,
+        100000
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    },
+    "punto": [
+      100000,
+      100005
+    ]
+  },
+  "atteso": {
+    "punto": [
+      {
+        "valore": 100000.0,
+        "tolleranza": 5.684626103175106e-09
+      },
+      {
+        "valore": 100005.0,
+        "tolleranza": 5.684626103175106e-09
+      }
+    ],
+    "distanza": {
+      "valore": 0.0,
+      "tolleranza": 5.684626103175106e-09
+    },
+    "posizione": "inside"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "(0,5) relativo al centro soddisfa x²+4y²=100. La distanza minima zero identifica un solo candidato. Tolleranza 2^-44 N, N=max delle coordinate assolute del centro, dell’asse maggiore e del punto, arrotondata per eccesso. Coordinate e distanze in Decimal a 100 cifre."
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "versione": 1,
+  "id": "ellipse-nearest-asse-nullo-prima-del-punto",
+  "componente": "geom2d",
+  "descrizione": "#217: asse nullo prima del punto.",
+  "ingresso": {
+    "operazione": "nearest",
+    "ellisse": {
+      "centro": [
+        0,
+        0
+      ],
+      "asse_maggiore": [
+        0,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    },
+    "punto": [
+      "nan",
+      0
+    ]
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "degenerateCurve",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Asse nullo: dato 0 degenere prima di controllare il punto."
+  }
+}
