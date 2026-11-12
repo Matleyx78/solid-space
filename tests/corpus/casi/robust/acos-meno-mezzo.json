@@ -1,0 +1,21 @@
+{
+  "versione": 1,
+  "id": "acos-meno-mezzo",
+  "componente": "robust",
+  "descrizione": "Richiesta #216, ADR 0016: acos(-1/2) = 2*pi/3.",
+  "ingresso": {
+    "operazione": "acos",
+    "x": "-0x1.0000000000000p-1"
+  },
+  "atteso": {
+    "angolo": {
+      "valore": 2.0943951023931957,
+      "tolleranza": 8.881784197001252e-16
+    },
+    "angolo_negativo": false
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente Python decimal a 200 cifre (mai solid-space): pi=16*atan(1/5)-4*atan(1/239); atan con tre riduzioni di meta' angolo u=t/(1+sqrt(1+t^2)) e serie, e pi/2-atan(1/t) per t>1. acos(x)=2*atan(sqrt((1-x)/(1+x))), confrontato con la formula indipendente pi/2-atan(x/sqrt((1-x)(1+x))): stesso valore entro 10^-180. Valore=double piu' vicino; tolleranza=2*ulp del valore esatto (minimo 2^-1074), come chiede kElementaryMaxErrorUlps. Ripetuto a 260 cifre."
+  }
+}

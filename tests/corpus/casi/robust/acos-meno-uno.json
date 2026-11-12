@@ -1,0 +1,18 @@
+{
+  "versione": 1,
+  "id": "acos-meno-uno",
+  "componente": "robust",
+  "descrizione": "Richiesta #216, ADR 0016: acos(-1) e' esattamente il double piu' vicino a pi (elementary.hpp).",
+  "ingresso": {
+    "operazione": "acos",
+    "x": "-0x1.0000000000000p+0"
+  },
+  "atteso": {
+    "angolo": "884279719003555/281474976710656",
+    "angolo_negativo": false
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "elementary.hpp: acos(-1) e' il double piu' vicino a pi, esatto. pi a 200 cifre (16*atan(1/5)-4*atan(1/239)) arrotondato al double piu' vicino: 0x1.921fb54442d18p+1 = 884279719003555/281474976710656."
+  }
+}
