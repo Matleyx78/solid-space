@@ -1,0 +1,91 @@
+{
+  "versione": 1,
+  "id": "boundary-tolerance-km-collegamento-oltre",
+  "componente": "geom2d",
+  "descrizione": "#214: km collegamento oltre.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      131067,
+      4
+    ],
+    "curve": [
+      {
+        "segmento": {
+          "inizio": [
+            131062,
+            0
+          ],
+          "fine": [
+            131072,
+            0
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            131072,
+            2.980232238769532e-08
+          ],
+          "fine": [
+            131072,
+            8
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            131072,
+            8
+          ],
+          "fine": [
+            131062,
+            8
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            131062,
+            8
+          ],
+          "fine": [
+            131062,
+            0
+          ]
+        }
+      }
+    ],
+    "unita_in_metri": 1000
+  },
+  "atteso": {
+    "esito": "notEnclosed",
+    "scartate": [],
+    "loop": [],
+    "estremi_liberi": [
+      {
+        "curva": "0",
+        "all_inizio": false,
+        "punto": [
+          "131072",
+          "0"
+        ]
+      },
+      {
+        "curva": "1",
+        "all_inizio": true,
+        "punto": [
+          "131072",
+          "4503599627370497/151115727451828646838272"
+        ]
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "La M delle due curve è 131072; epsilon=0x1.0000000000000p-25. Gli estremi destri distano 0x1.0000000000001p-25 esattamente. Entro epsilon si aggiunge il segmento verticale, oltre epsilon non è ammesso nemmeno il prolungamento che raggiunge il lato inferiore."
+  }
+}

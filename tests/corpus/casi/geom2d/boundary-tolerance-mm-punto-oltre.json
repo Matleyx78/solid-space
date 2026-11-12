@@ -1,0 +1,38 @@
+{
+  "versione": 1,
+  "id": "boundary-tolerance-mm-punto-oltre",
+  "componente": "geom2d",
+  "descrizione": "#214: mm punto oltre.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      5,
+      1.0000000000000002e-06
+    ],
+    "curve": [
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            0
+          ],
+          "fine": [
+            10,
+            0
+          ]
+        }
+      }
+    ],
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "notEnclosed",
+    "scartate": [],
+    "loop": [],
+    "estremi_liberi": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "La proiezione del punto sta nell’interno del segmento; la distanza esatta è 0x1.0c6f7a0b5ed8ep-20 e epsilon=0x1.0c6f7a0b5ed8dp-20. Il confronto include l’uguaglianza."
+  }
+}

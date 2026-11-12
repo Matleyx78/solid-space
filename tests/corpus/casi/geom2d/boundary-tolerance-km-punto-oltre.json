@@ -1,0 +1,38 @@
+{
+  "versione": 1,
+  "id": "boundary-tolerance-km-punto-oltre",
+  "componente": "geom2d",
+  "descrizione": "#214: km punto oltre.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      131067,
+      2.980232238769532e-08
+    ],
+    "curve": [
+      {
+        "segmento": {
+          "inizio": [
+            131062,
+            0
+          ],
+          "fine": [
+            131072,
+            0
+          ]
+        }
+      }
+    ],
+    "unita_in_metri": 1000
+  },
+  "atteso": {
+    "esito": "notEnclosed",
+    "scartate": [],
+    "loop": [],
+    "estremi_liberi": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "La proiezione del punto sta nell’interno del segmento; la distanza esatta è 0x1.0000000000001p-25 e epsilon=0x1.0000000000000p-25. Il confronto include l’uguaglianza."
+  }
+}

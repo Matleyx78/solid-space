@@ -1,0 +1,36 @@
+{
+  "versione": 1,
+  "id": "boundary-tolerance-arco-convertito-scala-originale-232",
+  "componente": "geom2d",
+  "descrizione": "#214: arco convertito scala originale 232.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      -5.960464477539063e-08,
+      0
+    ],
+    "curve": [
+      {
+        "arco": {
+          "centro": [
+            1048576,
+            0
+          ],
+          "raggio": 1048576,
+          "angolo_iniziale": 3.1415916999154767,
+          "ampiezza": 1.9073486328125e-06
+        }
+      }
+    ],
+    "unita_in_metri": 1
+  },
+  "atteso": {
+    "esito": "onCurve",
+    "scartate": [],
+    "curva_vicina": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Decisione #232: l’arco contiene il punto (0,0). Il punto scelto dista 2^-24, la conversione sposta l’arco di al più 2^-25 e la M dell’Arc dato resta 2^20. Anche sommando gli errori si resta sotto epsilon=2^-22."
+  }
+}

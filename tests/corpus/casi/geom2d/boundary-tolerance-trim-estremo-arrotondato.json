@@ -1,0 +1,83 @@
+{
+  "versione": 1,
+  "id": "boundary-tolerance-trim-estremo-arrotondato",
+  "componente": "geom2d",
+  "descrizione": "#214: trim estremo arrotondato.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      -2,
+      0.3333333333333333
+    ],
+    "curve": [
+      {
+        "segmento": {
+          "inizio": [
+            -1,
+            0.3333333333333333
+          ],
+          "fine": [
+            0,
+            0.3333333333333333
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            -1,
+            0
+          ],
+          "fine": [
+            2,
+            1
+          ]
+        }
+      }
+    ],
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "notEnclosed",
+    "scartate": [],
+    "loop": [],
+    "estremi_liberi": [
+      {
+        "curva": "0",
+        "all_inizio": true,
+        "punto": [
+          "-1",
+          "6004799503160661/18014398509481984"
+        ]
+      },
+      {
+        "curva": "0",
+        "all_inizio": false,
+        "punto": [
+          "0",
+          "6004799503160661/18014398509481984"
+        ]
+      },
+      {
+        "curva": "1",
+        "all_inizio": true,
+        "punto": [
+          "-1",
+          "0"
+        ]
+      },
+      {
+        "curva": "1",
+        "all_inizio": false,
+        "punto": [
+          "2",
+          "1"
+        ]
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Per il segmento orizzontale la retta del tagliente ha equazione x=3y-1. Il double di 1/3 è inferiore a 1/3, quindi l’incontro è già all’interno dell’ospite e la sua fine destra non può prolungarsi all’indietro. La distanza inferiore a un ulp non trasforma una decisione di incrocio in un nuovo incontro verso l’esterno."
+  }
+}

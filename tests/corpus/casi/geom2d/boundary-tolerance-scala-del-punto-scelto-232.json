@@ -1,0 +1,34 @@
+{
+  "versione": 1,
+  "id": "boundary-tolerance-scala-del-punto-scelto-232",
+  "componente": "geom2d",
+  "descrizione": "#214: scala del punto scelto 232.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      2097152.0000003576,
+      0
+    ],
+    "curve": [
+      {
+        "cerchio": {
+          "centro": [
+            1048576,
+            0
+          ],
+          "raggio": 1048576
+        }
+      }
+    ],
+    "unita_in_metri": 1
+  },
+  "atteso": {
+    "esito": "onCurve",
+    "scartate": [],
+    "curva_vicina": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "La distanza dalla circonferenza è 3·2^-23, maggiore di 2^-22. La coordinata del punto scelto supera 2·2^20, quindi con il punto incluso in M la tolleranza supera 2^-21. Il punto è entro la tolleranza."
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "versione": 1,
+  "id": "boundary-tolerance-prolungamento-non-cambia-scala-232",
+  "componente": "geom2d",
+  "descrizione": "#214: prolungamento non cambia scala 232.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      0.5,
+      2.3841857910156255e-07
+    ],
+    "curve": [
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            0
+          ],
+          "fine": [
+            1048576,
+            0
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            1048576.0000001192,
+            -1
+          ],
+          "fine": [
+            1048576.0000001192,
+            1
+          ]
+        }
+      }
+    ],
+    "unita_in_metri": 1
+  },
+  "atteso": {
+    "esito": "notEnclosed",
+    "scartate": [],
+    "loop": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Il segmento si estende di 2^-23 fino alla verticale, entro la tolleranza. La distanza del punto dal segmento è nextafter(2^-22,+inf), oltre la epsilon originale. Ricalcolando M dopo il prolungamento si aggiungerebbe 2^-65 a epsilon e si cambierebbe l’esito. Il passo 4 conserva la M del dato."
+  }
+}
