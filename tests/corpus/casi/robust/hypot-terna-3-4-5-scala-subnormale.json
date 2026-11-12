@@ -1,0 +1,19 @@
+{
+  "versione": 1,
+  "id": "hypot-terna-3-4-5-scala-subnormale",
+  "componente": "robust",
+  "descrizione": "Richiesta #216, ADR 0016: terna (3, 4) scalata per 2^-1074: componenti subnormali, 5*2^-1074 esatto.",
+  "ingresso": {
+    "operazione": "hypot",
+    "x": "0x0.0000000000003p-1022",
+    "y": "0x0.0000000000004p-1022"
+  },
+  "atteso": {
+    "lunghezza": "5/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784",
+    "lunghezza_negativa": false
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Aritmetica esatta (fractions di Python, mai solid-space): x e y sono i double scritti, s=x^2+y^2 come frazione; s e' il quadrato di una frazione L (numeratore e denominatore quadrati perfetti, math.isqrt) e L e' un double, quindi elementary.hpp chiede L esatto. Segno: hypot non e' mai negativo."
+  }
+}

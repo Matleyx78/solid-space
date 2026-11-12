@@ -1,0 +1,19 @@
+{
+  "versione": 1,
+  "id": "hypot-zero-negativo-x",
+  "componente": "robust",
+  "descrizione": "Richiesta #216, ADR 0016: (-0, 1e-300): |y| esatto.",
+  "ingresso": {
+    "operazione": "hypot",
+    "x": "-0x0p+0",
+    "y": "0x1.56e1fc2f8f359p-997"
+  },
+  "atteso": {
+    "lunghezza": "6032057205060441/6032057205060440848842124543157735677050252251748505781796615064961622344493727293370973578138265743708225425014400837164813540499979063179105919597766951022193355091707896034850684039059079180396788349106095584290087446076413771468940477241550670753145517602931224392424029547429993824129889235158145614364972941312",
+    "lunghezza_negativa": false
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Aritmetica esatta (fractions di Python, mai solid-space): x e y sono i double scritti, s=x^2+y^2 come frazione; s e' il quadrato di una frazione L (numeratore e denominatore quadrati perfetti, math.isqrt) e L e' un double, quindi elementary.hpp chiede L esatto. Segno: hypot non e' mai negativo."
+  }
+}

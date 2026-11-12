@@ -1,0 +1,19 @@
+{
+  "versione": 1,
+  "id": "hypot-terna-3-4-5",
+  "componente": "robust",
+  "descrizione": "Richiesta #216, ADR 0016: terna pitagorica (3, 4): 5 esatto.",
+  "ingresso": {
+    "operazione": "hypot",
+    "x": "0x1.8000000000000p+1",
+    "y": "0x1.0000000000000p+2"
+  },
+  "atteso": {
+    "lunghezza": "5",
+    "lunghezza_negativa": false
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Aritmetica esatta (fractions di Python, mai solid-space): x e y sono i double scritti, s=x^2+y^2 come frazione; s e' il quadrato di una frazione L (numeratore e denominatore quadrati perfetti, math.isqrt) e L e' un double, quindi elementary.hpp chiede L esatto. Segno: hypot non e' mai negativo."
+  }
+}

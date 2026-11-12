@@ -1,0 +1,22 @@
+{
+  "versione": 1,
+  "id": "hypot-ordinario",
+  "componente": "robust",
+  "descrizione": "Richiesta #216, ADR 0016: (1.5, -2.25): valore ordinario.",
+  "ingresso": {
+    "operazione": "hypot",
+    "x": "0x1.8000000000000p+0",
+    "y": "-0x1.2000000000000p+1"
+  },
+  "atteso": {
+    "lunghezza": {
+      "valore": 2.704163456597992,
+      "tolleranza": 8.881784197001252e-16
+    },
+    "lunghezza_negativa": false
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Aritmetica esatta con fractions di Python (mai solid-space; decimal solo per il punto di partenza della ricerca): s=x^2+y^2 come frazione esatta dei double scritti; L=sqrt(s) non e' una frazione o non e' un double (math.isqrt su numeratore e denominatore). Tutto in aritmetica esatta: la potenza di 2 di L con 4^e<=s<4^(e+1), i double vicini confrontando i loro quadrati con s, il piu' vicino con il quadrato del punto medio. Valore=double piu' vicino; tolleranza=2*ulp del valore esatto (2^(e-52) con 2^e<=L<2^(e+1), minimo 2^-1074), come kElementaryMaxErrorUlps, e, quando la finestra contiene double che elementary.hpp esclude (sotto la componente maggiore, o +0), togliendoli: restano k double consecutivi (k dispari), scritti come il double di mezzo con tolleranza pari alla meta' della loro estensione, cosi' il confronto accetta tutti e soli quei double."
+  }
+}
