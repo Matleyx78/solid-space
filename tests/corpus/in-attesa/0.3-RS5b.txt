@@ -1,0 +1,18 @@
+# [0.3-RS5b] taglio: casi della richiesta e ordinari; obbligatori con PS5 (#245)
+geom2d/taglio-richiesta-rettangolo-isola-righe-intere #245
+geom2d/taglio-richiesta-rettangolo-isola-righe-intere-traslato #245
+geom2d/taglio-richiesta-rettangolo-isola-righe-come-sono #245
+geom2d/taglio-richiesta-rettangolo-isola-righe-come-sono-traslato #245
+geom2d/taglio-richiesta-isole-annidate #245
+geom2d/taglio-richiesta-isole-annidate-traslato #245
+geom2d/taglio-richiesta-contorno-con-archi #245
+geom2d/taglio-richiesta-contorno-con-archi-traslato #245
+geom2d/taglio-regione-vuota #245
+geom2d/taglio-regione-vuota-traslato #245
+geom2d/taglio-segmento-diritto #245
+geom2d/taglio-segmento-diritto-traslato #245
+geom2d/taglio-segmento-rovesciato #245
+geom2d/taglio-segmento-rovesciato-traslato #245
+geom2d/taglio-scarti-loop-e-ospiti #245
+geom2d/taglio-scarti-tutti-i-loop #245
+geom2d/taglio-pezzo-ridotto-a-un-punto-tolto #245

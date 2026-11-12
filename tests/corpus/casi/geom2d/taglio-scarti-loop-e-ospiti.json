@@ -1,0 +1,545 @@
+{
+  "versione": 1,
+  "id": "taglio-scarti-loop-e-ospiti",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #215, ADR 0015: loop e ospiti non validi in mezzo a quelli buoni (quadrato 8x8 con un'isola circolare): ogni scarto con il suo indice e la sua diagnosi, e gli altri tagliati come se gli scarti non ci fossero.",
+  "ingresso": {
+    "operazione": "clipToRegion",
+    "ospiti": [
+      {
+        "segmento": {
+          "inizio": [
+            -1,
+            4
+          ],
+          "fine": [
+            9,
+            4
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            "nan",
+            0
+          ],
+          "fine": [
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "cerchio": {
+          "centro": [
+            1,
+            1
+          ],
+          "raggio": -2
+        }
+      },
+      {
+        "arco": {
+          "centro": [
+            1,
+            1
+          ],
+          "raggio": 1,
+          "angolo_iniziale": 2097152,
+          "ampiezza": 1
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            3,
+            3
+          ],
+          "fine": [
+            3,
+            3
+          ]
+        }
+      },
+      {
+        "cerchio": {
+          "centro": [
+            1,
+            1
+          ],
+          "raggio": 0
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            4,
+            -1
+          ],
+          "fine": [
+            4,
+            9
+          ]
+        }
+      }
+    ],
+    "prolunga_ospiti": "extended",
+    "regione": [
+      {
+        "vertici": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            8,
+            0,
+            0
+          ],
+          [
+            8,
+            8,
+            0
+          ],
+          [
+            0,
+            8,
+            0
+          ]
+        ],
+        "chiusa": true
+      },
+      {
+        "cerchio": {
+          "centro": [
+            1,
+            1
+          ],
+          "raggio": -1
+        }
+      },
+      {
+        "vertici": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            "nan",
+            0
+          ],
+          [
+            1,
+            1,
+            0
+          ]
+        ],
+        "chiusa": true
+      },
+      {
+        "vertici": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            "inf"
+          ],
+          [
+            1,
+            1,
+            0
+          ]
+        ],
+        "chiusa": true
+      },
+      {
+        "vertici": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            2251799813685248,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0
+          ]
+        ],
+        "chiusa": true
+      },
+      {
+        "vertici": [
+          [
+            0,
+            0,
+            "0x1p-60"
+          ],
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0
+          ]
+        ],
+        "chiusa": true
+      },
+      {
+        "cerchio": {
+          "centro": [
+            0,
+            0
+          ],
+          "raggio": 2251799813685248
+        }
+      },
+      {
+        "cerchio": {
+          "centro": [
+            3,
+            3
+          ],
+          "raggio": 0
+        }
+      },
+      {
+        "vertici": [
+          [
+            5,
+            5,
+            0
+          ],
+          [
+            5,
+            5,
+            0.5
+          ],
+          [
+            5,
+            5,
+            0
+          ]
+        ],
+        "chiusa": true
+      },
+      {
+        "cerchio": {
+          "centro": [
+            4,
+            4
+          ],
+          "raggio": 2
+        }
+      }
+    ]
+  },
+  "atteso": {
+    "ospiti": [
+      {
+        "dentro": [
+          {
+            "da": {
+              "punto": [
+                {
+                  "valore": 0.0,
+                  "tolleranza": 3.197442310920451e-14
+                },
+                {
+                  "valore": 4.0,
+                  "tolleranza": 3.197442310920451e-14
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "inside",
+                "stazione": {
+                  "valore": 1.0,
+                  "tolleranza": 1.2789769243681803e-13
+                }
+              }
+            },
+            "a": {
+              "punto": [
+                {
+                  "valore": 2.0,
+                  "tolleranza": 3.197442310920451e-14
+                },
+                {
+                  "valore": 4.0,
+                  "tolleranza": 3.197442310920451e-14
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "inside",
+                "stazione": {
+                  "valore": 3.0,
+                  "tolleranza": 1.2789769243681803e-13
+                }
+              }
+            }
+          },
+          {
+            "da": {
+              "punto": [
+                {
+                  "valore": 6.0,
+                  "tolleranza": 3.197442310920451e-14
+                },
+                {
+                  "valore": 4.0,
+                  "tolleranza": 3.197442310920451e-14
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "inside",
+                "stazione": {
+                  "valore": 7.0,
+                  "tolleranza": 1.2789769243681803e-13
+                }
+              }
+            },
+            "a": {
+              "punto": [
+                {
+                  "valore": 8.0,
+                  "tolleranza": 3.197442310920451e-14
+                },
+                {
+                  "valore": 4.0,
+                  "tolleranza": 3.197442310920451e-14
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "inside",
+                "stazione": {
+                  "valore": 9.0,
+                  "tolleranza": 1.2789769243681803e-13
+                }
+              }
+            }
+          }
+        ],
+        "bordo": []
+      },
+      {
+        "dentro": [],
+        "bordo": []
+      },
+      {
+        "dentro": [],
+        "bordo": []
+      },
+      {
+        "dentro": [],
+        "bordo": []
+      },
+      {
+        "dentro": [],
+        "bordo": []
+      },
+      {
+        "dentro": [],
+        "bordo": []
+      },
+      {
+        "dentro": [
+          {
+            "da": {
+              "punto": [
+                {
+                  "valore": 4.0,
+                  "tolleranza": 3.197442310920451e-14
+                },
+                {
+                  "valore": 0.0,
+                  "tolleranza": 3.197442310920451e-14
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "inside",
+                "stazione": {
+                  "valore": 1.0,
+                  "tolleranza": 1.2789769243681803e-13
+                }
+              }
+            },
+            "a": {
+              "punto": [
+                {
+                  "valore": 4.0,
+                  "tolleranza": 3.197442310920451e-14
+                },
+                {
+                  "valore": 2.0,
+                  "tolleranza": 3.197442310920451e-14
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "inside",
+                "stazione": {
+                  "valore": 3.0,
+                  "tolleranza": 1.2789769243681803e-13
+                }
+              }
+            }
+          },
+          {
+            "da": {
+              "punto": [
+                {
+                  "valore": 4.0,
+                  "tolleranza": 3.197442310920451e-14
+                },
+                {
+                  "valore": 6.0,
+                  "tolleranza": 3.197442310920451e-14
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "inside",
+                "stazione": {
+                  "valore": 7.0,
+                  "tolleranza": 1.2789769243681803e-13
+                }
+              }
+            },
+            "a": {
+              "punto": [
+                {
+                  "valore": 4.0,
+                  "tolleranza": 3.197442310920451e-14
+                },
+                {
+                  "valore": 8.0,
+                  "tolleranza": 3.197442310920451e-14
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "inside",
+                "stazione": {
+                  "valore": 9.0,
+                  "tolleranza": 1.2789769243681803e-13
+                }
+              }
+            }
+          }
+        ],
+        "bordo": []
+      }
+    ],
+    "ospiti_scartati": [
+      {
+        "indice": "1",
+        "diagnosi": {
+          "codice": "invalidValue",
+          "dato": "1"
+        }
+      },
+      {
+        "indice": "2",
+        "diagnosi": {
+          "codice": "invalidValue",
+          "dato": "2"
+        }
+      },
+      {
+        "indice": "3",
+        "diagnosi": {
+          "codice": "outOfDomain",
+          "dato": "3"
+        }
+      },
+      {
+        "indice": "4",
+        "diagnosi": {
+          "codice": "degenerateCurve",
+          "dato": "4"
+        }
+      },
+      {
+        "indice": "5",
+        "diagnosi": {
+          "codice": "degenerateCurve",
+          "dato": "5"
+        }
+      }
+    ],
+    "loop_scartati": [
+      {
+        "indice": "1",
+        "diagnosi": {
+          "codice": "invalidValue",
+          "dato": "1"
+        }
+      },
+      {
+        "indice": "2",
+        "diagnosi": {
+          "codice": "invalidValue",
+          "dato": "2"
+        }
+      },
+      {
+        "indice": "3",
+        "diagnosi": {
+          "codice": "invalidValue",
+          "dato": "3"
+        }
+      },
+      {
+        "indice": "4",
+        "diagnosi": {
+          "codice": "outOfDomain",
+          "dato": "4"
+        }
+      },
+      {
+        "indice": "5",
+        "diagnosi": {
+          "codice": "outOfDomain",
+          "dato": "5"
+        }
+      },
+      {
+        "indice": "6",
+        "diagnosi": {
+          "codice": "outOfDomain",
+          "dato": "6"
+        }
+      },
+      {
+        "indice": "7",
+        "diagnosi": {
+          "codice": "degenerateCurve",
+          "dato": "7"
+        }
+      },
+      {
+        "indice": "8",
+        "diagnosi": {
+          "codice": "degenerateCurve",
+          "dato": "8"
+        }
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente (mai solid-space), lo stesso di RS5a: i tre passi di clipping.hpp (tagli esatti in numeri a+b*sqrt(d) con fractions, parti fra tagli distinti, classe con la regola pari-dispari in un punto interno o ai due lati, tratti). Estremi che sono dati dell'ospite esatti; altri punti con kRelativePointError*max(M,|p|), M dell'ospite e dei pezzi per quel punto; stazioni con kRelativeStationError*max(M,|s|); tolleranze arrotondate per eccesso. Scarti: ogni loop si controlla come in nestContours (boundary.hpp): invalidValue per un valore NaN o infinito o un raggio negativo, outOfDomain per una coordinata, un raggio, il punto m o un punto del cerchio di un pezzo curvo oltre kMaxCoordinate = 2^50, degenerateCurve per un loop che e' esattamente un punto (cerchio di raggio 0, nessun pezzo dopo aver tolto quelli ridotti a un punto); ogni ospite come curves.hpp, 'Checking the data'. Indice e dato sono la posizione nell'elenco; l'ospite scartato ha la voce vuota. Loop 5: pezzo da (0, 0) a (1, 0) con bulge 2^-60, il cui cerchio ha raggio circa 2^58, oltre il dominio. Loop 8: tutti i pezzi ridotti a un punto."
+  }
+}
