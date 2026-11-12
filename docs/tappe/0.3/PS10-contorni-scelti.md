@@ -13,7 +13,7 @@
   usa `region.hpp` (`Loop`, `SkippedInput`)
 - **Dipende da:** PS5 (#245); RS10a (#258), RS10b (#259). La revisione del contratto
   `[0.3-CS]` (#222) e PS2 arrivano attraverso PS5
-- **Sblocca in Tecnigrafo:** PT43 (issue ancora da aprire), con PS9: le isole
+- **Sblocca in Tecnigrafo:** PT43 ([Matleyx78/tecnigrafo#740](https://github.com/Matleyx78/tecnigrafo/issues/740)), con PS9: le isole
   dei contorni scelti (*Select objects*); con PS5 e PS9, PT44 (`-HATCH`)
 - **Componente:** `geom2d`
 - **Da leggere:** [ADR 0014](../../adr/0014-contorno-e-isole-di-una-regione.md)

@@ -11,7 +11,7 @@
   `EllipseNearest`, `kRelativeNearestError`)
 - **Dipende da:** PS3 (#238), PS4 (#241); RS8 (#251). La revisione del contratto
   `[0.3-CS]` (#222) arriva attraverso PS4
-- **Sblocca in Tecnigrafo:** PT50 (issue ancora da aprire), con PS4 e PS7: lo
+- **Sblocca in Tecnigrafo:** PT50 ([Matleyx78/tecnigrafo#744](https://github.com/Matleyx78/tecnigrafo/issues/744)), con PS4 e PS7: lo
   snap *Vicino* e la scelta di un'ellisse con un clic
 - **Componente:** `geom2d`
 - **Da leggere:** [ADR 0017](../../adr/0017-ellisse-nel-piano.md) (Decisione,

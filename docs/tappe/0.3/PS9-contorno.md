@@ -16,7 +16,7 @@
   `SkippedInput`), `curves.hpp` e `robust/tolerance.hpp`
 - **Dipende da:** PS6 (#246); RS9a (#253), RS9b (#254), RS9c (#255), RS9d (#256). La
   revisione del contratto `[0.3-CS]` (#222) e PS2 arrivano attraverso PS6
-- **Sblocca in Tecnigrafo:** PT43 (issue ancora da aprire), con PS10: il
+- **Sblocca in Tecnigrafo:** PT43 ([Matleyx78/tecnigrafo#740](https://github.com/Matleyx78/tecnigrafo/issues/740)), con PS10: il
   contorno rilevato da un punto; con PS5 e PS10, PT44 (`-HATCH`)
 - **Componente:** `geom2d`
 - **Da leggere:** [ADR 0014](../../adr/0014-contorno-e-isole-di-una-regione.md),
