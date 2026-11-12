@@ -1,0 +1,19 @@
+{
+  "versione": 1,
+  "id": "hypot-terna-5-12-13-scala-grande",
+  "componente": "robust",
+  "descrizione": "Richiesta #216, ADR 0016: terna (5, 12) scalata per 2^1019 (12*2^1019 = 1.5*2^1022): i quadrati andrebbero oltre il massimo; 13*2^1019 esatto.",
+  "ingresso": {
+    "operazione": "hypot",
+    "x": "-0x1.4000000000000p+1021",
+    "y": "0x1.8000000000000p+1022"
+  },
+  "atteso": {
+    "lunghezza": "73031283603781583751503023375804129803230314769531204517330970470328899545984766272662818912228061508580046263697753551548883343580856752887719268697286363028468206703851603393497776713006225736027814949284533593590498714701625545598777201157211065097611144965613183659978568662507384748839363508909841055744",
+    "lunghezza_negativa": false
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Aritmetica esatta (fractions di Python, mai solid-space): x e y sono i double scritti, s=x^2+y^2 come frazione; s e' il quadrato di una frazione L (numeratore e denominatore quadrati perfetti, math.isqrt) e L e' un double, quindi elementary.hpp chiede L esatto. Segno: hypot non e' mai negativo."
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "versione": 1,
+  "id": "hypot-vettore-nullo-pm",
+  "componente": "robust",
+  "descrizione": "Richiesta #216, ADR 0016: vettore nullo (0x0p+0, -0x0p+0): +0 esatto, segno positivo (#230).",
+  "ingresso": {
+    "operazione": "hypot",
+    "x": "0x0p+0",
+    "y": "-0x0p+0"
+  },
+  "atteso": {
+    "lunghezza": "0",
+    "lunghezza_negativa": false
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Aritmetica esatta (fractions di Python, mai solid-space): x e y sono i double scritti, s=x^2+y^2 come frazione; s e' il quadrato di una frazione L (numeratore e denominatore quadrati perfetti, math.isqrt) e L e' un double, quindi elementary.hpp chiede L esatto. Segno: hypot non e' mai negativo."
+  }
+}

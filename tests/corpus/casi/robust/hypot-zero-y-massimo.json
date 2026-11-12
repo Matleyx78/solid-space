@@ -1,0 +1,19 @@
+{
+  "versione": 1,
+  "id": "hypot-zero-y-massimo",
+  "componente": "robust",
+  "descrizione": "Richiesta #216, ADR 0016: (kMaxHypotArgument, -0): 2^1023 esatto.",
+  "ingresso": {
+    "operazione": "hypot",
+    "x": "0x1.0000000000000p+1023",
+    "y": "-0x0p+0"
+  },
+  "atteso": {
+    "lunghezza": "89884656743115795386465259539451236680898848947115328636715040578866337902750481566354238661203768010560056939935696678829394884407208311246423715319737062188883946712432742638151109800623047059726541476042502884419075341171231440736956555270413618581675255342293149119973622969239858152417678164812112068608",
+    "lunghezza_negativa": false
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Aritmetica esatta (fractions di Python, mai solid-space): x e y sono i double scritti, s=x^2+y^2 come frazione; s e' il quadrato di una frazione L (numeratore e denominatore quadrati perfetti, math.isqrt) e L e' un double, quindi elementary.hpp chiede L esatto. Segno: hypot non e' mai negativo."
+  }
+}
