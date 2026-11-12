@@ -1,0 +1,52 @@
+{
+  "versione": 1,
+  "id": "ellipse-delicate-mm-archi-samecurve",
+  "componente": "geom2d",
+  "descrizione": "#217: mm archi samecurve.",
+  "ingresso": {
+    "operazione": "ellipseIntersect",
+    "ellisse": {
+      "centro": [
+        0,
+        0
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 1.0
+    },
+    "prolunga_ellisse": "none",
+    "prolunga_seconda": "none",
+    "seconda_ellisse": {
+      "centro": [
+        0,
+        0
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": 1.0,
+      "parametro_finale": 2.0
+    }
+  },
+  "atteso": {
+    "punti": [
+      {
+        "contatto": "sameCurve",
+        "sulla_prima": "atEnd",
+        "sulla_seconda": "atStart"
+      }
+    ],
+    "sovrapposizioni": [],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Stesso sostegno e stesso double 1.0 nei due parametri comuni: D1 della prima è D0 della seconda bit per bit. Gli intervalli [0.2,1] e [1,2] hanno un solo punto comune; nessuna coordinata trigonometrica viene imposta. Coordinate arrotondate da Decimal a 100 cifre; tolleranza 2^-48 max(M, |coordinata|), arrotondata per eccesso. Parametro iniziale 0.2 (o esplicitato): nessun punto vicino alle direzioni entro 2 ulp. Nessuna esecuzione di solid-space."
+  }
+}

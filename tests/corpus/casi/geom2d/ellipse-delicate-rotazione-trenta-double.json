@@ -1,0 +1,76 @@
+{
+  "versione": 1,
+  "id": "ellipse-delicate-rotazione-trenta-double",
+  "componente": "geom2d",
+  "descrizione": "#217: rotazione trenta double.",
+  "ingresso": {
+    "operazione": "ellipseIntersect",
+    "ellisse": {
+      "centro": [
+        0,
+        0
+      ],
+      "asse_maggiore": [
+        8.660254037844387,
+        4.999999999999999
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    },
+    "prolunga_ellisse": "none",
+    "prolunga_seconda": "none",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          -20,
+          0
+        ],
+        "fine": [
+          20,
+          0
+        ]
+      }
+    }
+  },
+  "atteso": {
+    "punti": [
+      {
+        "punto": [
+          {
+            "valore": -7.559289460184545,
+            "tolleranza": 7.105427357601003e-14
+          },
+          {
+            "valore": 0.0,
+            "tolleranza": 7.105427357601003e-14
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": "inside",
+        "sulla_seconda": "inside"
+      },
+      {
+        "punto": [
+          {
+            "valore": 7.559289460184545,
+            "tolleranza": 7.105427357601003e-14
+          },
+          {
+            "valore": 0.0,
+            "tolleranza": 7.105427357601003e-14
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": "inside",
+        "sulla_seconda": "inside"
+      }
+    ],
+    "sovrapposizioni": [],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "#217 caso 5: asse (double(10 cos(pi/6)), double(10 sin(pi/6))) dato esplicitamente. F inversa: (a*x+b*y)^2+4(-b*x+a*y)^2=(a²+b²)^2. Per y=0, x²=(a²+b²)^2/(a²+4b²). Decimal.from_float usa i double esatti, non l’ellisse ideale. Coordinate arrotondate da Decimal a 100 cifre; tolleranza 2^-48 max(M, |coordinata|), arrotondata per eccesso. Parametro iniziale 0.2 (o esplicitato): nessun punto vicino alle direzioni entro 2 ulp. Nessuna esecuzione di solid-space."
+  }
+}

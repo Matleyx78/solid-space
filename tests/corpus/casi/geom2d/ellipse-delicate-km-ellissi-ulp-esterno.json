@@ -1,0 +1,46 @@
+{
+  "versione": 1,
+  "id": "ellipse-delicate-km-ellissi-ulp-esterno",
+  "componente": "geom2d",
+  "descrizione": "#217: km ellissi ulp esterno.",
+  "ingresso": {
+    "operazione": "ellipseIntersect",
+    "ellisse": {
+      "centro": [
+        100000,
+        100000
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    },
+    "prolunga_ellisse": "none",
+    "prolunga_seconda": "none",
+    "seconda_ellisse": {
+      "centro": [
+        100020.00000000001,
+        100000
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    }
+  },
+  "atteso": {
+    "punti": [],
+    "sovrapposizioni": [],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Sottrarre (x-d)²+4y²=100 da x²+4y²=100 dà x=d/2, y²=25(1-d²/400). d=20.000000000014551915228366851806640625. Le due intersezioni vicine al semiasse positivo sono dopo l’origine 0.2: inferiore poi superiore. Coordinate arrotondate da Decimal a 100 cifre; tolleranza 2^-48 max(M, |coordinata|), arrotondata per eccesso. Parametro iniziale 0.2 (o esplicitato): nessun punto vicino alle direzioni entro 2 ulp. Nessuna esecuzione di solid-space."
+  }
+}

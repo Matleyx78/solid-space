@@ -1,0 +1,76 @@
+{
+  "versione": 1,
+  "id": "ellipse-delicate-km-arco-extended",
+  "componente": "geom2d",
+  "descrizione": "#217: km arco extended.",
+  "ingresso": {
+    "operazione": "ellipseIntersect",
+    "ellisse": {
+      "centro": [
+        100000,
+        100000
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": -0.2,
+      "parametro_finale": 3.3
+    },
+    "prolunga_ellisse": "extended",
+    "prolunga_seconda": "none",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          100000,
+          99990
+        ],
+        "fine": [
+          100000,
+          100010
+        ]
+      }
+    }
+  },
+  "atteso": {
+    "punti": [
+      {
+        "punto": [
+          {
+            "valore": 100000.0,
+            "tolleranza": 3.5534242215362615e-10
+          },
+          {
+            "valore": 100005.0,
+            "tolleranza": 3.5534242215362615e-10
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": "inside",
+        "sulla_seconda": "inside"
+      },
+      {
+        "punto": [
+          {
+            "valore": 100000.0,
+            "tolleranza": 3.5534242215362615e-10
+          },
+          {
+            "valore": 99995.0,
+            "tolleranza": 3.5534242215362615e-10
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": "afterEnd",
+        "sulla_seconda": "inside"
+      }
+    ],
+    "sovrapposizioni": [],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "x=c implica y=c±5. D0 a -0.2 e D1 a 3.3 racchiudono solo il punto superiore, con margine maggiore di 0.1 radiante da ogni estremo. Coordinate arrotondate da Decimal a 100 cifre; tolleranza 2^-48 max(M, |coordinata|), arrotondata per eccesso. Parametro iniziale 0.2 (o esplicitato): nessun punto vicino alle direzioni entro 2 ulp. Nessuna esecuzione di solid-space."
+  }
+}

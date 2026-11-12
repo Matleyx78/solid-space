@@ -1,0 +1,107 @@
+{
+  "versione": 1,
+  "id": "ellipse-delicate-km-ellissi-quattro",
+  "componente": "geom2d",
+  "descrizione": "#217: km ellissi quattro.",
+  "ingresso": {
+    "operazione": "ellipseIntersect",
+    "ellisse": {
+      "centro": [
+        100000,
+        100000
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    },
+    "prolunga_ellisse": "none",
+    "prolunga_seconda": "none",
+    "seconda_ellisse": {
+      "centro": [
+        100000,
+        100000
+      ],
+      "asse_maggiore": [
+        0,
+        10
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    }
+  },
+  "atteso": {
+    "punti": [
+      {
+        "punto": [
+          {
+            "valore": 100004.472135955,
+            "tolleranza": 3.5534242215362615e-10
+          },
+          {
+            "valore": 100004.472135955,
+            "tolleranza": 3.5534242215362615e-10
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": "inside",
+        "sulla_seconda": "inside"
+      },
+      {
+        "punto": [
+          {
+            "valore": 99995.527864045,
+            "tolleranza": 3.5534242215362615e-10
+          },
+          {
+            "valore": 100004.472135955,
+            "tolleranza": 3.5534242215362615e-10
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": "inside",
+        "sulla_seconda": "inside"
+      },
+      {
+        "punto": [
+          {
+            "valore": 99995.527864045,
+            "tolleranza": 3.5534242215362615e-10
+          },
+          {
+            "valore": 99995.527864045,
+            "tolleranza": 3.5534242215362615e-10
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": "inside",
+        "sulla_seconda": "inside"
+      },
+      {
+        "punto": [
+          {
+            "valore": 100004.472135955,
+            "tolleranza": 3.5534242215362615e-10
+          },
+          {
+            "valore": 99995.527864045,
+            "tolleranza": 3.5534242215362615e-10
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": "inside",
+        "sulla_seconda": "inside"
+      }
+    ],
+    "sovrapposizioni": [],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "x²+4y²=100, 4x²+y²=100 danno x²=y²=20. Parametrizzazione x=10(1-t²)/(1+t²), y=10t/(1+t²): t^4-18t²+1. Sturm in Q isola quattro radici semplici: [((-1779979416004714189/420196140727489673, -1440033597185408060/339945818819306129), 1), ((-99194853094755497/420196140727489673, -80250321908183544/339945818819306129), 1), ((80250321908183544/339945818819306129, 99194853094755497/420196140727489673), 1), ((1440033597185408060/339945818819306129, 1779979416004714189/420196140727489673), 1)] Coordinate arrotondate da Decimal a 100 cifre; tolleranza 2^-48 max(M, |coordinata|), arrotondata per eccesso. Parametro iniziale 0.2 (o esplicitato): nessun punto vicino alle direzioni entro 2 ulp. Nessuna esecuzione di solid-space."
+  }
+}
