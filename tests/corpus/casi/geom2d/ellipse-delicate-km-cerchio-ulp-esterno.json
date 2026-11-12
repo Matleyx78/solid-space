@@ -1,0 +1,103 @@
+{
+  "versione": 1,
+  "id": "ellipse-delicate-km-cerchio-ulp-esterno",
+  "componente": "geom2d",
+  "descrizione": "#217: km cerchio ulp esterno.",
+  "ingresso": {
+    "operazione": "ellipseIntersect",
+    "ellisse": {
+      "centro": [
+        100000,
+        100000
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    },
+    "prolunga_ellisse": "none",
+    "prolunga_seconda": "none",
+    "curva": {
+      "cerchio": {
+        "centro": [
+          100000,
+          100000
+        ],
+        "raggio": 5.000000000000001
+      }
+    }
+  },
+  "atteso": {
+    "punti": [
+      {
+        "punto": [
+          {
+            "valore": 100000.00000010882,
+            "tolleranza": 3.5534242215362615e-10
+          },
+          {
+            "valore": 100005.0,
+            "tolleranza": 3.5534242215362615e-10
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": "inside",
+        "sulla_seconda": "inside"
+      },
+      {
+        "punto": [
+          {
+            "valore": 99999.99999989118,
+            "tolleranza": 3.5534242215362615e-10
+          },
+          {
+            "valore": 100005.0,
+            "tolleranza": 3.5534242215362615e-10
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": "inside",
+        "sulla_seconda": "inside"
+      },
+      {
+        "punto": [
+          {
+            "valore": 99999.99999989118,
+            "tolleranza": 3.5534242215362615e-10
+          },
+          {
+            "valore": 99995.0,
+            "tolleranza": 3.5534242215362615e-10
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": "inside",
+        "sulla_seconda": "inside"
+      },
+      {
+        "punto": [
+          {
+            "valore": 100000.00000010882,
+            "tolleranza": 3.5534242215362615e-10
+          },
+          {
+            "valore": 99995.0,
+            "tolleranza": 3.5534242215362615e-10
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": "inside",
+        "sulla_seconda": "inside"
+      }
+    ],
+    "sovrapposizioni": [],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Eliminazione esatta x²+4y²=100 e x²+y²=r²: y²=(100-r²)/3, x²=4(r²-25)/3. r è il double esatto. Due radici doppie per r=5, nessuna per r<5, quattro semplici per r>5. Coordinate arrotondate da Decimal a 100 cifre; tolleranza 2^-48 max(M, |coordinata|), arrotondata per eccesso. Parametro iniziale 0.2 (o esplicitato): nessun punto vicino alle direzioni entro 2 ulp. Nessuna esecuzione di solid-space."
+  }
+}

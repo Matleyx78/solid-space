@@ -1,0 +1,50 @@
+{
+  "versione": 1,
+  "id": "ellipse-delicate-mm-stesso-sostegno",
+  "componente": "geom2d",
+  "descrizione": "#217: mm stesso sostegno.",
+  "ingresso": {
+    "operazione": "ellipseIntersect",
+    "ellisse": {
+      "centro": [
+        0,
+        0
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    },
+    "prolunga_ellisse": "none",
+    "prolunga_seconda": "none",
+    "seconda_ellisse": {
+      "centro": [
+        0,
+        0
+      ],
+      "asse_maggiore": [
+        -10,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": 3.3415926535897933,
+      "parametro_finale": 3.3415926535897933
+    }
+  },
+  "atteso": {
+    "punti": [],
+    "sovrapposizioni": [
+      {
+        "intera": true
+      }
+    ],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Cambiare a in -a cambia anche b in -b: F(S1) invariato esattamente. Parametri uguali su entrambe: due ellissi intere. Sovrapposizione intera; i punti degli estremi non sono imposti. Coordinate arrotondate da Decimal a 100 cifre; tolleranza 2^-48 max(M, |coordinata|), arrotondata per eccesso. Parametro iniziale 0.2 (o esplicitato): nessun punto vicino alle direzioni entro 2 ulp. Nessuna esecuzione di solid-space."
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "versione": 1,
+  "id": "ellipse-delicate-km-retta-ulp-interno",
+  "componente": "geom2d",
+  "descrizione": "#217: km retta ulp interno.",
+  "ingresso": {
+    "operazione": "ellipseIntersect",
+    "ellisse": {
+      "centro": [
+        100000,
+        100000
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    },
+    "prolunga_ellisse": "none",
+    "prolunga_seconda": "none",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          99980,
+          100004.99999999999
+        ],
+        "fine": [
+          100020,
+          100004.99999999999
+        ]
+      }
+    }
+  },
+  "atteso": {
+    "punti": [
+      {
+        "punto": [
+          {
+            "valore": 99999.99997587374,
+            "tolleranza": 3.5534242215362615e-10
+          },
+          {
+            "valore": 100004.99999999999,
+            "tolleranza": 3.5534242215362615e-10
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": "inside",
+        "sulla_seconda": "inside"
+      },
+      {
+        "punto": [
+          {
+            "valore": 100000.00002412626,
+            "tolleranza": 3.5534242215362615e-10
+          },
+          {
+            "valore": 100004.99999999999,
+            "tolleranza": 3.5534242215362615e-10
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": "inside",
+        "sulla_seconda": "inside"
+      }
+    ],
+    "sovrapposizioni": [],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Sostituzione dei double esatti: h=4.999999999985448084771633148193359375; (x-c)^2=100(1-h^2/25)=5.82076609133827039318370699660931677499320358037948608398437500E-10. Segno negativo: vuoto; zero: radice doppia; positivo: due radici. Ordine CCW da 0.2: sinistra poi destra. A c=100000 lo scarto 1e-12 si arrotonda a zero. Coordinate arrotondate da Decimal a 100 cifre; tolleranza 2^-48 max(M, |coordinata|), arrotondata per eccesso. Parametro iniziale 0.2 (o esplicitato): nessun punto vicino alle direzioni entro 2 ulp. Nessuna esecuzione di solid-space."
+  }
+}

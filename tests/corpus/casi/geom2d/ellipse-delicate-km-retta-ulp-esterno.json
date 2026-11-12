@@ -1,0 +1,45 @@
+{
+  "versione": 1,
+  "id": "ellipse-delicate-km-retta-ulp-esterno",
+  "componente": "geom2d",
+  "descrizione": "#217: km retta ulp esterno.",
+  "ingresso": {
+    "operazione": "ellipseIntersect",
+    "ellisse": {
+      "centro": [
+        100000,
+        100000
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    },
+    "prolunga_ellisse": "none",
+    "prolunga_seconda": "none",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          99980,
+          100005.00000000001
+        ],
+        "fine": [
+          100020,
+          100005.00000000001
+        ]
+      }
+    }
+  },
+  "atteso": {
+    "punti": [],
+    "sovrapposizioni": [],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Sostituzione dei double esatti: h=5.000000000014551915228366851806640625; (x-c)^2=100(1-h^2/25)=-5.82076609135521105212879300339068322500679641962051391601562500E-10. Segno negativo: vuoto; zero: radice doppia; positivo: due radici. Ordine CCW da 0.2: sinistra poi destra. A c=100000 lo scarto 1e-12 si arrotonda a zero. Coordinate arrotondate da Decimal a 100 cifre; tolleranza 2^-48 max(M, |coordinata|), arrotondata per eccesso. Parametro iniziale 0.2 (o esplicitato): nessun punto vicino alle direzioni entro 2 ulp. Nessuna esecuzione di solid-space."
+  }
+}
