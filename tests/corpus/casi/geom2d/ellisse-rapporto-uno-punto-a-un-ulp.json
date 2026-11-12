@@ -1,0 +1,37 @@
+{
+  "versione": 1,
+  "id": "ellisse-rapporto-uno-punto-a-un-ulp",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #217, ADR 0017: rapporto 1: il punto (3, 4 piu' un ulp) non e' sulla curva.",
+  "ingresso": {
+    "operazione": "meetsRectangle",
+    "ellisse": {
+      "centro": [
+        0,
+        0
+      ],
+      "asse_maggiore": [
+        5,
+        0
+      ],
+      "rapporto": 1,
+      "parametro_iniziale": 1,
+      "parametro_finale": 1
+    },
+    "angolo": [
+      3,
+      "0x1.0000000000001p+2"
+    ],
+    "angolo_opposto": [
+      3,
+      "0x1.0000000000001p+2"
+    ]
+  },
+  "atteso": {
+    "incontra": false
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente (mai solid-space), come dice ellipse.hpp: vero se l'inizio esatto sta nel rettangolo chiuso, o un lato non ridotto a un punto incontra la curva, o il rettangolo e' un punto della curva. Lati sostituiti nell'equazione implicita esatta ((q.a)^2+(q.a_perp)^2/rapporto^2=|a|^4, fractions): radici del secondo grado esatte (discriminante esatto, radice razionale quando e' un quadrato perfetto, decimal a 200 cifre solo per collocare una radice irrazionale lontana dagli estremi del lato); direzione F^-1 del punto e appartenenza all'arco con decimal, controllando che nessuna decisione cambi per D0 e D1 entro 2 ulp di sinCos (margine piu' di 8 volte l'errore di direzione). Stessa risposta con gli angoli scambiati."
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "versione": 1,
+  "id": "ellisse-regola-arc-ridotta-a-un-punto-grandezza",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #217, ADR 0017: lo stesso arco ridotto a un punto: magnitude lo accetta e da' 10.",
+  "ingresso": {
+    "operazione": "ellipseMagnitude",
+    "ellisse": {
+      "centro": [
+        0,
+        0
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": "0x1.0000000000000p-1",
+      "parametro_iniziale": 0,
+      "parametro_finale": "0x1.4d02421c87558p+8"
+    }
+  },
+  "atteso": {
+    "grandezza": "10"
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "ellipse.hpp: la grandezza M e' il massimo dei valori assoluti delle coordinate di centro e asse maggiore; un'ellisse degenere e' accettata."
+  }
+}

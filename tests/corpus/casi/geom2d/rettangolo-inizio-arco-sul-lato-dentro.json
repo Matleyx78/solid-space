@@ -1,0 +1,37 @@
+{
+  "versione": 1,
+  "id": "rettangolo-inizio-arco-sul-lato-dentro",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #217, ADR 0017: inizio dell'arco sul lato y=0 del rettangolo [5,12]x[-3,0]: arco da -1e-300 a pi/2, il cui inizio ha y = 5 sin(-1e-300) < 0 ed e' nel rettangolo.",
+  "ingresso": {
+    "operazione": "meetsRectangle",
+    "ellisse": {
+      "centro": [
+        0,
+        0
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": "0x1.0000000000000p-1",
+      "parametro_iniziale": "-0x1.56e1fc2f8f359p-997",
+      "parametro_finale": "0x1.921fb54442d18p+0"
+    },
+    "angolo": [
+      5,
+      -3
+    ],
+    "angolo_opposto": [
+      12,
+      0
+    ]
+  },
+  "atteso": {
+    "incontra": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente (mai solid-space), come dice ellipse.hpp: vero se l'inizio esatto sta nel rettangolo chiuso, o un lato non ridotto a un punto incontra la curva, o il rettangolo e' un punto della curva. Lati sostituiti nell'equazione implicita esatta ((q.a)^2+(q.a_perp)^2/rapporto^2=|a|^4, fractions): radici del secondo grado esatte (discriminante esatto, radice razionale quando e' un quadrato perfetto, decimal a 200 cifre solo per collocare una radice irrazionale lontana dagli estremi del lato); direzione F^-1 del punto e appartenenza all'arco con decimal, controllando che nessuna decisione cambi per D0 e D1 entro 2 ulp di sinCos (margine piu' di 8 volte l'errore di direzione). Stessa risposta con gli angoli scambiati."
+  }
+}
