@@ -1,0 +1,170 @@
+{
+  "versione": 1,
+  "id": "boundary-topology-isola-cerchio-con-diametro",
+  "componente": "geom2d",
+  "descrizione": "#214: isola cerchio con diametro.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      8,
+      0
+    ],
+    "curve": [
+      {
+        "segmento": {
+          "inizio": [
+            -10,
+            -10
+          ],
+          "fine": [
+            10,
+            -10
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            10,
+            -10
+          ],
+          "fine": [
+            10,
+            10
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            10,
+            10
+          ],
+          "fine": [
+            -10,
+            10
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            -10,
+            10
+          ],
+          "fine": [
+            -10,
+            -10
+          ]
+        }
+      },
+      {
+        "cerchio": {
+          "centro": [
+            0,
+            0
+          ],
+          "raggio": 4
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            -4,
+            0
+          ],
+          "fine": [
+            4,
+            0
+          ]
+        }
+      }
+    ],
+    "unita_in_metri": 1
+  },
+  "atteso": {
+    "esito": "enclosed",
+    "loop": [
+      {
+        "loop": {
+          "vertici": [
+            [
+              "-10",
+              "-10",
+              "0"
+            ],
+            [
+              "10",
+              "-10",
+              "0"
+            ],
+            [
+              "10",
+              "10",
+              "0"
+            ],
+            [
+              "-10",
+              "10",
+              "0"
+            ]
+          ],
+          "chiusa": true
+        },
+        "origini": [
+          {
+            "fonte": "curve",
+            "curva": "0",
+            "altra_curva": "0",
+            "invertito": false
+          },
+          {
+            "fonte": "curve",
+            "curva": "1",
+            "altra_curva": "1",
+            "invertito": false
+          },
+          {
+            "fonte": "curve",
+            "curva": "2",
+            "altra_curva": "2",
+            "invertito": false
+          },
+          {
+            "fonte": "curve",
+            "curva": "3",
+            "altra_curva": "3",
+            "invertito": false
+          }
+        ],
+        "profondita": "0"
+      },
+      {
+        "loop": {
+          "cerchio": {
+            "centro": [
+              "0",
+              "0"
+            ],
+            "raggio": "4"
+          }
+        },
+        "origini": [
+          {
+            "fonte": "curve",
+            "curva": "4",
+            "altra_curva": "4",
+            "invertito": false
+          }
+        ],
+        "profondita": "1"
+      }
+    ],
+    "scartate": [],
+    "estremi_liberi": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Il diametro divide le facce limitate del gruppo del cerchio. Nessuno dei suoi punti interni appartiene al bordo della faccia illimitata del gruppo. Entrambi i semicerchi hanno credito 4, quindi l’isola è un Circle."
+  }
+}

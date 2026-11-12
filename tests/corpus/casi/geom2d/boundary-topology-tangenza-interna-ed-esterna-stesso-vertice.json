@@ -1,0 +1,94 @@
+{
+  "versione": 1,
+  "id": "boundary-topology-tangenza-interna-ed-esterna-stesso-vertice",
+  "componente": "geom2d",
+  "descrizione": "#214: tangenza interna ed esterna stesso vertice.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      -5,
+      0
+    ],
+    "curve": [
+      {
+        "cerchio": {
+          "centro": [
+            0,
+            0
+          ],
+          "raggio": 10
+        }
+      },
+      {
+        "cerchio": {
+          "centro": [
+            5,
+            0
+          ],
+          "raggio": 5
+        }
+      },
+      {
+        "cerchio": {
+          "centro": [
+            13,
+            0
+          ],
+          "raggio": 3
+        }
+      }
+    ],
+    "unita_in_metri": 1
+  },
+  "atteso": {
+    "esito": "enclosed",
+    "loop": [
+      {
+        "loop": {
+          "cerchio": {
+            "centro": [
+              "0",
+              "0"
+            ],
+            "raggio": "10"
+          }
+        },
+        "origini": [
+          {
+            "fonte": "curve",
+            "curva": "0",
+            "altra_curva": "0",
+            "invertito": false
+          }
+        ],
+        "profondita": "0"
+      },
+      {
+        "loop": {
+          "cerchio": {
+            "centro": [
+              "5",
+              "0"
+            ],
+            "raggio": "5"
+          }
+        },
+        "origini": [
+          {
+            "fonte": "curve",
+            "curva": "1",
+            "altra_curva": "1",
+            "invertito": false
+          }
+        ],
+        "profondita": "1"
+      }
+    ],
+    "scartate": [],
+    "estremi_liberi": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Le tre coppie sono tangenti in (10,0): distanze dei centri 5,13,8 uguali a differenza 10-5 e somme 10+3,5+3. La faccia scelta tocca i primi due cerchi, non il terzo all’esterno. Ogni giro ha un solo credito."
+  }
+}

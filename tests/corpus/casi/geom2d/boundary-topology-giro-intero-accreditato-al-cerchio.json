@@ -1,0 +1,69 @@
+{
+  "versione": 1,
+  "id": "boundary-topology-giro-intero-accreditato-al-cerchio",
+  "componente": "geom2d",
+  "descrizione": "#214: giro intero accreditato al cerchio.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      0,
+      0
+    ],
+    "curve": [
+      {
+        "cerchio": {
+          "centro": [
+            0,
+            0
+          ],
+          "raggio": 10
+        }
+      },
+      {
+        "pezzo": {
+          "inizio": [
+            -10,
+            0
+          ],
+          "fine": [
+            10,
+            0
+          ],
+          "bulge": 1
+        }
+      }
+    ],
+    "unita_in_metri": 1
+  },
+  "atteso": {
+    "esito": "enclosed",
+    "loop": [
+      {
+        "loop": {
+          "cerchio": {
+            "centro": [
+              "0",
+              "0"
+            ],
+            "raggio": "10"
+          }
+        },
+        "origini": [
+          {
+            "fonte": "curve",
+            "curva": "0",
+            "altra_curva": "0",
+            "invertito": false
+          }
+        ],
+        "profondita": "0"
+      }
+    ],
+    "scartate": [],
+    "estremi_liberi": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Stessi sostegni e vertici del caso #228, ma il cerchio ha indice 0. Il passo 5 gli accredita entrambi i semicerchi; il risultato è un solo Circle con origine 0."
+  }
+}

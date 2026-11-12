@@ -1,0 +1,12 @@
+geom2d/boundary-topology-vertice-a-quattro-pezzi #257
+geom2d/boundary-topology-tangenza-interna-contorno-227 #257
+geom2d/boundary-topology-tangenza-interna-ed-esterna-stesso-vertice #257
+geom2d/boundary-topology-tre-tratti-condivisi #257
+geom2d/boundary-topology-bordo-con-vertice-ripetuto #257
+geom2d/boundary-topology-gruppo-dentro-isola #257
+geom2d/boundary-topology-segmento-aperto-nella-faccia #257
+geom2d/boundary-topology-isola-cerchio-con-diametro #257
+geom2d/boundary-topology-isola-interna-tangente-in-gruppo-distinto #257
+geom2d/boundary-topology-giro-intero-origini-miste-228 #257
+geom2d/boundary-topology-giro-intero-accreditato-al-cerchio #257
+geom2d/boundary-topology-giro-intero-accreditato-ad-arco #257
