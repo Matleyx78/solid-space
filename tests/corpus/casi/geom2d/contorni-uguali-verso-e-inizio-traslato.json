@@ -1,0 +1,141 @@
+{
+  "versione": 1,
+  "id": "contorni-uguali-verso-e-inizio-traslato",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #214, ADR 0014: lo stesso quadrato dato tre volte: in senso antiorario, in senso orario e da un altro vertice: tre conflitti same, profondita' 1 dentro il contorno esterno (traslato di 1e5).",
+  "ingresso": {
+    "operazione": "nestContours",
+    "contorni": [
+      {
+        "vertici": [
+          [
+            99998,
+            99998,
+            0
+          ],
+          [
+            100010,
+            99998,
+            0
+          ],
+          [
+            100010,
+            100010,
+            0
+          ],
+          [
+            99998,
+            100010,
+            0
+          ]
+        ],
+        "chiusa": true
+      },
+      {
+        "vertici": [
+          [
+            100000,
+            100000,
+            0
+          ],
+          [
+            100008,
+            100000,
+            0
+          ],
+          [
+            100008,
+            100008,
+            0
+          ],
+          [
+            100000,
+            100008,
+            0
+          ]
+        ],
+        "chiusa": true
+      },
+      {
+        "vertici": [
+          [
+            100000,
+            100000,
+            0
+          ],
+          [
+            100000,
+            100008,
+            0
+          ],
+          [
+            100008,
+            100008,
+            0
+          ],
+          [
+            100008,
+            100000,
+            0
+          ]
+        ],
+        "chiusa": true
+      },
+      {
+        "vertici": [
+          [
+            100008,
+            100008,
+            0
+          ],
+          [
+            100000,
+            100008,
+            0
+          ],
+          [
+            100000,
+            100000,
+            0
+          ],
+          [
+            100008,
+            100000,
+            0
+          ]
+        ],
+        "chiusa": true
+      }
+    ]
+  },
+  "atteso": {
+    "profondita": [
+      "0",
+      "1",
+      "1",
+      "1"
+    ],
+    "conflitti": [
+      {
+        "primo": "1",
+        "secondo": "2",
+        "tipo": "same"
+      },
+      {
+        "primo": "1",
+        "secondo": "3",
+        "tipo": "same"
+      },
+      {
+        "primo": "2",
+        "secondo": "3",
+        "tipo": "same"
+      }
+    ],
+    "scartati": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente (mai solid-space), come dice nestContours (boundary.hpp): per ogni coppia A, B si tagliano i pezzi di B sul solo A con lo stesso oracolo dei casi del taglio (RS5a: tagli esatti in numeri a+b*sqrt(d) con fractions, parti fra tagli distinti, regola pari-dispari in un punto interno di ogni parte fuori da A); A racchiude B se qualche parte di B e' dentro A e nessuna fuori; same se ogni parte di ciascuno corre lungo l'altro; crossing se una ha parti dentro e fuori dell'altra o si racchiudono a vicenda; la profondita' conta i contorni che racchiudono, senza i conflitti. Tutto esatto."
+  }
+}

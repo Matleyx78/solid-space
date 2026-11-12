@@ -1,0 +1,79 @@
+{
+  "versione": 1,
+  "id": "contorni-uguali-cerchio-e-semicerchi-traslato",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #214, ADR 0014: un cerchio di centro (4, 4) e raggio 2 e la polilinea di due semicerchi (bulge 1) sullo stesso cerchio: same; il quadrato intorno li racchiude entrambi (traslato di 1e5).",
+  "ingresso": {
+    "operazione": "nestContours",
+    "contorni": [
+      {
+        "vertici": [
+          [
+            100000,
+            100000,
+            0
+          ],
+          [
+            100008,
+            100000,
+            0
+          ],
+          [
+            100008,
+            100008,
+            0
+          ],
+          [
+            100000,
+            100008,
+            0
+          ]
+        ],
+        "chiusa": true
+      },
+      {
+        "cerchio": {
+          "centro": [
+            100004,
+            100004
+          ],
+          "raggio": 2
+        }
+      },
+      {
+        "vertici": [
+          [
+            100006,
+            100004,
+            1
+          ],
+          [
+            100002,
+            100004,
+            1
+          ]
+        ],
+        "chiusa": true
+      }
+    ]
+  },
+  "atteso": {
+    "profondita": [
+      "0",
+      "1",
+      "1"
+    ],
+    "conflitti": [
+      {
+        "primo": "1",
+        "secondo": "2",
+        "tipo": "same"
+      }
+    ],
+    "scartati": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente (mai solid-space), come dice nestContours (boundary.hpp): per ogni coppia A, B si tagliano i pezzi di B sul solo A con lo stesso oracolo dei casi del taglio (RS5a: tagli esatti in numeri a+b*sqrt(d) con fractions, parti fra tagli distinti, regola pari-dispari in un punto interno di ogni parte fuori da A); A racchiude B se qualche parte di B e' dentro A e nessuna fuori; same se ogni parte di ciascuno corre lungo l'altro; crossing se una ha parti dentro e fuori dell'altra o si racchiudono a vicenda; la profondita' conta i contorni che racchiudono, senza i conflitti. Tutto esatto."
+  }
+}
