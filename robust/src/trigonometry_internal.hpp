@@ -124,8 +124,8 @@ inline DoubleDouble arctangent(double numerator, double denominator) noexcept {
     const DoubleDouble denominatorSum =
         fastTwoSum(sum.hi, sum.lo + (product.lo + centre * quotientLow));
     const DoubleDouble reduced = divide(difference, denominatorSum);
-    const DoubleDouble arctangentOfReduced = multiply(
-        reduced, series(kArctangentHead, kArctangentTail, multiply(reduced, reduced)));
+    const DoubleDouble arctangentOfReduced =
+        multiply(reduced, series(kArctangentHead, kArctangentTail, multiply(reduced, reduced)));
     const auto index = static_cast<std::ptrdiff_t>(eighths);  // 0 to 8
     return add(*std::next(kArctangentOfEighths.begin(), index), arctangentOfReduced);
 }
