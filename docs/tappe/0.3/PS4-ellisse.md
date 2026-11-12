@@ -12,7 +12,7 @@
   `magnitude`, `endpoints`, `meetsRectangle`)
 - **Dipende da:** la revisione del contratto `[0.3-CS]` (#222); RS4a (#239),
   RS4b (#240)
-- **Sblocca in Tecnigrafo:** PT50 (issue ancora da aprire), con PS7 e PS8: la
+- **Sblocca in Tecnigrafo:** PT50 ([Matleyx78/tecnigrafo#744](https://github.com/Matleyx78/tecnigrafo/issues/744)), con PS7 e PS8: la
   finestra che attraversa usa `meetsRectangle`, lo snap *Estremo* `endpoints`
 - **Componente:** `geom2d`
 - **Da leggere:** [ADR 0017](../../adr/0017-ellisse-nel-piano.md) (Decisione,

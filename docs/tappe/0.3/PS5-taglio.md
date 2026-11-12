@@ -14,7 +14,7 @@
   `intersection.hpp`, `side.hpp`, `curves.hpp`
 - **Dipende da:** la revisione del contratto `[0.3-CS]` (#222); PS2 (#237);
   RS5a (#242), RS5b (#243), RS5c (#244)
-- **Sblocca in Tecnigrafo:** PT42 (issue ancora da aprire), righe dei motivi
+- **Sblocca in Tecnigrafo:** PT42 ([Matleyx78/tecnigrafo#738](https://github.com/Matleyx78/tecnigrafo/issues/738)), righe dei motivi
   tagliate sulla regione; con PS9 e PS10, PT44 (`-HATCH`)
 - **Componente:** `geom2d`
 - **Da leggere:** [ADR 0015](../../adr/0015-parti-di-una-curva-dentro-una-regione.md),

@@ -13,7 +13,7 @@
   `acos`, `hypot`, `kElementaryMaxErrorUlps`, `kMaxHypotArgument`)
 - **Dipende da:** la revisione del contratto `[0.3-CS]` (#222); RS1a (#234),
   RS1b (#235)
-- **Sblocca in Tecnigrafo:** PT41 (issue ancora da aprire): `core` e `cmd`
+- **Sblocca in Tecnigrafo:** PT41 ([Matleyx78/tecnigrafo#736](https://github.com/Matleyx78/tecnigrafo/issues/736)): `core` e `cmd`
   passano a `robust::tan`, `robust::acos` e `robust::hypot`, e l'elenco delle
   eccezioni del confronto tra sistemi si svuota
 - **Componente:** `robust`
