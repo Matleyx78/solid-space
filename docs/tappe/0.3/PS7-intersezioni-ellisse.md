@@ -1,19 +1,19 @@
 # [0.3-PS7] `geom2d`: intersezioni dell'ellisse
 
 - **Tappa:** 0.3 — [piano](../0.3-regioni-ed-ellisse.md)
-- **Issue:** #…
+- **Issue:** #250
 - **Difficoltà:** media
 - **Agente:** claude
 - **Modello e impegno:** medio; impegno alto. La revisione di Codex è mirata,
   in fascia forte, su tangenze, coniche uguali e posizioni agli estremi
-- **Riferimenti:** issue `[0.3-RS7a]` (#…), agente codex, fascia forte;
-  `[0.3-RS7b]` (#…), agente codex, fascia leggera; `[0.3-RS7c]` (#…), agente
+- **Riferimenti:** issue `[0.3-RS7a]` (#247), agente codex, fascia forte;
+  `[0.3-RS7b]` (#248), agente codex, fascia leggera; `[0.3-RS7c]` (#249), agente
   codex, fascia leggera (`autocad-ellissi.dxf`)
 - **Contratto:** `geom2d/include/solid_space/geom2d/ellipse.hpp` (le due
   `intersect`, `EllipseIntersectionPoint`, `EllipseOverlapEnd`,
   `EllipseOverlap`, `EllipseIntersections`); usa `intersection.hpp`
   (`Extension`, `Location`, `Contact`) e `curves.hpp`
-- **Dipende da:** PS3 (#…), PS4 (#…); RS7a (#…), RS7b (#…), RS7c (#…). La
+- **Dipende da:** PS3 (#238), PS4 (#241); RS7a (#247), RS7b (#248), RS7c (#249). La
   revisione del contratto `[0.3-CS]` (#222) arriva attraverso PS4
 - **Sblocca in Tecnigrafo:** PT50 (issue ancora da aprire), con PS4 e PS8: lo
   snap *Intersezione* sulle ellissi

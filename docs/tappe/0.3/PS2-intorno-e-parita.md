@@ -1,7 +1,7 @@
 # [0.3-PS2] `geom2d`: ordine intorno a un punto e parità (interno)
 
 - **Tappa:** 0.3 — [piano](../0.3-regioni-ed-ellisse.md)
-- **Issue:** #…
+- **Issue:** #237
 - **Difficoltà:** impegnativa
 - **Agente:** claude
 - **Modello e impegno:** forte; impegno alto. Resta impegnativo: l'ordine

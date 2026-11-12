@@ -1,17 +1,17 @@
 # [0.3-PS4] `geom2d`: l'ellisse, i suoi estremi e il rettangolo
 
 - **Tappa:** 0.3 — [piano](../0.3-regioni-ed-ellisse.md)
-- **Issue:** #…
+- **Issue:** #241
 - **Difficoltà:** media
 - **Agente:** codex
 - **Modello e impegno:** medio; impegno alto. La revisione di Claude è mirata,
   in fascia forte, sulla regola dell'ampiezza nominale e sul rettangolo
-- **Riferimenti:** issue `[0.3-RS4a]` (#…), agente claude, fascia forte;
-  `[0.3-RS4b]` (#…), agente claude, fascia leggera
+- **Riferimenti:** issue `[0.3-RS4a]` (#239), agente claude, fascia forte;
+  `[0.3-RS4b]` (#240), agente claude, fascia leggera
 - **Contratto:** `geom2d/include/solid_space/geom2d/ellipse.hpp` (`Ellipse`,
   `magnitude`, `endpoints`, `meetsRectangle`)
-- **Dipende da:** la revisione del contratto `[0.3-CS]` (#222); RS4a (#…),
-  RS4b (#…)
+- **Dipende da:** la revisione del contratto `[0.3-CS]` (#222); RS4a (#239),
+  RS4b (#240)
 - **Sblocca in Tecnigrafo:** PT50 (issue ancora da aprire), con PS7 e PS8: la
   finestra che attraversa usa `meetsRectangle`, lo snap *Estremo* `endpoints`
 - **Componente:** `geom2d`

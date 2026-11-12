@@ -1,7 +1,7 @@
 # [0.3-PS6] `geom2d`: arrangiamento delle curve (interno)
 
 - **Tappa:** 0.3 — [piano](../0.3-regioni-ed-ellisse.md)
-- **Issue:** #…
+- **Issue:** #246
 - **Difficoltà:** impegnativa
 - **Agente:** claude
 - **Modello e impegno:** forte; impegno alto. Resta impegnativo: la topologia
@@ -14,7 +14,7 @@
 - **Contratto:** usa `geom2d/include/solid_space/geom2d/boundary.hpp` (passi 5
   e 6 di `detectBoundary`: a chi va un tratto comune, come si percorre il bordo
   di una faccia) e `curves.hpp`; non realizza funzioni pubbliche
-- **Dipende da:** la revisione del contratto `[0.3-CS]` (#222); PS2 (#…)
+- **Dipende da:** la revisione del contratto `[0.3-CS]` (#222); PS2 (#237)
 - **Sblocca in Tecnigrafo:** niente da solo; serve a PS9 (PT43, PT44)
 - **Componente:** `geom2d` (interno)
 - **Da leggere:** [ADR 0014](../../adr/0014-contorno-e-isole-di-una-regione.md),
