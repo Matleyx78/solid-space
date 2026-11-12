@@ -1,0 +1,29 @@
+{
+  "versione": 1,
+  "id": "ellisse-grandezza-asse-negativo",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #217, ADR 0017: asse (-6, -8): M = 8.",
+  "ingresso": {
+    "operazione": "ellipseMagnitude",
+    "ellisse": {
+      "centro": [
+        -3,
+        4
+      ],
+      "asse_maggiore": [
+        -6,
+        -8
+      ],
+      "rapporto": "0x1.0000000000000p-2",
+      "parametro_iniziale": -1,
+      "parametro_finale": "-0x1.0000000000000p-2"
+    }
+  },
+  "atteso": {
+    "grandezza": "8"
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "ellipse.hpp: la grandezza M e' il massimo dei valori assoluti delle coordinate di centro e asse maggiore; un'ellisse degenere e' accettata."
+  }
+}

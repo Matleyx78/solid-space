@@ -1,0 +1,37 @@
+{
+  "versione": 1,
+  "id": "rettangolo-contiene-coordinate-1e5",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #217, ADR 0017: ellisse intera con coordinate di 1e5: il rettangolo [123000,124000]x[98000,99000] la contiene.",
+  "ingresso": {
+    "operazione": "meetsRectangle",
+    "ellisse": {
+      "centro": [
+        "0x1.e240c00000000p+16",
+        "0x1.81cd800000000p+16"
+      ],
+      "asse_maggiore": [
+        250,
+        -125
+      ],
+      "rapporto": "0x1.3333333333333p-2",
+      "parametro_iniziale": 2,
+      "parametro_finale": 2
+    },
+    "angolo": [
+      123000,
+      98000
+    ],
+    "angolo_opposto": [
+      124000,
+      99000
+    ]
+  },
+  "atteso": {
+    "incontra": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente (mai solid-space), come dice ellipse.hpp: vero se l'inizio esatto sta nel rettangolo chiuso, o un lato non ridotto a un punto incontra la curva, o il rettangolo e' un punto della curva. Lati sostituiti nell'equazione implicita esatta ((q.a)^2+(q.a_perp)^2/rapporto^2=|a|^4, fractions): radici del secondo grado esatte (discriminante esatto, radice razionale quando e' un quadrato perfetto, decimal a 200 cifre solo per collocare una radice irrazionale lontana dagli estremi del lato); direzione F^-1 del punto e appartenenza all'arco con decimal, controllando che nessuna decisione cambi per D0 e D1 entro 2 ulp di sinCos (margine piu' di 8 volte l'errore di direzione). Stessa risposta con gli angoli scambiati."
+  }
+}

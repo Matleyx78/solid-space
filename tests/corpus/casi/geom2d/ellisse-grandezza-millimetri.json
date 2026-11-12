@@ -1,0 +1,29 @@
+{
+  "versione": 1,
+  "id": "ellisse-grandezza-millimetri",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #217, ADR 0017: ellisse in millimetri vicino all'origine: centro (12.5, -7.25), asse (40, 30): M = 40.",
+  "ingresso": {
+    "operazione": "ellipseMagnitude",
+    "ellisse": {
+      "centro": [
+        "0x1.9000000000000p+3",
+        "-0x1.d000000000000p+2"
+      ],
+      "asse_maggiore": [
+        40,
+        30
+      ],
+      "rapporto": "0x1.3333333333333p-1",
+      "parametro_iniziale": "0x1.0000000000000p-1",
+      "parametro_finale": "0x1.4000000000000p+1"
+    }
+  },
+  "atteso": {
+    "grandezza": "40"
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "ellipse.hpp: la grandezza M e' il massimo dei valori assoluti delle coordinate di centro e asse maggiore; un'ellisse degenere e' accettata."
+  }
+}

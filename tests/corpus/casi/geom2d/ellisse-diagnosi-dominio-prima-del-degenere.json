@@ -1,0 +1,32 @@
+{
+  "versione": 1,
+  "id": "ellisse-diagnosi-dominio-prima-del-degenere",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #217, ADR 0017: asse nullo e parametro finale -2^21: outOfDomain viene prima di degenerateCurve.",
+  "ingresso": {
+    "operazione": "ellipseEndpoints",
+    "ellisse": {
+      "centro": [
+        0,
+        0
+      ],
+      "asse_maggiore": [
+        0,
+        0
+      ],
+      "rapporto": "0x1.0000000000000p-1",
+      "parametro_iniziale": 0,
+      "parametro_finale": -2097152
+    }
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "outOfDomain",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Controllo dei dati di ellipse.hpp, nell'ordine di curves.hpp, input per input: per l'ellisse prima invalidValue (un valore NaN o infinito, o rapporto fuori da (0, 1]), poi outOfDomain (coordinata di centro o asse oltre kMaxCoordinate = 2^50, parametro oltre kMaxTrigArgument = 2^20), poi degenerateCurve (asse nullo, o arco ridotto a una direzione); gli angoli del rettangolo dopo l'ellisse, solo invalidValue e outOfDomain, corner (dato 1) prima di oppositeCorner (dato 2). magnitude accetta un'ellisse degenere."
+  }
+}
