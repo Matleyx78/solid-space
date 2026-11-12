@@ -72,7 +72,7 @@ si tocca: lo aggiorna PS11.
 
 | Operazione | `ingresso` | `atteso` |
 |---|---|---|
-| `tan` | `angolo` | `valore` (esatto o approssimato), `valore_negativo` (booleano) |
+| `tan` | `angolo` | `tangente` (esatto o approssimato), `tangente_negativa` (booleano) |
 | `acos` | `x` | `angolo`, `angolo_negativo` |
 | `hypot` | `x`, `y` | `lunghezza`, `lunghezza_negativa` |
 
