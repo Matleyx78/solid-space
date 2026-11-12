@@ -1,6 +1,6 @@
 # [0.3-CS] Revisione del contratto
 
-- **Tappa:** 0.3, in preparazione, per Tecnigrafo 0.8
+- **Tappa:** 0.3, per Tecnigrafo 0.8 — [piano](../0.3-regioni-ed-ellisse.md)
 - **Issue:** [#222](https://github.com/Matleyx78/solid-space/issues/222)
 - **Agente:** codex
 - **Difficoltà:** impegnativa
