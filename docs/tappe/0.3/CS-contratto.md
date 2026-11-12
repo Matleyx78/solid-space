@@ -18,6 +18,11 @@ di regione, contorno, taglio e funzioni elementari e dei relativi
 [0015](../../adr/0015-parti-di-una-curva-dentro-una-regione.md) e
 [0016](../../adr/0016-tangente-arcocoseno-e-lunghezza-deterministici.md).
 
+La decisione nella [#232](https://github.com/Matleyx78/solid-space/issues/232)
+e il [via libera sul passo 6](https://github.com/Matleyx78/solid-space/pull/231#issuecomment-6815626390)
+autorizzano anche le correzioni di `detectBoundary` e dell’ADR 0014 emerse
+nella revisione della pull request #231.
+
 ## Modifiche al piano
 
 - **2026-11-12 — Correzioni dopo la revisione #222.** Le schede di lavoro e
@@ -28,3 +33,11 @@ di regione, contorno, taglio e funzioni elementari e dei relativi
   l'indipendenza delle liste (#229). Per le funzioni elementari recepiscono
   il caso del vettore nullo nella composizione di `acos` e `hypot` (#230).
   Voce da riportare nel piano della tappa alla sua pubblicazione.
+
+- **2026-11-12 — Correzioni dopo la revisione della #231.** Nei passi 2, 3
+  e 4 di `detectBoundary` vale la M della curva data, invariata dal
+  prolungamento; nel passo 4 contano anche le coordinate del punto scelto
+  (#232). La frase finale del passo 6 esclude i pezzi interni solo negli
+  altri gruppi, come autorizzato nella #231 per applicare la #227.
+  Le schede di lavoro e di riferimenti che usano il contratto recepiscono
+  queste regole. Voce da riportare nel piano della tappa alla pubblicazione.

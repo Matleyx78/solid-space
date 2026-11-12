@@ -93,7 +93,9 @@ struct DetectedBoundary {
 ///
 /// The exact result is defined by these steps. For two curves, epsilon is
 /// policy.epsilon(M) with M the magnitude of the two (curves.hpp). In
-/// steps 2 and 3, use the magnitude of the input Arc for a converted Arc.
+/// steps 2, 3 and 4, use the magnitude of the input curve: for a converted
+/// Arc, that of the input Arc. Extending a curve in step 3 does not change
+/// its magnitude.
 /// For the picked point and a curve, M also counts the coordinates of the
 /// point.
 /// 1. Data. A curve with invalidValue, outOfDomain or degenerateCurve
@@ -143,8 +145,8 @@ struct DetectedBoundary {
 ///    contour is the loop of F that encloses F. The islands are the other
 ///    loops of F, and, for every connected group lying inside the contour
 ///    other than the group of the contour, the loops of the boundary of the
-///    unbounded face of that group taken alone. A piece inside a group, with
-///    a face of the group on both sides, is never part of an island.
+///    unbounded face of that group taken alone. A piece of such a group,
+///    with faces of that group on both sides, is never part of an island.
 /// 7. Depth. The depth of a loop is the number of the other loops of steps 6
 ///    (the contour included) that enclose it: every point of it lies inside
 ///    or on that loop, and some point lies inside.

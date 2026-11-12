@@ -4,6 +4,9 @@
 - **Data:** 2026-11-11
 - **Corretto:** 2026-11-12 — scala dei collegamenti, prolungamenti, isole e
   origine dei cerchi interi, decisioni #223–#228 della revisione #222.
+- **Corretto:** 2026-11-12 — M della curva data nei passi 2, 3 e 4,
+  invariata dal prolungamento (#232); frase del passo 6 limitata agli altri
+  gruppi, come autorizzato nella #231 per applicare la #227.
 - **Richiesta:** #214 — da Tecnigrafo: tappa 0.8, Matleyx78/tecnigrafo#661
 - **Esito:** 3 pezzo nostro
 - **Tappa:** 0.3, per Tecnigrafo 0.8 (scheda da scrivere all'apertura)
@@ -156,8 +159,11 @@ Le risposte esatte, con le coordinate, le scrive il pacchetto di riferimenti
    nei passi che cambiano i dati (collegamenti, prolungamenti, punto sopra una
    curva), con la M delle curve in gioco. Due estremi distinti si collegano
    se la loro distanza esatta è al più `policy.epsilon(M)` per le loro
-   curve. Per collegamenti e prolungamenti, un `Arc` convertito usa la M
-   dell'arco dato. Da un estremo libero senza collegamento si percorre il
+   curve. Nei passi 2, 3 e 4 la M di una curva è quella della curva data
+   (`magnitude`, `curves.hpp`): per un `Arc` convertito, quella dell'arco
+   dato. Il prolungamento del passo 3 non cambia la M della curva. Nel
+   passo 4 M conta anche le coordinate del punto scelto.
+   Da un estremo libero senza collegamento si percorre il
    prolungamento verso l'esterno, sulla semiretta oltre l'estremo o sulla
    parte restante del cerchio oltre la fine nel verso del pezzo, oltre
    l'inizio contro il verso.

@@ -656,3 +656,15 @@ i rimandi ai documenti che cambia.
 
   La [scheda CS](tappe/0.3/CS-contratto.md) registra la modifica per il piano
   della 0.3.
+
+- **2026-11-12 — Correzioni dopo la revisione della #231.** Il responsabile
+  sceglie la prima alternativa nella [#232](https://github.com/Matleyx78/solid-space/issues/232#issuecomment-6815626098):
+  nei passi 2, 3 e 4 di `detectBoundary` la M è quella della curva data,
+  anche per un `Arc` convertito, e il prolungamento non la cambia. Nel passo
+  4 contano anche le coordinate del punto scelto. La stessa curva conserva
+  così la stessa scala nei passi che usano la regola, come deciso nella #223.
+  Il [via libera nella #231](https://github.com/Matleyx78/solid-space/pull/231#issuecomment-6815626390)
+  autorizza a restringere l’ultima frase del passo 6 ai gruppi diversi
+  da quello del contorno, applicando la #227.
+  Aggiornati [ADR 0014](adr/0014-contorno-e-isole-di-una-regione.md) e
+  [scheda CS](tappe/0.3/CS-contratto.md), con la voce da riportare nel piano.
