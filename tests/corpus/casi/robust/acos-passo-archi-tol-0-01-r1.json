@@ -1,0 +1,21 @@
+{
+  "versione": 1,
+  "id": "acos-passo-archi-tol-0-01-r1",
+  "componente": "robust",
+  "descrizione": "Richiesta #216, ADR 0016: x = 1-tol/r del passo degli archi, con tol 0.01 e r 1, calcolato in double come RN(1-RN(0.01/r)).",
+  "ingresso": {
+    "operazione": "acos",
+    "x": "0x1.fae147ae147aep-1"
+  },
+  "atteso": {
+    "angolo": {
+      "valore": 0.1415394733244273,
+      "tolleranza": 5.551115123125783e-17
+    },
+    "angolo_negativo": false
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente Python decimal a 200 cifre (mai solid-space): pi=16*atan(1/5)-4*atan(1/239); atan con tre riduzioni di meta' angolo u=t/(1+sqrt(1+t^2)) e serie, e pi/2-atan(1/t) per t>1. acos(x)=2*atan(sqrt((1-x)/(1+x))), confrontato con la formula indipendente pi/2-atan(x/sqrt((1-x)(1+x))): stesso valore entro 10^-180. Valore=double piu' vicino; tolleranza=2*ulp del valore esatto (minimo 2^-1074), come chiede kElementaryMaxErrorUlps. Ripetuto a 260 cifre."
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "versione": 1,
+  "id": "acos-uno",
+  "componente": "robust",
+  "descrizione": "Richiesta #216, ADR 0016: acos(1) e' +0 esatto (elementary.hpp).",
+  "ingresso": {
+    "operazione": "acos",
+    "x": "0x1.0000000000000p+0"
+  },
+  "atteso": {
+    "angolo": "0",
+    "angolo_negativo": false
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "elementary.hpp: acos(1) e' +0, esatto. Valore 0 con segno positivo."
+  }
+}

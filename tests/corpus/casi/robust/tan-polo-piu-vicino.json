@@ -1,0 +1,21 @@
+{
+  "versione": 1,
+  "id": "tan-polo-piu-vicino",
+  "componente": "robust",
+  "descrizione": "Richiesta #216, ADR 0016: il double piu' vicino a un multiplo dispari di pi/2 fino a 2^20 (0x1.6c6cbc45dc8dep+5, q=29, dalla ricerca esaustiva citata in trigonometry.cpp): tangente intorno a 2^60, finita.",
+  "ingresso": {
+    "operazione": "tan",
+    "angolo": "0x1.6c6cbc45dc8dep+5"
+  },
+  "atteso": {
+    "tangente": {
+      "valore": -1.6155594228467482e+18,
+      "tolleranza": 512.0
+    },
+    "tangente_negativa": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente Python decimal a 200 cifre (mai solid-space): pi=16*atan(1/5)-4*atan(1/239) con la serie di atan; ingresso Decimal.from_float sul double esadecimale; riduzione r=x-k*2*pi con k=RN(x/(2*pi)); seno e coseno di Taylor con ricorrenza dei termini fino a stabilita'; tan=seno/coseno. Valore=double piu' vicino al risultato esatto; tolleranza=2*ulp del valore esatto (2^(e-52) con 2^e<=|v|<2^(e+1), minimo 2^-1074), come chiede kElementaryMaxErrorUlps. Ripetuto a 260 cifre: stesso double e stessa tolleranza. Il segno in tangente_negativa e' quello del valore esatto."
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "versione": 1,
+  "id": "tan-pi-2",
+  "componente": "robust",
+  "descrizione": "Richiesta #216, ADR 0016: tangente del double piu' vicino a 4*pi/8 (vicino a un polo: il risultato e' grande e finito).",
+  "ingresso": {
+    "operazione": "tan",
+    "angolo": "0x1.921fb54442d18p+0"
+  },
+  "atteso": {
+    "tangente": {
+      "valore": 1.633123935319537e+16,
+      "tolleranza": 4.0
+    },
+    "tangente_negativa": false
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente Python decimal a 200 cifre (mai solid-space): pi=16*atan(1/5)-4*atan(1/239) con la serie di atan; ingresso Decimal.from_float sul double esadecimale; riduzione r=x-k*2*pi con k=RN(x/(2*pi)); seno e coseno di Taylor con ricorrenza dei termini fino a stabilita'; tan=seno/coseno. Valore=double piu' vicino al risultato esatto; tolleranza=2*ulp del valore esatto (2^(e-52) con 2^e<=|v|<2^(e+1), minimo 2^-1074), come chiede kElementaryMaxErrorUlps. Ripetuto a 260 cifre: stesso double e stessa tolleranza. Il segno in tangente_negativa e' quello del valore esatto."
+  }
+}

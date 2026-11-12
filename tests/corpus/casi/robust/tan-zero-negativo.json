@@ -1,0 +1,18 @@
+{
+  "versione": 1,
+  "id": "tan-zero-negativo",
+  "componente": "robust",
+  "descrizione": "Richiesta #216, ADR 0016: tan(-0) e' -0 per struttura (elementary.hpp).",
+  "ingresso": {
+    "operazione": "tan",
+    "angolo": "-0x0p+0"
+  },
+  "atteso": {
+    "tangente": "0",
+    "tangente_negativa": true
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "elementary.hpp: tan(+-0) e' +-0. Valore esatto 0, segno negativo."
+  }
+}
