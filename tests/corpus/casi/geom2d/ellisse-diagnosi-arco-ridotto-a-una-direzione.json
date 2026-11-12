@@ -1,0 +1,32 @@
+{
+  "versione": 1,
+  "id": "ellisse-diagnosi-arco-ridotto-a-una-direzione",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #217, ADR 0017: parametri 0 e 0x1.7f4638c50fafbp+8 = 61*2pi-7.8e-15: ampiezza nominale minuscola e D1 indietro su D0 per piu' dei 2 ulp di sinCos: arco ridotto a una direzione, degenerateCurve.",
+  "ingresso": {
+    "operazione": "ellipseEndpoints",
+    "ellisse": {
+      "centro": [
+        1000,
+        2000
+      ],
+      "asse_maggiore": [
+        30,
+        40
+      ],
+      "rapporto": "0x1.0000000000000p-1",
+      "parametro_iniziale": 0,
+      "parametro_finale": "0x1.7f4638c50fafbp+8"
+    }
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "degenerateCurve",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "Controllo dei dati di ellipse.hpp, nell'ordine di curves.hpp, input per input: per l'ellisse prima invalidValue (un valore NaN o infinito, o rapporto fuori da (0, 1]), poi outOfDomain (coordinata di centro o asse oltre kMaxCoordinate = 2^50, parametro oltre kMaxTrigArgument = 2^20), poi degenerateCurve (asse nullo, o arco ridotto a una direzione); gli angoli del rettangolo dopo l'ellisse, solo invalidValue e outOfDomain, corner (dato 1) prima di oppositeCorner (dato 2). magnitude accetta un'ellisse degenere."
+  }
+}

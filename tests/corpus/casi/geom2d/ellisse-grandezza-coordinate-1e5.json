@@ -1,0 +1,29 @@
+{
+  "versione": 1,
+  "id": "ellisse-grandezza-coordinate-1e5",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #217, ADR 0017: ellisse con coordinate di 1e5: M = 123456.75 (centro).",
+  "ingresso": {
+    "operazione": "ellipseMagnitude",
+    "ellisse": {
+      "centro": [
+        "0x1.e240c00000000p+16",
+        "0x1.81cd800000000p+16"
+      ],
+      "asse_maggiore": [
+        250,
+        -125
+      ],
+      "rapporto": "0x1.3333333333333p-2",
+      "parametro_iniziale": 1,
+      "parametro_finale": 4
+    }
+  },
+  "atteso": {
+    "grandezza": "493827/4"
+  },
+  "provenienza": {
+    "tipo": "calcolo-a-mano",
+    "procedimento": "ellipse.hpp: la grandezza M e' il massimo dei valori assoluti delle coordinate di centro e asse maggiore; un'ellisse degenere e' accettata."
+  }
+}
