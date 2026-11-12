@@ -1,0 +1,181 @@
+{
+  "versione": 1,
+  "id": "boundary-ordinary-mm-curve-scartate-fra-lati-validi",
+  "componente": "geom2d",
+  "descrizione": "#214: mm curve scartate fra lati validi.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      5,
+      5
+    ],
+    "curve": [
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            0
+          ],
+          "fine": [
+            10,
+            0
+          ]
+        }
+      },
+      {
+        "cerchio": {
+          "centro": [
+            5,
+            5
+          ],
+          "raggio": -1
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            10,
+            0
+          ],
+          "fine": [
+            10,
+            10
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            2,
+            2
+          ],
+          "fine": [
+            2,
+            2
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            10,
+            10
+          ],
+          "fine": [
+            0,
+            10
+          ]
+        }
+      },
+      {
+        "cerchio": {
+          "centro": [
+            5,
+            5
+          ],
+          "raggio": 1125899906842624
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            10
+          ],
+          "fine": [
+            0,
+            0
+          ]
+        }
+      }
+    ],
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "enclosed",
+    "loop": [
+      {
+        "loop": {
+          "vertici": [
+            [
+              "0",
+              "0",
+              "0"
+            ],
+            [
+              "10",
+              "0",
+              "0"
+            ],
+            [
+              "10",
+              "10",
+              "0"
+            ],
+            [
+              "0",
+              "10",
+              "0"
+            ]
+          ],
+          "chiusa": true
+        },
+        "origini": [
+          {
+            "fonte": "curve",
+            "curva": "0",
+            "altra_curva": "0",
+            "invertito": false
+          },
+          {
+            "fonte": "curve",
+            "curva": "2",
+            "altra_curva": "2",
+            "invertito": false
+          },
+          {
+            "fonte": "curve",
+            "curva": "4",
+            "altra_curva": "4",
+            "invertito": false
+          },
+          {
+            "fonte": "curve",
+            "curva": "6",
+            "altra_curva": "6",
+            "invertito": false
+          }
+        ],
+        "profondita": "0"
+      }
+    ],
+    "estremi_liberi": [],
+    "scartate": [
+      {
+        "indice": "1",
+        "diagnosi": {
+          "codice": "invalidValue",
+          "dato": "2"
+        }
+      },
+      {
+        "indice": "3",
+        "diagnosi": {
+          "codice": "degenerateCurve",
+          "dato": "4"
+        }
+      },
+      {
+        "indice": "5",
+        "diagnosi": {
+          "codice": "outOfDomain",
+          "dato": "6"
+        }
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "La curva 1 ha raggio negativo, la 3 è un segmento nullo, la 5 ha il suo punto più a destra oltre 2^50 pur avendo centro e raggio ammessi. Restano i lati con gli indici originali 0,2,4,6."
+  }
+}

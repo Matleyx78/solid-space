@@ -1,0 +1,104 @@
+{
+  "versione": 1,
+  "id": "boundary-ordinary-mm-caso-1bis-punto-dentro-il-cerchio",
+  "componente": "geom2d",
+  "descrizione": "#214: mm caso 1bis punto dentro il cerchio.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      5,
+      5
+    ],
+    "curve": [
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            0
+          ],
+          "fine": [
+            10,
+            0
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            10,
+            0
+          ],
+          "fine": [
+            10,
+            10
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            10,
+            10
+          ],
+          "fine": [
+            0,
+            10
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            10
+          ],
+          "fine": [
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "cerchio": {
+          "centro": [
+            5,
+            5
+          ],
+          "raggio": 2
+        }
+      }
+    ],
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "enclosed",
+    "loop": [
+      {
+        "loop": {
+          "cerchio": {
+            "centro": [
+              "5",
+              "5"
+            ],
+            "raggio": "2"
+          }
+        },
+        "origini": [
+          {
+            "fonte": "curve",
+            "curva": "4",
+            "altra_curva": "4",
+            "invertito": false
+          }
+        ],
+        "profondita": "0"
+      }
+    ],
+    "estremi_liberi": [],
+    "scartate": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Il punto è il centro del cerchio. La faccia più piccola che lo contiene è il suo disco. Il rettangolo è esterno al contorno scelto."
+  }
+}

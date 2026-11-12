@@ -1,0 +1,209 @@
+{
+  "versione": 1,
+  "id": "boundary-ordinary-km-caso-3b-tangenza-e-sovrapposizione",
+  "componente": "geom2d",
+  "descrizione": "#214: km caso 3b tangenza e sovrapposizione.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      131067,
+      3
+    ],
+    "curve": [
+      {
+        "segmento": {
+          "inizio": [
+            131070,
+            0
+          ],
+          "fine": [
+            131064,
+            0
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            131062,
+            0
+          ],
+          "fine": [
+            131072,
+            0
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            131072,
+            0
+          ],
+          "fine": [
+            131072,
+            10
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            131072,
+            10
+          ],
+          "fine": [
+            131062,
+            10
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            131062,
+            10
+          ],
+          "fine": [
+            131062,
+            0
+          ]
+        }
+      },
+      {
+        "cerchio": {
+          "centro": [
+            131067,
+            8
+          ],
+          "raggio": 2
+        }
+      }
+    ],
+    "unita_in_metri": 1000
+  },
+  "atteso": {
+    "esito": "enclosed",
+    "loop": [
+      {
+        "loop": {
+          "vertici": [
+            [
+              "131062",
+              "0",
+              "0"
+            ],
+            [
+              "131064",
+              "0",
+              "0"
+            ],
+            [
+              "131070",
+              "0",
+              "0"
+            ],
+            [
+              "131072",
+              "0",
+              "0"
+            ],
+            [
+              "131072",
+              "10",
+              "0"
+            ],
+            [
+              {
+                "valore": 131067,
+                "tolleranza": 4.656612873077394e-10
+              },
+              {
+                "valore": 10,
+                "tolleranza": 4.656612873077394e-10
+              },
+              "0"
+            ],
+            [
+              "131062",
+              "10",
+              "0"
+            ]
+          ],
+          "chiusa": true
+        },
+        "origini": [
+          {
+            "fonte": "curve",
+            "curva": "1",
+            "altra_curva": "1",
+            "invertito": false
+          },
+          {
+            "fonte": "curve",
+            "curva": "0",
+            "altra_curva": "0",
+            "invertito": true
+          },
+          {
+            "fonte": "curve",
+            "curva": "1",
+            "altra_curva": "1",
+            "invertito": false
+          },
+          {
+            "fonte": "curve",
+            "curva": "2",
+            "altra_curva": "2",
+            "invertito": false
+          },
+          {
+            "fonte": "curve",
+            "curva": "3",
+            "altra_curva": "3",
+            "invertito": false
+          },
+          {
+            "fonte": "curve",
+            "curva": "3",
+            "altra_curva": "3",
+            "invertito": false
+          },
+          {
+            "fonte": "curve",
+            "curva": "4",
+            "altra_curva": "4",
+            "invertito": false
+          }
+        ],
+        "profondita": "0"
+      },
+      {
+        "loop": {
+          "cerchio": {
+            "centro": [
+              "131067",
+              "8"
+            ],
+            "raggio": "2"
+          }
+        },
+        "origini": [
+          {
+            "fonte": "curve",
+            "curva": "5",
+            "altra_curva": "5",
+            "invertito": false
+          }
+        ],
+        "profondita": "1"
+      }
+    ],
+    "estremi_liberi": [],
+    "scartate": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Sul lato inferiore l’intervallo fra x=c+2 e c+8 è condiviso e accreditato alla curva 0, percorsa al contrario. Il cerchio tocca dall’interno il lato superiore in (c+5,10), che divide il lato in due pezzi. Il cerchio conserva un solo credito ed è isola della faccia. Il vertice di tangenza ha tolleranza 2^-48·(c+10)."
+  }
+}

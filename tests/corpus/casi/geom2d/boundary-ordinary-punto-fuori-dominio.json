@@ -1,0 +1,25 @@
+{
+  "versione": 1,
+  "id": "boundary-ordinary-punto-fuori-dominio",
+  "componente": "geom2d",
+  "descrizione": "#214: punto fuori dominio.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      1125899906842625,
+      0
+    ],
+    "curve": [],
+    "unita_in_metri": 1000
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "outOfDomain",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "L’ascissa supera kMaxCoordinate=2^50. La diagnosi riguarda il dato 0."
+  }
+}
