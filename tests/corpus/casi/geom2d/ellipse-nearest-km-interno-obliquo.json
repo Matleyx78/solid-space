@@ -1,0 +1,47 @@
+{
+  "versione": 1,
+  "id": "ellipse-nearest-km-interno-obliquo",
+  "componente": "geom2d",
+  "descrizione": "#217: km interno obliquo.",
+  "ingresso": {
+    "operazione": "nearest",
+    "ellisse": {
+      "centro": [
+        100000,
+        100000
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    },
+    "punto": [
+      100003,
+      100002
+    ]
+  },
+  "atteso": {
+    "punto": [
+      {
+        "valore": 100003.50156899632,
+        "tolleranza": 5.684512416337385e-09
+      },
+      {
+        "valore": 100004.68345531002,
+        "tolleranza": 5.684512416337385e-09
+      }
+    ],
+    "distanza": {
+      "valore": 2.729927445733961,
+      "tolleranza": 5.684512416337385e-09
+    },
+    "posizione": "inside"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Parametrizzare x=10(1-t²)/(1+t²), y=10t/(1+t²). Annullare la derivata di (x-3)²+(y-2)²: 10*t**4 + 210*t**3 - 90*t - 10. Sturm in Q certifica 4 radici reali semplici, una per intervallo razionale di ampiezza <10^-72. Il punto a t infinito non è stazionario poiché y del punto dato è non nullo. Confronto delle distanze isolate: 2.729927445733961, 6.634812416334201, 7.432473631424064, 13.18907740237878. Tolleranza 2^-44 N, N=max delle coordinate assolute del centro, dell’asse maggiore e del punto, arrotondata per eccesso. Coordinate e distanze in Decimal a 100 cifre."
+  }
+}

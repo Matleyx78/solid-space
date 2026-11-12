@@ -1,0 +1,36 @@
+{
+  "versione": 1,
+  "id": "ellipse-nearest-asse-fuori-dominio",
+  "componente": "geom2d",
+  "descrizione": "#217: asse fuori dominio.",
+  "ingresso": {
+    "operazione": "nearest",
+    "ellisse": {
+      "centro": [
+        0,
+        0
+      ],
+      "asse_maggiore": [
+        1125899906842625,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    },
+    "punto": [
+      0,
+      0
+    ]
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "outOfDomain",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "La coordinata dell’asse supera kMaxCoordinate=2^50."
+  }
+}

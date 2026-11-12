@@ -1,0 +1,47 @@
+{
+  "versione": 1,
+  "id": "ellipse-nearest-mm-asse-minore-interno",
+  "componente": "geom2d",
+  "descrizione": "#217: mm asse minore interno.",
+  "ingresso": {
+    "operazione": "nearest",
+    "ellisse": {
+      "centro": [
+        0,
+        0
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    },
+    "punto": [
+      0,
+      2
+    ]
+  },
+  "atteso": {
+    "punto": [
+      {
+        "valore": 0.0,
+        "tolleranza": 5.684341886080802e-13
+      },
+      {
+        "valore": 5.0,
+        "tolleranza": 5.684341886080802e-13
+      }
+    ],
+    "distanza": {
+      "valore": 3.0,
+      "tolleranza": 5.684341886080802e-13
+    },
+    "posizione": "inside"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Ponendo v=sin(t), la distanza al quadrato è 104-75v²-20v. Il minimo della funzione concava è a v=1: 9 contro 49 per v=-1. Gli eventuali altri piedi non rientrano nella fascia. Tolleranza 2^-44 N, N=max delle coordinate assolute del centro, dell’asse maggiore e del punto, arrotondata per eccesso. Coordinate e distanze in Decimal a 100 cifre."
+  }
+}

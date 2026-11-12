@@ -1,0 +1,36 @@
+{
+  "versione": 1,
+  "id": "ellipse-nearest-punto-non-finito",
+  "componente": "geom2d",
+  "descrizione": "#217: punto non finito.",
+  "ingresso": {
+    "operazione": "nearest",
+    "ellisse": {
+      "centro": [
+        0,
+        0
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    },
+    "punto": [
+      "inf",
+      0
+    ]
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "invalidValue",
+      "dato": "1"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Il dato 1 ha una coordinata infinita."
+  }
+}

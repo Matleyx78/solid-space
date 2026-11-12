@@ -1,0 +1,47 @@
+{
+  "versione": 1,
+  "id": "ellipse-nearest-mm-caso-quattro-interno-vertice",
+  "componente": "geom2d",
+  "descrizione": "#217: mm caso quattro interno vertice.",
+  "ingresso": {
+    "operazione": "nearest",
+    "ellisse": {
+      "centro": [
+        0,
+        0
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0.01,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    },
+    "punto": [
+      9.9995,
+      0
+    ]
+  },
+  "atteso": {
+    "punto": [
+      {
+        "valore": 10.0,
+        "tolleranza": 5.684341886080802e-13
+      },
+      {
+        "valore": 0.0,
+        "tolleranza": 5.684341886080802e-13
+      }
+    ],
+    "distanza": {
+      "valore": 0.0005000000000006111,
+      "tolleranza": 5.684341886080802e-13
+    },
+    "posizione": "inside"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Sull’asse, la distanza al quadrato è una quadratica convessa in u=cos(t): (100-b²)u²-20h*u+h²+b². h=9.9994999999999993889332472463138401508331298828125 supera (100-b²)/10, quindi il minimo su [-1,1] è u=1. Tolleranza 2^-44 N, N=max delle coordinate assolute del centro, dell’asse maggiore e del punto, arrotondata per eccesso. Coordinate e distanze in Decimal a 100 cifre."
+  }
+}

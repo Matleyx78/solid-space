@@ -1,0 +1,33 @@
+{
+  "versione": 1,
+  "id": "ellipse-nearest-km-arco-estremo-e-piede-nella-fascia",
+  "componente": "geom2d",
+  "descrizione": "#217: km arco estremo e piede nella fascia.",
+  "ingresso": {
+    "operazione": "nearest",
+    "ellisse": {
+      "centro": [
+        100000,
+        100000
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": -0.8,
+      "parametro_finale": 0
+    },
+    "punto": [
+      100012,
+      99999.9999999404
+    ]
+  },
+  "atteso": {
+    "sulla_curva": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Il piede interno è vicino a t=0. Il suo vantaggio in distanza sull’estremo è al più (sqrt(4+2^-48)-2), inferiore a 2^-44 N, perché x≤10. La posizione può cambiare con la scelta; si verifica solo l’appartenenza entro l’errore. Tolleranza 2^-44 N, N=max delle coordinate assolute del centro, dell’asse maggiore e del punto, arrotondata per eccesso. Coordinate e distanze in Decimal a 100 cifre."
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "versione": 1,
+  "id": "ellipse-nearest-mm-caso-quattro-esterno",
+  "componente": "geom2d",
+  "descrizione": "#217: mm caso quattro esterno.",
+  "ingresso": {
+    "operazione": "nearest",
+    "ellisse": {
+      "centro": [
+        0,
+        0
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0.01,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    },
+    "punto": [
+      10.001,
+      0
+    ]
+  },
+  "atteso": {
+    "punto": [
+      {
+        "valore": 10.0,
+        "tolleranza": 5.68491032026941e-13
+      },
+      {
+        "valore": 0.0,
+        "tolleranza": 5.68491032026941e-13
+      }
+    ],
+    "distanza": {
+      "valore": 0.0009999999999994458,
+      "tolleranza": 5.68491032026941e-13
+    },
+    "posizione": "inside"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Sull’asse, la distanza al quadrato è una quadratica convessa in u=cos(t): (100-b²)u²-20h*u+h²+b². h=10.0009999999999994457766661071218550205230712890625 supera (100-b²)/10, quindi il minimo su [-1,1] è u=1. Tolleranza 2^-44 N, N=max delle coordinate assolute del centro, dell’asse maggiore e del punto, arrotondata per eccesso. Coordinate e distanze in Decimal a 100 cifre."
+  }
+}

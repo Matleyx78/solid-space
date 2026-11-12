@@ -1,0 +1,36 @@
+{
+  "versione": 1,
+  "id": "ellipse-nearest-rapporto-nullo",
+  "componente": "geom2d",
+  "descrizione": "#217: rapporto nullo.",
+  "ingresso": {
+    "operazione": "nearest",
+    "ellisse": {
+      "centro": [
+        0,
+        0
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    },
+    "punto": [
+      0,
+      0
+    ]
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "invalidValue",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Il rapporto zero non appartiene a (0,1]."
+  }
+}

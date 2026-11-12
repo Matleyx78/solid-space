@@ -1,0 +1,47 @@
+{
+  "versione": 1,
+  "id": "ellipse-nearest-mm-arco-estremo",
+  "componente": "geom2d",
+  "descrizione": "#217: mm arco estremo.",
+  "ingresso": {
+    "operazione": "nearest",
+    "ellisse": {
+      "centro": [
+        0,
+        0
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": -0.8,
+      "parametro_finale": 0
+    },
+    "punto": [
+      12,
+      2
+    ]
+  },
+  "atteso": {
+    "punto": [
+      {
+        "valore": 10.0,
+        "tolleranza": 6.821210263296963e-13
+      },
+      {
+        "valore": 0.0,
+        "tolleranza": 6.821210263296963e-13
+      }
+    ],
+    "distanza": {
+      "valore": 2.8284271247461903,
+      "tolleranza": 6.821210263296963e-13
+    },
+    "posizione": "atEnd"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "L’arco termina a t=0; per t∈[-0.8,0] x≤10 e y≤0, quindi il punto a t=0 minimizza entrambe le differenze. È un estremo e il risultato deve usare gli stessi bit di endpoints, da confrontare nel test PS8. Tolleranza 2^-44 N, N=max delle coordinate assolute del centro, dell’asse maggiore e del punto, arrotondata per eccesso. Coordinate e distanze in Decimal a 100 cifre."
+  }
+}

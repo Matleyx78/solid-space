@@ -1,0 +1,47 @@
+{
+  "versione": 1,
+  "id": "ellipse-nearest-km-evoluta-cuspide",
+  "componente": "geom2d",
+  "descrizione": "#217: km evoluta cuspide.",
+  "ingresso": {
+    "operazione": "nearest",
+    "ellisse": {
+      "centro": [
+        100000,
+        100000
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    },
+    "punto": [
+      100007.5,
+      100000
+    ]
+  },
+  "atteso": {
+    "punto": [
+      {
+        "valore": 100010.0,
+        "tolleranza": 5.684768211722258e-09
+      },
+      {
+        "valore": 100000.0,
+        "tolleranza": 5.684768211722258e-09
+      }
+    ],
+    "distanza": {
+      "valore": 2.5,
+      "tolleranza": 5.684768211722258e-09
+    },
+    "posizione": "inside"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "A h=7.5 il minimo della quadratica 75u²-20hu+h²+25 è in u=1, dove confluiscono i due piedi fuori asse. Il vertice negativo è distante 17.5. Tolleranza 2^-44 N, N=max delle coordinate assolute del centro, dell’asse maggiore e del punto, arrotondata per eccesso. Coordinate e distanze in Decimal a 100 cifre."
+  }
+}

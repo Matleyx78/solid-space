@@ -1,0 +1,38 @@
+{
+  "versione": 1,
+  "id": "ellipse-nearest-mm-cerchio-centro",
+  "componente": "geom2d",
+  "descrizione": "#217: mm cerchio centro.",
+  "ingresso": {
+    "operazione": "nearest",
+    "ellisse": {
+      "centro": [
+        0,
+        0
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 1,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    },
+    "punto": [
+      0,
+      0
+    ]
+  },
+  "atteso": {
+    "distanza": {
+      "valore": 10.0,
+      "tolleranza": 5.684341886080802e-13
+    },
+    "posizione": "inside",
+    "sulla_curva": true
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "L’ellisse di rapporto 1 è un cerchio di raggio 10. Ogni suo punto dista 10 dal centro e ha posizione inside; non si impone alcun punto particolare. Tolleranza 2^-44 N, N=max delle coordinate assolute del centro, dell’asse maggiore e del punto, arrotondata per eccesso. Coordinate e distanze in Decimal a 100 cifre."
+  }
+}
