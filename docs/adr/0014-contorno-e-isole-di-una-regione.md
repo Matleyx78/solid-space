@@ -2,6 +2,8 @@
 
 - **Stato:** Accettato
 - **Data:** 2026-11-11
+- **Corretto:** 2026-11-12 — scala dei collegamenti, prolungamenti, isole e
+  origine dei cerchi interi, decisioni #223–#228 della revisione #222.
 - **Richiesta:** #214 — da Tecnigrafo: tappa 0.8, Matleyx78/tecnigrafo#661
 - **Esito:** 3 pezzo nostro
 - **Tappa:** 0.3, per Tecnigrafo 0.8 (scheda da scrivere all'apertura)
@@ -62,9 +64,9 @@ Il problema ha tre parti, e solo la prima è nuova come tecnica:
    regione disegnata chiusa risulterebbe aperta. L'ADR 0009 dice come si
    rimedia: la regola cambia i dati **prima** delle decisioni, mai al loro
    posto. Qui i cambiamenti sono due: un **collegamento**, il segmento fra due
-   estremi che coincidono per la regola, e un **prolungamento**, un estremo
-   portato sulla curva che sfiora (come `EXTEND`) quando la incontra entro la
-   tolleranza.
+   estremi distinti entro la tolleranza delle loro curve, e un
+   **prolungamento**, la continuazione oltre un estremo fino al primo
+   incontro entro la tolleranza (come `EXTEND`).
 3. **La costruzione dei contorni restituiti**, arrotondata entro un errore
    dichiarato (ADR 0013): vertici e bulge di polilinee chiuse, che Tecnigrafo
    usa così come sono per i contorni del retino nel DXF e per la regione
@@ -152,17 +154,30 @@ Le risposte esatte, con le coordinate, le scrive il pacchetto di riferimenti
    punto sopra una curva; arrangiamento e faccia del punto; contorno e isole;
    profondità. Ogni confronto è esatto. La tolleranza dell'ADR 0009 entra solo
    nei passi che cambiano i dati (collegamenti, prolungamenti, punto sopra una
-   curva), con la M delle curve in gioco, mai in una decisione.
+   curva), con la M delle curve in gioco. Due estremi distinti si collegano
+   se la loro distanza esatta è al più `policy.epsilon(M)` per le loro
+   curve. Per collegamenti e prolungamenti, un `Arc` convertito usa la M
+   dell'arco dato. Da un estremo libero senza collegamento si percorre il
+   prolungamento verso l'esterno, sulla semiretta oltre l'estremo o sulla
+   parte restante del cerchio oltre la fine nel verso del pezzo, oltre
+   l'inizio contro il verso.
+   Si prende il primo punto comune con un'altra curva del passo 1, comprese
+   le tangenze esatte. Se la distanza esatta dall'estremo al punto è al più
+   epsilon per la curva prolungata e una curva incontrata in quel punto,
+   il pezzo originale si prolunga fino al punto. Altrimenti l'estremo resta
+   libero. Quando più curve passano per quel punto, i pezzi seguono il
+   passo 5 di `detectBoundary`.
 3. **Gli archi entrano come segmenti di polilinea** fra i loro estremi
    arrotondati, divisi in due oltre mezzo giro, entro metà di
    `kRelativeLoopError`; un arco intero diventa il suo cerchio. Le decisioni che
    cambierebbero spostando un arco di quell'errore sono libere (fascia, ADR
    0013, punto 4); fuori dalla fascia sono determinate.
 4. **Il contorno** è il bordo della faccia del punto che la racchiude. **Le
-   isole** sono gli altri bordi della faccia e il bordo esterno di ogni gruppo
-   di curve connesse dentro il contorno; un pezzo interno a un gruppo non fa
-   mai parte di un'isola. **La profondità** di un loop è il numero degli altri
-   loop che lo racchiudono. Con lo stile *normale* contano tutti i loop
+   isole** sono gli altri loop della faccia, anche se toccano il contorno,
+   e il bordo esterno di ogni altro gruppo di curve connesse dentro il
+   contorno. Un pezzo con la stessa faccia su entrambi i lati non fa parte
+   di un'isola. **La profondità** di un loop è il numero degli altri loop che
+   lo racchiudono. Con lo stile *normale* contano tutti i loop
    (pari-dispari), con *esterno* quelli di profondità 0 e 1, con *ignora* solo
    il contorno: lo applica Tecnigrafo.
 5. **Tre esiti**: `enclosed`, con i loop; `onCurve`, quando il punto sta entro
@@ -171,8 +186,10 @@ Le risposte esatte, con le coordinate, le scrive il pacchetto di riferimenti
    incontrato dalla semiretta dal punto verso +x. Una curva non valida non fa
    fallire la chiamata: si scarta e si elenca, come in `intersectAlong`. Solo
    un punto non valido dà una diagnosi.
-6. **I loop restituiti** girano in senso antiorario. Un cerchio intero è il suo
-   `Circle`, con i suoi `double`; gli altri sono polilinee chiuse che cominciano
+6. **I loop restituiti** girano in senso antiorario. Un giro intero è
+   restituito come `Circle`, con i suoi `double`, solo se tutti i pezzi del
+   giro sono accreditati allo stesso `Circle` o `Arc` intero di ingresso
+   dopo il passo 5. Gli altri loop sono polilinee chiuse che cominciano
    dal vertice minore in ordine lessicografico esatto, con un pezzo d'arco al
    più di mezzo giro, gli estremi dei dati copiati, gli altri vertici entro
    `kRelativePointError` e ogni pezzo entro `kRelativeLoopError` (2^-44) del
@@ -195,11 +212,12 @@ Le risposte esatte, con le coordinate, le scrive il pacchetto di riferimenti
     la regola delle tolleranze come scritta e gli errori dichiarati. **Non** si
     garantiscono, e il risultato può differire da AutoCAD:
     - la chiusura di uno spazio più largo della tolleranza (niente `HPGAPTOL`);
-    - il prolungamento di un estremo verso una curva che incontrerebbe solo di
-      tangente (il punto d'incontro esatto è lontano anche quando l'estremo è
-      vicinissimo): l'estremo resta libero;
-    - un'isola che tocca dall'interno un'altra curva del suo gruppo (un cerchio
-      tangente dentro un cerchio) conta solo con il bordo esterno del gruppo;
+    - il prolungamento di un estremo il cui primo incontro lungo l'estensione
+      è oltre la tolleranza, anche se l'estremo è vicinissimo a una curva
+      (per esempio una quasi tangenza): l'estremo resta libero;
+    - in un gruppo diverso da quello del contorno, un'isola che tocca
+      dall'interno un'altra curva del suo gruppo conta solo con il bordo
+      esterno del gruppo;
     - gli estremi liberi di `notEnclosed` sono un'indicazione: quelli del primo
       gruppo aperto lungo la semiretta, non tutti gli spazi del disegno.
 
@@ -270,12 +288,15 @@ controlla che le intestazioni compilino con le firme dichiarate.
     (millimetri vicino all'origine, chilometri con coordinate di 1e5);
   - la regola: due estremi a distanza uguale alla tolleranza e un `double`
     oltre; un estremo tagliato da `TRIM` a un arrotondamento dalla curva; un
-    arco raccordato a due linee (`FILLET`); un estremo che sfiora di tangente
-    una curva (resta libero);
+    arco raccordato a due linee (`FILLET`); un primo incontro tangente entro
+    la tolleranza (si prolunga) e un primo incontro oltre la tolleranza su
+    una curva vicina all'estremo (resta libero). I dati di #223–#226
+    distinguono la scala dei collegamenti e l'ordine degli incontri;
   - la topologia: vertici con quattro o più pezzi, tangenze interne ed esterne
     nello stesso vertice, tratti sovrapposti da più curve, facce con il bordo
     che tocca se stesso, isole che toccano il contorno, gruppi di curve dentro
-    un'isola, curve aperte dentro la regione;
+    un'isola, curve aperte dentro la regione. I dati di #227 distinguono
+    l'isola tangente al contorno e quelli di #228 un giro con origini miste;
   - `notEnclosed` con e senza estremi liberi; il punto a distanza uguale alla
     tolleranza da una curva e un `double` oltre;
   - `nestContours`: annidamenti, contorni che si toccano da fuori e da dentro,

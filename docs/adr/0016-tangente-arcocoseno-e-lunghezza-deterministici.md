@@ -2,6 +2,8 @@
 
 - **Stato:** Accettato
 - **Data:** 2026-11-11
+- **Corretto:** 2026-11-12 — composizione di `acos` e `hypot` per vettori
+  non nulli, decisione #230 della revisione #222.
 - **Richiesta:** #216 — da Tecnigrafo: tappa 0.8, Matleyx78/tecnigrafo#661
   (decisione in Matleyx78/tecnigrafo#620)
 - **Esito:** 3 pezzo nostro
@@ -72,9 +74,13 @@ le vede o ci costruisce sopra:
 - **arcocoseno:** dentro [+0, π arrotondato], 1 dà +0 e −1 dà π arrotondato,
   esattamente (come `atan2`, che dà il `double` più vicino a π);
 - **lunghezza:** esatta quando la lunghezza esatta è un `double` (3 e 4 danno
-  5, (x, 0) dà |x|), mai sotto la componente maggiore (così a / hypot(a, b)
-  sta in [−1, 1] e si può dare all'arcocoseno), indipendente da segni e ordine
-  degli argomenti, senza traboccamenti intermedi, subnormali compresi.
+  5, (x, 0) dà |x|), mai sotto la componente maggiore, indipendente da segni
+  e ordine degli argomenti, senza traboccamenti intermedi, subnormali
+  compresi. Per un vettore non nullo nel dominio di `hypot`, il quoziente
+  `a / hypot(a, b)` sta in [−1, 1] e si può dare all'arcocoseno.
+  `hypot` restituisce +0 esatto se e solo se entrambe le componenti sono
+  zero, di qualunque segno. Il chiamante gestisce il vettore nullo prima
+  della divisione.
 
 La lunghezza esatta quando è un `double` costa poco: la somma dei quadrati in
 double-double (due prodotti esatti con `fma` e una somma esatta) e una
@@ -90,7 +96,7 @@ potrebbe uscire 5,000000000000001 nei rapporti.
 | Arcocoseno vicino a 1 e a −1 | entro 2 ulp; 1 dà +0 e −1 dà π arrotondato, esatti; vicino a 1, dove l'arcocoseno è circa √(2(1 − x)), l'errore resta relativo |
 | `hypot(1e-12, 1e6)` | entro 2 ulp di 1e6, mai sotto 1e6 |
 | `hypot` di componenti uguali | entro 2 ulp di a·√2 |
-| `hypot(0, 0)` | +0, esatto |
+| `hypot(±0, ±0)` | +0, esatto; il chiamante gestisce il vettore nullo prima di calcolare il quoziente |
 | I 17 casi di `docs/verifica/sistemi.md` di Tecnigrafo | gli stessi bit sui tre sistemi per ogni funzione chiamata; il criterio si verifica dal lato di Tecnigrafo |
 
 ## Alternative considerate
@@ -119,7 +125,7 @@ potrebbe uscire 5,000000000000001 nei rapporti.
   del chiamante (un coseno calcolato male) invece di segnalarlo. Le funzioni di
   `robust` hanno precondizioni controllate in debug, e la promessa di `hypot`
   (mai sotto la componente maggiore) dà a Tecnigrafo un modo sicuro di
-  calcolare un coseno nell'intervallo.
+  calcolare un coseno nell'intervallo per un vettore non nullo.
 - **Anche arcoseno e arcotangente di un solo argomento:** non chiesti
   (ADR 0007, punto 2). L'arcotangente `atan(b)` che Tecnigrafo usa per il bulge
   è `atan2(b, 1)`, che c'è già.

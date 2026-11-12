@@ -51,7 +51,8 @@ inline constexpr double kMaxHypotArgument = 0x1p1023;
 /// exactly.
 ///
 /// Precondition (asserted in debug): x is finite and -1 <= x <= 1. A cosine
-/// computed as a / hypot(a, b) always satisfies it (see hypot).
+/// computed as a / hypot(a, b) satisfies it for a nonzero vector (a, b)
+/// in the domain of hypot. The caller handles a zero length before dividing.
 [[nodiscard]] double acos(double x) noexcept;
 
 /// The length of the vector (x, y), the square root of x^2 + y^2, within
@@ -66,7 +67,8 @@ inline constexpr double kMaxHypotArgument = 0x1p1023;
 /// - The result depends only on |x| and |y| as an unordered pair:
 ///   hypot(x, y), hypot(y, x), hypot(-x, y) and hypot(x, -y) have the same
 ///   bits.
-/// - hypot(+-0, +-0) is +0; any other result is positive.
+/// - The result is exactly +0 if and only if both components are zero
+///   (either sign).
 ///
 /// Precondition (asserted in debug): x and y are finite, with magnitude at
 /// most kMaxHypotArgument.

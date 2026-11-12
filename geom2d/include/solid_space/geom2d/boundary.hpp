@@ -92,8 +92,10 @@ struct DetectedBoundary {
 /// curve i is input i + 1.
 ///
 /// The exact result is defined by these steps. For two curves, epsilon is
-/// policy.epsilon(M) with M the magnitude of the two (curves.hpp); for the
-/// picked point and a curve, M also counts the coordinates of the point.
+/// policy.epsilon(M) with M the magnitude of the two (curves.hpp). In
+/// steps 2 and 3, use the magnitude of the input Arc for a converted Arc.
+/// For the picked point and a curve, M also counts the coordinates of the
+/// point.
 /// 1. Data. A curve with invalidValue, outOfDomain or degenerateCurve
 ///    (curves.hpp, "Checking the data"), or with a point of the curve (for
 ///    an Arc or a curved PolylineSegment, of its whole circle) with a
@@ -110,16 +112,18 @@ struct DetectedBoundary {
 ///    Circle) that is not a common point of its curve with another curve.
 /// 2. Links. For every free end e and every other end f, of another curve or
 ///    the other end of the same curved PolylineSegment, such that e and f are
-///    not the same point and policy.coincident(e, f) is true, the Segment
-///    from e to f is added: a link, once for each pair.
-/// 3. Extensions. A free end e without a link is moved to P, the point
-///    nearest e among the common points of another curve (not a link) with
-///    the extension of the curve of e that are not on that curve, when the
-///    exact distance from e to P is at most epsilon for the two curves. The
-///    curve then runs on its extension (line or circle) to P instead of e:
-///    this is EXTEND by less than the tolerance. Ends are moved together:
-///    every P is found on the curves of step 1, without the moves of other
-///    ends.
+///    distinct points at an exact distance of at most epsilon for their
+///    curves, the Segment from e to f is added: a link, once for each pair.
+/// 3. Extensions. From a free end e without a link, follow the extension
+///    outward: the ray beyond e for a straight piece, or the rest of the
+///    circle in the direction of the piece beyond its end or against it
+///    beyond its start.
+///    Take the first point P on that extension common to another curve of
+///    step 1, including exact tangencies. If the exact distance from e to
+///    P is at most epsilon for the curve of e and a curve met at P, extend
+///    the original piece to P. Otherwise e stays free. All ends use the
+///    curves of step 1 before any extensions. When several curves meet at
+///    P, step 5 governs the resulting pieces.
 /// 4. Picked point. If the exact distance from the picked point to a curve,
 ///    as extended in step 3, or to a link is at most epsilon, the outcome is
 ///    onCurve.
@@ -146,8 +150,9 @@ struct DetectedBoundary {
 ///    or on that loop, and some point lies inside.
 ///
 /// The returned loops (region.hpp, RegionLoop) all run counterclockwise:
-/// - a loop made of the whole of one Circle is that Circle, with its
-///   doubles, whatever vertices lie on it;
+/// - a loop made of a whole input Circle or whole-circle Arc is that
+///   Circle, with its doubles, if step 5 credits every piece of the loop
+///   to that same input curve;
 /// - otherwise a closed Polyline that starts at its exactly smallest vertex
 ///   in lexicographic order of (x, y). Each segment is a piece of step 5 or
 ///   part of one: a curved stretch with an included angle above half a turn
@@ -168,10 +173,11 @@ struct DetectedBoundary {
 /// are determined.
 ///
 /// Limits (ADR 0014): a gap wider than the tolerance is not closed; an end
-/// within the tolerance of a curve it would only meet tangentially stays
-/// free; an island that touches another curve of its group from inside
-/// counts only through the outer boundary of the group. The result may
-/// differ from AutoCAD in these cases.
+/// whose first meeting on its extension is beyond the tolerance stays
+/// free, even if it lies close to a curve (for example, at a near tangency).
+/// For a group other than the contour's group, an island that touches
+/// another curve of its group from inside counts only through the group's
+/// outer boundary. The result may differ from AutoCAD in these cases.
 ///
 /// Diagnosis invalidValue when a coordinate of the picked point is not
 /// finite, outOfDomain when its magnitude is beyond robust::kMaxCoordinate
