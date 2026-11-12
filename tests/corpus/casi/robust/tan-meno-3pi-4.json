@@ -8,14 +8,14 @@
     "angolo": "-0x1.2d97c7f3321d2p+1"
   },
   "atteso": {
-    "valore": {
+    "tangente": {
       "valore": 1.0000000000000002,
       "tolleranza": 4.440892098500626e-16
     },
-    "valore_negativo": false
+    "tangente_negativa": false
   },
   "provenienza": {
     "tipo": "aritmetica-esatta",
-    "procedimento": "Oracolo indipendente Python decimal a 200 cifre (mai solid-space): pi=16*atan(1/5)-4*atan(1/239) con la serie di atan; ingresso Decimal.from_float sul double esadecimale; riduzione r=x-k*2*pi con k=RN(x/(2*pi)); seno e coseno di Taylor con ricorrenza dei termini fino a stabilita'; tan=seno/coseno. Valore=double piu' vicino al risultato esatto; tolleranza=2*ulp del valore esatto (2^(e-52) con 2^e<=|v|<2^(e+1), minimo 2^-1074), come chiede kElementaryMaxErrorUlps. Ripetuto a 260 cifre: stesso double e stessa tolleranza. Il segno in valore_negativo e' quello del valore esatto."
+    "procedimento": "Oracolo indipendente Python decimal a 200 cifre (mai solid-space): pi=16*atan(1/5)-4*atan(1/239) con la serie di atan; ingresso Decimal.from_float sul double esadecimale; riduzione r=x-k*2*pi con k=RN(x/(2*pi)); seno e coseno di Taylor con ricorrenza dei termini fino a stabilita'; tan=seno/coseno. Valore=double piu' vicino al risultato esatto; tolleranza=2*ulp del valore esatto (2^(e-52) con 2^e<=|v|<2^(e+1), minimo 2^-1074), come chiede kElementaryMaxErrorUlps. Ripetuto a 260 cifre: stesso double e stessa tolleranza. Il segno in tangente_negativa e' quello del valore esatto."
   }
 }

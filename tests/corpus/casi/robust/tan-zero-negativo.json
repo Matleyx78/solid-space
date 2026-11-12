@@ -8,8 +8,8 @@
     "angolo": "-0x0p+0"
   },
   "atteso": {
-    "valore": "0",
-    "valore_negativo": true
+    "tangente": "0",
+    "tangente_negativa": true
   },
   "provenienza": {
     "tipo": "calcolo-a-mano",
