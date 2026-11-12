@@ -1,0 +1,135 @@
+{
+  "versione": 1,
+  "id": "contorni-catena-di-quattro-traslato",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #214, ADR 0014: un cerchio dentro una catena di quattro quadrati annidati: profondita' 0, 1, 2, 3 e 4 (traslato di 1e5).",
+  "ingresso": {
+    "operazione": "nestContours",
+    "contorni": [
+      {
+        "vertici": [
+          [
+            100000,
+            100000,
+            0
+          ],
+          [
+            100016,
+            100000,
+            0
+          ],
+          [
+            100016,
+            100016,
+            0
+          ],
+          [
+            100000,
+            100016,
+            0
+          ]
+        ],
+        "chiusa": true
+      },
+      {
+        "vertici": [
+          [
+            100001,
+            100001,
+            0
+          ],
+          [
+            100015,
+            100001,
+            0
+          ],
+          [
+            100015,
+            100015,
+            0
+          ],
+          [
+            100001,
+            100015,
+            0
+          ]
+        ],
+        "chiusa": true
+      },
+      {
+        "vertici": [
+          [
+            100002,
+            100002,
+            0
+          ],
+          [
+            100014,
+            100002,
+            0
+          ],
+          [
+            100014,
+            100014,
+            0
+          ],
+          [
+            100002,
+            100014,
+            0
+          ]
+        ],
+        "chiusa": true
+      },
+      {
+        "vertici": [
+          [
+            100003,
+            100003,
+            0
+          ],
+          [
+            100013,
+            100003,
+            0
+          ],
+          [
+            100013,
+            100013,
+            0
+          ],
+          [
+            100003,
+            100013,
+            0
+          ]
+        ],
+        "chiusa": true
+      },
+      {
+        "cerchio": {
+          "centro": [
+            100008,
+            100008
+          ],
+          "raggio": 2
+        }
+      }
+    ]
+  },
+  "atteso": {
+    "profondita": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "conflitti": [],
+    "scartati": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente (mai solid-space), lo stesso di RS10a: per ogni coppia A, B i pezzi di B tagliati sul solo A (tagli esatti in numeri a+b*sqrt(d) con fractions, parti fra tagli distinti, regola pari-dispari in un punto interno di ogni parte fuori da A); racchiude, same e crossing come dice nestContours; profondita' senza i conflitti."
+  }
+}

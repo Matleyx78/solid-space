@@ -1,0 +1,105 @@
+{
+  "versione": 1,
+  "id": "contorni-richiesta-si-intersecano-traslato",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #214, ADR 0014: caso 6c: due quadrati che si intersecano dentro un rettangolo: conflitto crossing, e nessuno dei due conta per la profondita' dell'altro (1 e 1) (traslato di 1e5).",
+  "ingresso": {
+    "operazione": "nestContours",
+    "contorni": [
+      {
+        "vertici": [
+          [
+            100000,
+            100000,
+            0
+          ],
+          [
+            100020,
+            100000,
+            0
+          ],
+          [
+            100020,
+            100010,
+            0
+          ],
+          [
+            100000,
+            100010,
+            0
+          ]
+        ],
+        "chiusa": true
+      },
+      {
+        "vertici": [
+          [
+            100002,
+            100002,
+            0
+          ],
+          [
+            100008,
+            100002,
+            0
+          ],
+          [
+            100008,
+            100008,
+            0
+          ],
+          [
+            100002,
+            100008,
+            0
+          ]
+        ],
+        "chiusa": true
+      },
+      {
+        "vertici": [
+          [
+            100005,
+            100005,
+            0
+          ],
+          [
+            100012,
+            100005,
+            0
+          ],
+          [
+            100012,
+            100009,
+            0
+          ],
+          [
+            100005,
+            100009,
+            0
+          ]
+        ],
+        "chiusa": true
+      }
+    ]
+  },
+  "atteso": {
+    "profondita": [
+      "0",
+      "1",
+      "1"
+    ],
+    "conflitti": [
+      {
+        "primo": "1",
+        "secondo": "2",
+        "tipo": "crossing"
+      }
+    ],
+    "scartati": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente (mai solid-space), lo stesso di RS10a: per ogni coppia A, B i pezzi di B tagliati sul solo A (tagli esatti in numeri a+b*sqrt(d) con fractions, parti fra tagli distinti, regola pari-dispari in un punto interno di ogni parte fuori da A); racchiude, same e crossing come dice nestContours; profondita' senza i conflitti."
+  }
+}
