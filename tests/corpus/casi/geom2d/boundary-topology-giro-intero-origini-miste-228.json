@@ -1,0 +1,87 @@
+{
+  "versione": 1,
+  "id": "boundary-topology-giro-intero-origini-miste-228",
+  "componente": "geom2d",
+  "descrizione": "#214: giro intero origini miste 228.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      0,
+      0
+    ],
+    "curve": [
+      {
+        "pezzo": {
+          "inizio": [
+            -10,
+            0
+          ],
+          "fine": [
+            10,
+            0
+          ],
+          "bulge": 1
+        }
+      },
+      {
+        "cerchio": {
+          "centro": [
+            0,
+            0
+          ],
+          "raggio": 10
+        }
+      }
+    ],
+    "unita_in_metri": 1
+  },
+  "atteso": {
+    "esito": "enclosed",
+    "loop": [
+      {
+        "loop": {
+          "vertici": [
+            [
+              "-10",
+              "0",
+              {
+                "valore": 1,
+                "tolleranza": 5.684341886080803e-14
+              }
+            ],
+            [
+              "10",
+              "0",
+              {
+                "valore": 1,
+                "tolleranza": 5.684341886080803e-14
+              }
+            ]
+          ],
+          "chiusa": true
+        },
+        "origini": [
+          {
+            "fonte": "curve",
+            "curva": "0",
+            "altra_curva": "0",
+            "invertito": false
+          },
+          {
+            "fonte": "curve",
+            "curva": "1",
+            "altra_curva": "1",
+            "invertito": false
+          }
+        ],
+        "profondita": "0"
+      }
+    ],
+    "scartate": [],
+    "estremi_liberi": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Decisione #228: il bulge 1 dà il semicerchio inferiore, con punto medio (0,-10). L’altro semicerchio appartiene al cerchio. Il giro antiorario parte da (-10,0), ha due origini e due bulge positivi. Con la corda esatta di lunghezza 20, la variazione della freccia è 10·|bulge-1|. Il limite geometrico 10·2^-44 dà la tolleranza del bulge 2^-44."
+  }
+}

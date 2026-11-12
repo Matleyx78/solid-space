@@ -1,0 +1,85 @@
+{
+  "versione": 1,
+  "id": "boundary-topology-tangenza-interna-contorno-227",
+  "componente": "geom2d",
+  "descrizione": "#214: tangenza interna contorno 227.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      -5,
+      0
+    ],
+    "curve": [
+      {
+        "cerchio": {
+          "centro": [
+            0,
+            0
+          ],
+          "raggio": 10
+        }
+      },
+      {
+        "cerchio": {
+          "centro": [
+            5,
+            0
+          ],
+          "raggio": 5
+        }
+      }
+    ],
+    "unita_in_metri": 1
+  },
+  "atteso": {
+    "esito": "enclosed",
+    "loop": [
+      {
+        "loop": {
+          "cerchio": {
+            "centro": [
+              "0",
+              "0"
+            ],
+            "raggio": "10"
+          }
+        },
+        "origini": [
+          {
+            "fonte": "curve",
+            "curva": "0",
+            "altra_curva": "0",
+            "invertito": false
+          }
+        ],
+        "profondita": "0"
+      },
+      {
+        "loop": {
+          "cerchio": {
+            "centro": [
+              "5",
+              "0"
+            ],
+            "raggio": "5"
+          }
+        },
+        "origini": [
+          {
+            "fonte": "curve",
+            "curva": "1",
+            "altra_curva": "1",
+            "invertito": false
+          }
+        ],
+        "profondita": "1"
+      }
+    ],
+    "scartate": [],
+    "estremi_liberi": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Decisione #227: la distanza dei centri è 5=10-5. La faccia scelta fra i due cerchi ha i due giri come bordo. La visita si separa in (10,0); il secondo giro è un’isola di profondità 1."
+  }
+}

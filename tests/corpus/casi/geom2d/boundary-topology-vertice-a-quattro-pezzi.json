@@ -1,0 +1,159 @@
+{
+  "versione": 1,
+  "id": "boundary-topology-vertice-a-quattro-pezzi",
+  "componente": "geom2d",
+  "descrizione": "#214: vertice a quattro pezzi.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      3,
+      3
+    ],
+    "curve": [
+      {
+        "segmento": {
+          "inizio": [
+            -10,
+            -10
+          ],
+          "fine": [
+            10,
+            -10
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            10,
+            -10
+          ],
+          "fine": [
+            10,
+            10
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            10,
+            10
+          ],
+          "fine": [
+            -10,
+            10
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            -10,
+            10
+          ],
+          "fine": [
+            -10,
+            -10
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            -10
+          ],
+          "fine": [
+            0,
+            10
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            -10,
+            0
+          ],
+          "fine": [
+            10,
+            0
+          ]
+        }
+      }
+    ],
+    "unita_in_metri": 1
+  },
+  "atteso": {
+    "esito": "enclosed",
+    "loop": [
+      {
+        "loop": {
+          "vertici": [
+            [
+              {
+                "valore": 0,
+                "tolleranza": 3.5527136788005016e-14
+              },
+              {
+                "valore": 0,
+                "tolleranza": 3.5527136788005016e-14
+              },
+              "0"
+            ],
+            [
+              "10",
+              "0",
+              "0"
+            ],
+            [
+              "10",
+              "10",
+              "0"
+            ],
+            [
+              "0",
+              "10",
+              "0"
+            ]
+          ],
+          "chiusa": true
+        },
+        "origini": [
+          {
+            "fonte": "curve",
+            "curva": "5",
+            "altra_curva": "5",
+            "invertito": false
+          },
+          {
+            "fonte": "curve",
+            "curva": "1",
+            "altra_curva": "1",
+            "invertito": false
+          },
+          {
+            "fonte": "curve",
+            "curva": "2",
+            "altra_curva": "2",
+            "invertito": false
+          },
+          {
+            "fonte": "curve",
+            "curva": "4",
+            "altra_curva": "4",
+            "invertito": true
+          }
+        ],
+        "profondita": "0"
+      }
+    ],
+    "scartate": [],
+    "estremi_liberi": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "I due diametri ortogonali del quadrato si incrociano in (0,0). I segni x>0,y>0 selezionano il quadrante superiore destro; il bordo antiorario va da (0,0) verso destra. L’ultimo lato percorre la curva 4 al contrario. Vertici costruiti con tolleranza 10·2^-48."
+  }
+}

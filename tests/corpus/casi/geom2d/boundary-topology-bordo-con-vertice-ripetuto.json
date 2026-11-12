@@ -1,0 +1,275 @@
+{
+  "versione": 1,
+  "id": "boundary-topology-bordo-con-vertice-ripetuto",
+  "componente": "geom2d",
+  "descrizione": "#214: bordo con vertice ripetuto.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      0,
+      7
+    ],
+    "curve": [
+      {
+        "segmento": {
+          "inizio": [
+            -10,
+            -10
+          ],
+          "fine": [
+            10,
+            -10
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            10,
+            -10
+          ],
+          "fine": [
+            10,
+            10
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            10,
+            10
+          ],
+          "fine": [
+            -10,
+            10
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            -10,
+            10
+          ],
+          "fine": [
+            -10,
+            -10
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            -4,
+            -4
+          ],
+          "fine": [
+            4,
+            4
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            4,
+            4
+          ],
+          "fine": [
+            -4,
+            4
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            -4,
+            4
+          ],
+          "fine": [
+            4,
+            -4
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            4,
+            -4
+          ],
+          "fine": [
+            -4,
+            -4
+          ]
+        }
+      }
+    ],
+    "unita_in_metri": 1
+  },
+  "atteso": {
+    "esito": "enclosed",
+    "loop": [
+      {
+        "loop": {
+          "vertici": [
+            [
+              "-10",
+              "-10",
+              "0"
+            ],
+            [
+              "10",
+              "-10",
+              "0"
+            ],
+            [
+              "10",
+              "10",
+              "0"
+            ],
+            [
+              "-10",
+              "10",
+              "0"
+            ]
+          ],
+          "chiusa": true
+        },
+        "origini": [
+          {
+            "fonte": "curve",
+            "curva": "0",
+            "altra_curva": "0",
+            "invertito": false
+          },
+          {
+            "fonte": "curve",
+            "curva": "1",
+            "altra_curva": "1",
+            "invertito": false
+          },
+          {
+            "fonte": "curve",
+            "curva": "2",
+            "altra_curva": "2",
+            "invertito": false
+          },
+          {
+            "fonte": "curve",
+            "curva": "3",
+            "altra_curva": "3",
+            "invertito": false
+          }
+        ],
+        "profondita": "0"
+      },
+      {
+        "loop": {
+          "vertici": [
+            [
+              "-4",
+              "-4",
+              "0"
+            ],
+            [
+              "4",
+              "-4",
+              "0"
+            ],
+            [
+              {
+                "valore": 0,
+                "tolleranza": 3.5527136788005016e-14
+              },
+              {
+                "valore": 0,
+                "tolleranza": 3.5527136788005016e-14
+              },
+              "0"
+            ]
+          ],
+          "chiusa": true
+        },
+        "origini": [
+          {
+            "fonte": "curve",
+            "curva": "7",
+            "altra_curva": "7",
+            "invertito": true
+          },
+          {
+            "fonte": "curve",
+            "curva": "6",
+            "altra_curva": "6",
+            "invertito": true
+          },
+          {
+            "fonte": "curve",
+            "curva": "4",
+            "altra_curva": "4",
+            "invertito": true
+          }
+        ],
+        "profondita": "1"
+      },
+      {
+        "loop": {
+          "vertici": [
+            [
+              "-4",
+              "4",
+              "0"
+            ],
+            [
+              {
+                "valore": 0,
+                "tolleranza": 3.5527136788005016e-14
+              },
+              {
+                "valore": 0,
+                "tolleranza": 3.5527136788005016e-14
+              },
+              "0"
+            ],
+            [
+              "4",
+              "4",
+              "0"
+            ]
+          ],
+          "chiusa": true
+        },
+        "origini": [
+          {
+            "fonte": "curve",
+            "curva": "6",
+            "altra_curva": "6",
+            "invertito": false
+          },
+          {
+            "fonte": "curve",
+            "curva": "4",
+            "altra_curva": "4",
+            "invertito": false
+          },
+          {
+            "fonte": "curve",
+            "curva": "5",
+            "altra_curva": "5",
+            "invertito": false
+          }
+        ],
+        "profondita": "1"
+      }
+    ],
+    "scartate": [],
+    "estremi_liberi": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Le diagonali della polilinea a farfalla si incontrano in (0,0). Il bordo esterno del gruppo passa due volte dal punto e si divide in due triangoli antiorari; l’isola inferiore precede la superiore perché ha y minore alla stessa x. Vertice costruito con errore 10·2^-48."
+  }
+}

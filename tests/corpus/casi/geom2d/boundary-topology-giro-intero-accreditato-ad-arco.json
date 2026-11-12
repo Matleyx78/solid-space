@@ -1,0 +1,58 @@
+{
+  "versione": 1,
+  "id": "boundary-topology-giro-intero-accreditato-ad-arco",
+  "componente": "geom2d",
+  "descrizione": "#214: giro intero accreditato ad arco.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      0,
+      0
+    ],
+    "curve": [
+      {
+        "arco": {
+          "centro": [
+            0,
+            0
+          ],
+          "raggio": 10,
+          "angolo_iniziale": 0.2,
+          "ampiezza": 6.283185307179586
+        }
+      }
+    ],
+    "unita_in_metri": 1
+  },
+  "atteso": {
+    "esito": "enclosed",
+    "loop": [
+      {
+        "loop": {
+          "cerchio": {
+            "centro": [
+              "0",
+              "0"
+            ],
+            "raggio": "10"
+          }
+        },
+        "origini": [
+          {
+            "fonte": "curve",
+            "curva": "0",
+            "altra_curva": "0",
+            "invertito": false
+          }
+        ],
+        "profondita": "0"
+      }
+    ],
+    "scartate": [],
+    "estremi_liberi": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Il double dell’ampiezza è kFullTurn, quindi il passo 1 sostituisce l’Arc con il suo cerchio intero. Il punto scelto è nel disco e il giro è accreditato a un solo ingresso."
+  }
+}
