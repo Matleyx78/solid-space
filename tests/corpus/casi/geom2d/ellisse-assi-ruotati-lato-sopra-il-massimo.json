@@ -1,0 +1,37 @@
+{
+  "versione": 1,
+  "id": "ellisse-assi-ruotati-lato-sopra-il-massimo",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #217, ADR 0017: assi ruotati: il lato y=6.272001872658766, il primo double sopra 2+sqrt(73)/2, non la incontra.",
+  "ingresso": {
+    "operazione": "meetsRectangle",
+    "ellisse": {
+      "centro": [
+        1,
+        2
+      ],
+      "asse_maggiore": [
+        3,
+        4
+      ],
+      "rapporto": "0x1.0000000000000p-1",
+      "parametro_iniziale": 2,
+      "parametro_finale": 2
+    },
+    "angolo": [
+      -10,
+      "0x1.91687a8ae14a4p+2"
+    ],
+    "angolo_opposto": [
+      10,
+      10
+    ]
+  },
+  "atteso": {
+    "incontra": false
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente (mai solid-space), come dice ellipse.hpp: vero se l'inizio esatto sta nel rettangolo chiuso, o un lato non ridotto a un punto incontra la curva, o il rettangolo e' un punto della curva. Lati sostituiti nell'equazione implicita esatta ((q.a)^2+(q.a_perp)^2/rapporto^2=|a|^4, fractions): radici del secondo grado esatte (discriminante esatto, radice razionale quando e' un quadrato perfetto, decimal a 200 cifre solo per collocare una radice irrazionale lontana dagli estremi del lato); direzione F^-1 del punto e appartenenza all'arco con decimal, controllando che nessuna decisione cambi per D0 e D1 entro 2 ulp di sinCos (margine piu' di 8 volte l'errore di direzione). Stessa risposta con gli angoli scambiati."
+  }
+}

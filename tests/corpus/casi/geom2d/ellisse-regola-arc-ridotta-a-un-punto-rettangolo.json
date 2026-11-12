@@ -1,0 +1,40 @@
+{
+  "versione": 1,
+  "id": "ellisse-regola-arc-ridotta-a-un-punto-rettangolo",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #217, ADR 0017: lo stesso arco ridotto a un punto: meetsRectangle da' degenerateCurve.",
+  "ingresso": {
+    "operazione": "meetsRectangle",
+    "ellisse": {
+      "centro": [
+        0,
+        0
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": "0x1.0000000000000p-1",
+      "parametro_iniziale": 0,
+      "parametro_finale": "0x1.4d02421c87558p+8"
+    },
+    "angolo": [
+      9,
+      -1
+    ],
+    "angolo_opposto": [
+      11,
+      1
+    ]
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "degenerateCurve",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente (mai solid-space), come dice ellipse.hpp: vero se l'inizio esatto sta nel rettangolo chiuso, o un lato non ridotto a un punto incontra la curva, o il rettangolo e' un punto della curva. Lati sostituiti nell'equazione implicita esatta ((q.a)^2+(q.a_perp)^2/rapporto^2=|a|^4, fractions): radici del secondo grado esatte (discriminante esatto, radice razionale quando e' un quadrato perfetto, decimal a 200 cifre solo per collocare una radice irrazionale lontana dagli estremi del lato); direzione F^-1 del punto e appartenenza all'arco con decimal, controllando che nessuna decisione cambi per D0 e D1 entro 2 ulp di sinCos (margine piu' di 8 volte l'errore di direzione). Stessa risposta con gli angoli scambiati."
+  }
+}

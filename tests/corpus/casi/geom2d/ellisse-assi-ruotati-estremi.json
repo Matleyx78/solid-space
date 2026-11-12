@@ -1,0 +1,48 @@
+{
+  "versione": 1,
+  "id": "ellisse-assi-ruotati-estremi",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #217, ADR 0017: assi ruotati: centro (1, 2), asse (3, 4), rapporto 0.5, arco da 0.25 a 4.",
+  "ingresso": {
+    "operazione": "ellipseEndpoints",
+    "ellisse": {
+      "centro": [
+        1,
+        2
+      ],
+      "asse_maggiore": [
+        3,
+        4
+      ],
+      "rapporto": "0x1.0000000000000p-1",
+      "parametro_iniziale": "0x1.0000000000000p-2",
+      "parametro_finale": 4
+    }
+  },
+  "atteso": {
+    "inizio": [
+      {
+        "valore": 3.4119293466228884,
+        "tolleranza": 2.396929099903518e-14
+      },
+      {
+        "valore": 6.246755625724363,
+        "tolleranza": 2.396929099903518e-14
+      }
+    ],
+    "fine": [
+      {
+        "valore": 0.5526741280250208,
+        "tolleranza": 1.9272682865680864e-14
+      },
+      {
+        "valore": -1.74977822641634,
+        "tolleranza": 1.9272682865680864e-14
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente (mai solid-space): F(x,y)=centro+x*a+y*b con b=rapporto*(-a.y,a.x) esatto (fractions); estremi F(cos t, sin t) con seno e coseno di Taylor in Python decimal a 200 cifre (pi di Machin). Regola di Arc sull'ampiezza nominale sigma calcolata esatta (fractions, kFullTurn come double) e su alpha da decimal; il caso vale per ogni D0 e D1 entro 2 ulp di sinCos: alpha e' lontano da 0, pi/2, 3pi/2 e 2pi piu' di 8 volte l'errore di direzione (2^-50 per la distanza dell'angolo dal multiplo di pi/2 piu' vicino, piu' 2^-1070). Tolleranza di ogni coordinata: kRelativePointError*max(M,|p|) con p esatto, piu' lo spostamento massimo dell'estremo dovuto all'errore di D0 o D1 (2*max|a_i,b_i|*errore di direzione), arrotondata per eccesso."
+  }
+}
