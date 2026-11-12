@@ -1,0 +1,91 @@
+{
+  "versione": 1,
+  "id": "boundary-tolerance-mm-collegamento-oltre",
+  "componente": "geom2d",
+  "descrizione": "#214: mm collegamento oltre.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      5,
+      4
+    ],
+    "curve": [
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            0
+          ],
+          "fine": [
+            10,
+            0
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            10,
+            1.0000000000000002e-06
+          ],
+          "fine": [
+            10,
+            8
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            10,
+            8
+          ],
+          "fine": [
+            0,
+            8
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            8
+          ],
+          "fine": [
+            0,
+            0
+          ]
+        }
+      }
+    ],
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "notEnclosed",
+    "scartate": [],
+    "loop": [],
+    "estremi_liberi": [
+      {
+        "curva": "0",
+        "all_inizio": false,
+        "punto": [
+          "10",
+          "0"
+        ]
+      },
+      {
+        "curva": "1",
+        "all_inizio": true,
+        "punto": [
+          "10",
+          "2361183241434823/2361183241434822606848"
+        ]
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "La M delle due curve è 10; epsilon=0x1.0c6f7a0b5ed8dp-20. Gli estremi destri distano 0x1.0c6f7a0b5ed8ep-20 esattamente. Entro epsilon si aggiunge il segmento verticale, oltre epsilon non è ammesso nemmeno il prolungamento che raggiunge il lato inferiore."
+  }
+}

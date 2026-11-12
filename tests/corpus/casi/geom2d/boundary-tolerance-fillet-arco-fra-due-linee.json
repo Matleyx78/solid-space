@@ -1,0 +1,60 @@
+{
+  "versione": 1,
+  "id": "boundary-tolerance-fillet-arco-fra-due-linee",
+  "componente": "geom2d",
+  "descrizione": "#214: fillet arco fra due linee.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      0.75,
+      0.25
+    ],
+    "curve": [
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            -2
+          ],
+          "fine": [
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "arco": {
+          "centro": [
+            1,
+            0
+          ],
+          "raggio": 1,
+          "angolo_iniziale": 3.141592653589793,
+          "ampiezza": -1.5707963267948966
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            1,
+            1
+          ],
+          "fine": [
+            3,
+            1
+          ]
+        }
+      }
+    ],
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "notEnclosed",
+    "scartate": [],
+    "loop": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Raccordo nominale unitario da (0,0) a (1,1). Gli estremi in double sono entro il pavimento 10^-6 dai segmenti e il punto scelto è lontano dall’arco e dai link più di 0.1. Ingresso aperto, nessuna faccia limitata per il punto. Non si fissano le origini nella fascia della conversione di Arc."
+  }
+}

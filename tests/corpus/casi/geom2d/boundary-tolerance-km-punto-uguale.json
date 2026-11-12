@@ -1,0 +1,37 @@
+{
+  "versione": 1,
+  "id": "boundary-tolerance-km-punto-uguale",
+  "componente": "geom2d",
+  "descrizione": "#214: km punto uguale.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      131067,
+      2.9802322387695312e-08
+    ],
+    "curve": [
+      {
+        "segmento": {
+          "inizio": [
+            131062,
+            0
+          ],
+          "fine": [
+            131072,
+            0
+          ]
+        }
+      }
+    ],
+    "unita_in_metri": 1000
+  },
+  "atteso": {
+    "esito": "onCurve",
+    "scartate": [],
+    "curva_vicina": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "La proiezione del punto sta nell’interno del segmento; la distanza esatta è 0x1.0000000000000p-25 e epsilon=0x1.0000000000000p-25. Il confronto include l’uguaglianza."
+  }
+}

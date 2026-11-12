@@ -1,0 +1,162 @@
+{
+  "versione": 1,
+  "id": "boundary-tolerance-scala-delle-curve-223",
+  "componente": "geom2d",
+  "descrizione": "#214: scala delle curve 223.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      0,
+      -0.5
+    ],
+    "curve": [
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            0
+          ],
+          "fine": [
+            -1000000,
+            0
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            -1000000,
+            0
+          ],
+          "fine": [
+            -1000000,
+            -1
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            -1000000,
+            -1
+          ],
+          "fine": [
+            1000000,
+            -1
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            1000000,
+            -1
+          ],
+          "fine": [
+            1000000,
+            1.1920928955078125e-07
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            1000000,
+            1.1920928955078125e-07
+          ],
+          "fine": [
+            0,
+            1.1920928955078125e-07
+          ]
+        }
+      }
+    ],
+    "unita_in_metri": 1
+  },
+  "atteso": {
+    "esito": "enclosed",
+    "scartate": [],
+    "loop": [
+      {
+        "loop": {
+          "vertici": [
+            [
+              "-1000000",
+              "-1",
+              "0"
+            ],
+            [
+              "1000000",
+              "-1",
+              "0"
+            ],
+            [
+              "1000000",
+              "1/8388608",
+              "0"
+            ],
+            [
+              "0",
+              "1/8388608",
+              "0"
+            ],
+            [
+              "0",
+              "0",
+              "0"
+            ],
+            [
+              "-1000000",
+              "0",
+              "0"
+            ]
+          ],
+          "chiusa": true
+        },
+        "origini": [
+          {
+            "fonte": "curve",
+            "curva": "2",
+            "altra_curva": "2",
+            "invertito": false
+          },
+          {
+            "fonte": "curve",
+            "curva": "3",
+            "altra_curva": "3",
+            "invertito": false
+          },
+          {
+            "fonte": "curve",
+            "curva": "4",
+            "altra_curva": "4",
+            "invertito": false
+          },
+          {
+            "fonte": "link",
+            "curva": "0",
+            "altra_curva": "4",
+            "invertito": false
+          },
+          {
+            "fonte": "curve",
+            "curva": "0",
+            "altra_curva": "0",
+            "invertito": false
+          },
+          {
+            "fonte": "curve",
+            "curva": "1",
+            "altra_curva": "1",
+            "invertito": false
+          }
+        ],
+        "profondita": "0"
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Decisione #223: distanza 2^-23, compresa fra il pavimento 10^-9 e 2^-42·10^6. Il collegamento dipende dalla M dei segmenti dati e chiude la faccia che contiene il punto."
+  }
+}

@@ -1,0 +1,139 @@
+{
+  "versione": 1,
+  "id": "boundary-tolerance-mm-collegamento-uguale",
+  "componente": "geom2d",
+  "descrizione": "#214: mm collegamento uguale.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      5,
+      4
+    ],
+    "curve": [
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            0
+          ],
+          "fine": [
+            10,
+            0
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            10,
+            1e-06
+          ],
+          "fine": [
+            10,
+            8
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            10,
+            8
+          ],
+          "fine": [
+            0,
+            8
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            8
+          ],
+          "fine": [
+            0,
+            0
+          ]
+        }
+      }
+    ],
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "enclosed",
+    "scartate": [],
+    "loop": [
+      {
+        "loop": {
+          "vertici": [
+            [
+              "0",
+              "0",
+              "0"
+            ],
+            [
+              "10",
+              "0",
+              "0"
+            ],
+            [
+              "10",
+              "4722366482869645/4722366482869645213696",
+              "0"
+            ],
+            [
+              "10",
+              "8",
+              "0"
+            ],
+            [
+              "0",
+              "8",
+              "0"
+            ]
+          ],
+          "chiusa": true
+        },
+        "origini": [
+          {
+            "fonte": "curve",
+            "curva": "0",
+            "altra_curva": "0",
+            "invertito": false
+          },
+          {
+            "fonte": "link",
+            "curva": "0",
+            "altra_curva": "1",
+            "invertito": false
+          },
+          {
+            "fonte": "curve",
+            "curva": "1",
+            "altra_curva": "1",
+            "invertito": false
+          },
+          {
+            "fonte": "curve",
+            "curva": "2",
+            "altra_curva": "2",
+            "invertito": false
+          },
+          {
+            "fonte": "curve",
+            "curva": "3",
+            "altra_curva": "3",
+            "invertito": false
+          }
+        ],
+        "profondita": "0"
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "La M delle due curve è 10; epsilon=0x1.0c6f7a0b5ed8dp-20. Gli estremi destri distano 0x1.0c6f7a0b5ed8dp-20 esattamente. Entro epsilon si aggiunge il segmento verticale, oltre epsilon non è ammesso nemmeno il prolungamento che raggiunge il lato inferiore."
+  }
+}

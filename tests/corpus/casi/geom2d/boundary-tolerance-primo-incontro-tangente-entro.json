@@ -1,0 +1,56 @@
+{
+  "versione": 1,
+  "id": "boundary-tolerance-primo-incontro-tangente-entro",
+  "componente": "geom2d",
+  "descrizione": "#214: primo incontro tangente entro.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      -3,
+      0
+    ],
+    "curve": [
+      {
+        "segmento": {
+          "inizio": [
+            -2,
+            0
+          ],
+          "fine": [
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "cerchio": {
+          "centro": [
+            1.1641532182693481e-10,
+            1
+          ],
+          "raggio": 1
+        }
+      }
+    ],
+    "unita_in_metri": 1
+  },
+  "atteso": {
+    "esito": "notEnclosed",
+    "scartate": [],
+    "loop": [],
+    "estremi_liberi": [
+      {
+        "curva": "0",
+        "all_inizio": true,
+        "punto": [
+          "-2",
+          "0"
+        ]
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Decisione #225: sul sostegno y=0 il cerchio tocca una sola volta, in (x,0) con x=0x1.0000000000000p-33. La distanza dall’estremo è x. Con M=1, il passo 3 raggiunge la tangenza."
+  }
+}

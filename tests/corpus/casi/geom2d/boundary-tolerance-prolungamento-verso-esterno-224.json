@@ -1,0 +1,79 @@
+{
+  "versione": 1,
+  "id": "boundary-tolerance-prolungamento-verso-esterno-224",
+  "componente": "geom2d",
+  "descrizione": "#214: prolungamento verso esterno 224.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      -2,
+      0
+    ],
+    "curve": [
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            0
+          ],
+          "fine": [
+            2.9103830456733704e-11,
+            0
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            -1
+          ],
+          "fine": [
+            0,
+            1
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            -1.1641532182693481e-10,
+            -2
+          ],
+          "fine": [
+            -1.1641532182693481e-10,
+            2
+          ]
+        }
+      }
+    ],
+    "unita_in_metri": 1
+  },
+  "atteso": {
+    "esito": "notEnclosed",
+    "scartate": [],
+    "loop": [],
+    "estremi_liberi": [
+      {
+        "curva": "2",
+        "all_inizio": true,
+        "punto": [
+          "-1/8589934592",
+          "-2"
+        ]
+      },
+      {
+        "curva": "2",
+        "all_inizio": false,
+        "punto": [
+          "-1/8589934592",
+          "2"
+        ]
+      }
+    ]
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Decisione #224: l’incrocio a x=-d è dietro l’inizio del segmento orizzontale, quindi non si può raggiungere prolungando la sua fine. La semiretta da (-2,0) incontra prima la verticale sinistra, rimasta separata."
+  }
+}

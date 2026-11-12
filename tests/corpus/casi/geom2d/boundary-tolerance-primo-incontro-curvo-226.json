@@ -1,0 +1,62 @@
+{
+  "versione": 1,
+  "id": "boundary-tolerance-primo-incontro-curvo-226",
+  "componente": "geom2d",
+  "descrizione": "#214: primo incontro curvo 226.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      -9.822542779147625e-10,
+      -5.238689482212067e-10
+    ],
+    "curve": [
+      {
+        "pezzo": {
+          "inizio": [
+            0,
+            -5.820766091346741e-11
+          ],
+          "fine": [
+            0,
+            0
+          ],
+          "bulge": 0.25
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            -5.820766091346741e-11
+          ],
+          "fine": [
+            1,
+            -5.820766091346741e-11
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            -8.00000000005457,
+            14.999999999970896
+          ],
+          "fine": [
+            7.99999999994543,
+            -15.000000000029104
+          ]
+        }
+      }
+    ],
+    "unita_in_metri": 1
+  },
+  "atteso": {
+    "esito": "notEnclosed",
+    "scartate": [],
+    "loop": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Decisione #226: centro C=(-15d/16,-d/2), r=17d/16. Sul cerchio il punto di fine ha direzione (15,8); la retta bersaglio ha direzione (8,-15). Entrambe le intersezioni distano sqrt(2)r, ma quella a +90° da (15,8) viene prima. Il punto scelto è a 17r da C in direzione opposta alla fine. Distanza dalla retta 17r e dal primo incontro sqrt(290)r, entrambe oltre epsilon. Il prolungamento lungo passerebbe per il punto del cerchio a 16r dal punto scelto, entro epsilon."
+  }
+}
