@@ -2,6 +2,8 @@
 
 - **Stato:** Accettato
 - **Data:** 2026-11-11
+- **Corretto:** 2026-11-12 — liste indipendenti per ospite, decisione #229
+  della revisione #222.
 - **Richiesta:** #215 — da Tecnigrafo: tappa 0.8, Matleyx78/tecnigrafo#661
 - **Esito:** 3 pezzo nostro
 - **Tappa:** 0.3, per Tecnigrafo 0.8 (scheda da scrivere all'apertura)
@@ -138,9 +140,12 @@ li leggono mai, quindi nessun esito cade in una fascia (ADR 0013, punto 4).
    tagli, classi delle parti (dentro, bordo con il suo lato, fuori), tratti
    come sequenze più lunghe di parti della stessa classe. Su un ospite chiuso
    (cerchio, arco di un giro intero) i tratti non passano per il suo inizio.
-4. **Due elenchi per ospite**, nell'ordine esatto lungo l'ospite: i tratti
-   dentro e i tratti sul bordo, questi con il lato (`Side`, come `side()`) in
-   cui sta la regione. I punti di solo contatto non sono tratti.
+4. **Due elenchi indipendenti per ospite**: i tratti dentro e i tratti sul
+   bordo, questi con il lato (`Side`, come `side()`) in cui sta la regione.
+   Ogni elenco è nell'ordine esatto lungo l'ospite. Il risultato non espone
+   l'ordine relativo né l'identità degli estremi comuni fra i due elenchi.
+   Punti e stazioni arrotondati non conservano queste informazioni. I punti
+   di solo contatto non sono tratti.
 5. **Gli estremi dei tratti** portano il punto e la posizione sull'ospite
    (`CurvePosition`, come `intersect()`): la posizione esatta, la stazione
    entro `kRelativeStationError`, il punto entro `kRelativePointError`; gli
@@ -210,7 +215,10 @@ controlla che l'intestazione compili con la firma dichiarata.
     `nestContours`, o dai contorni letti dal file; i contorni a lati del DXF
     (linee e archi) Tecnigrafo li traduce in una polilinea chiusa, con il bulge
     dall'angolo degli archi (la tangente è la richiesta #216);
-  - se disegnare i tratti sul bordo è una sua scelta: consiglio di disegnarli,
+  - la facciata usa i due elenchi separatamente. Disegna ogni tratto per
+    conto suo e misura i tratteggi dalla stazione riferita all'origine
+    della famiglia di righe. Se disegnare i tratti sul bordo è una sua
+    scelta: consiglio di disegnarli,
     perché la regione chiusa comprende il suo bordo e la famiglia di righe resta
     regolare anche dove una riga cade su un lato; il comportamento di AutoCAD
     non è stato provato;

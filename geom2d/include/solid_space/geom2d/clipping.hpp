@@ -17,7 +17,7 @@
 // curves and loops as given (curves.hpp): where a host meets the loops, which
 // parts of the host lie inside the region, on its boundary or outside, on
 // which side of a boundary stretch the region lies, and the number and order
-// of the stretches. No tolerance is used. Only the ends of the stretches are
+// of stretches within each list. No tolerance is used. Only the ends are
 // rounded, within the errors of curves.hpp; no decision is read from a
 // rounded value, so no outcome lies in a band (ADR 0013, point 4).
 
@@ -68,7 +68,9 @@ struct BoundaryStretch {
     Side regionSide = Side::left;
 };
 
-/// What the region does to one host.
+/// What the region does to one host. The two lists are independent: the
+/// result gives neither their relative order nor the identity of ends they
+/// share. The caller uses each list separately.
 struct ClippedHost {
     /// The stretches inside the region, in the exact order along the host.
     std::vector<HostStretch> inside;
@@ -133,8 +135,9 @@ struct RegionClipping {
 ///
 /// The ends are rounded (StretchEnd): two distinct ends may round to the
 /// same point or station, and the stations of ends closer than their errors
-/// may come out in the reverse order. The order of the lists is the exact
-/// one, and the classes and sides are exact.
+/// may come out in the reverse order. The order within each list is exact,
+/// as are the classes and sides. Rounded points and stations cannot be used
+/// to recover exact order or shared ends across the two lists.
 ///
 /// The decisions (the stretches, their order, locations and sides) do not
 /// depend on the order of the loops, on the direction of a loop or on the

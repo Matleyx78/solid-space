@@ -41,9 +41,8 @@ using Loop = std::variant<Circle, Polyline>;
 enum class LoopPieceSource : std::uint8_t {
     /// A stretch of an input curve.
     curve,
-    /// A link: the straight segment between two ends of the input curves
-    /// that coincide under the rule of ADR 0009 without being the same
-    /// point (boundary.hpp, detectBoundary, step 2).
+    /// A link: the straight segment between distinct ends joined within
+    /// the tolerance of their curves (boundary.hpp, detectBoundary, step 2).
     link,
 };
 

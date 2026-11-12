@@ -637,3 +637,34 @@ i rimandi ai documenti che cambia.
     autorizzato la chat di Tecnigrafo a scrivere anche qui (questa pull
     request), in deroga ad [AGENTS.md](../AGENTS.md), "Dove puoi scrivere",
     che non cambia.
+- **2026-11-12 — Correzioni del contratto della tappa 0.3.** Dopo la revisione
+  [#222](https://github.com/Matleyx78/solid-space/issues/222), il responsabile
+  decide:
+  - `detectBoundary` collega gli estremi con la M delle curve (#223).
+    Prolunga dal lato uscente fino al primo punto comune, tangenze comprese,
+    se è entro epsilon (#224–#226). Le isole della faccia scelta comprendono
+    quelle che toccano il contorno (#227). La forma `Circle` richiede un
+    giro intero accreditato alla stessa curva circolare intera (#228).
+    [ADR 0014](adr/0014-contorno-e-isole-di-una-regione.md).
+  - `clipToRegion` restituisce due liste indipendenti per ospite (#229).
+    L'ordine esatto è garantito all'interno di ciascuna lista.
+    [ADR 0015](adr/0015-parti-di-una-curva-dentro-una-regione.md).
+  - Il quoziente `a / hypot(a, b)` soddisfa la precondizione di `acos` per
+    un vettore non nullo nel dominio di `hypot` (#230). Il chiamante gestisce
+    il vettore nullo prima di dividere, riconoscibile da `hypot` uguale a +0.
+    [ADR 0016](adr/0016-tangente-arcocoseno-e-lunghezza-deterministici.md).
+
+  La [scheda CS](tappe/0.3/CS-contratto.md) registra la modifica per il piano
+  della 0.3.
+
+- **2026-11-12 — Correzioni dopo la revisione della #231.** Il responsabile
+  sceglie la prima alternativa nella [#232](https://github.com/Matleyx78/solid-space/issues/232#issuecomment-6815626098):
+  nei passi 2, 3 e 4 di `detectBoundary` la M è quella della curva data,
+  anche per un `Arc` convertito, e il prolungamento non la cambia. Nel passo
+  4 contano anche le coordinate del punto scelto. La stessa curva conserva
+  così la stessa scala nei passi che usano la regola, come deciso nella #223.
+  Il [via libera nella #231](https://github.com/Matleyx78/solid-space/pull/231#issuecomment-6815626390)
+  autorizza a restringere l’ultima frase del passo 6 ai gruppi diversi
+  da quello del contorno, applicando la #227.
+  Aggiornati [ADR 0014](adr/0014-contorno-e-isole-di-una-regione.md) e
+  [scheda CS](tappe/0.3/CS-contratto.md), con la voce da riportare nel piano.
