@@ -1,0 +1,301 @@
+{
+  "versione": 1,
+  "id": "taglio-segmento-rovesciato",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #215, ADR 0015: gli stessi due segmenti con gli estremi scambiati: gli stessi tratti in ordine inverso, da e a scambiati, lati scambiati (vicino all'origine).",
+  "ingresso": {
+    "operazione": "clipToRegion",
+    "ospiti": [
+      {
+        "segmento": {
+          "inizio": [
+            18,
+            5
+          ],
+          "fine": [
+            2,
+            5
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            9,
+            2
+          ],
+          "fine": [
+            -1,
+            2
+          ]
+        }
+      }
+    ],
+    "prolunga_ospiti": "none",
+    "regione": [
+      {
+        "vertici": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            20,
+            0,
+            0
+          ],
+          [
+            20,
+            10,
+            0
+          ],
+          [
+            0,
+            10,
+            0
+          ]
+        ],
+        "chiusa": true
+      },
+      {
+        "cerchio": {
+          "centro": [
+            10,
+            5
+          ],
+          "raggio": 3
+        }
+      },
+      {
+        "vertici": [
+          [
+            2,
+            2,
+            0
+          ],
+          [
+            6,
+            2,
+            0
+          ],
+          [
+            6,
+            6,
+            0
+          ],
+          [
+            2,
+            6,
+            0
+          ]
+        ],
+        "chiusa": true
+      }
+    ]
+  },
+  "atteso": {
+    "ospiti": [
+      {
+        "dentro": [
+          {
+            "da": {
+              "punto": [
+                "18",
+                "5"
+              ],
+              "sull_ospite": {
+                "posizione": "atStart",
+                "stazione": "0"
+              }
+            },
+            "a": {
+              "punto": [
+                {
+                  "valore": 13.0,
+                  "tolleranza": 6.394884621840902e-14
+                },
+                {
+                  "valore": 5.0,
+                  "tolleranza": 6.394884621840902e-14
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "inside",
+                "stazione": {
+                  "valore": 5.0,
+                  "tolleranza": 2.5579538487363607e-13
+                }
+              }
+            }
+          },
+          {
+            "da": {
+              "punto": [
+                {
+                  "valore": 7.0,
+                  "tolleranza": 6.394884621840902e-14
+                },
+                {
+                  "valore": 5.0,
+                  "tolleranza": 6.394884621840902e-14
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "inside",
+                "stazione": {
+                  "valore": 11.0,
+                  "tolleranza": 2.5579538487363607e-13
+                }
+              }
+            },
+            "a": {
+              "punto": [
+                {
+                  "valore": 6.0,
+                  "tolleranza": 6.394884621840902e-14
+                },
+                {
+                  "valore": 5.0,
+                  "tolleranza": 6.394884621840902e-14
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "inside",
+                "stazione": {
+                  "valore": 12.0,
+                  "tolleranza": 2.5579538487363607e-13
+                }
+              }
+            }
+          }
+        ],
+        "bordo": []
+      },
+      {
+        "dentro": [
+          {
+            "da": {
+              "punto": [
+                "9",
+                "2"
+              ],
+              "sull_ospite": {
+                "posizione": "atStart",
+                "stazione": "0"
+              }
+            },
+            "a": {
+              "punto": [
+                {
+                  "valore": 6.0,
+                  "tolleranza": 3.197442310920451e-14
+                },
+                {
+                  "valore": 2.0,
+                  "tolleranza": 3.197442310920451e-14
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "inside",
+                "stazione": {
+                  "valore": 3.0,
+                  "tolleranza": 1.2789769243681803e-13
+                }
+              }
+            }
+          },
+          {
+            "da": {
+              "punto": [
+                {
+                  "valore": 2.0,
+                  "tolleranza": 3.197442310920451e-14
+                },
+                {
+                  "valore": 2.0,
+                  "tolleranza": 3.197442310920451e-14
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "inside",
+                "stazione": {
+                  "valore": 7.0,
+                  "tolleranza": 1.2789769243681803e-13
+                }
+              }
+            },
+            "a": {
+              "punto": [
+                {
+                  "valore": 0.0,
+                  "tolleranza": 3.552713678800501e-14
+                },
+                {
+                  "valore": 2.0,
+                  "tolleranza": 3.552713678800501e-14
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "inside",
+                "stazione": {
+                  "valore": 9.0,
+                  "tolleranza": 1.4210854715202004e-13
+                }
+              }
+            }
+          }
+        ],
+        "bordo": [
+          {
+            "da": {
+              "punto": [
+                {
+                  "valore": 6.0,
+                  "tolleranza": 3.197442310920451e-14
+                },
+                {
+                  "valore": 2.0,
+                  "tolleranza": 3.197442310920451e-14
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "inside",
+                "stazione": {
+                  "valore": 3.0,
+                  "tolleranza": 1.2789769243681803e-13
+                }
+              }
+            },
+            "a": {
+              "punto": [
+                {
+                  "valore": 2.0,
+                  "tolleranza": 3.197442310920451e-14
+                },
+                {
+                  "valore": 2.0,
+                  "tolleranza": 3.197442310920451e-14
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "inside",
+                "stazione": {
+                  "valore": 7.0,
+                  "tolleranza": 1.2789769243681803e-13
+                }
+              }
+            },
+            "lato": "left"
+          }
+        ]
+      }
+    ],
+    "ospiti_scartati": [],
+    "loop_scartati": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente (mai solid-space), lo stesso di RS5a: i tre passi di clipping.hpp (tagli esatti in numeri a+b*sqrt(d) con fractions, parti fra tagli distinti, classe con la regola pari-dispari in un punto interno o ai due lati, tratti). Estremi che sono dati dell'ospite esatti; altri punti con kRelativePointError*max(M,|p|), M dell'ospite e dei pezzi per quel punto; stazioni con kRelativeStationError*max(M,|s|); tolleranze arrotondate per eccesso."
+  }
+}
