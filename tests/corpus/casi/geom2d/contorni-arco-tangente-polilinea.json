@@ -1,0 +1,57 @@
+{
+  "versione": 1,
+  "id": "contorni-arco-tangente-polilinea",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #214, ADR 0014: un contorno a pista (lati e semicerchi) e un cerchio sullo stesso cerchio dell'arco destro: corre lungo l'arco, per il resto e' dentro e tocca i lati dritti nei vertici (10, 0) e (10, 6): racchiuso (vicino all'origine).",
+  "ingresso": {
+    "operazione": "nestContours",
+    "contorni": [
+      {
+        "vertici": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            10,
+            0,
+            1
+          ],
+          [
+            10,
+            6,
+            0
+          ],
+          [
+            0,
+            6,
+            1
+          ]
+        ],
+        "chiusa": true
+      },
+      {
+        "cerchio": {
+          "centro": [
+            10,
+            3
+          ],
+          "raggio": 3
+        }
+      }
+    ]
+  },
+  "atteso": {
+    "profondita": [
+      "0",
+      "1"
+    ],
+    "conflitti": [],
+    "scartati": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente (mai solid-space), come dice nestContours (boundary.hpp): per ogni coppia A, B si tagliano i pezzi di B sul solo A con lo stesso oracolo dei casi del taglio (RS5a: tagli esatti in numeri a+b*sqrt(d) con fractions, parti fra tagli distinti, regola pari-dispari in un punto interno di ogni parte fuori da A); A racchiude B se qualche parte di B e' dentro A e nessuna fuori; same se ogni parte di ciascuno corre lungo l'altro; crossing se una ha parti dentro e fuori dell'altra o si racchiudono a vicenda; la profondita' conta i contorni che racchiudono, senza i conflitti. Tutto esatto."
+  }
+}

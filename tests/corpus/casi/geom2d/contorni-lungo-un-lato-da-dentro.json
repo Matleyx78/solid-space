@@ -1,0 +1,73 @@
+{
+  "versione": 1,
+  "id": "contorni-lungo-un-lato-da-dentro",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #214, ADR 0014: un quadrato che corre lungo due lati del quadrato grande, da dentro: e' racchiuso, profondita' 0 e 1 (vicino all'origine).",
+  "ingresso": {
+    "operazione": "nestContours",
+    "contorni": [
+      {
+        "vertici": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            8,
+            0,
+            0
+          ],
+          [
+            8,
+            8,
+            0
+          ],
+          [
+            0,
+            8,
+            0
+          ]
+        ],
+        "chiusa": true
+      },
+      {
+        "vertici": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            4,
+            4,
+            0
+          ],
+          [
+            0,
+            4,
+            0
+          ]
+        ],
+        "chiusa": true
+      }
+    ]
+  },
+  "atteso": {
+    "profondita": [
+      "0",
+      "1"
+    ],
+    "conflitti": [],
+    "scartati": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente (mai solid-space), come dice nestContours (boundary.hpp): per ogni coppia A, B si tagliano i pezzi di B sul solo A con lo stesso oracolo dei casi del taglio (RS5a: tagli esatti in numeri a+b*sqrt(d) con fractions, parti fra tagli distinti, regola pari-dispari in un punto interno di ogni parte fuori da A); A racchiude B se qualche parte di B e' dentro A e nessuna fuori; same se ogni parte di ciascuno corre lungo l'altro; crossing se una ha parti dentro e fuori dell'altra o si racchiudono a vicenda; la profondita' conta i contorni che racchiudono, senza i conflitti. Tutto esatto."
+  }
+}

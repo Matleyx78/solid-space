@@ -1,0 +1,73 @@
+{
+  "versione": 1,
+  "id": "contorni-toccano-punto-da-dentro-traslato",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #214, ADR 0014: caso 6b: un rombo con il vertice (4, 0) sul lato inferiore del quadrato, da dentro: profondita' 0 e 1 (traslato di 1e5).",
+  "ingresso": {
+    "operazione": "nestContours",
+    "contorni": [
+      {
+        "vertici": [
+          [
+            100000,
+            100000,
+            0
+          ],
+          [
+            100008,
+            100000,
+            0
+          ],
+          [
+            100008,
+            100008,
+            0
+          ],
+          [
+            100000,
+            100008,
+            0
+          ]
+        ],
+        "chiusa": true
+      },
+      {
+        "vertici": [
+          [
+            100004,
+            100000,
+            0
+          ],
+          [
+            100006,
+            100002,
+            0
+          ],
+          [
+            100004,
+            100004,
+            0
+          ],
+          [
+            100002,
+            100002,
+            0
+          ]
+        ],
+        "chiusa": true
+      }
+    ]
+  },
+  "atteso": {
+    "profondita": [
+      "0",
+      "1"
+    ],
+    "conflitti": [],
+    "scartati": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente (mai solid-space), come dice nestContours (boundary.hpp): per ogni coppia A, B si tagliano i pezzi di B sul solo A con lo stesso oracolo dei casi del taglio (RS5a: tagli esatti in numeri a+b*sqrt(d) con fractions, parti fra tagli distinti, regola pari-dispari in un punto interno di ogni parte fuori da A); A racchiude B se qualche parte di B e' dentro A e nessuna fuori; same se ogni parte di ciascuno corre lungo l'altro; crossing se una ha parti dentro e fuori dell'altra o si racchiudono a vicenda; la profondita' conta i contorni che racchiudono, senza i conflitti. Tutto esatto."
+  }
+}

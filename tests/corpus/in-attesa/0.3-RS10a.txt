@@ -1,0 +1,23 @@
+# [0.3-RS10a] contorni scelti: contatti e conflitti; obbligatori con PS10 (#260)
+geom2d/contorni-toccano-vertice-da-fuori #260
+geom2d/contorni-toccano-vertice-da-fuori-traslato #260
+geom2d/contorni-toccano-punto-da-dentro #260
+geom2d/contorni-toccano-punto-da-dentro-traslato #260
+geom2d/contorni-lungo-un-lato-da-dentro #260
+geom2d/contorni-lungo-un-lato-da-dentro-traslato #260
+geom2d/contorni-lungo-un-lato-da-fuori #260
+geom2d/contorni-lungo-un-lato-da-fuori-traslato #260
+geom2d/contorni-uguali-verso-e-inizio #260
+geom2d/contorni-uguali-verso-e-inizio-traslato #260
+geom2d/contorni-uguali-cerchio-e-semicerchi #260
+geom2d/contorni-uguali-cerchio-e-semicerchi-traslato #260
+geom2d/contorni-farfalla-e-parti #260
+geom2d/contorni-farfalla-e-parti-traslato #260
+geom2d/contorni-farfalla-tocca-incrocio #260
+geom2d/contorni-farfalla-tocca-incrocio-traslato #260
+geom2d/contorni-cerchi-tangenti-da-dentro #260
+geom2d/contorni-cerchi-tangenti-da-dentro-traslato #260
+geom2d/contorni-cerchi-tangenti-da-fuori #260
+geom2d/contorni-cerchi-tangenti-da-fuori-traslato #260
+geom2d/contorni-arco-tangente-polilinea #260
+geom2d/contorni-arco-tangente-polilinea-traslato #260

@@ -1,0 +1,73 @@
+{
+  "versione": 1,
+  "id": "contorni-toccano-vertice-da-fuori",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #214, ADR 0014: caso 6b: due quadrati che si toccano in un vertice da fuori: profondita' 0 e 0, nessun conflitto (vicino all'origine).",
+  "ingresso": {
+    "operazione": "nestContours",
+    "contorni": [
+      {
+        "vertici": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            4,
+            4,
+            0
+          ],
+          [
+            0,
+            4,
+            0
+          ]
+        ],
+        "chiusa": true
+      },
+      {
+        "vertici": [
+          [
+            4,
+            4,
+            0
+          ],
+          [
+            8,
+            4,
+            0
+          ],
+          [
+            8,
+            8,
+            0
+          ],
+          [
+            4,
+            8,
+            0
+          ]
+        ],
+        "chiusa": true
+      }
+    ]
+  },
+  "atteso": {
+    "profondita": [
+      "0",
+      "0"
+    ],
+    "conflitti": [],
+    "scartati": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente (mai solid-space), come dice nestContours (boundary.hpp): per ogni coppia A, B si tagliano i pezzi di B sul solo A con lo stesso oracolo dei casi del taglio (RS5a: tagli esatti in numeri a+b*sqrt(d) con fractions, parti fra tagli distinti, regola pari-dispari in un punto interno di ogni parte fuori da A); A racchiude B se qualche parte di B e' dentro A e nessuna fuori; same se ogni parte di ciascuno corre lungo l'altro; crossing se una ha parti dentro e fuori dell'altra o si racchiudono a vicenda; la profondita' conta i contorni che racchiudono, senza i conflitti. Tutto esatto."
+  }
+}

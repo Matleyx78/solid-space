@@ -1,0 +1,131 @@
+{
+  "versione": 1,
+  "id": "contorni-farfalla-e-parti",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #214, ADR 0014: una polilinea a farfalla che si interseca in (4, 4): un quadratino nel lobo sinistro e' racchiuso (pari-dispari), uno nel triangolo in alto e' fuori, uno a cavallo dell'incrocio e' in conflitto crossing (vicino all'origine).",
+  "ingresso": {
+    "operazione": "nestContours",
+    "contorni": [
+      {
+        "vertici": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            8,
+            8,
+            0
+          ],
+          [
+            8,
+            0,
+            0
+          ],
+          [
+            0,
+            8,
+            0
+          ]
+        ],
+        "chiusa": true
+      },
+      {
+        "vertici": [
+          [
+            "0x1.0000000000000p-1",
+            "0x1.c000000000000p+1",
+            0
+          ],
+          [
+            "0x1.8000000000000p+0",
+            "0x1.c000000000000p+1",
+            0
+          ],
+          [
+            "0x1.8000000000000p+0",
+            "0x1.2000000000000p+2",
+            0
+          ],
+          [
+            "0x1.0000000000000p-1",
+            "0x1.2000000000000p+2",
+            0
+          ]
+        ],
+        "chiusa": true
+      },
+      {
+        "vertici": [
+          [
+            3,
+            6,
+            0
+          ],
+          [
+            5,
+            6,
+            0
+          ],
+          [
+            5,
+            7,
+            0
+          ],
+          [
+            3,
+            7,
+            0
+          ]
+        ],
+        "chiusa": true
+      },
+      {
+        "vertici": [
+          [
+            3,
+            3,
+            0
+          ],
+          [
+            5,
+            3,
+            0
+          ],
+          [
+            5,
+            5,
+            0
+          ],
+          [
+            3,
+            5,
+            0
+          ]
+        ],
+        "chiusa": true
+      }
+    ]
+  },
+  "atteso": {
+    "profondita": [
+      "0",
+      "1",
+      "0",
+      "0"
+    ],
+    "conflitti": [
+      {
+        "primo": "0",
+        "secondo": "3",
+        "tipo": "crossing"
+      }
+    ],
+    "scartati": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Oracolo indipendente (mai solid-space), come dice nestContours (boundary.hpp): per ogni coppia A, B si tagliano i pezzi di B sul solo A con lo stesso oracolo dei casi del taglio (RS5a: tagli esatti in numeri a+b*sqrt(d) con fractions, parti fra tagli distinti, regola pari-dispari in un punto interno di ogni parte fuori da A); A racchiude B se qualche parte di B e' dentro A e nessuna fuori; same se ogni parte di ciascuno corre lungo l'altro; crossing se una ha parti dentro e fuori dell'altra o si racchiudono a vicenda; la profondita' conta i contorni che racchiudono, senza i conflitti. Tutto esatto."
+  }
+}
