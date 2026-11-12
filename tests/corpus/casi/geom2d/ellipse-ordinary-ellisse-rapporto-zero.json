@@ -1,0 +1,46 @@
+{
+  "versione": 1,
+  "id": "ellipse-ordinary-ellisse-rapporto-zero",
+  "componente": "geom2d",
+  "descrizione": "#217: ellisse rapporto zero.",
+  "ingresso": {
+    "operazione": "ellipseIntersect",
+    "ellisse": {
+      "centro": [
+        0,
+        0
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    },
+    "prolunga_ellisse": "none",
+    "prolunga_seconda": "none",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          -20,
+          0
+        ],
+        "fine": [
+          20,
+          0
+        ]
+      }
+    }
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "invalidValue",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Il rapporto deve appartenere a (0,1]."
+  }
+}

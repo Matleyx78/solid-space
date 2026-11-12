@@ -1,0 +1,61 @@
+{
+  "versione": 1,
+  "id": "ellipse-ordinary-oltre-dominio",
+  "componente": "geom2d",
+  "descrizione": "#217: oltre dominio.",
+  "ingresso": {
+    "operazione": "ellipseIntersect",
+    "ellisse": {
+      "centro": [
+        1125899906842619,
+        0
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    },
+    "prolunga_ellisse": "none",
+    "prolunga_seconda": "extended",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          1125899906842594,
+          0
+        ],
+        "fine": [
+          1125899906842622,
+          0
+        ]
+      }
+    }
+  },
+  "atteso": {
+    "punti": [
+      {
+        "punto": [
+          {
+            "valore": 1125899906842609.0,
+            "tolleranza": 3.9999999999999933
+          },
+          {
+            "valore": 0.0,
+            "tolleranza": 3.9999999999999933
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": "inside",
+        "sulla_seconda": "inside"
+      }
+    ],
+    "sovrapposizioni": [],
+    "omessi_fuori_dominio": "1"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "y=0 incontra l’ellisse a L-15 e L+5, dove L=2^50. Il primo punto appartiene al segmento e il secondo alla sua estensione, oltre il dominio. Si riporta un punto e si conta un omesso. Coordinate calcolate in Decimal a 70 cifre, tolleranza 2^-48 max(M, |p|) arrotondata per eccesso. Le decisioni non usano i punti arrotondati."
+  }
+}

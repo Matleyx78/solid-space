@@ -1,0 +1,47 @@
+{
+  "versione": 1,
+  "id": "ellipse-ordinary-seconda-ellisse-rapporto-negativo",
+  "componente": "geom2d",
+  "descrizione": "#217: seconda ellisse rapporto negativo.",
+  "ingresso": {
+    "operazione": "ellipseIntersect",
+    "ellisse": {
+      "centro": [
+        0,
+        0
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    },
+    "prolunga_ellisse": "none",
+    "prolunga_seconda": "none",
+    "seconda_ellisse": {
+      "centro": [
+        0,
+        0
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": -1,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    }
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "invalidValue",
+      "dato": "1"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Il rapporto della seconda ellisse non è in (0,1]."
+  }
+}

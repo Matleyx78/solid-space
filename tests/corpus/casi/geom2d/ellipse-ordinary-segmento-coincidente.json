@@ -1,0 +1,46 @@
+{
+  "versione": 1,
+  "id": "ellipse-ordinary-segmento-coincidente",
+  "componente": "geom2d",
+  "descrizione": "#217: segmento coincidente.",
+  "ingresso": {
+    "operazione": "ellipseIntersect",
+    "ellisse": {
+      "centro": [
+        0,
+        0
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    },
+    "prolunga_ellisse": "none",
+    "prolunga_seconda": "none",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          1,
+          1
+        ],
+        "fine": [
+          1,
+          1
+        ]
+      }
+    }
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "degenerateCurve",
+      "dato": "1"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Gli estremi coincidono, quindi il dato 1 è degenere."
+  }
+}

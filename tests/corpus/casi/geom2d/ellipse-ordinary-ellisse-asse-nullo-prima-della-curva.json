@@ -1,0 +1,46 @@
+{
+  "versione": 1,
+  "id": "ellipse-ordinary-ellisse-asse-nullo-prima-della-curva",
+  "componente": "geom2d",
+  "descrizione": "#217: ellisse asse nullo prima della curva.",
+  "ingresso": {
+    "operazione": "ellipseIntersect",
+    "ellisse": {
+      "centro": [
+        0,
+        0
+      ],
+      "asse_maggiore": [
+        0,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    },
+    "prolunga_ellisse": "none",
+    "prolunga_seconda": "none",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          0,
+          0
+        ],
+        "fine": [
+          "inf",
+          0
+        ]
+      }
+    }
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "degenerateCurve",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "L’asse nullo rende degenere il dato 0. Il dato 1 non viene controllato."
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "versione": 1,
+  "id": "ellipse-ordinary-ellisse-parziale-extended",
+  "componente": "geom2d",
+  "descrizione": "#217: ellisse parziale extended.",
+  "ingresso": {
+    "operazione": "ellipseIntersect",
+    "ellisse": {
+      "centro": [
+        0,
+        0
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": 0.2,
+      "parametro_finale": 0.2
+    },
+    "prolunga_ellisse": "none",
+    "prolunga_seconda": "extended",
+    "seconda_ellisse": {
+      "centro": [
+        12,
+        0
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": 1,
+      "parametro_finale": 4
+    }
+  },
+  "atteso": {
+    "punti": [
+      {
+        "punto": [
+          {
+            "valore": 6.0,
+            "tolleranza": 4.263256414560602e-14
+          },
+          {
+            "valore": 4.0,
+            "tolleranza": 4.263256414560602e-14
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": "inside",
+        "sulla_seconda": "inside"
+      },
+      {
+        "punto": [
+          {
+            "valore": 6.0,
+            "tolleranza": 4.263256414560602e-14
+          },
+          {
+            "valore": -4.0,
+            "tolleranza": 4.263256414560602e-14
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": "inside",
+        "sulla_seconda": "afterEnd"
+      }
+    ],
+    "sovrapposizioni": [],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Sottraendo le equazioni delle ellissi traslate, x=6 e y=±4. La direzione sulla seconda ha coseno -3/5: il punto superiore è nell’intervallo [1,4], quello inferiore ha angolo maggiore di 4. Coordinate calcolate in Decimal a 70 cifre, tolleranza 2^-48 max(M, |p|) arrotondata per eccesso. Le decisioni non usano i punti arrotondati."
+  }
+}

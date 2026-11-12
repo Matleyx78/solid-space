@@ -1,0 +1,46 @@
+{
+  "versione": 1,
+  "id": "ellipse-ordinary-ellisse-parametro-fuori-dominio",
+  "componente": "geom2d",
+  "descrizione": "#217: ellisse parametro fuori dominio.",
+  "ingresso": {
+    "operazione": "ellipseIntersect",
+    "ellisse": {
+      "centro": [
+        0,
+        0
+      ],
+      "asse_maggiore": [
+        10,
+        0
+      ],
+      "rapporto": 0.5,
+      "parametro_iniziale": 1048577,
+      "parametro_finale": 0.2
+    },
+    "prolunga_ellisse": "none",
+    "prolunga_seconda": "none",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          -20,
+          0
+        ],
+        "fine": [
+          20,
+          0
+        ]
+      }
+    }
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "outOfDomain",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Il parametro 2^20+1 supera kMaxTrigArgument."
+  }
+}
