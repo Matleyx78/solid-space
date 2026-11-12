@@ -1,19 +1,19 @@
 # [0.3-PS5] `geom2d`: parti di una curva dentro una regione
 
 - **Tappa:** 0.3 — [piano](../0.3-regioni-ed-ellisse.md)
-- **Issue:** #…
+- **Issue:** #245
 - **Difficoltà:** media
 - **Agente:** codex
 - **Modello e impegno:** medio; impegno alto. La revisione di Claude è mirata,
   in fascia forte, sulle classi ai vertici, alle tangenze e lungo i lati
-- **Riferimenti:** issue `[0.3-RS5a]` (#…), agente claude, fascia forte;
-  `[0.3-RS5b]` (#…), agente claude, fascia leggera; `[0.3-RS5c]` (#…), agente
+- **Riferimenti:** issue `[0.3-RS5a]` (#242), agente claude, fascia forte;
+  `[0.3-RS5b]` (#243), agente claude, fascia leggera; `[0.3-RS5c]` (#244), agente
   claude, fascia leggera (`autocad-retini.dxf`)
 - **Contratto:** `geom2d/include/solid_space/geom2d/clipping.hpp`
   (`clipToRegion`); usa `region.hpp` (`Loop`, `SkippedInput`),
   `intersection.hpp`, `side.hpp`, `curves.hpp`
-- **Dipende da:** la revisione del contratto `[0.3-CS]` (#222); PS2 (#…);
-  RS5a (#…), RS5b (#…), RS5c (#…)
+- **Dipende da:** la revisione del contratto `[0.3-CS]` (#222); PS2 (#237);
+  RS5a (#242), RS5b (#243), RS5c (#244)
 - **Sblocca in Tecnigrafo:** PT42 (issue ancora da aprire), righe dei motivi
   tagliate sulla regione; con PS9 e PS10, PT44 (`-HATCH`)
 - **Componente:** `geom2d`

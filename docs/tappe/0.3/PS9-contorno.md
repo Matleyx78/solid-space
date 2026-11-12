@@ -1,20 +1,20 @@
 # [0.3-PS9] `geom2d`: contorno e isole da un punto
 
 - **Tappa:** 0.3 — [piano](../0.3-regioni-ed-ellisse.md)
-- **Issue:** #…
+- **Issue:** #257
 - **Difficoltà:** media
 - **Agente:** claude
 - **Modello e impegno:** medio; impegno alto. La revisione di Codex è mirata,
   in fascia forte, sulla regola (collegamenti, prolungamenti, punto sopra una
   curva) e sulla costruzione dei loop
-- **Riferimenti:** issue `[0.3-RS9a]` (#…) e `[0.3-RS9b]` (#…), agente codex,
-  fascia forte; `[0.3-RS9c]` (#…) e `[0.3-RS9d]` (#…), agente codex, fascia
+- **Riferimenti:** issue `[0.3-RS9a]` (#253) e `[0.3-RS9b]` (#254), agente codex,
+  fascia forte; `[0.3-RS9c]` (#255) e `[0.3-RS9d]` (#256), agente codex, fascia
   leggera (RS9d: `autocad-retini.dxf`)
 - **Contratto:** `geom2d/include/solid_space/geom2d/boundary.hpp`
   (`detectBoundary`, `BoundaryOutcome`, `OpenEnd`, `DetectedBoundary`); usa
   `region.hpp` (`RegionLoop`, `LoopPieceOrigin`, `kRelativeLoopError`,
   `SkippedInput`), `curves.hpp` e `robust/tolerance.hpp`
-- **Dipende da:** PS6 (#…); RS9a (#…), RS9b (#…), RS9c (#…), RS9d (#…). La
+- **Dipende da:** PS6 (#246); RS9a (#253), RS9b (#254), RS9c (#255), RS9d (#256). La
   revisione del contratto `[0.3-CS]` (#222) e PS2 arrivano attraverso PS6
 - **Sblocca in Tecnigrafo:** PT43 (issue ancora da aprire), con PS10: il
   contorno rilevato da un punto; con PS5 e PS10, PT44 (`-HATCH`)

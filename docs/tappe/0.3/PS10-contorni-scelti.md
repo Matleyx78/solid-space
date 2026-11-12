@@ -1,17 +1,17 @@
 # [0.3-PS10] `geom2d`: contorni scelti uno dentro l'altro
 
 - **Tappa:** 0.3 — [piano](../0.3-regioni-ed-ellisse.md)
-- **Issue:** #…
+- **Issue:** #260
 - **Difficoltà:** media
 - **Agente:** codex
 - **Modello e impegno:** medio; impegno alto. La revisione di Claude è mirata,
   in fascia forte, sui contorni che si toccano e sui conflitti
-- **Riferimenti:** issue `[0.3-RS10a]` (#…), agente claude, fascia forte;
-  `[0.3-RS10b]` (#…), agente claude, fascia leggera
+- **Riferimenti:** issue `[0.3-RS10a]` (#258), agente claude, fascia forte;
+  `[0.3-RS10b]` (#259), agente claude, fascia leggera
 - **Contratto:** `geom2d/include/solid_space/geom2d/boundary.hpp`
   (`nestContours`, `ContourConflictKind`, `ContourConflict`, `ContourNesting`);
   usa `region.hpp` (`Loop`, `SkippedInput`)
-- **Dipende da:** PS5 (#…); RS10a (#…), RS10b (#…). La revisione del contratto
+- **Dipende da:** PS5 (#245); RS10a (#258), RS10b (#259). La revisione del contratto
   `[0.3-CS]` (#222) e PS2 arrivano attraverso PS5
 - **Sblocca in Tecnigrafo:** PT43 (issue ancora da aprire), con PS9: le isole
   dei contorni scelti (*Select objects*); con PS5 e PS9, PT44 (`-HATCH`)

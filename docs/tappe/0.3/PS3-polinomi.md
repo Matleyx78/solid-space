@@ -1,7 +1,7 @@
 # [0.3-PS3] `geom2d`: radici dei polinomi fino al quarto grado (interno)
 
 - **Tappa:** 0.3 — [piano](../0.3-regioni-ed-ellisse.md)
-- **Issue:** #…
+- **Issue:** #238
 - **Difficoltà:** impegnativa
 - **Agente:** claude
 - **Modello e impegno:** forte; impegno alto. Resta impegnativo: è uno

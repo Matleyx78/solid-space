@@ -1,15 +1,15 @@
 # [0.3-PS8] `geom2d`: punto più vicino dell'ellisse
 
 - **Tappa:** 0.3 — [piano](../0.3-regioni-ed-ellisse.md)
-- **Issue:** #…
+- **Issue:** #252
 - **Difficoltà:** media
 - **Agente:** claude
 - **Modello e impegno:** medio; impegno alto. La revisione di Codex è mirata,
   in fascia forte, sull'errore garantito vicino all'evoluta e agli estremi
-- **Riferimenti:** issue `[0.3-RS8]` (#…), agente codex, fascia forte
+- **Riferimenti:** issue `[0.3-RS8]` (#251), agente codex, fascia forte
 - **Contratto:** `geom2d/include/solid_space/geom2d/ellipse.hpp` (`nearest`,
   `EllipseNearest`, `kRelativeNearestError`)
-- **Dipende da:** PS3 (#…), PS4 (#…); RS8 (#…). La revisione del contratto
+- **Dipende da:** PS3 (#238), PS4 (#241); RS8 (#251). La revisione del contratto
   `[0.3-CS]` (#222) arriva attraverso PS4
 - **Sblocca in Tecnigrafo:** PT50 (issue ancora da aprire), con PS4 e PS7: lo
   snap *Vicino* e la scelta di un'ellisse con un clic

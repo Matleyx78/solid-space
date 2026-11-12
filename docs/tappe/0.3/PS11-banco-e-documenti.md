@@ -1,7 +1,7 @@
 # [0.3-PS11] Banco delle prestazioni e stato del contratto
 
 - **Tappa:** 0.3 — [piano](../0.3-regioni-ed-ellisse.md)
-- **Issue:** #…
+- **Issue:** #261
 - **Difficoltà:** media
 - **Agente:** codex
 - **Modello e impegno:** medio; impegno medio. La revisione di Claude è
@@ -10,7 +10,7 @@
   il resto sono documenti e un commento
 - **Contratto:** usa tutte le intestazioni della tappa; cambia solo il commento
   di stato di `robust/include/solid_space/robust/elementary.hpp`
-- **Dipende da:** PS1 (#…), PS7 (#…), PS8 (#…), PS9 (#…), PS10 (#…): gli
+- **Dipende da:** PS1 (#236), PS7 (#250), PS8 (#252), PS9 (#257), PS10 (#260): gli
   ultimi pacchetti di ogni catena, così ogni funzione pubblica della tappa è
   unita
 - **Sblocca in Tecnigrafo:** niente

@@ -1,18 +1,18 @@
 # [0.3-PS1] `robust`: tangente, arcocoseno e lunghezza di un vettore
 
 - **Tappa:** 0.3 — [piano](../0.3-regioni-ed-ellisse.md)
-- **Issue:** #…
+- **Issue:** #236
 - **Difficoltà:** media
 - **Agente:** codex
 - **Modello e impegno:** medio; impegno alto (tabella in
   LAVORO-IN-PARALLELO.md). La revisione di Claude è mirata, in fascia forte,
   sull'analisi dell'errore vicino ai poli e vicino a ±1
-- **Riferimenti:** issue `[0.3-RS1a]` (#…), agente claude, fascia forte
-  (`tan` e `acos`); `[0.3-RS1b]` (#…), agente claude, fascia leggera (`hypot`)
+- **Riferimenti:** issue `[0.3-RS1a]` (#234), agente claude, fascia forte
+  (`tan` e `acos`); `[0.3-RS1b]` (#235), agente claude, fascia leggera (`hypot`)
 - **Contratto:** `robust/include/solid_space/robust/elementary.hpp` (`tan`,
   `acos`, `hypot`, `kElementaryMaxErrorUlps`, `kMaxHypotArgument`)
-- **Dipende da:** la revisione del contratto `[0.3-CS]` (#222); RS1a (#…),
-  RS1b (#…)
+- **Dipende da:** la revisione del contratto `[0.3-CS]` (#222); RS1a (#234),
+  RS1b (#235)
 - **Sblocca in Tecnigrafo:** PT41 (issue ancora da aprire): `core` e `cmd`
   passano a `robust::tan`, `robust::acos` e `robust::hypot`, e l'elenco delle
   eccezioni del confronto tra sistemi si svuota
