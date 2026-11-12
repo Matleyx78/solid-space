@@ -1,0 +1,35 @@
+{
+  "versione": 1,
+  "id": "boundary-ordinary-punto-non-finito",
+  "componente": "geom2d",
+  "descrizione": "#214: punto non finito.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      "nan",
+      0
+    ],
+    "curve": [
+      {
+        "cerchio": {
+          "centro": [
+            0,
+            0
+          ],
+          "raggio": -1
+        }
+      }
+    ],
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "diagnosi": {
+      "codice": "invalidValue",
+      "dato": "0"
+    }
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Il dato 0 contiene NaN. La diagnosi del punto precede la valutazione delle curve."
+  }
+}

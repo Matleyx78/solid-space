@@ -1,0 +1,91 @@
+{
+  "versione": 1,
+  "id": "boundary-ordinary-km-caso-4-spazio-oltre",
+  "componente": "geom2d",
+  "descrizione": "#214: km caso 4 spazio oltre.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      131067,
+      5
+    ],
+    "curve": [
+      {
+        "segmento": {
+          "inizio": [
+            131062,
+            0
+          ],
+          "fine": [
+            131072,
+            0
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            131072,
+            5.960464477539063e-08
+          ],
+          "fine": [
+            131072,
+            10
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            131072,
+            10
+          ],
+          "fine": [
+            131062,
+            10
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            131062,
+            10
+          ],
+          "fine": [
+            131062,
+            0
+          ]
+        }
+      }
+    ],
+    "unita_in_metri": 1000
+  },
+  "atteso": {
+    "esito": "notEnclosed",
+    "loop": [],
+    "estremi_liberi": [
+      {
+        "curva": "0",
+        "all_inizio": false,
+        "punto": [
+          "131072",
+          "0"
+        ]
+      },
+      {
+        "curva": "1",
+        "all_inizio": true,
+        "punto": [
+          "131072",
+          "1/16777216"
+        ]
+      }
+    ],
+    "scartate": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Il divario verticale esatto è 0x1.0000000000000p-24, epsilon è 0x1.0000000000000p-25. Entro epsilon il link completa il bordo. Oltre epsilon il prolungamento verticale richiederebbe la stessa distanza e non è ammesso. La semiretta verso +x incontra il gruppo dei quattro lati."
+  }
+}

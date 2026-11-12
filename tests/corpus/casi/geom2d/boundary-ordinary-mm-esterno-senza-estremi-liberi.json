@@ -1,0 +1,74 @@
+{
+  "versione": 1,
+  "id": "boundary-ordinary-mm-esterno-senza-estremi-liberi",
+  "componente": "geom2d",
+  "descrizione": "#214: mm esterno senza estremi liberi.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      -3,
+      5
+    ],
+    "curve": [
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            0
+          ],
+          "fine": [
+            10,
+            0
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            10,
+            0
+          ],
+          "fine": [
+            10,
+            10
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            10,
+            10
+          ],
+          "fine": [
+            0,
+            10
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            10
+          ],
+          "fine": [
+            0,
+            0
+          ]
+        }
+      }
+    ],
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "notEnclosed",
+    "loop": [],
+    "estremi_liberi": [],
+    "scartate": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Il punto è a sinistra del rettangolo e la semiretta incontra solo il gruppo dei quattro lati, privo di estremi liberi."
+  }
+}

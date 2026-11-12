@@ -1,0 +1,75 @@
+{
+  "versione": 1,
+  "id": "boundary-ordinary-mm-caso-5-punto-sul-contorno",
+  "componente": "geom2d",
+  "descrizione": "#214: mm caso 5 punto sul contorno.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      5,
+      0
+    ],
+    "curve": [
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            0
+          ],
+          "fine": [
+            10,
+            0
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            10,
+            0
+          ],
+          "fine": [
+            10,
+            10
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            10,
+            10
+          ],
+          "fine": [
+            0,
+            10
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            0,
+            10
+          ],
+          "fine": [
+            0,
+            0
+          ]
+        }
+      }
+    ],
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "onCurve",
+    "loop": [],
+    "estremi_liberi": [],
+    "scartate": [],
+    "curva_vicina": "0"
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Il punto appartiene al lato inferiore, curva 0, con distanza esatta zero."
+  }
+}

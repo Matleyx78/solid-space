@@ -1,0 +1,74 @@
+{
+  "versione": 1,
+  "id": "boundary-ordinary-km-esterno-senza-estremi-liberi",
+  "componente": "geom2d",
+  "descrizione": "#214: km esterno senza estremi liberi.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      131059,
+      5
+    ],
+    "curve": [
+      {
+        "segmento": {
+          "inizio": [
+            131062,
+            0
+          ],
+          "fine": [
+            131072,
+            0
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            131072,
+            0
+          ],
+          "fine": [
+            131072,
+            10
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            131072,
+            10
+          ],
+          "fine": [
+            131062,
+            10
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            131062,
+            10
+          ],
+          "fine": [
+            131062,
+            0
+          ]
+        }
+      }
+    ],
+    "unita_in_metri": 1000
+  },
+  "atteso": {
+    "esito": "notEnclosed",
+    "loop": [],
+    "estremi_liberi": [],
+    "scartate": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Il punto è a sinistra del rettangolo e la semiretta incontra solo il gruppo dei quattro lati, privo di estremi liberi."
+  }
+}
