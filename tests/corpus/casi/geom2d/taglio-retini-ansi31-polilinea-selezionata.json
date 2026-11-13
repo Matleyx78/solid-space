@@ -1,0 +1,163 @@
+{
+  "versione": 1,
+  "id": "taglio-retini-ansi31-polilinea-selezionata",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #215, ADR 0015, autocad-retini.dxf: retino ANSI31 (handle C8) creato con Seleziona oggetti sulla polilinea chiusa: AutoCAD salva il contorno come quattro spigoli di linea (flag 1), qui la polilinea dei loro vertici; righe k = -55 e -50.",
+  "ingresso": {
+    "operazione": "clipToRegion",
+    "ospiti": [
+      {
+        "segmento": {
+          "inizio": [
+            123.47852166470084,
+            -123.47852166470084
+          ],
+          "fine": [
+            223.47852166470085,
+            -23.478521664700835
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            112.2532015133644,
+            -112.2532015133644
+          ],
+          "fine": [
+            212.2532015133644,
+            -12.253201513364402
+          ]
+        }
+      }
+    ],
+    "prolunga_ospiti": "extended",
+    "regione": [
+      {
+        "vertici": [
+          [
+            0,
+            -240,
+            0
+          ],
+          [
+            60,
+            -240,
+            0
+          ],
+          [
+            60,
+            -200,
+            0
+          ],
+          [
+            0,
+            -200,
+            0
+          ]
+        ],
+        "chiusa": true
+      }
+    ]
+  },
+  "atteso": {
+    "ospiti": [
+      {
+        "dentro": [
+          {
+            "da": {
+              "punto": [
+                {
+                  "valore": 6.957043329401654,
+                  "tolleranza": 8.526512829121202e-13
+                },
+                {
+                  "valore": -240.0,
+                  "tolleranza": 8.526512829121202e-13
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "beforeStart",
+                "stazione": {
+                  "valore": -164.78625496954285,
+                  "tolleranza": 3.410605131648481e-12
+                }
+              }
+            },
+            "a": {
+              "punto": [
+                {
+                  "valore": 46.95704332940166,
+                  "tolleranza": 7.939552008362968e-13
+                },
+                {
+                  "valore": -200.0,
+                  "tolleranza": 7.939552008362968e-13
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "beforeStart",
+                "stazione": {
+                  "valore": -108.21771247461905,
+                  "tolleranza": 3.1758208033451872e-12
+                }
+              }
+            }
+          }
+        ],
+        "bordo": []
+      },
+      {
+        "dentro": [
+          {
+            "da": {
+              "punto": [
+                {
+                  "valore": 0.0,
+                  "tolleranza": 8.526512829121202e-13
+                },
+                {
+                  "valore": -224.50640302672883,
+                  "tolleranza": 8.526512829121202e-13
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "beforeStart",
+                "stazione": {
+                  "valore": -158.75,
+                  "tolleranza": 3.410605131648481e-12
+                }
+              }
+            },
+            "a": {
+              "punto": [
+                {
+                  "valore": 24.50640302672882,
+                  "tolleranza": 7.540748523857288e-13
+                },
+                {
+                  "valore": -200.0,
+                  "tolleranza": 7.540748523857288e-13
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "beforeStart",
+                "stazione": {
+                  "valore": -124.09271247461902,
+                  "tolleranza": 3.0162994095429154e-12
+                }
+              }
+            }
+          }
+        ],
+        "bordo": []
+      }
+    ],
+    "ospiti_scartati": [],
+    "loop_scartati": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Dati copiati da autocad-retini.dxf (voce autocad-retini di sorgenti.json): i loop sono i percorsi di contorno del retino come li ha salvati AutoCAD (codici 92-93, vertici 10/20, bulge 42; il percorso a spigoli di linee del retino da Seleziona oggetti come polilinea dei suoi spigoli), gli ospiti sono righe intere del motivo (codici 53, 43/44, 45/46): la riga k passa per base + k*offset, calcolato in double, e la fine è quel punto più 100 lungo la direzione (per 0, 45, 90 e 135 gradi in passi esatti di 100, per l'angolo di 75 gradi con cos e sin arrotondati: vale il double scritto). Valori attesi da un oracolo indipendente (mai solid-space), lo stesso che riproduce i casi di RS5a e RS5b con ospiti dritti e loop a polilinea: i tre passi di clipping.hpp (tagli esatti dell'ospite con ogni pezzo: retta-retta e retta-cerchio in numeri a+b*sqrt(d) con fractions, appartenenza a un semicerchio di bulge -1 con il segno del prodotto vettoriale rispetto alla corda e al punto m di curves.hpp, tratti comuni dagli estremi dei pezzi sulla stessa retta; parti fra tagli distinti, ordinate con decimal a 120 cifre controllando che distano più di 1e-60; classe con la regola pari-dispari in un punto razionale interno alla parte, o a 1e-30 ai due lati per una parte lungo i loop; tratti come passo 3). Punti con tolleranza kRelativePointError*max(M,|p|), M dell'ospite e dei pezzi per quel punto (con il punto m dei semicerchi); stazioni con kRelativeStationError*max(M,|s|); tolleranze arrotondate per eccesso."
+  }
+}

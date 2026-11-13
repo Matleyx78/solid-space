@@ -28,6 +28,13 @@
       "versione": "5615d657af2bb98839c63ad683086795657f3322",
       "sha256": "a7264cccb74cfad6b1094c96cd39cdd69085087d97c3ab88e2a812a0eb963183",
       "licenza": "GPL-3.0-or-later"
+    },
+    "autocad-retini": {
+      "nome": "autocad-retini.dxf",
+      "indirizzo": "https://raw.githubusercontent.com/Matleyx78/dxf-test-file/26c7537f9872655d90f742624430026cb5f39b5b/autocad-retini.dxf",
+      "versione": "26c7537f9872655d90f742624430026cb5f39b5b",
+      "sha256": "53003a6acb7fee57be087cc0a1e7a9733e95181ff557c874752f06e57373e926",
+      "licenza": "CC0-1.0"
     }
   }
 }
