@@ -123,6 +123,10 @@ target_include_directories(solid_space_corpus_test PRIVATE ${ss_corpus_dir}/eseg
 target_link_libraries(solid_space_corpus_test PRIVATE
   solid_space::robust solid_space::geom2d GTest::gtest)
 ss_configure_target(solid_space_corpus_test)
+# The generated case table exceeds the default COFF section limit (C1128).
+if(MSVC)
+  target_compile_options(solid_space_corpus_test PRIVATE /bigobj)
+endif()
 gtest_discover_tests(solid_space_corpus_test DISCOVERY_MODE PRE_TEST PROPERTIES LABELS corpus)
 add_test(NAME corpus_results COMMAND solid_space_corpus_test
   --ss-results=${ss_corpus_output}/risultati.txt)
