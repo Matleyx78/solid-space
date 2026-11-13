@@ -76,6 +76,8 @@ TEST(Elementary, TangentIsOddAndFinite) {
     for (const double angle : {0x1p-1074, 0x1p-27, robust::kMaxTrigArgument}) {
         checkTangent(angle);
     }
+    // A fixed seed makes failing inputs reproducible on every platform.
+    // NOLINTNEXTLINE(cert-msc32-c,cert-msc51-cpp)
     std::mt19937_64 random(0x74616eU);
     for (int i = 0; i < kSamples; ++i) {
         checkTangent(unit(random) * robust::kMaxTrigArgument);
@@ -92,6 +94,8 @@ TEST(Elementary, ArccosineStaysInRangeAndHasExactEndpoints) {
     EXPECT_EQ(bits(robust::acos(-1.0)), bits(kPi));
     checkArccosine(0.0);
     checkArccosine(-0.0);
+    // A fixed seed makes failing inputs reproducible on every platform.
+    // NOLINTNEXTLINE(cert-msc32-c,cert-msc51-cpp)
     std::mt19937_64 random(0x61636f73U);
     double nearOne = 1.0;
     for (int i = 0; i < kSamples; ++i) {
@@ -106,6 +110,8 @@ TEST(Elementary, LengthIsSymmetricAndBoundsTheComponents) {
     checkLength(-0.0, -0.0);
     checkLength(robust::kMaxHypotArgument, robust::kMaxHypotArgument);
     checkLength(robust::kMaxHypotArgument, 0x1p-1074);
+    // A fixed seed makes failing inputs reproducible on every platform.
+    // NOLINTNEXTLINE(cert-msc32-c,cert-msc51-cpp)
     std::mt19937_64 random(0x6879706f74U);
     // Exercise nearby magnitudes and both sides of the exponent-gap shortcut.
     for (int i = 0; i < kSamples; ++i) {
