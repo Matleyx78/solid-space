@@ -1,0 +1,334 @@
+{
+  "versione": 1,
+  "id": "taglio-retini-ansi37",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #215, ADR 0015, autocad-retini.dxf: retino ANSI37 (handle 12B, due famiglie a 45 e 135 gradi) sul rettangolo senza isole: per un solo loop convesso al più un tratto per riga; la riga a 135 gradi k = -4 taglia l'angolo (220,-200).",
+  "ingresso": {
+    "operazione": "clipToRegion",
+    "ospiti": [
+      {
+        "segmento": {
+          "inizio": [
+            204.3008267543232,
+            -204.3008267543232
+          ],
+          "fine": [
+            304.3008267543232,
+            -104.3008267543232
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            213.28108287539234,
+            -213.28108287539234
+          ],
+          "fine": [
+            313.28108287539237,
+            -113.28108287539234
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            8.980256121069152,
+            8.980256121069148
+          ],
+          "fine": [
+            -91.01974387893085,
+            108.98025612106915
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            -8.980256121069152,
+            -8.980256121069148
+          ],
+          "fine": [
+            -108.98025612106915,
+            91.01974387893085
+          ]
+        }
+      },
+      {
+        "segmento": {
+          "inizio": [
+            -22.45064030267288,
+            -22.45064030267287
+          ],
+          "fine": [
+            -122.45064030267288,
+            77.54935969732713
+          ]
+        }
+      }
+    ],
+    "prolunga_ospiti": "extended",
+    "regione": [
+      {
+        "vertici": [
+          [
+            220,
+            -200,
+            0
+          ],
+          [
+            160,
+            -200,
+            0
+          ],
+          [
+            160,
+            -240,
+            0
+          ],
+          [
+            220,
+            -240,
+            0
+          ]
+        ],
+        "chiusa": true
+      }
+    ]
+  },
+  "atteso": {
+    "ospiti": [
+      {
+        "dentro": [
+          {
+            "da": {
+              "punto": [
+                {
+                  "valore": 168.6016535086464,
+                  "tolleranza": 1.0810937096803856e-12
+                },
+                {
+                  "valore": -240.0,
+                  "tolleranza": 1.0810937096803856e-12
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "beforeStart",
+                "stazione": {
+                  "valore": -50.486254969542884,
+                  "tolleranza": 4.324374838721542e-12
+                }
+              }
+            },
+            "a": {
+              "punto": [
+                {
+                  "valore": 208.6016535086464,
+                  "tolleranza": 1.0810937096803856e-12
+                },
+                {
+                  "valore": -200.0,
+                  "tolleranza": 1.0810937096803856e-12
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "inside",
+                "stazione": {
+                  "valore": 6.0822875253809245,
+                  "tolleranza": 4.324374838721542e-12
+                }
+              }
+            }
+          }
+        ],
+        "bordo": []
+      },
+      {
+        "dentro": [
+          {
+            "da": {
+              "punto": [
+                {
+                  "valore": 186.5621657507847,
+                  "tolleranza": 1.1129979884408398e-12
+                },
+                {
+                  "valore": -240.0,
+                  "tolleranza": 1.1129979884408398e-12
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "beforeStart",
+                "stazione": {
+                  "valore": -37.786254969542895,
+                  "tolleranza": 4.451991953763359e-12
+                }
+              }
+            },
+            "a": {
+              "punto": [
+                {
+                  "valore": 220.0,
+                  "tolleranza": 1.1129979884408398e-12
+                },
+                {
+                  "valore": -206.5621657507847,
+                  "tolleranza": 1.1129979884408398e-12
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "inside",
+                "stazione": {
+                  "valore": 9.501983722080986,
+                  "tolleranza": 4.451991953763359e-12
+                }
+              }
+            }
+          }
+        ],
+        "bordo": []
+      },
+      {
+        "dentro": [
+          {
+            "da": {
+              "punto": [
+                {
+                  "valore": 220.0,
+                  "tolleranza": 8.526512829121202e-13
+                },
+                {
+                  "valore": -202.03948775786168,
+                  "tolleranza": 8.526512829121202e-13
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "beforeStart",
+                "stazione": {
+                  "valore": -298.4269837220809,
+                  "tolleranza": 4.2409025087704454e-12
+                }
+              }
+            },
+            "a": {
+              "punto": [
+                {
+                  "valore": 217.96051224213832,
+                  "tolleranza": 7.815970093361102e-13
+                },
+                {
+                  "valore": -200.0,
+                  "tolleranza": 7.815970093361102e-13
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "beforeStart",
+                "stazione": {
+                  "valore": -295.542712474619,
+                  "tolleranza": 4.19991454911353e-12
+                }
+              }
+            }
+          }
+        ],
+        "bordo": []
+      },
+      {
+        "dentro": [
+          {
+            "da": {
+              "punto": [
+                {
+                  "valore": 220.0,
+                  "tolleranza": 8.526512829121202e-13
+                },
+                {
+                  "valore": -237.96051224213832,
+                  "tolleranza": 8.526512829121202e-13
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "beforeStart",
+                "stazione": {
+                  "valore": -323.8269837220809,
+                  "tolleranza": 4.601858218536577e-12
+                }
+              }
+            },
+            "a": {
+              "punto": [
+                {
+                  "valore": 182.03948775786168,
+                  "tolleranza": 7.815970093361102e-13
+                },
+                {
+                  "valore": -200.0,
+                  "tolleranza": 7.815970093361102e-13
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "beforeStart",
+                "stazione": {
+                  "valore": -270.14271247461903,
+                  "tolleranza": 3.838958839347399e-12
+                }
+              }
+            }
+          }
+        ],
+        "bordo": []
+      },
+      {
+        "dentro": [
+          {
+            "da": {
+              "punto": [
+                {
+                  "valore": 195.09871939465424,
+                  "tolleranza": 8.526512829121202e-13
+                },
+                {
+                  "valore": -240.0,
+                  "tolleranza": 8.526512829121202e-13
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "beforeStart",
+                "stazione": {
+                  "valore": -307.6612549695428,
+                  "tolleranza": 4.372129395868894e-12
+                }
+              }
+            },
+            "a": {
+              "punto": [
+                {
+                  "valore": 160.0,
+                  "tolleranza": 8.526512829121202e-13
+                },
+                {
+                  "valore": -204.90128060534576,
+                  "tolleranza": 8.526512829121202e-13
+                }
+              ],
+              "sull_ospite": {
+                "posizione": "beforeStart",
+                "stazione": {
+                  "valore": -258.0241699796952,
+                  "tolleranza": 3.666743992592035e-12
+                }
+              }
+            }
+          }
+        ],
+        "bordo": []
+      }
+    ],
+    "ospiti_scartati": [],
+    "loop_scartati": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Dati copiati da autocad-retini.dxf (voce autocad-retini di sorgenti.json): i loop sono i percorsi di contorno del retino come li ha salvati AutoCAD (codici 92-93, vertici 10/20, bulge 42; il percorso a spigoli di linee del retino da Seleziona oggetti come polilinea dei suoi spigoli), gli ospiti sono righe intere del motivo (codici 53, 43/44, 45/46): la riga k passa per base + k*offset, calcolato in double, e la fine è quel punto più 100 lungo la direzione (per 0, 45, 90 e 135 gradi in passi esatti di 100, per l'angolo di 75 gradi con cos e sin arrotondati: vale il double scritto). Valori attesi da un oracolo indipendente (mai solid-space), lo stesso che riproduce i casi di RS5a e RS5b con ospiti dritti e loop a polilinea: i tre passi di clipping.hpp (tagli esatti dell'ospite con ogni pezzo: retta-retta e retta-cerchio in numeri a+b*sqrt(d) con fractions, appartenenza a un semicerchio di bulge -1 con il segno del prodotto vettoriale rispetto alla corda e al punto m di curves.hpp, tratti comuni dagli estremi dei pezzi sulla stessa retta; parti fra tagli distinti, ordinate con decimal a 120 cifre controllando che distano più di 1e-60; classe con la regola pari-dispari in un punto razionale interno alla parte, o a 1e-30 ai due lati per una parte lungo i loop; tratti come passo 3). Punti con tolleranza kRelativePointError*max(M,|p|), M dell'ospite e dei pezzi per quel punto (con il punto m dei semicerchi); stazioni con kRelativeStationError*max(M,|s|); tolleranze arrotondate per eccesso."
+  }
+}

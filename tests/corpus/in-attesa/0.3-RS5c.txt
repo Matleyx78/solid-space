@@ -1,0 +1,10 @@
+# [0.3-RS5c] taglio: autocad-retini.dxf; obbligatori con PS5 (#245)
+geom2d/taglio-retini-ansi31-rettangolo-isola #245
+geom2d/taglio-retini-net-rettangolo-isola #245
+geom2d/taglio-retini-net-isole-annidate #245
+geom2d/taglio-retini-ansi31-isole-annidate-normale #245
+geom2d/taglio-retini-ansi31-isole-annidate-esterno #245
+geom2d/taglio-retini-ansi31-isole-annidate-ignora #245
+geom2d/taglio-retini-ansi31-ruotato-scalato #245
+geom2d/taglio-retini-ansi37 #245
+geom2d/taglio-retini-ansi31-polilinea-selezionata #245
