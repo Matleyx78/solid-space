@@ -46,8 +46,10 @@ struct StretchEnd {
     /// the location is exact, the station is rounded within
     /// kRelativeStationError * max(M, |s|), with the same M. The station of
     /// the start of the host is exactly 0. On a closed host (a Circle, an Arc
-    /// of a whole circle) the end of a stretch that reaches the start again
-    /// is atEnd, with the length of the host as its station.
+    /// of a whole circle) the end of a stretch that leaves the start is
+    /// atStart, with station 0, even on a Circle, where intersect() says
+    /// inside; the end of a stretch that reaches the start again is atEnd,
+    /// with the length of the host as its station.
     CurvePosition onHost;
 };
 

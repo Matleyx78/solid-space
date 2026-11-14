@@ -668,3 +668,12 @@ i rimandi ai documenti che cambia.
   da quello del contorno, applicando la #227.
   Aggiornati [ADR 0014](adr/0014-contorno-e-isole-di-una-regione.md) e
   [scheda CS](tappe/0.3/CS-contratto.md), con la voce da riportare nel piano.
+
+- **2026-11-14 — Inizio di un ospite chiuso in `clipToRegion`.** Il responsabile
+  sceglie la prima alternativa nella [#286](https://github.com/Matleyx78/solid-space/issues/286#issuecomment-6877270178):
+  su un ospite chiuso (cerchio, arco di un giro intero) l'estremo di un tratto
+  all'inizio del giro è `atStart` con stazione 0, anche per un `Circle`, dove
+  `intersect()` dà `inside`; il ritorno all'inizio resta `atEnd`. La
+  convenzione di `intersect()` non cambia e i riferimenti di RS5a restano
+  validi. Aggiornati `clipping.hpp` (`StretchEnd::onHost`) e
+  [ADR 0015](adr/0015-parti-di-una-curva-dentro-una-regione.md), punto 5.

@@ -150,7 +150,10 @@ li leggono mai, quindi nessun esito cade in una fascia (ADR 0013, punto 4).
    (`CurvePosition`, come `intersect()`): la posizione esatta, la stazione
    entro `kRelativeStationError`, il punto entro `kRelativePointError`; gli
    estremi dei dati dell'ospite si copiano, quelli di un arco sono i punti di
-   `endpoints()`. Nessuna costante nuova.
+   `endpoints()`. Nessuna costante nuova. Su un ospite chiuso l'estremo
+   all'inizio del giro è `atStart` con stazione 0, anche per un cerchio, dove
+   `intersect()` dà `inside`, e il ritorno all'inizio è `atEnd` con stazione
+   pari alla lunghezza dell'ospite ([#286](https://github.com/Matleyx78/solid-space/issues/286)).
 6. **Dati non validi:** un ospite o un loop non valido si scarta e si elenca
    (`SkippedInput`), e la chiamata continua; i loop si controllano come in
    `nestContours`. Nessuna diagnosi per la chiamata intera e nessun codice
