@@ -37,8 +37,8 @@ TEST(RegionParts, ChecksLoopDataAndWholeCircularSupports) {
 }
 
 TEST(RegionParts, DropsPointPiecesAndClosesTheLoop) {
-    auto loop = std::get<Polyline>(square(0, 2));
-    loop.vertices.insert(loop.vertices.begin(), loop.vertices.front());
+    const Loop loop =
+        Polyline{{{{0, 0}, 0}, {{0, 0}, 0}, {{2, 0}, 0}, {{2, 2}, 0}, {{0, 2}, 0}}, false};
     const auto result = detail::checkedLoopPieces(loop, 0);
     ASSERT_TRUE(result.hasValue());
     ASSERT_EQ(result.value().pieces.size(), 4);
