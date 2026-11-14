@@ -93,6 +93,22 @@ std::size_t boundedFaceAt(const Arrangement& arrangement, double x, double y) {
     return face.value_or(0);
 }
 
+// Each loop is closed, each dart starts where the previous one ends, and no
+// vertex comes twice.
+void expectSimpleLoops(const Arrangement& arrangement,
+                       const std::vector<std::vector<std::size_t>>& loops) {
+    for (const auto& loop : loops) {
+        ASSERT_FALSE(loop.empty());
+        std::vector<std::size_t> vertices;
+        for (std::size_t k = 0; k < loop.size(); ++k) {
+            EXPECT_EQ(arrangement.head(loop[k]), arrangement.tail(loop[(k + 1) % loop.size()]));
+            vertices.push_back(arrangement.tail(loop[k]));
+        }
+        std::sort(vertices.begin(), vertices.end());
+        EXPECT_EQ(std::adjacent_find(vertices.begin(), vertices.end()), vertices.end());
+    }
+}
+
 std::size_t boundedFaces(const Arrangement& arrangement) {
     std::size_t count = 0;
     for (std::size_t c = 0; c < arrangement.cycleCount(); ++c) {
@@ -363,16 +379,53 @@ TEST(Arrangement, FaceWhoseBoundaryTouchesItself) {
     EXPECT_FALSE(arrangement.counterclockwise(loops[1 - outer]));
     EXPECT_TRUE(arrangement.encloses(loops[outer], loops[1 - outer]));
     EXPECT_FALSE(arrangement.encloses(loops[1 - outer], loops[outer]));
-    // Each loop is closed and passes every vertex once.
-    for (const auto& loop : loops) {
-        std::vector<std::size_t> vertices;
-        for (std::size_t k = 0; k < loop.size(); ++k) {
-            EXPECT_EQ(arrangement.head(loop[k]), arrangement.tail(loop[(k + 1) % loop.size()]));
-            vertices.push_back(arrangement.tail(loop[k]));
-        }
-        std::sort(vertices.begin(), vertices.end());
-        EXPECT_EQ(std::adjacent_find(vertices.begin(), vertices.end()), vertices.end());
+    expectSimpleLoops(arrangement, loops);
+}
+
+TEST(Arrangement, ABridgeBetweenTwoContoursLeavesTwoLoops) {
+    // Two unit circles joined by the segment from (1, 0) to (3, 0), inside a
+    // rectangle.
+    std::vector<Curve> curves{Circle{Point2{0, 0}, 1}, Circle{Point2{4, 0}, 1},
+                              segment(1, 0, 3, 0)};
+    for (const Curve& side : rectangle(-3, -3, 7, 3)) {
+        curves.push_back(side);
     }
+    const auto input = given(curves);
+    const Arrangement arrangement(input);
+    ASSERT_EQ(arrangement.groupCount(), 2U);
+
+    // The hole cycle of the dumbbell runs around both circles and twice
+    // along the bridge, which has the face on both sides.
+    const auto hole = arrangement.holeCycle(0);
+    EXPECT_EQ(arrangement.cycle(hole).size(), 4U);
+    const auto islands = arrangement.simpleLoops(hole);
+    ASSERT_EQ(islands.size(), 2U);
+    expectSimpleLoops(arrangement, islands);
+    EXPECT_EQ(stepsOf(arrangement, islands[0]), (Steps{{0, true}}));
+    EXPECT_EQ(stepsOf(arrangement, islands[1]), (Steps{{1, true}}));
+    EXPECT_FALSE(arrangement.counterclockwise(islands[0]));
+    EXPECT_FALSE(arrangement.counterclockwise(islands[1]));
+
+    const auto contour = arrangement.simpleLoops(boundedFaceAt(arrangement, -2, 0));
+    ASSERT_EQ(contour.size(), 1U);
+    EXPECT_TRUE(arrangement.encloses(contour[0], islands[0]));
+    EXPECT_TRUE(arrangement.encloses(contour[0], islands[1]));
+    EXPECT_FALSE(arrangement.encloses(islands[0], islands[1]));
+}
+
+TEST(Arrangement, ATinyCircleMeetsASegment) {
+    // The rounded square of the radius 2^-600 is zero: the box must still
+    // hold the circle, which the segment x = r / 2 crosses twice.
+    constexpr double kRadius = 0x1p-600;
+    const auto input = given({Circle{Point2{0, 0}, kRadius},
+                              segment(kRadius / 2, -2 * kRadius, kRadius / 2, 2 * kRadius)});
+    const Arrangement arrangement(input);
+    EXPECT_EQ(arrangement.groupCount(), 1U);
+    EXPECT_EQ(arrangement.vertexCount(), 4U);
+    EXPECT_EQ(arrangement.pieces().size(), 5U);
+    EXPECT_EQ(boundedFaces(arrangement), 2U);
+    EXPECT_EQ(faceSteps(arrangement, 0, 0), (Steps{{0, false}, {1, false}}));
+    EXPECT_EQ(faceSteps(arrangement, 0.75 * kRadius, 0), (Steps{{0, false}, {1, true}}));
 }
 
 TEST(Arrangement, CircleWithADiameter) {
@@ -562,6 +615,7 @@ TEST(ArrangementProperties, FacesAreCountedAndOriented) {
               arrangement.pieces().size() + 2 * arrangement.groupCount());
     for (std::size_t c = 0; c < arrangement.cycleCount(); ++c) {
         const auto loops = arrangement.simpleLoops(c);
+        expectSimpleLoops(arrangement, loops);
         if (loops.size() == 1 && loops[0].size() == arrangement.cycle(c).size()) {
             EXPECT_EQ(arrangement.counterclockwise(loops[0]), !arrangement.isHole(c)) << c;
         }

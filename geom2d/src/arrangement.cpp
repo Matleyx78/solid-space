@@ -33,6 +33,7 @@ namespace {
 constexpr double kBoxRelativeMargin = 0x1p-40;
 constexpr double kBoxAbsoluteMargin = 0x1p-1000;
 constexpr double kInfinity = std::numeric_limits<double>::infinity();
+constexpr double kTinySquaredRadius = 0x1p-900;
 
 double margin(double magnitude) {
     return magnitude * kBoxRelativeMargin + kBoxAbsoluteMargin;
@@ -61,8 +62,14 @@ void include(Box& box, const Box& other) {
 Box circleBox(const CircleSupport& circle) {
     const double cx = quotientToDouble(circle.centerX, circle.weight);
     const double cy = quotientToDouble(circle.centerY, circle.weight);
-    const double radius =
-        std::sqrt(quotientToDouble(circle.radiusSquared, circle.weight * circle.weight));
+    double squared = quotientToDouble(circle.radiusSquared, circle.weight * circle.weight);
+    // Below 2^-900 the rounded square may have lost all its digits (it may
+    // even be zero): its absolute error is at most 2^-1074, so the radius is
+    // below 2^-449 and that bound stands for it.
+    if (squared < kTinySquaredRadius) {
+        squared = 4 * kTinySquaredRadius;
+    }
+    const double radius = std::sqrt(squared);
     if (!std::isfinite(cx) || !std::isfinite(cy) || !std::isfinite(radius)) {
         return Box{-kInfinity, -kInfinity, kInfinity, kInfinity};
     }
@@ -641,27 +648,52 @@ std::optional<std::size_t> Arrangement::faceOf(const ExactPoint& point) const {
 }
 
 std::vector<std::vector<std::size_t>> Arrangement::simpleLoops(std::size_t c) const {
+    // Leaving out a piece with the face on both sides may cut the cycle into
+    // several closed walks (a bridge between two contours): each dart left
+    // goes on to the first dart left of the cycle met turning clockwise
+    // around its head, which is next() once those pieces are gone.
+    const auto left = [&](std::size_t dart) {
+        return cycleOf(dart) == c && cycleOf(twin(dart)) != c;
+    };
+    const auto following = [&](std::size_t dart) {
+        const std::span<const std::size_t> darts = around(head(dart));
+        const std::size_t back = m_aroundIndex[twin(dart)];
+        for (std::size_t turn = 1; turn <= darts.size(); ++turn) {
+            const std::size_t candidate = darts[(back + darts.size() - turn) % darts.size()];
+            if (cycleOf(candidate) != c || cycleOf(twin(candidate)) != c) {
+                assert(left(candidate) && "the face goes on along a dart of its cycle");
+                return candidate;
+            }
+        }
+        assert(false && "a dart left has a following dart");
+        return dart;
+    };
+
     std::vector<std::vector<std::size_t>> loops;
-    std::vector<std::size_t> path;
-    // The vertices the open path leaves, with the position of their dart.
-    std::map<std::size_t, std::size_t> open;
-    for (const std::size_t dart : cycle(c)) {
-        if (cycleOf(twin(dart)) == c) {
+    std::vector<bool> visited(dartCount(), false);
+    for (const std::size_t first : cycle(c)) {
+        if (!left(first) || visited[first]) {
             continue;
         }
-        const std::size_t from = tail(dart);
-        if (const auto found = open.find(from); found != open.end()) {
-            const std::size_t begin = found->second;
-            for (std::size_t k = begin; k < path.size(); ++k) {
-                open.erase(tail(path[k]));
+        // One closed walk, split into simple loops at every vertex it passes
+        // again: the vertices the open path leaves, with the position of
+        // their dart.
+        std::vector<std::size_t> path;
+        std::map<std::size_t, std::size_t> open;
+        for (std::size_t dart = first; !visited[dart]; dart = following(dart)) {
+            visited[dart] = true;
+            const std::size_t from = tail(dart);
+            if (const auto found = open.find(from); found != open.end()) {
+                const std::size_t begin = found->second;
+                for (std::size_t k = begin; k < path.size(); ++k) {
+                    open.erase(tail(path[k]));
+                }
+                loops.emplace_back(path.begin() + static_cast<std::ptrdiff_t>(begin), path.end());
+                path.resize(begin);
             }
-            loops.emplace_back(path.begin() + static_cast<std::ptrdiff_t>(begin), path.end());
-            path.resize(begin);
+            open.emplace(from, path.size());
+            path.push_back(dart);
         }
-        open.emplace(from, path.size());
-        path.push_back(dart);
-    }
-    if (!path.empty()) {
         loops.push_back(std::move(path));
     }
     return loops;

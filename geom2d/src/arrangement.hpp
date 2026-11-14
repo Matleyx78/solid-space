@@ -216,11 +216,14 @@ public:
     /// The boundary of a cycle as step 6 of detectBoundary runs it: the darts
     /// whose twin lies in the same cycle (the piece has the face on both
     /// sides) are left out, and the rest is split into simple loops at every
-    /// vertex it passes more than once. Each loop is a closed sequence of
-    /// darts, each starting where the previous one ends, with no vertex
-    /// twice. The loops come in the order in which they close along the
-    /// cycle from its first dart; the last one is the one that contains
-    /// that dart (or the first dart left). Empty when every dart is left out.
+    /// vertex it passes more than once. Leaving those pieces out may cut the
+    /// cycle into several closed walks (two contours joined by a bridge): the
+    /// walk goes on from the head of a dart along the first dart left met
+    /// turning clockwise from it, as next() does without those pieces. Each
+    /// loop is a closed sequence of darts, each starting where the previous
+    /// one ends, with no vertex twice. The walks are taken by their first
+    /// dart in the cycle, and the loops of a walk in the order in which they
+    /// close. Empty when every dart is left out.
     [[nodiscard]] std::vector<std::vector<std::size_t>> simpleLoops(std::size_t c) const;
 
     /// True when a simple loop runs counterclockwise around the region it
