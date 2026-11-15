@@ -44,7 +44,9 @@ Value writeNesting(const geom2d::ContourNesting& result) {
 }
 
 void restoreIndices(geom2d::ContourNesting& result, std::size_t size) {
-    const auto originalIndex = [size](std::size_t index) { return size - 1 - index; };
+    const auto originalIndex = [size](std::size_t index) {
+        return size - 1 - index;
+    };
     std::ranges::reverse(result.depth);
     std::ranges::reverse(result.skipped);
     for (auto& [index, diagnosis] : result.skipped) {

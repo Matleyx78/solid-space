@@ -18,6 +18,7 @@ struct OffLoopParts {
     bool outside = false;
 
     [[nodiscard]] bool mixed() const { return inside && outside; }
+
     [[nodiscard]] bool allOnLoop() const { return !inside && !outside; }
 };
 
