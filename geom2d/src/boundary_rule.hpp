@@ -25,7 +25,7 @@
 // and bulges of the converted arcs, each within its declared error. The
 // bounding boxes of arrangement.hpp only skip pairs that cannot matter.
 //
-// Determinism (ADR 0008, point 5): all the computation is in boundary_rule.cpp,
+// Determinism (ADR 0008, point 5): all the computation is in boundary.cpp,
 // with no trigonometric function; every order is exact or by index. The
 // functions may allocate, so they are not noexcept.
 
@@ -133,9 +133,10 @@ struct BoundaryRule {
 /// The pieces of polyline that stand for an Arc that is not a whole circle
 /// (step 1): from its rounded start to its rounded end (endpoints(),
 /// curves.hpp), split at a rounded middle point when the arc turns by more
-/// than half a turn, each within kRelativeLoopError / 2 of the arc. The
-/// pieces whose rounded ends coincide are left out. Precondition: the arc
-/// is checked, not degenerate and not a whole circle.
+/// than half a turn, each within kRelativeLoopError / 2 of the arc. None when
+/// the rounded ends of the arc coincide; a piece whose ends coincide (only
+/// below the bounds of curves.hpp, M < 2^-50) is left out too.
+/// Precondition: the arc is checked, not degenerate and not a whole circle.
 [[nodiscard]] std::vector<PolylineSegment> convertedArc(const Arc& arc, const ArcMeaning& meaning);
 
 /// The bulge of the arc of a circle from `from` to `to`, turning by at most

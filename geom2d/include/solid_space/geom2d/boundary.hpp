@@ -132,7 +132,8 @@ struct DetectedBoundary {
 /// 5. Arrangement. The curves and links of steps 1-3 are split at every
 ///    point where they meet each other or end; a stretch shared by several
 ///    of them is a single piece, credited to the curve of lowest index (to a
-///    curve before a link). The picked point lies in one face F.
+///    curve before a link; among links, to the one whose lower index, then
+///    higher index, is lowest). The picked point lies in one face F.
 ///    If F is unbounded the outcome is notEnclosed. openEnds then comes from
 ///    the connected groups of curves and links (two are connected when they
 ///    share a point), taken in the order in which the half-line from the

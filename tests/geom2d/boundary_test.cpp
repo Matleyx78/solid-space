@@ -14,9 +14,11 @@
 #include <gtest/gtest.h>
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <numbers>
 #include <numeric>
 #include <optional>
 #include <span>
@@ -29,7 +31,7 @@ namespace {
 
 using robust::TolerancePolicy;
 
-constexpr double kPi = 3.141592653589793;
+constexpr double kPi = std::numbers::pi;
 
 // A small deterministic generator (a linear congruential one).
 class Generator {
@@ -301,7 +303,7 @@ struct Scale {
     double scale;
 };
 
-constexpr Scale kScales[] = {{0.0, 1.0}, {1e5, 1000.0}};
+constexpr std::array<Scale, 2> kScales{{{0.0, 1.0}, {1e5, 1000.0}}};
 
 TEST(DetectBoundary, GeneratedDrawingsKeepTheirErrorsAndDepths) {
     for (const Scale& scale : kScales) {
@@ -541,6 +543,37 @@ TEST(DetectBoundary, PointNearALinkOnlyIsOnCurve) {
     ASSERT_TRUE(farther.hasValue());
     EXPECT_EQ(farther.value().outcome, BoundaryOutcome::notEnclosed);
     EXPECT_TRUE(farther.value().openEnds.empty());
+}
+
+TEST(DetectBoundary, StretchSharedByLinksGoesToTheLowestPair) {
+    // Three collinear free ends e = (0, 0), f = (0, 2^-31), g = (0, 2^-30)
+    // of curves 0, 1 and 2, within 1e-9 m of each other: the links (0, 1)
+    // and (0, 2) share the stretch from e to f, credited to (0, 1).
+    const double step = 0x1p-31;
+    const std::vector<Curve> curves{Segment{{0, -1}, {0, 0}}, Segment{{-1, step}, {0, step}},
+                                    Segment{{0, 2 * step}, {1, 2 * step}},
+                                    Segment{{-1, -1}, {0, -1}}, Segment{{-1, step}, {-1, -1}}};
+    const auto policy = TolerancePolicy::forUnit(1.0).value();
+    const auto result = detectBoundary({-0.5, -0.5}, curves, policy);
+    ASSERT_TRUE(result.hasValue());
+    const DetectedBoundary& boundary = result.value();
+    ASSERT_EQ(boundary.outcome, BoundaryOutcome::enclosed);
+    ASSERT_EQ(boundary.loops.size(), 1U);
+    const auto& loop = std::get<Polyline>(boundary.loops[0].loop);
+    ASSERT_EQ(loop.vertices.size(), 5U);
+    EXPECT_EQ(loop.vertices[0].position.x, -1);
+    EXPECT_EQ(loop.vertices[0].position.y, -1);
+    const auto& origins = boundary.loops[0].origins;
+    ASSERT_EQ(origins.size(), 5U);
+    EXPECT_EQ(origins[0].curve, 3U);
+    EXPECT_EQ(origins[1].curve, 0U);
+    EXPECT_EQ(origins[2].source, LoopPieceSource::link);
+    EXPECT_EQ(origins[2].curve, 0U);
+    EXPECT_EQ(origins[2].otherCurve, 1U);
+    EXPECT_FALSE(origins[2].reversed);
+    EXPECT_EQ(origins[3].curve, 1U);
+    EXPECT_TRUE(origins[3].reversed);
+    EXPECT_EQ(origins[4].curve, 4U);
 }
 
 TEST(DetectBoundary, NoCurveLeavesThePointNotEnclosed) {
