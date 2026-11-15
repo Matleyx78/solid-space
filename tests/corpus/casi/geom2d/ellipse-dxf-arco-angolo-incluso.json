@@ -1,0 +1,62 @@
+{
+  "versione": 1,
+  "id": "ellipse-dxf-arco-angolo-incluso",
+  "componente": "geom2d",
+  "descrizione": "#217, autocad-ellissi.dxf (1ad04b0): handle 94, secante all’arco da Centro e angolo incluso oltre 2π.",
+  "ingresso": {
+    "operazione": "ellipseIntersect",
+    "ellisse": {
+      "centro": [
+        100.0,
+        -60.0
+      ],
+      "asse_maggiore": [
+        20.0,
+        0.0
+      ],
+      "rapporto": 0.3,
+      "parametro_iniziale": 5.003845774862556,
+      "parametro_finale": 7.773769349034119
+    },
+    "prolunga_ellisse": "none",
+    "prolunga_seconda": "none",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          60,
+          -60
+        ],
+        "fine": [
+          140,
+          -60
+        ]
+      }
+    }
+  },
+  "atteso": {
+    "punti": [
+      {
+        "punto": [
+          {
+            "valore": 120.0,
+            "tolleranza": 4.973799150320702e-13
+          },
+          {
+            "valore": -60.0,
+            "tolleranza": 4.973799150320702e-13
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": "inside",
+        "sulla_seconda": "inside"
+      }
+    ],
+    "sovrapposizioni": [],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "file-pubblico",
+    "sorgente": "autocad-ellissi",
+    "procedimento": "Posto a = asse maggiore, b = rapporto·(-a.y,a.x) e d = y - centro.y, si interseca a.y·u + b.y·v = d con u² + v² = 1. Con Q = a.y² + b.y², (u,v) = (d·(a.y,b.y) ± √(Q-d²)·(b.y,-a.y))/Q. Il segno di Q-d² si calcola sui razionali diadici esatti. I segni delle radici in ordine da D0 sono +. La posizione e l’ordine seguono i quadranti e il confronto con le direzioni degli estremi. Coordinate in Decimal a 90 cifre; tolleranza 2^-48·max(M, |p|) arrotondata per eccesso."
+  }
+}

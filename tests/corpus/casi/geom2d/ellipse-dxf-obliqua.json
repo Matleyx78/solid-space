@@ -1,0 +1,77 @@
+{
+  "versione": 1,
+  "id": "ellipse-dxf-obliqua",
+  "componente": "geom2d",
+  "descrizione": "#217, autocad-ellissi.dxf (1ad04b0): handle 91, secante all’ellisse obliqua originale.",
+  "ingresso": {
+    "operazione": "ellipseIntersect",
+    "ellisse": {
+      "centro": [
+        400.0,
+        0.0
+      ],
+      "asse_maggiore": [
+        20.0,
+        5.0
+      ],
+      "rapporto": 0.3880570000581327,
+      "parametro_iniziale": 0.0,
+      "parametro_finale": 6.283185307179586
+    },
+    "prolunga_ellisse": "none",
+    "prolunga_seconda": "none",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          360,
+          0
+        ],
+        "fine": [
+          440,
+          0
+        ]
+      }
+    }
+  },
+  "atteso": {
+    "punti": [
+      {
+        "punto": [
+          {
+            "valore": 382.13616412524703,
+            "tolleranza": 1.5631940186722206e-12
+          },
+          {
+            "valore": 0.0,
+            "tolleranza": 1.5631940186722206e-12
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": "inside",
+        "sulla_seconda": "inside"
+      },
+      {
+        "punto": [
+          {
+            "valore": 417.86383587475297,
+            "tolleranza": 1.5631940186722206e-12
+          },
+          {
+            "valore": 0.0,
+            "tolleranza": 1.5631940186722206e-12
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": "inside",
+        "sulla_seconda": "inside"
+      }
+    ],
+    "sovrapposizioni": [],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "file-pubblico",
+    "sorgente": "autocad-ellissi",
+    "procedimento": "Posto a = asse maggiore, b = rapporto·(-a.y,a.x) e d = y - centro.y, si interseca a.y·u + b.y·v = d con u² + v² = 1. Con Q = a.y² + b.y², (u,v) = (d·(a.y,b.y) ± √(Q-d²)·(b.y,-a.y))/Q. Il segno di Q-d² si calcola sui razionali diadici esatti. I segni delle radici in ordine da D0 sono -, +. La posizione e l’ordine seguono i quadranti e il confronto con le direzioni degli estremi. Coordinate in Decimal a 90 cifre; tolleranza 2^-48·max(M, |p|) arrotondata per eccesso."
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "versione": 1,
+  "id": "ellipse-dxf-esplosa-parametri-grezzi",
+  "componente": "geom2d",
+  "descrizione": "#217, autocad-ellissi.dxf (1ad04b0): handle 9D, sovrapposizione con il proprio sostegno, con i parametri grezzi.",
+  "ingresso": {
+    "operazione": "ellipseIntersect",
+    "ellisse": {
+      "centro": [
+        20.0,
+        -195.0
+      ],
+      "asse_maggiore": [
+        30.49014016867735,
+        7.201989105668515
+      ],
+      "rapporto": 0.2078414727134397,
+      "parametro_iniziale": 0.1370039199315505,
+      "parametro_finale": 6.420189227111136
+    },
+    "prolunga_ellisse": "none",
+    "prolunga_seconda": "extended",
+    "seconda_ellisse": {
+      "centro": [
+        20.0,
+        -195.0
+      ],
+      "asse_maggiore": [
+        30.49014016867735,
+        7.201989105668515
+      ],
+      "rapporto": 0.2078414727134397,
+      "parametro_iniziale": 0.1370039199315505,
+      "parametro_finale": 6.420189227111136
+    }
+  },
+  "atteso": {
+    "punti": [],
+    "sovrapposizioni": [
+      {
+        "intera": false,
+        "da": {
+          "punto": [
+            {
+              "valore": 50.00000000000001,
+              "tolleranza": 6.927791673660978e-13
+            },
+            {
+              "valore": -187.0,
+              "tolleranza": 6.927791673660978e-13
+            }
+          ],
+          "sulla_prima": "atStart",
+          "sulla_seconda": "atStart"
+        },
+        "a": {
+          "punto": [
+            {
+              "valore": 50.000000000000014,
+              "tolleranza": 6.927791673660978e-13
+            },
+            {
+              "valore": -187.0,
+              "tolleranza": 6.927791673660978e-13
+            }
+          ],
+          "sulla_prima": "atEnd",
+          "sulla_seconda": "atEnd"
+        }
+      }
+    ],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "file-pubblico",
+    "sorgente": "autocad-ellissi",
+    "procedimento": "Centro, asse e rapporto sono quelli di 9D; i gruppi 41 e 42 del commit 1ad04b0 valgono 0.1370039199315505 e 6.420189227111136. Si conservano i parametri grezzi: fine-inizio-kFullTurn = -33/36028797018963968. Le serie di Taylor in razionali, allargando ogni componente di 2 ulp, danno det(D0,D1) fra -1.34e-15 e -9.90e-16 e prodotto scalare positivo. Il tratto comune è l’arco quasi intero da D0 a D1, con entrambi gli estremi nelle rispettive posizioni originali anche sulla seconda ellisse prolungata. Estremi da F(D/|D|) in Decimal a 90 cifre; tolleranza 2^-48·max(M, |p|) arrotondata per eccesso."
+  }
+}

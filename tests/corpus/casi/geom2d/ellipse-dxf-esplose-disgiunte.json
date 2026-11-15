@@ -1,0 +1,47 @@
+{
+  "versione": 1,
+  "id": "ellipse-dxf-esplose-disgiunte",
+  "componente": "geom2d",
+  "descrizione": "#217, autocad-ellissi.dxf (1ad04b0): handle 9D e A4, ellisse intera e arco esplosi da blocchi con scala (2,1).",
+  "ingresso": {
+    "operazione": "ellipseIntersect",
+    "ellisse": {
+      "centro": [
+        20.0,
+        -195.0
+      ],
+      "asse_maggiore": [
+        30.49014016867735,
+        7.201989105668515
+      ],
+      "rapporto": 0.2078414727134397,
+      "parametro_iniziale": 0,
+      "parametro_finale": 6.283185307179586
+    },
+    "prolunga_ellisse": "none",
+    "prolunga_seconda": "extended",
+    "seconda_ellisse": {
+      "centro": [
+        120.0,
+        -195.0
+      ],
+      "asse_maggiore": [
+        30.49014016867735,
+        7.201989105668507
+      ],
+      "rapporto": 0.2078414727134402,
+      "parametro_iniziale": 0.9377849990789082,
+      "parametro_finale": 4.721632518503652
+    }
+  },
+  "atteso": {
+    "punti": [],
+    "sovrapposizioni": [],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "file-pubblico",
+    "sorgente": "autocad-ellissi",
+    "procedimento": "9D usa 0 e kFullTurn secondo #249. Per ogni sostegno, |x-centro.x| ≤ |a.x|+|b.x| ≤ |a.x|+|a.y|. I centri distano 100 in x e ciascun limite è minore di 38; le proiezioni sono disgiunte anche con l’arco prolungato."
+  }
+}
