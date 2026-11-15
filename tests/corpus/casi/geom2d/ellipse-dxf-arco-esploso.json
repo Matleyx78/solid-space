@@ -1,0 +1,62 @@
+{
+  "versione": 1,
+  "id": "ellipse-dxf-arco-esploso",
+  "componente": "geom2d",
+  "descrizione": "#217, autocad-ellissi.dxf (1ad04b0): handle A4, secante all’arco esploso dal blocco con scala (2,1).",
+  "ingresso": {
+    "operazione": "ellipseIntersect",
+    "ellisse": {
+      "centro": [
+        120.0,
+        -195.0
+      ],
+      "asse_maggiore": [
+        30.49014016867735,
+        7.201989105668507
+      ],
+      "rapporto": 0.2078414727134402,
+      "parametro_iniziale": 0.9377849990789082,
+      "parametro_finale": 4.721632518503652
+    },
+    "prolunga_ellisse": "none",
+    "prolunga_seconda": "none",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          80,
+          -195
+        ],
+        "fine": [
+          160,
+          -195
+        ]
+      }
+    }
+  },
+  "atteso": {
+    "punti": [
+      {
+        "punto": [
+          {
+            "valore": 98.73472875397322,
+            "tolleranza": 6.927791673660978e-13
+          },
+          {
+            "valore": -195.0,
+            "tolleranza": 6.927791673660978e-13
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": "inside",
+        "sulla_seconda": "inside"
+      }
+    ],
+    "sovrapposizioni": [],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "file-pubblico",
+    "sorgente": "autocad-ellissi",
+    "procedimento": "Posto a = asse maggiore, b = rapporto·(-a.y,a.x) e d = y - centro.y, si interseca a.y·u + b.y·v = d con u² + v² = 1. Con Q = a.y² + b.y², (u,v) = (d·(a.y,b.y) ± √(Q-d²)·(b.y,-a.y))/Q. Il segno di Q-d² si calcola sui razionali diadici esatti. I segni delle radici in ordine da D0 sono -. La posizione e l’ordine seguono i quadranti e il confronto con le direzioni degli estremi. Coordinate in Decimal a 90 cifre; tolleranza 2^-48·max(M, |p|) arrotondata per eccesso."
+  }
+}

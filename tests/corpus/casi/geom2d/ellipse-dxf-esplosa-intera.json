@@ -1,0 +1,79 @@
+{
+  "versione": 1,
+  "id": "ellipse-dxf-esplosa-intera",
+  "componente": "geom2d",
+  "descrizione": "#217, autocad-ellissi.dxf (1ad04b0): handle 9D, sovrapposizione con il proprio sostegno, dopo normalizzazione del giro completo.",
+  "ingresso": {
+    "operazione": "ellipseIntersect",
+    "ellisse": {
+      "centro": [
+        20.0,
+        -195.0
+      ],
+      "asse_maggiore": [
+        30.49014016867735,
+        7.201989105668515
+      ],
+      "rapporto": 0.2078414727134397,
+      "parametro_iniziale": 0,
+      "parametro_finale": 6.283185307179586
+    },
+    "prolunga_ellisse": "none",
+    "prolunga_seconda": "extended",
+    "seconda_ellisse": {
+      "centro": [
+        20.0,
+        -195.0
+      ],
+      "asse_maggiore": [
+        30.49014016867735,
+        7.201989105668515
+      ],
+      "rapporto": 0.2078414727134397,
+      "parametro_iniziale": 0,
+      "parametro_finale": 6.283185307179586
+    }
+  },
+  "atteso": {
+    "punti": [],
+    "sovrapposizioni": [
+      {
+        "intera": true,
+        "da": {
+          "punto": [
+            {
+              "valore": 50.49014016867735,
+              "tolleranza": 6.927791673660978e-13
+            },
+            {
+              "valore": -187.7980108943315,
+              "tolleranza": 6.927791673660978e-13
+            }
+          ],
+          "sulla_prima": "atStart",
+          "sulla_seconda": "atStart"
+        },
+        "a": {
+          "punto": [
+            {
+              "valore": 50.49014016867735,
+              "tolleranza": 6.927791673660978e-13
+            },
+            {
+              "valore": -187.7980108943315,
+              "tolleranza": 6.927791673660978e-13
+            }
+          ],
+          "sulla_prima": "atStart",
+          "sulla_seconda": "atStart"
+        }
+      }
+    ],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "file-pubblico",
+    "sorgente": "autocad-ellissi",
+    "procedimento": "Centro, asse e rapporto sono quelli di 9D; i gruppi 41 e 42 del commit 1ad04b0 valgono 0.1370039199315505 e 6.420189227111136. Decisione #249: ellisse intera proveniente da EXPLODE di ELLISSE_INTERA, scala (2,1); si usano 0 e kFullTurn. I due sostegni coincidono e i due estremi del tratto intero sono il punto centro + asse maggiore, all’inizio di entrambi."
+  }
+}

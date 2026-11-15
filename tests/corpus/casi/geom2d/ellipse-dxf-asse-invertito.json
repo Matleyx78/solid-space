@@ -1,0 +1,77 @@
+{
+  "versione": 1,
+  "id": "ellipse-dxf-asse-invertito",
+  "componente": "geom2d",
+  "descrizione": "#217, autocad-ellissi.dxf (1ad04b0): handle 8D, secante all’ellisse col primo asse indicato più corto del secondo.",
+  "ingresso": {
+    "operazione": "ellipseIntersect",
+    "ellisse": {
+      "centro": [
+        70.0,
+        0.0
+      ],
+      "asse_maggiore": [
+        0.0,
+        -25.0
+      ],
+      "rapporto": 0.4,
+      "parametro_iniziale": 0.0,
+      "parametro_finale": 6.283185307179586
+    },
+    "prolunga_ellisse": "none",
+    "prolunga_seconda": "none",
+    "curva": {
+      "segmento": {
+        "inizio": [
+          30,
+          0
+        ],
+        "fine": [
+          110,
+          0
+        ]
+      }
+    }
+  },
+  "atteso": {
+    "punti": [
+      {
+        "punto": [
+          {
+            "valore": 80.0,
+            "tolleranza": 3.9079850466805515e-13
+          },
+          {
+            "valore": 0.0,
+            "tolleranza": 3.9079850466805515e-13
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": "inside",
+        "sulla_seconda": "inside"
+      },
+      {
+        "punto": [
+          {
+            "valore": 60.0,
+            "tolleranza": 3.9079850466805515e-13
+          },
+          {
+            "valore": 0.0,
+            "tolleranza": 3.9079850466805515e-13
+          }
+        ],
+        "contatto": "crossing",
+        "sulla_prima": "inside",
+        "sulla_seconda": "inside"
+      }
+    ],
+    "sovrapposizioni": [],
+    "omessi_fuori_dominio": "0"
+  },
+  "provenienza": {
+    "tipo": "file-pubblico",
+    "sorgente": "autocad-ellissi",
+    "procedimento": "Posto a = asse maggiore, b = rapporto·(-a.y,a.x) e d = y - centro.y, si interseca a.y·u + b.y·v = d con u² + v² = 1. Con Q = a.y² + b.y², (u,v) = (d·(a.y,b.y) ± √(Q-d²)·(b.y,-a.y))/Q. Il segno di Q-d² si calcola sui razionali diadici esatti. I segni delle radici in ordine da D0 sono +, -. La posizione e l’ordine seguono i quadranti e il confronto con le direzioni degli estremi. Coordinate in Decimal a 90 cifre; tolleranza 2^-48·max(M, |p|) arrotondata per eccesso."
+  }
+}

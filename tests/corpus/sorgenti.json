@@ -35,6 +35,13 @@
       "versione": "26c7537f9872655d90f742624430026cb5f39b5b",
       "sha256": "53003a6acb7fee57be087cc0a1e7a9733e95181ff557c874752f06e57373e926",
       "licenza": "CC0-1.0"
+    },
+    "autocad-ellissi": {
+      "nome": "autocad-ellissi.dxf",
+      "indirizzo": "https://raw.githubusercontent.com/Matleyx78/dxf-test-file/1ad04b0b8a568fb9dd4960719a8f17289129f788/autocad-ellissi.dxf",
+      "versione": "1ad04b0b8a568fb9dd4960719a8f17289129f788",
+      "sha256": "eacd35327f5a5c9833a6de0f304428e058d50385363673ee3107b647fd38ad6e",
+      "licenza": "CC0-1.0"
     }
   }
 }
