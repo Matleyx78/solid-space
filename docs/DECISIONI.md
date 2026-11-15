@@ -694,3 +694,12 @@ i rimandi ai documenti che cambia.
   c'è più. Gli ambienti degli agenti nella catena li decide il responsabile.
   Solo lui avvia gli agenti.
   [ADR 0018](adr/0018-catena-degli-agenti.md); [agenti/catena.md](agenti/catena.md).
+
+- **2026-11-15 — La riga per riprendere porta le regole della catena.** Nella
+  prima decisione della catena (PS7, #250, correzione dei riferimenti di RS7a,
+  #247) Codex ha ricevuto una riga con solo il dato da applicare: ha corretto i
+  casi ma non ha preso in carico né pubblicato il ramo, e ha lasciato la pull
+  request preparata nel suo ambiente. Da qui la riga da copiare, quando chiede
+  di cambiare dei file, finisce sempre con la frase che rimanda ad AGENTS.md e
+  a catena.md e chiede `git push` e `gh pr create`, come il commento di avvio
+  ([agenti/catena.md](agenti/catena.md), "Fermarsi per una decisione").
