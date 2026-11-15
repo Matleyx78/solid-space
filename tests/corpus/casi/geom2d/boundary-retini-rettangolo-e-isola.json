@@ -1,0 +1,65 @@
+{
+  "versione": 1,
+  "id": "boundary-retini-rettangolo-e-isola",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #215, autocad-retini.dxf: il punto interno al rettangolo del retino ANSI31 (handle CF) restituisce il contorno e il cerchio che AutoCAD ha salvato nel HATCH come due semicerchi; il limite 10 dell'ADR 0014 non cambia i percorsi.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      10,
+      20
+    ],
+    "curve": [
+      { "segmento": { "inizio": [60, 40], "fine": [0, 40] } },
+      { "segmento": { "inizio": [0, 40], "fine": [0, 0] } },
+      { "segmento": { "inizio": [0, 0], "fine": [60, 0] } },
+      { "segmento": { "inizio": [60, 0], "fine": [60, 40] } },
+      { "pezzo": { "inizio": [22, 20], "fine": [38, 20], "bulge": -1 } },
+      { "pezzo": { "inizio": [38, 20], "fine": [22, 20], "bulge": -1 } }
+    ],
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "enclosed",
+    "loop": [
+      {
+        "loop": {
+          "vertici": [
+            ["0", "0", "0"],
+            ["60", "0", "0"],
+            ["60", "40", "0"],
+            ["0", "40", "0"]
+          ],
+          "chiusa": true
+        },
+        "origini": [
+          { "fonte": "curve", "curva": "2", "altra_curva": "2", "invertito": false },
+          { "fonte": "curve", "curva": "3", "altra_curva": "3", "invertito": false },
+          { "fonte": "curve", "curva": "0", "altra_curva": "0", "invertito": false },
+          { "fonte": "curve", "curva": "1", "altra_curva": "1", "invertito": false }
+        ],
+        "profondita": "0"
+      },
+      {
+        "loop": {
+          "vertici": [
+            ["22", "20", "1"],
+            ["38", "20", "1"]
+          ],
+          "chiusa": true
+        },
+        "origini": [
+          { "fonte": "curve", "curva": "5", "altra_curva": "5", "invertito": true },
+          { "fonte": "curve", "curva": "4", "altra_curva": "4", "invertito": true }
+        ],
+        "profondita": "1"
+      }
+    ],
+    "estremi_liberi": [],
+    "scartate": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Curve copiate dai percorsi di contorno del retino handle CF in autocad-retini.dxf (voce autocad-retini di sorgenti.json; codici 92-93, vertici 10/20 e bulge 42). Il rettangolo e i due semicerchi coincidono pezzo per pezzo con i percorsi HATCH. Con frazioni, 0<10<22<38<60 e 0<20<40: il punto è dentro il rettangolo e fuori dal cerchio di centro (30,20) e raggio 8; il cerchio è dentro il rettangolo perché 30-8>0, 30+8<60, 20-8>0 e 20+8<40. Il contorno ha profondità 0 e l'isola profondità 1. I loop sono antiorari dal vertice lessicograficamente minore; invertire i due pezzi circolari cambia il bulge da -1 a 1. Tutti i vertici sono estremi dei dati e quindi esatti."
+  }
+}
