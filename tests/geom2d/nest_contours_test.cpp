@@ -68,7 +68,8 @@ TEST(NestContours, PermutationsAndPolylineStartAndDirectionPreserveNesting) {
 
     std::vector<std::size_t> order(contours.size());
     std::iota(order.begin(), order.end(), std::size_t{0});
-    do {
+    bool more = true;
+    while (more) {
         std::vector<Loop> permuted;
         for (const auto index : order) {
             auto loop = std::get<Polyline>(contours.at(index));
@@ -92,7 +93,8 @@ TEST(NestContours, PermutationsAndPolylineStartAndDirectionPreserveNesting) {
         EXPECT_GE(order.at(conflict.second), kLevels);
         EXPECT_EQ(conflict.kind, ContourConflictKind::crossing);
         EXPECT_TRUE(result.skipped.empty());
-    } while (std::next_permutation(order.begin(), order.end()));
+        more = std::next_permutation(order.begin(), order.end());
+    }
 }
 
 }  // namespace
