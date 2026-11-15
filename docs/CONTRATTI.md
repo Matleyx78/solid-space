@@ -183,7 +183,10 @@ e per quella di un pacchetto la cui scheda autorizza a cambiare il contratto.
 - **Il verbale.** Un commento nella pull request che comincia con
   **Verbale della revisione del contratto**, con la lista spuntata per ogni
   funzione e i numeri delle issue aperte. Per ogni buco nuovo, una issue
-  `contratto` come in «La revisione del contratto».
+  `contratto` come in «La revisione del contratto»; nella catena degli agenti,
+  invece, una segnalazione [decisione] nel verbale
+  ([agenti/catena.md](agenti/catena.md), "Revisione (revisore)";
+  [ADR 0018](adr/0018-catena-degli-agenti.md), punto 6).
 - **Il merge.** Il responsabile unisce solo dopo il verbale. Se ci sono buchi
   nuovi li decide prima: la decisione entra nella stessa pull request, che
   allora si rivede di nuovo sulle sole funzioni toccate dalla decisione.
