@@ -37,6 +37,9 @@ struct RegionParts {
     /// implicitly outside, since all loop pieces are bounded.
     std::vector<PartClass> classes;
     bool closed = false;
+    /// One flag per class: the open part runs along a loop piece,
+    /// independently of the parity of its two sides.
+    std::vector<bool> onLoop;
 };
 
 /// Splits and classifies a nondegenerate, checked host against checked loops.

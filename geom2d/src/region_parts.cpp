@@ -79,11 +79,13 @@ void addCuts(std::vector<ExactPoint>& cuts, const CurveMeaning& host, const Carr
 }
 
 PartClass classAfter(const ExactPoint& cut, const HalfPiece& along,
-                     std::span<const LoopPieces> loops) {
+                     std::span<const LoopPieces> loops, std::vector<bool>& onLoop) {
     const std::array references{along};
     const auto sectors = sectorStates(cut, loops, references);
     const auto group = sectors.order.groupOf(sectors.loopHalfPieces());
     const auto previous = (group + sectors.order.groupCount() - 1) % sectors.order.groupCount();
+    // A second half piece in the reference group shares its carrier and heading.
+    onLoop.push_back(sectors.order.group(group).size() > 1);
     // Sweeping counterclockwise past the forward half piece enters its left
     // side. Each side keeps that parity until the next cut, including when
     // several loop pieces coincide with the host.
@@ -157,7 +159,7 @@ RegionParts regionParts(const CurveMeaning& host, Extension extension,
                                        ? Heading::backward
                                        : Heading::forward};
     for (std::size_t i = 1; i < result.cuts.size(); ++i) {
-        result.classes.push_back(classAfter(result.cuts[i - 1], along, loops));
+        result.classes.push_back(classAfter(result.cuts[i - 1], along, loops, result.onLoop));
     }
     return result;
 }
