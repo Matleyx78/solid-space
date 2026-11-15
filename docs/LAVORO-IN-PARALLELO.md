@@ -55,8 +55,8 @@ Gli agenti sono due ([DECISIONI.md](DECISIONI.md), 2026-11-11). Ogni pacchetto
 fa un **giro a tre**: un agente scrive i riferimenti, l'altro realizza il
 pacchetto, e chi ha scritto i riferimenti rivede la pull request del lavoro.
 Quindi Codex, Claude, Codex per i pacchetti di Claude, e Claude, Codex, Claude
-per quelli di Codex. Riferimenti e revisioni si possono fare a lotti (sezioni 3
-e 4). Le etichette `agente:gemini`, `agente:gemini-argon` e `agente:copilot`
+per quelli di Codex. Ogni lavoro si avvia con un commento nella sua issue, e gli
+agenti si passano revisione e correzioni da soli (sezione 4). Le etichette `agente:gemini`, `agente:gemini-argon` e `agente:copilot`
 restano su GitHub, ma non si assegnano.
 
 Questi ruoli valgono dalla tappa che corrisponde alla 0.8 di Tecnigrafo; il
@@ -285,15 +285,30 @@ pacchetti a tappa aperta, le dipendenze si segnano solo per le issue nuove.
    adatta (la CI controlla l'hash, non la licenza).
 3. Unita la pull request, il pacchetto di lavoro collegato può partire.
 
-I pacchetti di riferimenti non dipendono l'uno dal merge dell'altro, quindi
-l'agente li fa **a lotti**: in una sola sessione prende di fila tutti quelli
-pronti, con un ramo e una pull request per ciascuno (regola in
-[AGENTS.md](../AGENTS.md), "Lavoro a lotti"). Il responsabile li rivede poi uno
-alla volta, come sopra.
+I pacchetti di riferimenti non dipendono l'uno dal merge dell'altro, quindi si
+avviano tutti insieme, ciascuno con il suo commento (sezione 4). La pull request
+porta la riga `Avvia dopo il merge: #<pacchetto>` e, con la CI verde,
+l'etichetta `pronta`; il responsabile li rivede poi uno alla volta, come sopra,
+e al merge il pacchetto di lavoro parte da solo
+([docs/agenti/catena.md](agenti/catena.md)).
 
 ## 4. Avviare l'agente
 
-Il messaggio normale è sempre lo stesso: l'agente sceglie da solo il pacchetto
+Di norma un lavoro si avvia con **un solo commento** nella sua issue, e gli
+agenti si passano il lavoro da soli: revisione, correzioni, giri successivi,
+ripresa dopo una decisione, partenza dopo un merge
+([docs/agenti/catena.md](agenti/catena.md);
+[ADR 0018](adr/0018-catena-degli-agenti.md)). Il commento, le etichette
+`pronta`, `decisione` e `ferma` e la preparazione del repository sono nella
+guida del responsabile, in Tecnigrafo:
+[GUIDA-RESPONSABILE.md](https://github.com/Matleyx78/tecnigrafo/blob/main/docs/GUIDA-RESPONSABILE.md),
+A2a. `scripts/avvia.sh <issue>` scrive lo stesso commento dal terminale, con
+modello e impegno della riga «Modello e impegno» della issue, e solo se la
+issue non aspetta altro; con `DRY_RUN=1` davanti mostra il testo senza
+scriverlo.
+
+Da una chat, per esempio per scegliere il modello di Codex, il messaggio
+normale è sempre lo stesso: l'agente sceglie da solo il pacchetto
 giusto con le regole di [AGENTS.md](../AGENTS.md) ("Se ti chiedono di prendere il
 prossimo pacchetto").
 
@@ -304,22 +319,8 @@ regole di AGENTS.md. Realizzalo, apri la pull request, porta la CI al
 verde e fermati, come dice AGENTS.md.
 ```
 
-Per i riferimenti e le revisioni i messaggi possono essere a lotti: una
-sessione fa tutto il lavoro pronto, e il responsabile non deve riavviarla per
-ogni pacchetto.
-
-```text
-Lavora sul repository Matleyx78/solid-space. Leggi AGENTS.md e seguilo alla
-lettera. Prendi i pacchetti di riferimenti pronti della tappa 0.2 assegnati a
-te, uno dopo l'altro, come dice AGENTS.md in "Lavoro a lotti". Per ognuno apri
-la pull request e porta la CI al verde; alla fine scrivimi un solo riepilogo.
-```
-
-```text
-Lavora sul repository Matleyx78/solid-space. Leggi AGENTS.md e seguilo alla
-lettera. Rivedi le pull request aperte, come dice AGENTS.md in "Lavoro a
-lotti", e alla fine scrivimi un solo riepilogo.
-```
+Avviato dalla chat, l'agente passa il lavoro alla catena se il messaggio
+aggiunge «alla fine fai il passaggio come dice docs/agenti/catena.md».
 
 Se serve far partire un pacchetto preciso, si indicano issue e ramo:
 

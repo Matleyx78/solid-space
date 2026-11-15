@@ -1,0 +1,100 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 The Tecnigrafo authors
+# Copyright (C) 2026 The solid-space authors
+# Adapted from Tecnigrafo commit a02fa2eac43af5a0aaccea28c22b68e9b3fabca3
+#
+# The chain of agents (docs/agenti/catena.md; docs/adr/0018): starts Claude
+# Code when a comment, a review or a new issue of the owner mentions @claude.
+# Only the owner can start it: Codex writes with the owner's token, the
+# automations through scripts/passa.sh and scripts/avvia.sh with the
+# RELAY_PAT secret. Claude runs on the owner's Max plan, through the
+# CLAUDE_CODE_OAUTH_TOKEN secret (created with `claude setup-token`).
+#
+# "[modello: …]" and "[impegno: …]" in the text choose model and effort; only
+# known values are accepted, anything else falls back to opus and medium.
+#
+# gh inside Claude's shell uses RELAY_PAT, not the default GITHUB_TOKEN: a
+# pull request opened with GITHUB_TOKEN would start no workflow, so ci.yml,
+# which runs on pull requests only, would never run. Pushes come from the
+# Claude GitHub App and start it as usual.
+#
+# What the job installs and which commands Claude may run are decided by the
+# owner (docs/agenti/comandi.md, "Gli ambienti della catena").
+name: Claude
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  pull_request_review:
+    types: [submitted]
+  issues:
+    types: [opened, assigned]
+
+jobs:
+  claude:
+    if: |
+      github.actor == 'Matleyx78' && (
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude'))))
+    runs-on: ubuntu-24.04
+    # The CI of a pull request can take more than an hour
+    # (Windows and macOS; scripts/ci-attendi.sh, docs/agenti/comandi.md).
+    timeout-minutes: 300
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      actions: read
+      checks: read
+      id-token: write
+    env:
+      GH_TOKEN: ${{ secrets.RELAY_PAT }}
+      GH_TOKEN_UTENTE: ${{ secrets.RELAY_PAT }}
+      # The job token, for what the personal token cannot read: the error
+      # annotations of scripts/ci-errori.sh (checks: read above).
+      GH_TOKEN_LETTURA: ${{ github.token }}
+      SS_BUILD_SUFFIX: -claude
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Read model and effort
+        id: opts
+        env:
+          TEXT: ${{ github.event.comment.body || github.event.review.body || github.event.issue.body }}
+        run: |
+          model=opus
+          effort=medium
+          lower="$(printf '%s' "$TEXT" | tr '[:upper:]' '[:lower:]')"
+          if [[ "$lower" =~ \[modello:[[:space:]]*([a-z]+)[[:space:]]*\] ]]; then
+            case "${BASH_REMATCH[1]}" in
+              opus|sonnet|haiku) model="${BASH_REMATCH[1]}" ;;
+            esac
+          fi
+          if [[ "$lower" =~ \[impegno:[[:space:]]*([a-z ]+)\] ]]; then
+            v="$(printf '%s' "${BASH_REMATCH[1]}" | xargs)"
+            case "$v" in
+              basso) effort=low ;;
+              medio) effort=medium ;;
+              alto) effort=high ;;
+              "molto alto") effort=xhigh ;;
+              massimo) effort=max ;;
+            esac
+          fi
+          echo "model=$model" >> "$GITHUB_OUTPUT"
+          echo "effort=$effort" >> "$GITHUB_OUTPUT"
+          echo "Model: $model, effort: $effort"
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: >-
+            --model ${{ steps.opts.outputs.model }}
+            --effort ${{ steps.opts.outputs.effort }}
+            --append-system-prompt "Sei stato avviato dalla catena degli agenti (docs/agenti/catena.md) con il modello ${{ steps.opts.outputs.model }} e l'impegno ${{ steps.opts.outputs.effort }}: scrivili cosi nelle pull request e nei verbali. Non scrivere mai @claude né @codex nei commenti, nemmeno citando un comando: i tuoi commenti hanno l'identità del responsabile e avvierebbero un agente."
+            --allowedTools "Edit,Write,Bash(gh:*),Bash(git:*),Bash(python3:*),Bash(jq:*),Bash(clang-format:*),Bash(clang-format-18:*),Bash(scripts/controlla.sh:*),Bash(scripts/ci-attendi.sh:*),Bash(bash scripts/ci-attendi.sh:*),Bash(scripts/ci-errori.sh:*),Bash(bash scripts/ci-errori.sh:*),Bash(scripts/passa.sh:*),Bash(bash scripts/passa.sh:*)"

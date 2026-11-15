@@ -1,0 +1,47 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 The Tecnigrafo authors
+# Copyright (C) 2026 The solid-space authors
+# Adapted from Tecnigrafo commit a02fa2eac43af5a0aaccea28c22b68e9b3fabca3
+#
+# The chain of agents (docs/agenti/catena.md, "Dopo il merge"; docs/adr/0018):
+# when the owner merges a pull request whose description has lines
+# "Avvia dopo il merge: #N", start or resume issue N with its agent. The
+# mention must come from the owner, because the agents ignore bots:
+# scripts/avvia.sh writes it with the RELAY_PAT secret, and does not start
+# an issue that still waits for another one ("Dipende da", "Riferimenti").
+name: Dopo il merge
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  avvia:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - name: Start the issues named in the description
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN_UTENTE: ${{ secrets.RELAY_PAT }}
+          BODY: ${{ github.event.pull_request.body }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          # Only lines of their own count, not the words quoted in a sentence.
+          numbers="$(printf '%s\n' "$BODY" | python3 scripts/catena.py avvia)"
+          if [ -z "$numbers" ]; then
+            echo "Nothing to start."
+            exit 0
+          fi
+          # Let GitHub close the issues of "Closes #N" first: the issues to
+          # start may depend on them.
+          sleep 20
+          for n in $numbers; do
+            bash scripts/avvia.sh "$n" "La pull request #$PR è stata unita."
+          done

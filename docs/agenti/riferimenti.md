@@ -7,8 +7,8 @@ l'etichetta `riferimenti` o il titolo `[X.Y-RN]`, oppure quando il lavoro tocca
 
 Per "il prossimo pacchetto di riferimenti" valgono le condizioni 1–3 e 5 di
 [pacchetto.md](pacchetto.md) ("Se ti chiedono di prendere il prossimo
-pacchetto"), sulle issue con l'etichetta `riferimenti`; per prenderli di fila,
-[lotti.md](lotti.md).
+pacchetto"), sulle issue con l'etichetta `riferimenti`. Un pacchetto di
+riferimenti per sessione: il successivo si prende in una nuova sessione.
 
 ## Robustezza e verifica
 
@@ -33,3 +33,9 @@ lavoro").
 - Una pull request che tocca solo casi di riferimento (o anche documenti e
   commenti) non si compila in locale: la verifica la fa la CI
   ([DECISIONI.md](../DECISIONI.md), 2026-11-03).
+- Nella descrizione della pull request scrivi la riga
+  `Avvia dopo il merge: #<issue del lavoro>`, una per ogni pacchetto di lavoro
+  che i tuoi casi sbloccano: al merge il pacchetto parte da solo, se non
+  aspetta altro ([catena.md](catena.md), "Dopo il merge"). Nella catena, con
+  la CI verde la pull request prende l'etichetta `pronta`: i riferimenti li
+  rivede il responsabile.

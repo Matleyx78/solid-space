@@ -2,8 +2,10 @@
 
 Si legge insieme al nucleo, [AGENTS.md](../../AGENTS.md), quando ti chiedono di
 rivedere una pull request, oppure quando la sua descrizione comincia con
-**Revisione del contratto: da fare**. Per rivederle di fila,
-[lotti.md](lotti.md).
+**Revisione del contratto: da fare**. Nella catena degli agenti il verbale ha
+anche i giri e le classi di [catena.md](catena.md), "Revisione (revisore)":
+[bloccante], [decisione] per i buchi visibili, [fascia] per «La fascia» qui
+sotto, [facoltativa] per ciò che qui è «non bloccante».
 
 ## Rivedere
 
@@ -12,8 +14,8 @@ carico", e togli l'etichetta alla fine.
 
 Se la descrizione comincia con **Revisione del contratto: da fare**, segui
 [docs/CONTRATTI.md](../CONTRATTI.md), «Le correzioni del contratto»: verbale
-nella pull request, una issue `contratto` per ogni buco nuovo, nessuna modifica
-alla pull request.
+nella pull request, una issue `contratto` per ogni buco nuovo (nella catena, una
+segnalazione [decisione] nel verbale), nessuna modifica alla pull request.
 
 ## La fascia
 
@@ -41,7 +43,8 @@ applica e va avanti; i dubbi di forma li scrive come **non bloccanti**.
 
 Il revisore usa un **modello diverso** da quello dell'autore, che la pull
 request dichiara nella sezione sull'uso dell'IA: se è il suo stesso modello,
-non la rivede e lo dice al responsabile. Il suo verbale dice il modello usato
+non la rivede e lo dice al responsabile (nella catena, con [catena.md](catena.md),
+"Fermarsi per una decisione"). Il suo verbale dice il modello usato
 ([DECISIONI.md](../DECISIONI.md), 2026-11-07).
 
 ## Prima di dichiarare un buco
