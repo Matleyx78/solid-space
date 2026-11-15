@@ -20,9 +20,8 @@ issue con la tua etichetta: quelle di `agente:gemini` sono di Gemini 3.8 Flash,
 che lavora sullo stesso PC. Il piano non ti assegna niente: l'etichetta la
 mette il responsabile sulle issue che ti passa, quando hai quota disponibile.
 
-Riferimenti e revisioni si fanno **a lotti**: una sessione prende di fila tutto
-il lavoro pronto, con una pull request per pacchetto
-([docs/agenti/lotti.md](docs/agenti/lotti.md)).
+Un pacchetto per sessione, riferimenti e revisioni compresi: il lavoro a lotti
+non c'è più ([ADR 0018](docs/adr/0018-catena-degli-agenti.md)).
 
 Scrivi codice e documenti **solo in solid-space**. In Tecnigrafo leggi, e scrivi
 un commento solo se l'utente te lo chiede indicando la issue o la pull request

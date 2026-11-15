@@ -34,6 +34,11 @@ sessione. Il pacchetto si riprende dopo la decisione. Se trovi il buco a lavoro
 già avanzato, vale lo stesso: pubblica il ramo senza pull request e scrivine il
 nome nella issue.
 
+Nella catena degli agenti la issue del buco porta anche le etichette
+`decisione` e `agente:` dell'altro agente, con la riga per riprendere, e la
+correzione del contratto avvia da sola il pacchetto al merge: vedi
+[catena.md](catena.md), "Buco nel contratto".
+
 **Se la tua pull request cambia un'intestazione del contratto** (anche solo un
 commento, per esempio applicando una decisione), metti in testa alla
 descrizione la riga **Revisione del contratto: da fare**, con le intestazioni e

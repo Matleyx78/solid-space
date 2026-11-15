@@ -677,3 +677,20 @@ i rimandi ai documenti che cambia.
   convenzione di `intersect()` non cambia e i riferimenti di RS5a restano
   validi. Aggiornati `clipping.hpp` (`StretchEnd::onHost`) e
   [ADR 0015](adr/0015-parti-di-una-curva-dentro-una-regione.md), punto 5.
+
+- **2026-11-15 — Catena degli agenti.** Dopo le prove nel repository
+  [Matleyx78/prova-orchestratore](https://github.com/Matleyx78/prova-orchestratore)
+  e i piloti in Tecnigrafo, il responsabile porta qui la catena degli agenti
+  di Tecnigrafo ([ADR 0053 di Tecnigrafo](https://github.com/Matleyx78/tecnigrafo/blob/main/docs/adr/0053-catena-degli-agenti.md)),
+  in via eccezionale a tappa aperta invece che nella pausa dopo la 0.3 (regola
+  del 2026-11-07), perché la ritiene molto più veloce del metodo attuale: un
+  lavoro si avvia con un solo commento, gli agenti si passano il lavoro con
+  `scripts/passa.sh` e `scripts/avvia.sh`, la revisione va a giri con le
+  classi [bloccante], [decisione], [fascia] e [facoltativa], le decisioni si
+  scrivono sempre in una issue, la issue di un buco nel contratto è anche il
+  posto della decisione e la sua correzione fa ripartire il pacchetto, il
+  merge avvia le issue di `Avvia dopo il merge: #N` e una sentinella mette
+  `ferma` sulle catene senza movimento da 60 minuti. Il lavoro a lotti non
+  c'è più. Gli ambienti degli agenti nella catena li decide il responsabile.
+  Solo lui avvia gli agenti.
+  [ADR 0018](adr/0018-catena-degli-agenti.md); [agenti/catena.md](agenti/catena.md).

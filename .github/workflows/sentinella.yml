@@ -1,0 +1,44 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 The Tecnigrafo authors
+# Copyright (C) 2026 The solid-space authors
+# Adapted from Tecnigrafo commit a02fa2eac43af5a0aaccea28c22b68e9b3fabca3
+#
+# The sentinel of the chain of agents (docs/agenti/catena.md, "Sentinella";
+# docs/adr/0018): every 30 minutes, label as `ferma` the chains with no
+# movement for 60 minutes or more that did not say why (no pronta, no
+# decisione), and the decisions written and never picked up. Pull requests
+# with a CI run still going are left alone. It can also be started by hand,
+# with another threshold or as a dry run.
+name: Sentinella
+
+on:
+  schedule:
+    - cron: '7,37 * * * *'
+  workflow_dispatch:
+    inputs:
+      soglia_minuti:
+        description: Minuti senza movimento per considerare ferma una catena
+        default: '60'
+      dry_run:
+        description: Solo elenco, senza etichette né commenti
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  checks: read
+
+jobs:
+  sentinella:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - name: Look for stuck chains
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          SOGLIA_MINUTI: ${{ inputs.soglia_minuti || '60' }}
+          DRY_RUN: ${{ inputs.dry_run && '1' || '0' }}
+        run: python3 scripts/sentinella.py

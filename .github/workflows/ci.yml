@@ -81,6 +81,10 @@ jobs:
           print('\n'.join(paths))
           print(f'Documentation only: {docs_only}')
           PY
+      # The scripts of the chain of agents (docs/agenti/catena.md) and of the
+      # CI, with fakes instead of the network.
+      - name: Script tests
+        run: python3 -m unittest discover -s scripts -p '*_test.py' -v
 
   formatting:
     name: Formatting (clang-format 18)

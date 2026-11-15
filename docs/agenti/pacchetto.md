@@ -58,8 +58,7 @@ Scegli **una sola** issue, la prima nell'ordine del piano che:
 Per "il prossimo pacchetto di riferimenti" valgono le condizioni 1–3 e 5, sulle
 issue con l'etichetta `riferimenti` ([riferimenti.md](riferimenti.md)). Se nessuna
 issue va bene, non iniziare: scrivi all'utente quali issue sono tue e cosa le
-blocca. Il pacchetto successivo si prende in una nuova sessione, dopo il merge
-(le eccezioni sono in [lotti.md](lotti.md)).
+blocca. Il pacchetto successivo si prende in una nuova sessione, dopo il merge.
 
 ## Robustezza e verifica
 
@@ -85,7 +84,9 @@ Chi scrive i casi segue [riferimenti.md](riferimenti.md).
   5. togli `AA-Presa in carico` e termina la sessione.
 
   Il caso lo corregge un pacchetto di riferimenti; poi il pacchetto si
-  riprende. In un lotto passa al pacchetto successivo.
+  riprende. Nella catena il commento del punto 3 è quello di
+  [catena.md](catena.md), "Fermarsi per una decisione", con la riga per chi ha
+  scritto i riferimenti.
 - Un'operazione che può fallire restituisce un risultato con diagnosi; un ripiego
   non è mai silenzioso.
 

@@ -56,9 +56,13 @@ REST; servono `jq` e `gh` oppure `curl`):
 ```sh
 scripts/ci-attendi.sh             # CI del commit corrente, già pubblicato
 scripts/ci-attendi.sh <sha>       # oppure un commit preciso
+scripts/ci-attendi.sh <numero>    # oppure l'ultimo commit di una pull request
 scripts/ci-attendi.sh <run-id>    # oppure una run precisa
 scripts/ci-errori.sh <run-id>     # job falliti, passi e righe di errore
 ```
+
+Un numero fino a sei cifre è una pull request, uno più lungo l'id di una run;
+`ci-errori.sh` accetta gli stessi argomenti.
 
 Il repository pubblico si legge anche senza token con `curl`; `GITHUB_TOKEN`
 aumenta il limite delle richieste anonime. `SS_REPO` cambia il repository.
@@ -70,3 +74,20 @@ Con 2, 4 o 5 riferisci il problema nella pull request e termina come dice
 AGENTS.md, "Quando fermarsi".
 `SS_ATTESA_MAX`, `SS_ATTESA_PAUSA` e `SS_ATTESA_RILANCI` regolano durata,
 intervallo e numero massimo di attese (default: 540 secondi, 90 secondi, dieci).
+
+## Gli ambienti della catena
+
+Nella catena degli agenti ([catena.md](catena.md)) Claude lavora in GitHub
+Actions (`.github/workflows/claude.yml`, con `SS_BUILD_SUFFIX=-claude`) e Codex
+nel suo ambiente sul web. **Che cosa c'è in questi ambienti lo decide il
+responsabile**: gli script di preparazione degli ambienti di Codex, i passi del
+workflow `claude.yml` e l'elenco dei comandi che Claude può lanciare
+([ADR 0018](../adr/0018-catena-degli-agenti.md)). Un agente non li cambia e non
+ne propone di nuovi nella pull request del suo lavoro: se gli manca qualcosa,
+vale la regola sopra (niente installazioni, solo i passi possibili, il resto
+alla CI) e lo scrive nella pull request; una proposta di cambio va nella issue
+«Proposte di metodo» della tappa.
+
+In GitHub Actions `gh` usa il token personale della catena (secret
+`RELAY_PAT`), che non legge le annotazioni degli errori: `scripts/ci-errori.sh`
+le legge con il token del job (`GH_TOKEN_LETTURA`), e altrove senza token.
