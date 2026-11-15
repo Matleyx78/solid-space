@@ -1,0 +1,87 @@
+{
+  "versione": 1,
+  "id": "boundary-retini-isole-annidate",
+  "componente": "geom2d",
+  "descrizione": "Richiesta #215, autocad-retini.dxf: il punto interno al rettangolo del retino ANSI31 (handle 109) restituisce il contorno, l'isola rettangolare e il cerchio annidato che AutoCAD ha salvato nei tre percorsi HATCH; il limite 10 dell'ADR 0014 non cambia i percorsi.",
+  "ingresso": {
+    "operazione": "detectBoundary",
+    "punto": [
+      5,
+      -150
+    ],
+    "curve": [
+      { "segmento": { "inizio": [60, -120], "fine": [0, -120] } },
+      { "segmento": { "inizio": [0, -120], "fine": [0, -160] } },
+      { "segmento": { "inizio": [0, -160], "fine": [60, -160] } },
+      { "segmento": { "inizio": [60, -160], "fine": [60, -120] } },
+      { "segmento": { "inizio": [10, -155], "fine": [10, -125] } },
+      { "segmento": { "inizio": [10, -125], "fine": [50, -125] } },
+      { "segmento": { "inizio": [50, -125], "fine": [50, -155] } },
+      { "segmento": { "inizio": [50, -155], "fine": [10, -155] } },
+      { "pezzo": { "inizio": [24, -140], "fine": [36, -140], "bulge": -1 } },
+      { "pezzo": { "inizio": [36, -140], "fine": [24, -140], "bulge": -1 } }
+    ],
+    "unita_in_metri": 0.001
+  },
+  "atteso": {
+    "esito": "enclosed",
+    "loop": [
+      {
+        "loop": {
+          "vertici": [
+            ["0", "-160", "0"],
+            ["60", "-160", "0"],
+            ["60", "-120", "0"],
+            ["0", "-120", "0"]
+          ],
+          "chiusa": true
+        },
+        "origini": [
+          { "fonte": "curve", "curva": "2", "altra_curva": "2", "invertito": false },
+          { "fonte": "curve", "curva": "3", "altra_curva": "3", "invertito": false },
+          { "fonte": "curve", "curva": "0", "altra_curva": "0", "invertito": false },
+          { "fonte": "curve", "curva": "1", "altra_curva": "1", "invertito": false }
+        ],
+        "profondita": "0"
+      },
+      {
+        "loop": {
+          "vertici": [
+            ["10", "-155", "0"],
+            ["50", "-155", "0"],
+            ["50", "-125", "0"],
+            ["10", "-125", "0"]
+          ],
+          "chiusa": true
+        },
+        "origini": [
+          { "fonte": "curve", "curva": "7", "altra_curva": "7", "invertito": true },
+          { "fonte": "curve", "curva": "6", "altra_curva": "6", "invertito": true },
+          { "fonte": "curve", "curva": "5", "altra_curva": "5", "invertito": true },
+          { "fonte": "curve", "curva": "4", "altra_curva": "4", "invertito": true }
+        ],
+        "profondita": "1"
+      },
+      {
+        "loop": {
+          "vertici": [
+            ["24", "-140", "1"],
+            ["36", "-140", "1"]
+          ],
+          "chiusa": true
+        },
+        "origini": [
+          { "fonte": "curve", "curva": "9", "altra_curva": "9", "invertito": true },
+          { "fonte": "curve", "curva": "8", "altra_curva": "8", "invertito": true }
+        ],
+        "profondita": "2"
+      }
+    ],
+    "estremi_liberi": [],
+    "scartate": []
+  },
+  "provenienza": {
+    "tipo": "aritmetica-esatta",
+    "procedimento": "Curve copiate dai tre percorsi di contorno del retino handle 109 in autocad-retini.dxf (voce autocad-retini di sorgenti.json; codici 92-93, vertici 10/20 e bulge 42). Con frazioni, il punto (5,-150) è nel rettangolo esterno [0,60]x[-160,-120] e fuori da quello interno [10,50]x[-155,-125]. Quest'ultimo è strettamente dentro il primo. Il cerchio ha centro (30,-140) e raggio 6, dunque è strettamente dentro il rettangolo interno: 30-6>10, 30+6<50, -140-6>-155 e -140+6<-125. Le profondità sono quindi 0, 1 e 2, come i tre percorsi HATCH. I loop sono antiorari dal vertice lessicograficamente minore; invertire i quattro lati interni e i due semicerchi cambia l'ordine e, per i pezzi circolari, il bulge da -1 a 1. Tutti i vertici sono estremi dei dati e quindi esatti."
+  }
+}
