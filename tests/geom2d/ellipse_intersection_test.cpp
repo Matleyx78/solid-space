@@ -423,4 +423,30 @@ TEST(EllipseIntersection, DiagnosesTheEllipseFirst) {
     EXPECT_EQ(withEllipse.diagnosis().input, 1U);
 }
 
+TEST(EllipseIntersection, SwappingReportsTheSameBadEllipse) {
+    // Only the second ellipse is bad: swapped, the same code names input 0.
+    const Ellipse good{{0.0, 0.0}, {10.0, 0.0}, 0.5};
+    const Ellipse negativeRatio{{0.0, 0.0}, {10.0, 0.0}, -1.0};
+    const auto direct = geom2d::intersect(good, Extension::none, negativeRatio, Extension::none);
+    const auto swapped = geom2d::intersect(negativeRatio, Extension::none, good, Extension::none);
+    ASSERT_FALSE(direct.hasValue());
+    ASSERT_FALSE(swapped.hasValue());
+    EXPECT_EQ(direct.diagnosis().code, geom2d::DiagnosisCode::invalidValue);
+    EXPECT_EQ(direct.diagnosis().input, 1U);
+    EXPECT_EQ(swapped.diagnosis().code, geom2d::DiagnosisCode::invalidValue);
+    EXPECT_EQ(swapped.diagnosis().input, 0U);
+
+    // Both are bad: each call reports the one given first.
+    const Ellipse farCenter{{1.0e300, 0.0}, {10.0, 0.0}, 0.5};
+    const auto both = geom2d::intersect(farCenter, Extension::none, negativeRatio, Extension::none);
+    const auto bothSwapped =
+        geom2d::intersect(negativeRatio, Extension::none, farCenter, Extension::none);
+    ASSERT_FALSE(both.hasValue());
+    ASSERT_FALSE(bothSwapped.hasValue());
+    EXPECT_EQ(both.diagnosis().code, geom2d::DiagnosisCode::outOfDomain);
+    EXPECT_EQ(both.diagnosis().input, 0U);
+    EXPECT_EQ(bothSwapped.diagnosis().code, geom2d::DiagnosisCode::invalidValue);
+    EXPECT_EQ(bothSwapped.diagnosis().input, 0U);
+}
+
 }  // namespace

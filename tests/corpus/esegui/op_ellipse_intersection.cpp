@@ -5,9 +5,10 @@
 // references [0.3-RS7a], [0.3-RS7b] and [0.3-RS7c]). With two ellipses every
 // case also calls intersect with the arguments swapped and fails unless it
 // gives the same decisions, with onFirst and onSecond swapped (ellipse.hpp,
-// the second intersect: "Symmetric in the decisions"). The rounded points
-// need not have the same bits: each is within kRelativePointError of the same
-// exact point, so the two are within twice that error.
+// the second intersect: "Symmetric in the decisions"), or the diagnosis of
+// the same bad ellipse with the input swapped. The rounded points need not
+// have the same bits: each is within kRelativePointError of the same exact
+// point, so the two are within twice that error.
 
 #include "ellipse_data.hpp"
 #include "operations.hpp"
@@ -18,6 +19,7 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -87,18 +89,48 @@ void checkOverlap(const EllipseOverlap& overlap, const EllipseIntersections& swa
     asymmetric("an overlap is missing with the arguments swapped");
 }
 
+// The diagnosis of one ellipse alone, if any: endpoints() checks it as
+// intersect does (ellipse.hpp, "Checking the data"), as input 0.
+std::optional<geom2d::Diagnosis> diagnosisOf(const geom2d::Ellipse& ellipse) {
+    const auto ends = geom2d::endpoints(ellipse);
+    if (ends.hasValue()) {
+        return std::nullopt;
+    }
+    return ends.diagnosis();
+}
+
+// Whether a call reports the ellipse it is given first (leading), if bad, as
+// input 0, and otherwise the one given second (trailing) as input 1.
+bool reportsFirstBad(const geom2d::Diagnosis& diagnosis,
+                     const std::optional<geom2d::Diagnosis>& leading,
+                     const std::optional<geom2d::Diagnosis>& trailing) {
+    if (leading.has_value()) {
+        return diagnosis.input == 0 && diagnosis.code == leading->code;
+    }
+    return trailing.has_value() && diagnosis.input == 1 && diagnosis.code == trailing->code;
+}
+
+// With only one bad ellipse both calls report it with the same code, as
+// input 1 in one call and as input 0 in the other; with two bad ellipses
+// each call reports the one it is given first.
+void checkDiagnoses(const geom2d::Diagnosis& direct, const geom2d::Diagnosis& swapped,
+                    const geom2d::Ellipse& first, const geom2d::Ellipse& second) {
+    const auto ofEllipse = diagnosisOf(first);
+    const auto ofOther = diagnosisOf(second);
+    if (!reportsFirstBad(direct, ofEllipse, ofOther) ||
+        !reportsFirstBad(swapped, ofOther, ofEllipse)) {
+        asymmetric("the diagnoses do not report the same bad ellipse");
+    }
+}
+
 void checkSymmetry(const geom2d::Result<EllipseIntersections>& direct,
-                   const geom2d::Result<EllipseIntersections>& swapped, double magnitude) {
+                   const geom2d::Result<EllipseIntersections>& swapped,
+                   const geom2d::Ellipse& first, const geom2d::Ellipse& second, double magnitude) {
     if (direct.hasValue() != swapped.hasValue()) {
         asymmetric("only one of the two calls gives a diagnosis");
     }
     if (!direct.hasValue()) {
-        // The same ellipse reported, as the other input, when only one is bad.
-        const auto& a = direct.diagnosis();
-        const auto& b = swapped.diagnosis();
-        if (a.input + b.input == 1 && a.code != b.code) {
-            asymmetric("the diagnoses differ");
-        }
+        checkDiagnoses(direct.diagnosis(), swapped.diagnosis(), first, second);
         return;
     }
     const auto& a = direct.value();
@@ -164,7 +196,7 @@ Value ellipseIntersectOperation(const Value& input) {
         const auto other = readEllipse(*value, "seconda_ellisse");
         direct = geom2d::intersect(ellipse, ellipsePart, other, otherPart);
         const auto swapped = geom2d::intersect(other, otherPart, ellipse, ellipsePart);
-        checkSymmetry(direct, swapped, magnitudeOf(ellipse, other));
+        checkSymmetry(direct, swapped, ellipse, other, magnitudeOf(ellipse, other));
     } else {
         const auto curve = readCurve(field(input, "curva"), "curva");
         direct = geom2d::intersect(ellipse, ellipsePart, curve, otherPart);
