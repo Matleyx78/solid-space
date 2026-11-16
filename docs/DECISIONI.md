@@ -703,3 +703,15 @@ i rimandi ai documenti che cambia.
   di cambiare dei file, finisce sempre con la frase che rimanda ad AGENTS.md e
   a catena.md e chiede `git push` e `gh pr create`, come il commento di avvio
   ([agenti/catena.md](agenti/catena.md), "Fermarsi per una decisione").
+- **2026-11-15 — Solo indirizzi noreply nei commit.** In Tecnigrafo alcuni
+  commit scritti da agenti portavano come autore l'indirizzo personale del
+  responsabile, preso dall'account dello strumento; lo squash and merge di
+  GitHub lo ha copiato in una riga `Co-authored-by` del commit su `main`, dove
+  resta pubblico. In solid-space non è successo, ma gli strumenti sono gli
+  stessi. Il responsabile decide, come in Tecnigrafo (sua decisione dello
+  stesso giorno e pacchetto fuori tappa F10): autore, committer e righe
+  `Co-authored-by` di ogni commit usano solo indirizzi noreply
+  ([AGENTS.md](../AGENTS.md), "Commit e pull request"), e il job «Commit
+  addresses» della CI, con `scripts/indirizzi_commit.py` preso da Tecnigrafo,
+  fa fallire una pull request con un commit firmato da un indirizzo diverso.
+  Questa decisione autorizza la modifica a `.github/workflows/ci.yml`.
