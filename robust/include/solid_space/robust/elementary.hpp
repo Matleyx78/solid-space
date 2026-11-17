@@ -13,8 +13,7 @@
 // Correct rounding is not promised either: each result is within a declared
 // error of the exact value of the function at the given doubles.
 //
-// Declared, not yet implemented: a function is used only after the package
-// that implements it is merged (ADR 0007, point 15).
+// Implemented in stage 0.3, package PS1 (ADR 0007, point 15).
 
 #include "solid_space/robust/trigonometry.hpp"  // kMaxTrigArgument
 
