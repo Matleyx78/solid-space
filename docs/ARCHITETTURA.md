@@ -65,6 +65,11 @@ salvataggio si fissano con l'ADR della tappa che porta il naming.
 <componente>/include/solid_space/<componente>/ interfaccia pubblica
 <componente>/src/                              implementazione (anche intestazioni private)
 geom2d/src/exact/                              implementazioni interne esatte
+geom2d/src/exact/polynomial.*                  polinomi esatti fino al quarto grado (0.3)
+geom2d/src/local_order.*, winding.*            ordine intorno a un punto e parità (0.3)
+geom2d/src/arrangement.*                       arrangiamento delle curve (0.3)
+geom2d/src/region_parts.*                      parti di una curva in una regione (0.3)
+geom2d/src/ellipse_meaning.*, ellipse_conic.hpp significato esatto dell’ellisse (0.3)
 tests/<componente>/                            test del componente
 tests/corpus/                                  archivio dei casi di verifica (ADR 0004)
 third_party/                                   OCCT e SolveSpace, sottomoduli fissati e non modificati
@@ -73,7 +78,7 @@ docs/                                          visione, architettura, roadmap, t
 
 Ogni componente ha la sua cartella con `CMakeLists.txt` e `src/`; le intestazioni
 pubbliche nascono con la tappa che le porta. `robust` e `geom2d` hanno realizzato
-nella tappa 0.2 le intestazioni del contratto con Tecnigrafo
+nelle tappe 0.2 e 0.3 le intestazioni del contratto con Tecnigrafo
 ([ADR 0007](adr/0007-tappe-su-richiesta.md), punto 15).
 
 ## Dipendenze esterne

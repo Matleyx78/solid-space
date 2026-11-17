@@ -123,7 +123,8 @@ In `atteso`, oltre alle forme di sempre:
 Regole per chi scrive i casi:
 
 - **Le chiavi e le operazioni** di ogni funzione sono nella scheda del pacchetto
-  che la realizza ([schede della tappa 0.2](../../docs/tappe/0.2/)), sezione "Casi di verifica"; dopo il
+  che la realizza ([schede della tappa 0.2](../../docs/tappe/0.2/) e
+  [della tappa 0.3](../../docs/tappe/0.3/)), sezione "Casi di verifica"; dopo il
   merge, anche nel file `tests/corpus/esegui/op_<area>.cpp` di quel pacchetto.
   Un caso può scrivere solo una parte delle chiavi di un risultato: si confronta
   ciò che è scritto.
