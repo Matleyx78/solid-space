@@ -79,7 +79,7 @@ Le regole sono nell'[ADR 0004](adr/0004-robustezza-e-verifica.md).
 | Quando in Tecnigrafo | Che cosa prende da solid-space | Tappa di solid-space |
 |---|---|---|
 | Tappa 0.7, comandi di modifica | decisioni e costruzioni geometriche robuste del piano per intersezioni, trim, raccordi e offset (richieste #20–#23) | 0.2, chiusa (`v0.2.0`) |
-| Tappa 0.8, quote, retini, blocchi | contorni e isole dei retini, righe tagliate sulla regione, tangente, arcocoseno e `hypot` deterministici, l'ellisse (richieste #214–#217) | 0.3, in chiusura |
+| Tappa 0.8, quote, retini, blocchi | contorni e isole dei retini, righe tagliate sulla regione, tangente, arcocoseno e `hypot` deterministici, l'ellisse (richieste #214–#217) | 0.3, chiusa (`v0.3.0`) |
 | Tappa dei vincoli 2D | `solver` con chiavi handle più ruolo, senza OCCT | quella che nascerà dalle sue richieste |
 | Fase 2, modellatore 3D | `kernel`, `naming`, `features` | quelle che nasceranno dalle sue richieste |
 
