@@ -19,8 +19,8 @@ operazioni di `kernel` passano a `naming` la genealogia che emettono.
 
 | Componente | Namespace | Contiene | Può usare |
 |---|---|---|---|
-| `robust` | `solid_space::robust` | tipi di base (`Point2`, `Result`), predicati esatti (2D, poi 3D), trigonometria deterministica, politica delle tolleranze | solo libreria standard |
-| `geom2d` | `solid_space::geom2d` | curve del piano (segmento, arco, cerchio, segmento di polilinea, polilinea), intersezioni e lato, tangenze e raccordi, curva parallela, regola delle tolleranze sulle curve | `robust` |
+| `robust` | `solid_space::robust` | tipi di base (`Point2`, `Result`), predicati esatti (2D, poi 3D), trigonometria e funzioni elementari deterministiche (`tan`, `acos`, `hypot`), politica delle tolleranze | solo libreria standard |
+| `geom2d` | `solid_space::geom2d` | curve del piano (segmento, arco, cerchio, segmento di polilinea, polilinea), intersezioni e lato, tangenze e raccordi, curva parallela, regola delle tolleranze sulle curve; regioni: contorno e isole da un punto, contorni annidati, curve tagliate sulla regione; ellisse e arco d'ellisse (fuori da `Curve`) | `robust` |
 | `naming` | `solid_space::naming` | `StableId`, grafo di genealogia, serializzazione | solo libreria standard |
 | `solver` | `solid_space::solver` | interfaccia del solver, motore su libslvs, diagnosi dei conflitti | `robust`, `geom2d` (quando serve), libslvs (privato) |
 | `kernel` | `solid_space::kernel` | forme opache, primitive, estrusione e rivoluzione, booleane, raccordi, controllo di validità, strategie di ripiego, STEP | `robust`, `naming`, `geom2d` (quando serve), OCCT (privato) |
@@ -109,3 +109,8 @@ nelle tappe 0.2 e 0.3 le intestazioni del contratto con Tecnigrafo
 | [0011](adr/0011-raccordi-e-tangenze-nel-piano.md) | Raccordi e tangenze tra linee, archi e cerchi del piano (richiesta #21, esito 3) | Accettato |
 | [0012](adr/0012-curva-parallela-nel-piano.md) | Curva parallela di linee, archi, cerchi e polilinee del piano (richiesta #22, esito 3) | Accettato |
 | [0013](adr/0013-esatto-dove-serve.md) | Esatto dove serve: decisioni esatte, costruzioni entro l'errore, dominio in basso e buchi visibili | Accettato |
+| [0014](adr/0014-contorno-e-isole-di-una-regione.md) | Contorno chiuso e isole di una regione da un insieme di curve del piano (richiesta #214, esito 3) | Accettato |
+| [0015](adr/0015-parti-di-una-curva-dentro-una-regione.md) | Parti di una curva dentro una regione del piano con le sue isole (richiesta #215, esito 3) | Accettato |
+| [0016](adr/0016-tangente-arcocoseno-e-lunghezza-deterministici.md) | Tangente, arcocoseno e lunghezza di un vettore uguali su tutti i sistemi (richiesta #216, esito 3) | Accettato |
+| [0017](adr/0017-ellisse-nel-piano.md) | Distanza, punto più vicino e intersezioni dell'ellisse e dell'arco d'ellisse (richiesta #217, esito 3) | Accettato |
+| [0018](adr/0018-catena-degli-agenti.md) | Catena degli agenti avviata con un commento | Accettato |

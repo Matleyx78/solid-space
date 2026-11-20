@@ -3,8 +3,9 @@
 ## Versioni supportate
 
 Fino alla versione 1.0 riceve le correzioni di sicurezza solo la versione più
-recente. Finché non esiste una versione con gli algoritmi geometrici, le
-correzioni si fanno su `main` ([docs/ROADMAP.md](docs/ROADMAP.md)).
+recente pubblicata (oggi `v0.3.0`; `v0.2.0` è la prima con gli algoritmi geometrici). Le
+correzioni si fanno su `main` ed entrano nella versione successiva
+([docs/ROADMAP.md](docs/ROADMAP.md)).
 
 ## Segnalare una vulnerabilità
 

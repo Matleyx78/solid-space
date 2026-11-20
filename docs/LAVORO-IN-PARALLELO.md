@@ -62,8 +62,8 @@ restano su GitHub, ma non si assegnano.
 Questi ruoli valgono dalla tappa che corrisponde alla 0.8 di Tecnigrafo; il
 piano della tappa 0.2 resta com'è. Più sessioni di Claude nello stesso momento
 usano la stessa etichetta: `AA-Presa in carico` basta perché due sessioni non
-prendano la stessa issue. Le issue aperte prima con `agente:claude-2` le prende
-qualunque sessione di Claude; per le nuove l'etichetta non si usa più.
+prendano la stessa issue. `agente:claude-2` non si usa più e non è su nessuna
+issue aperta.
 
 Chi lavora a un pacchetto non scrive i suoi riferimenti, e viceversa. Vale
 anche per i **modelli**: chi scrive i riferimenti usa un modello diverso da chi
@@ -237,9 +237,7 @@ Le etichette del progetto sono `idea`, `pacchetto`, `riferimenti`, `contratto`,
 `agente:claude`, `agente:codex` e `AA-Presa in carico` (sezione 5);
 `agente:gemini`, `agente:gemini-argon` e `agente:copilot` restano, ma non si
 assegnano.
-`agente:claude-2` resta solo sulle issue aperte prima della tappa che
-corrisponde alla 0.8 di Tecnigrafo: le prende qualunque sessione di Claude, e
-l'etichetta si elimina quando non ne restano.
+`agente:claude-2` non è più su nessuna issue aperta e si può eliminare.
 
 Le issue le può creare Claude, partendo dal piano, quando il responsabile glielo
 chiede.
