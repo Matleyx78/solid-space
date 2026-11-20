@@ -29,17 +29,19 @@ non li modifica mai: se un caso ti sembra sbagliato, scrivilo nella issue.
 
 1. **Assegnazione.** Un pacchetto è assegnato a una sola persona alla volta. Se
    non dai notizie per 14 giorni, il pacchetto torna libero.
-2. **Ramo.** Crea un ramo dal nome `pX.Y-NN-descrizione` (esempio:
-   `p0.2-03-orient2d`).
+2. **Ramo.** Crea un ramo dal nome `psX.Y-NN-descrizione` (esempio:
+   `ps0.3-05-taglio`; i prefissi `ps`, `rs`, `cs` valgono dalla tappa 0.3,
+   [docs/LAVORO-IN-PARALLELO.md](docs/LAVORO-IN-PARALLELO.md)).
 3. **Pull request.** Una PR realizza **un solo pacchetto** e cita la sua issue
    (`Closes #123`). Niente modifiche "già che c'ero": se trovi altro da sistemare,
    apri una issue a parte.
-4. **CI verde.** Quando la CI esiste (tappa 0.1), formattazione, compilazione
-   senza avvisi su tre sistemi, analisi statica e test devono passare. Una PR con
-   la CI rossa non viene revisionata.
+4. **CI verde.** Formattazione, compilazione senza avvisi su tre sistemi,
+   analisi statica e test devono passare. Una PR con la CI rossa non viene
+   revisionata.
 5. **Revisione.** Almeno un'approvazione del responsabile o di un revisore
    dell'area. Le osservazioni si risolvono con nuovi commit.
-6. **Merge.** Lo fa il revisore, con *squash* in un unico commit.
+6. **Merge.** Lo fa solo il responsabile, con *squash* in un unico commit
+   ([docs/LAVORO-IN-PARALLELO.md](docs/LAVORO-IN-PARALLELO.md), «Unire»).
 
 ### Cosa si può fare senza un pacchetto
 
@@ -73,8 +75,7 @@ una correzione. Il responsabile aggiorna il piano della tappa e la sezione
 - C++20. Stile descritto in [docs/CODING_STYLE.md](docs/CODING_STYLE.md).
 - Codice, commenti, nomi e messaggi di commit in **inglese**, per permettere a
   chiunque nel mondo di leggerli. Documenti e ADR sono in italiano.
-- Formattazione con `clang-format` 18 usando il `.clang-format` del progetto
-  (dal pacchetto P3 della tappa 0.1).
+- Formattazione con `clang-format` 18 usando il `.clang-format` del progetto.
 - Nessun avviso del compilatore e nessuna segnalazione di `clang-tidy`.
 - Ogni file sorgente inizia con l'intestazione SPDX della licenza.
 
@@ -116,8 +117,7 @@ sa spiegare, vengono chiuse.
 
 ## Prima di aprire la pull request
 
-Formattazione, compilazione e test si lanciano con **un solo comando locale**, che
-esegue gli stessi passi della CI. Arriva con i pacchetti P2 e P3 della
-[tappa 0.1](docs/tappe/0.1-fondamenta.md) e sarà descritto in
-[AGENTS.md](AGENTS.md), sezione "Comandi". Gli strumenti da installare sono in
-[docs/AMBIENTE-SVILUPPO.md](docs/AMBIENTE-SVILUPPO.md).
+Formattazione, compilazione e test si lanciano con **un solo comando locale**,
+`scripts/controlla.sh`, che esegue gli stessi passi della CI (opzioni e preset in
+[docs/agenti/comandi.md](docs/agenti/comandi.md)). Gli strumenti da installare
+sono in [docs/AMBIENTE-SVILUPPO.md](docs/AMBIENTE-SVILUPPO.md).

@@ -6,8 +6,8 @@ WSL (Debian dentro Windows): tieni il progetto **dentro Debian**
 build fatta in WSL è una build **Linux**: per Windows e macOS fa fede la CI.
 
 Questa guida copre gli strumenti. I comandi per compilare e provare il codice
-arrivano con i pacchetti P2 e P3 della [tappa 0.1](tappe/0.1-fondamenta.md) e
-saranno scritti in [AGENTS.md](../AGENTS.md), sezione "Comandi".
+sono nel [README](../README.md), «Compilare e provare i test», e in
+[agenti/comandi.md](agenti/comandi.md) (`scripts/controlla.sh`).
 
 ## 1. Pacchetti di sistema
 

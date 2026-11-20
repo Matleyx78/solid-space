@@ -6,10 +6,9 @@ pacchetto», oppure quando tocchi file `.hpp` o `.cpp`. Le sezioni portano i tit
 
 ## Le etichette degli agenti
 
-Viene da AGENTS.md, "Per prima cosa: prendi in carico", punto 2. Per ogni
-sessione di Claude sono sue sia `agente:claude` sia `agente:claude-2`, che resta
-solo sulle issue aperte prima della tappa che corrisponde alla 0.8 di Tecnigrafo.
-Chi fa che cosa:
+Viene da AGENTS.md, "Per prima cosa: prendi in carico", punto 2. Ogni
+sessione di Claude usa `agente:claude`; `agente:claude-2` non è più su nessuna
+issue aperta. Chi fa che cosa:
 [LAVORO-IN-PARALLELO.md](../LAVORO-IN-PARALLELO.md), "Chi fa cosa".
 
 ## Prima di scrivere codice

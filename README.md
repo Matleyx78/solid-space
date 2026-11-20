@@ -56,8 +56,8 @@ scheletro). Dettagli nella tabella qui sotto e in
 
 | Componente | Contenuto | Dipende da | Stato |
 |---|---|---|---|
-| `robust` | predicati geometrici robusti, trigonometria deterministica e politica delle tolleranze | solo libreria standard | realizzato nella tappa 0.2, in chiusura |
-| `geom2d` | curve del piano: intersezioni, lato, tangenze e raccordi, curva parallela | `robust` | realizzato nella tappa 0.2, in chiusura |
+| `robust` | predicati geometrici robusti, trigonometria e funzioni elementari deterministiche (`tan`, `acos`, `hypot`), politica delle tolleranze | solo libreria standard | in uso: tappe 0.2 (`v0.2.0`) e 0.3 (in chiusura) |
+| `geom2d` | curve del piano: intersezioni, lato, tangenze e raccordi, curva parallela; contorni e isole di una regione, curve tagliate sulla regione; ellisse e arco d'ellisse | `robust` | in uso: tappe 0.2 (`v0.2.0`) e 0.3 (in chiusura) |
 | `solver` | interfaccia del solver di vincoli e motore (libslvs, poi altro) | `robust`, `geom2d` (quando serve) | non ancora cominciato |
 | `naming` | identificativi stabili e grafo di genealogia | solo libreria standard | non ancora cominciato |
 | `kernel` | facciata su OCCT: forme, operazioni, STEP | `robust`, `naming`, `geom2d` (quando serve), OCCT | non ancora cominciato |
@@ -74,8 +74,9 @@ recente. `robust` e `geom2d` non hanno altre dipendenze: non servono OCCT né Qt
 Non abilitare `-ffast-math` né `/fp:fast` per i target di solid-space: la
 configurazione controlla questi requisiti.
 
-In attesa di `v0.2.0`, fissa il tuo progetto a un commit preciso di `main`.
-Il modo più semplice è un sottomodulo, come fa Tecnigrafo:
+Fissa il tuo progetto a una versione pubblicata (l'ultima è `v0.2.0`) o a un
+commit preciso di `main`, che è sempre verde. Il modo più semplice è un
+sottomodulo, come fa Tecnigrafo:
 
 ```sh
 git submodule add https://github.com/Matleyx78/solid-space third_party/solid-space
@@ -155,11 +156,13 @@ in **ADR** ([docs/adr/](docs/adr/)); un lavoro è finito quando i test conferman
 casi di verifica scritti prima. Il responsabile del progetto ha l'ultima parola
 ([GOVERNANCE.md](GOVERNANCE.md)).
 
-Tappa 0.1 (fondamenta) chiusa il 2026-10-27, con le
-[note di rilascio](docs/rilasci/0.1.md); la prova manuale su Windows nativo resta
-da eseguire. **Tappa 0.2 in chiusura.** Realizza la geometria del piano per
-le richieste #20–#23 della tappa 0.7 di Tecnigrafo. I pacchetti sono uniti e le
-verifiche ancora da completare sono nelle [note di rilascio](docs/rilasci/0.2.md).
+Tappe chiuse: 0.1, le fondamenta ([note di rilascio](docs/rilasci/0.1.md),
+`v0.1.0`), e 0.2, la geometria del piano per la tappa 0.7 di Tecnigrafo
+([note di rilascio](docs/rilasci/0.2.md), `v0.2.0`). **Tappa 0.3 in
+chiusura**: regioni, ellisse e funzioni elementari per la tappa 0.8 di
+Tecnigrafo (richieste #214–#217). I pacchetti sono uniti; le verifiche che
+restano sono nelle [note di rilascio](docs/rilasci/0.3.md). Lo stato di ogni
+tappa è nella tabella di [docs/ROADMAP.md](docs/ROADMAP.md).
 
 Come contribuire: [CONTRIBUTING.md](CONTRIBUTING.md). Persone e assistenti IA
 lavorano con le stesse regole: per gli agenti sono in [AGENTS.md](AGENTS.md), lo

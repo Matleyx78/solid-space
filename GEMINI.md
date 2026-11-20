@@ -4,25 +4,9 @@ Le istruzioni per gli assistenti IA sono in [AGENTS.md](AGENTS.md): leggi sempre
 il nucleo, cioè AGENTS.md, e i file di [docs/agenti/](docs/agenti/) che la sua
 tabella «Se ... leggi anche ...» indica per il tuo lavoro; seguili alla lettera.
 
-Questo file lo leggono Gemini CLI e Antigravity CLI. Di norma Gemini lavora ai
-**pacchetti di riferimenti** (`[X.Y-RN]`): le regole sono in
-[docs/agenti/riferimenti.md](docs/agenti/riferimenti.md) e in
-[docs/adr/0004-robustezza-e-verifica.md](docs/adr/0004-robustezza-e-verifica.md).
-Fa anche le revisioni delle pull request
-([docs/agenti/revisione.md](docs/agenti/revisione.md)), la pull request di
-chiusura della tappa ([docs/agenti/chiusura.md](docs/agenti/chiusura.md)) e i
-pacchetti facili, come la documentazione.
-
-Se sei **Gemini 4 Argon**, il responsabile te lo dice nel messaggio: la tua
-etichetta è `agente:gemini-argon`, non `agente:gemini`, e la tua cartella di
-build è `build-gemini-argon` (`SS_BUILD_SUFFIX=-gemini-argon`). Prendi solo le
-issue con la tua etichetta: quelle di `agente:gemini` sono di Gemini 3.8 Flash,
-che lavora sullo stesso PC. Il piano non ti assegna niente: l'etichetta la
-mette il responsabile sulle issue che ti passa, quando hai quota disponibile.
-
-Un pacchetto per sessione, riferimenti e revisioni compresi: il lavoro a lotti
-non c'è più ([ADR 0018](docs/adr/0018-catena-degli-agenti.md)).
-
-Scrivi codice e documenti **solo in solid-space**. In Tecnigrafo leggi, e scrivi
-un commento solo se l'utente te lo chiede indicando la issue o la pull request
-(AGENTS.md, "Dove puoi scrivere").
+Questo file lo leggono Gemini CLI e Antigravity CLI. Dal 2026-11-11 Gemini non
+lavora più a solid-space: gli agenti sono Claude e Codex
+([LAVORO-IN-PARALLELO.md](docs/LAVORO-IN-PARALLELO.md), «Chi fa cosa»), e le
+etichette `agente:gemini` e `agente:gemini-argon` non si assegnano. Se il
+responsabile ti avvia comunque, prendi solo le issue con un'etichetta che ti
+assegna lui in chat, come dice AGENTS.md.
