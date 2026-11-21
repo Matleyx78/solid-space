@@ -68,12 +68,25 @@ Il repository pubblico si legge anche senza token con `curl`; `GITHUB_TOKEN`
 aumenta il limite delle richieste anonime. `SS_REPO` cambia il repository.
 `ci-attendi.sh` restituisce 0 con tutto verde, 1 se un controllo fallisce,
 2 se l'API non risponde, 3 se la CI è ancora in corso, 4 se è annullata,
-5 dopo dieci attese consecutive scadute sulla stessa run. Con 3 rilancia lo
+5 dopo dieci attese consecutive scadute sulla stessa run, 6 se la run aspetta
+un'approvazione (`action_required`) da più di 20 minuti: lo script ha già
+scritto una volta «CI da approvare» nella pull request. Con 3 rilancia lo
 stesso comando; con 1 leggi subito gli errori, senza aspettare gli altri job.
 Con 2, 4 o 5 riferisci il problema nella pull request e termina come dice
-AGENTS.md, "Quando fermarsi".
-`SS_ATTESA_MAX`, `SS_ATTESA_PAUSA` e `SS_ATTESA_RILANCI` regolano durata,
-intervallo e numero massimo di attese (default: 540 secondi, 90 secondi, dieci).
+AGENTS.md, "Quando fermarsi"; con 6 lo stesso, senza `decisione`
+([catena.md](catena.md), "Fermate senza decisione").
+`SS_ATTESA_MAX`, `SS_ATTESA_PAUSA`, `SS_ATTESA_RILANCI` e
+`SS_ATTESA_APPROVAZIONE` regolano durata, intervallo, numero massimo di attese e
+attesa di un'approvazione (default: 540 secondi, 90 secondi, dieci, 1200
+secondi).
+
+## Autoprove degli script
+
+Un'autoprova scritta in Python o in shell (sotto `scripts/` o `tests/corpus/`)
+**non si ferma al primo errore**: raccoglie tutti i controlli falliti, alla
+fine li stampa tutti, con nome del controllo, valore atteso e valore ottenuto,
+e solo allora esce con errore. I test C++ lo fanno già
+([DECISIONI.md](../DECISIONI.md), 2026-11-21).
 
 ## Autoprove degli script
 

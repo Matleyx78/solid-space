@@ -82,8 +82,11 @@ Fermati prima del verde, scrivendo nella pull request che cosa hai visto e
 provato, solo se il controllo fallisce per un motivo estraneo (la CI, un servizio
 esterno), se per farlo passare violeresti una regola, o se dopo tre tentativi lo
 stesso controllo non passa ancora: non aspettare la CI, togli l'etichetta e
-termina. Per un caso di riferimento sbagliato scrivi nella issue
-([pacchetto.md](docs/agenti/pacchetto.md)).
+termina. Sono motivi estranei anche una CI che aspetta un'approvazione
+(`scripts/ci-attendi.sh` esce con 6) e una CI che fallisce solo nei casi della
+issue «main rosso» aperta: scrivilo nella pull request, con il rimando alla
+issue, e fermati **senza** l'etichetta `decisione`. Per un caso di riferimento
+sbagliato scrivi nella issue ([pacchetto.md](docs/agenti/pacchetto.md)).
 
 Prima di fermarti per un dubbio (un buco, un caso che sembra sbagliato),
 controlla se una regola esistente lo decide già, come fa chi rivede

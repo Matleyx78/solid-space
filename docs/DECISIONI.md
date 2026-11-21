@@ -749,3 +749,15 @@ i rimandi ai documenti che cambia.
   request a parte. Queste pull request le scrive la chat del progetto che
   lavora su Tecnigrafo, autorizzata dal responsabile il 21 novembre per questa
   pausa, seguendo l'AGENTS.md di questo repository.
+- **2026-11-21 — Codice e CI della pausa dopo la 0.3.** Come in Tecnigrafo
+  (decisioni del 19 novembre in
+  [Matleyx78/tecnigrafo#764](https://github.com/Matleyx78/tecnigrafo/issues/764),
+  gruppo 2): `claude.yml` passa `RELAY_PAT` anche all'azione, così i push di
+  Claude partono come quelli del responsabile; `scripts/ci-attendi.sh`
+  riconosce `action_required`, scrive una volta «CI da approvare» nella pull
+  request e dopo 20 minuti esce con 6; `.github/workflows/main-rosso.yml` apre
+  e chiude la issue «main rosso». Le fermate per approvazione e per `main`
+  rosso sono senza `decisione` ([AGENTS.md](../AGENTS.md), «Quando fermarsi»;
+  [agenti/catena.md](agenti/catena.md), «Fermate senza decisione»). Il
+  workflow a sé per «Submodule pointer» riguarda solo Tecnigrafo. Questa
+  decisione autorizza le modifiche a `.github/workflows/`.

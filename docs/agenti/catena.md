@@ -151,6 +151,22 @@ e `Avvia dopo il merge: #<issue del pacchetto>`, e la passa in revisione
 ("Fine del lavoro"). Il revisore è di nuovo l'altro: chi aveva il pacchetto.
 Al merge la issue `contratto` si chiude e il pacchetto riparte.
 
+### Fermate senza decisione
+
+Due fermate non chiedono niente al responsabile, quindi **non** mettono
+`decisione` ([DECISIONI.md](../DECISIONI.md), 2026-11-21):
+
+- **CI da approvare:** `scripts/ci-attendi.sh` esce con 6, dopo aver scritto
+  una volta «CI da approvare» nella pull request. Basta che il responsabile
+  approvi l'esecuzione: scrivi nella pull request che ti fermi per questo,
+  togli `AA-Presa in carico` e termina. Riprende chi viene avviato di nuovo;
+- **main rosso:** la tua CI fallisce solo nei casi elencati nella issue
+  «main rosso» aperta (la apre e la chiude da sola
+  `.github/workflows/main-rosso.yml`). È il motivo estraneo del nucleo:
+  scrivilo nella pull request con il rimando alla issue, non proporre una
+  correzione di `main`, togli `AA-Presa in carico` e termina. Riprende chi
+  aggiorna la pull request con `main` dopo la correzione.
+
 ## Ripresa dopo una decisione
 
 Il responsabile riprende con un commento nella issue che comincia con la
