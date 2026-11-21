@@ -1,0 +1,78 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 The solid-space authors
+#
+# A red main is said once, to everybody (docs/DECISIONI.md, 2026-11-21): when
+# the CI of a push to main fails, this workflow opens the issue "main rosso"
+# with the failed jobs and their first errors (scripts/ci-errori.sh); when the
+# CI of a later push to main is green, it closes the issue. An agent whose CI
+# fails only in the cases of that issue writes it in its pull request and
+# stops without the label decisione (AGENTS.md, "Quando fermarsi";
+# docs/agenti/catena.md). Same workflow as in Tecnigrafo, where four chains
+# found the same red main one by one on 2026-11-18.
+name: main rosso
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+  issues: write
+  actions: read
+  checks: read
+
+concurrency:
+  group: main-rosso
+  cancel-in-progress: false
+
+jobs:
+  main-rosso:
+    if: github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - name: Open or close the issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SS_REPO: ${{ github.repository }}
+          RUN: ${{ github.event.workflow_run.id }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+          URL: ${{ github.event.workflow_run.html_url }}
+          CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+        run: |
+          title='main rosso'
+          open=$(gh api "repos/$SS_REPO/issues?state=open&per_page=100" \
+            --jq "[.[] | select(.pull_request == null and .title == \"$title\")][0].number // empty")
+          short=${SHA:0:12}
+          case "$CONCLUSION" in
+            failure|timed_out)
+              errors=$(scripts/ci-errori.sh "$RUN" 2>&1 | head -n 80 || true)
+              body=$(printf '%s\n\n%s\n\n```text\n%s\n```\n\n%s\n' \
+                "La CI di \`main\` è rossa sul commit \`$short\` ([esecuzione $RUN]($URL))." \
+                "Job falliti e primi errori (\`scripts/ci-errori.sh $RUN\`):" \
+                "$errors" \
+                "Un agente la cui CI fallisce solo in questi casi lo scrive nella sua pull request, con il rimando a questa issue, e si ferma senza \`decisione\` (AGENTS.md, «Quando fermarsi»). La issue si chiude da sola quando la CI di un push su \`main\` torna verde.")
+              if [ -n "$open" ]; then
+                gh api "repos/$SS_REPO/issues/$open/comments" -f body="$body" > /dev/null
+                echo "Still red: comment on #$open."
+              else
+                gh api "repos/$SS_REPO/issues" -f title="$title" -f body="$body" --jq '.html_url'
+              fi
+              ;;
+            success)
+              if [ -n "$open" ]; then
+                gh api "repos/$SS_REPO/issues/$open/comments" \
+                  -f body="La CI di \`main\` è tornata verde sul commit \`$short\` ([esecuzione $RUN]($URL))." > /dev/null
+                gh api -X PATCH "repos/$SS_REPO/issues/$open" -f state=closed > /dev/null
+                echo "Green again: #$open closed."
+              else
+                echo "Green, no issue to close."
+              fi
+              ;;
+            *)
+              echo "Conclusion $CONCLUSION: nothing to do."
+              ;;
+          esac

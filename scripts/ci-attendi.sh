@@ -27,6 +27,15 @@
 #   5  the time ran out SS_ATTESA_RILANCI times in a row on the same run (about
 #      90 minutes in all, longer than any healthy run should take): do not
 #      wait again, report it in the pull request (AGENTS.md, "Quando fermarsi")
+#   6  the run waits for an approval (action_required) for longer than
+#      SS_ATTESA_APPROVAZIONE: nothing failed and there is nothing to decide.
+#      The script has written once "CI da approvare" in the pull request; stop
+#      without the label decisione (docs/agenti/catena.md, docs/DECISIONI.md,
+#      2026-11-21)
+#
+# A run in action_required is not finished: the script writes the note in the
+# pull request once and goes on waiting, so an approval within the time lets
+# the run go on as usual.
 #
 # SS_ATTESA_MAX     seconds to wait before giving up (default 540: the Bash
 #                   tool of an agent stops a foreground command at 600 s)
@@ -34,6 +43,8 @@
 #                   two requests and the anonymous limit of the GitHub API is 60
 #                   an hour; GITHUB_TOKEN raises it)
 # SS_ATTESA_RILANCI how many timeouts (exit 3) are allowed on one run (default 10: about 90 minutes in all)
+# SS_ATTESA_APPROVAZIONE seconds a run may wait for an approval, counted from
+#                   its creation (default 1200: 20 minutes)
 #
 # Needs jq, and either gh or curl (the repository is public: no token needed).
 set -euo pipefail
@@ -42,6 +53,7 @@ repo=${SS_REPO:-Matleyx78/solid-space}
 max=${SS_ATTESA_MAX:-540}
 pause=${SS_ATTESA_PAUSA:-90}
 max_timeouts=${SS_ATTESA_RILANCI:-10}
+approval_wait=${SS_ATTESA_APPROVAZIONE:-1200}
 
 if ! command -v jq > /dev/null 2>&1; then
     echo "ci-attendi.sh needs jq." >&2
@@ -101,6 +113,31 @@ failed_jobs() {
         | jq -r '.jobs[] | select(.conclusion == "failure" or .conclusion == "timed_out") | .name'
 }
 
+# Writes once in the pull request of the run that the run waits for an
+# approval. Needs gh, which can write; without it the note is only printed.
+note_approval() {
+    local reply=$1 sha number marker
+    sha=$(jq -r '.head_sha // empty' <<< "$reply")
+    [[ -z $sha ]] && sha=$ref
+    marker="CI da approvare: commit ${sha:0:12}"
+    number=${pr:-}
+    if [[ -z $number ]]; then
+        number=$(api "repos/$repo/commits/$sha/pulls" 2>> "$err" | jq -r '.[0].number // empty') || number=
+    fi
+    if [[ -z $number ]] || ! command -v gh > /dev/null 2>&1; then
+        echo "$marker: approve the run in Actions (no pull request to write to)."
+        return 0
+    fi
+    if api "repos/$repo/issues/$number/comments?per_page=100" 2>> "$err" \
+        | jq -e --arg m "$marker" 'any(.[]; .body | contains($m))' > /dev/null; then
+        return 0
+    fi
+    gh api "repos/$repo/issues/$number/comments" \
+        -f body="$marker. L'esecuzione $run della CI aspetta un'approvazione (action_required): approvala da Actions. scripts/ci-attendi.sh aspetta fino a $((approval_wait / 60)) minuti dalla sua creazione, poi l'agente si ferma senza decisione (docs/agenti/catena.md)." \
+        > /dev/null 2>> "$err" || true
+    echo "$marker: written in pull request #$number."
+}
+
 while :; do
     if reply=$( { if [[ -z $run ]]; then
                       api "repos/$repo/actions/workflows/ci.yml/runs?head_sha=$ref&per_page=1" \
@@ -113,7 +150,17 @@ while :; do
             run=$(jq -r '.id' <<< "$reply")
             status=$(jq -r '.status' <<< "$reply")
             conclusion=$(jq -r '.conclusion // "-"' <<< "$reply")
-            if [[ $status == completed ]]; then
+            if [[ $status == action_required || $conclusion == action_required ]]; then
+                [[ -n ${noted:-} ]] || { note_approval "$reply"; noted=1; }
+                age=$(jq -r '(now - (.created_at | fromdateiso8601)) | floor' <<< "$reply" 2> /dev/null) || age=0
+                if (( ${age:-0} >= approval_wait )); then
+                    rm -f "$(timeouts_file)"
+                    echo "run $run: waiting for an approval for $age s. Nothing failed and there is"
+                    echo "nothing to decide: stop without the label decisione (docs/agenti/catena.md)."
+                    exit 6
+                fi
+                echo "run $run: waiting for an approval ($age s of $approval_wait)."
+            elif [[ $status == completed ]]; then
                 rm -f "$(timeouts_file)"
                 echo "run $run: completed $conclusion"
                 [[ $conclusion == success ]] && exit 0
