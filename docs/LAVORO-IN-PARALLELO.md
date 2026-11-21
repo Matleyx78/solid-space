@@ -104,6 +104,39 @@ dice, per ogni pacchetto:
   request si scrive come la issue che quella pull request chiude: GitHub non
   accetta una issue «bloccata da» una pull request.
 
+**A nessun pacchetto deve mancare qualcosa il giorno in cui parte**
+([DECISIONI.md](DECISIONI.md), 2026-11-21, dalle decisioni della pausa dopo la
+0.8 di Tecnigrafo):
+
+- **Prova a secco dei riferimenti.** Ogni scheda con riferimenti ha
+  un'appendice con un caso d'esempio vero del corpus, senza valori attesi
+  ([tappe/0000-pacchetto.md](tappe/0000-pacchetto.md)). Se non si scrive con
+  il formato e il validatore di `main`, manca uno strumento: diventa un
+  pacchetto dell'**onda 0**, da cui dipendono gli RS che lo usano. Se si scrive
+  solo con una funzione di un pacchetto che non è fra le dipendenze, manca una
+  dipendenza: si aggiunge. Se il pacchetto cambia una risposta del corpus
+  (valori, esiti, diagnosi), la prova a secco elenca i casi o i riferimenti di
+  Tecnigrafo che ne dipendono e dice quando e come Tecnigrafo li aggiorna con
+  il sottomodulo: il legame si vede solo dopo l'aggiornamento del sottomodulo.
+- **Pacchetti trasversali in testa.** Un pacchetto che cambia ciò che tutti i
+  casi o tutti i rapporti contengono va **in testa** all'ordine; in coda solo
+  con un motivo scritto nel piano e l'elenco dei casi da aggiornare; mai in
+  mezzo.
+- **Onde larghe.** L'obiettivo è fino a **8 catene in parallelo**: le onde si
+  costruiscono con fino a 8 pacchetti indipendenti, senza obbligo.
+- **Regole numeriche.** Qui non c'è un documento a parte: le regole sono il
+  contratto, nell'[ADR 0013](adr/0013-esatto-dove-serve.md) e nelle
+  intestazioni. Una scheda che confronta o sceglie fra valori quasi uguali cita
+  la regola dell'ADR o dell'intestazione che la decide; se manca, è un buco del
+  contratto ([agenti/contratto.md](agenti/contratto.md)). Tecnigrafo raccoglie
+  le sue in `docs/REGOLE-NUMERICHE.md`, che cita il contratto senza ricopiarlo.
+- **Revisione del piano.** Prima dell'apertura l'altro agente rilegge il piano
+  intero, in un solo giro, come dice la guida del responsabile, B4a, con
+  questo repository al posto di Tecnigrafo (i punti in
+  [agenti/revisione.md](agenti/revisione.md), "Revisione del piano"). Le prove
+  a secco restano essenziali: se una richiede più di qualche riga, il pacchetto
+  va diviso. Preparare una tappa non deve costare più che farla.
+
 ### La revisione del contratto
 
 Una tappa che realizza intestazioni del contratto comincia con il pacchetto
@@ -207,6 +240,12 @@ scheda, nel contratto o in un ADR) e coperte da riferimenti di fascia forte è
 medio anche se il codice è delicato; la sua pull request ha una revisione
 mirata, in fascia forte, dall'altro agente. Il piano scrive in una riga perché
 un pacchetto resta impegnativo ([DECISIONI.md](DECISIONI.md), 2026-11-11).
+
+**Pacchetti che estendono il corpus o il suo validatore.** Un pacchetto che
+estende il formato del corpus o il validatore a **più di due** tipi nuovi ha la
+difficoltà della somma delle schede che descrive: **si divide**, un pacchetto
+per gruppo di tipi. Resta la regola dei pacchetti non troppo piccoli, qui
+sopra ([DECISIONI.md](DECISIONI.md), 2026-11-21).
 
 ## 2. Aprire la tappa: issue ed etichette
 

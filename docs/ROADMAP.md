@@ -90,7 +90,9 @@ Tutti i pacchetti sono uniti, tutti i criteri verificati uno per uno (il «quand
 soddisfatta» di ogni richiesta è uno di essi), i test passano sui tre sistemi
 operativi senza avvisi. Si aggiorna la tabella e si crea il tag `vX.Y.0`; il
 responsabile controlla dal lato di Tecnigrafo i criteri delle richieste ancora
-aperte e ne chiude le issue. Poi la **pausa tra le tappe**: con tutto fermo, il
+aperte e ne chiude le issue. La pull request di chiusura della tappa gemella di
+Tecnigrafo porta il suo sottomodulo a quel tag ([DECISIONI.md](DECISIONI.md),
+2026-11-21). Poi la **pausa tra le tappe**: con tutto fermo, il
 responsabile decide le idee aperte, le proposte di metodo e le correzioni dei
 documenti, che una pull request di soli documenti per repository applica (guida
 del responsabile, in Tecnigrafo:

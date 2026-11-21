@@ -75,6 +75,14 @@ AGENTS.md, "Quando fermarsi".
 `SS_ATTESA_MAX`, `SS_ATTESA_PAUSA` e `SS_ATTESA_RILANCI` regolano durata,
 intervallo e numero massimo di attese (default: 540 secondi, 90 secondi, dieci).
 
+## Autoprove degli script
+
+Un'autoprova scritta in Python o in shell (sotto `scripts/` o `tests/corpus/`)
+**non si ferma al primo errore**: raccoglie tutti i controlli falliti, alla
+fine li stampa tutti, con nome del controllo, valore atteso e valore ottenuto,
+e solo allora esce con errore. I test C++ lo fanno già
+([DECISIONI.md](../DECISIONI.md), 2026-11-21).
+
 ## Gli ambienti della catena
 
 Nella catena degli agenti ([catena.md](catena.md)) Claude lavora in GitHub
