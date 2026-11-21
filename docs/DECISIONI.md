@@ -715,3 +715,37 @@ i rimandi ai documenti che cambia.
   addresses» della CI, con `scripts/indirizzi_commit.py` preso da Tecnigrafo,
   fa fallire una pull request con un commit firmato da un indirizzo diverso.
   Questa decisione autorizza la modifica a `.github/workflows/ci.yml`.
+- **2026-11-21 — Le proposte di metodo della pausa dopo la 0.3.** Il
+  responsabile ha deciso il 19 novembre, in
+  [Matleyx78/tecnigrafo#764](https://github.com/Matleyx78/tecnigrafo/issues/764),
+  le proposte nate nelle tappe 0.8 di Tecnigrafo e 0.3 di solid-space
+  ([#301](https://github.com/Matleyx78/solid-space/issues/301)); il 21 novembre
+  ha aggiunto la regola del sottomodulo al tag. Le voci comuni hanno lo stesso
+  testo di Tecnigrafo, adattato a questo repository:
+  - *Analisi di una CI rossa*: passata direttamente all'esecutore quando causa
+    e correzione stanno solo nei file del pacchetto e la strada è una sola, con
+    una riga di motivo; fermata sempre alla seconda analisi
+    ([agenti/catena.md](agenti/catena.md));
+  - *Preparazione della tappa*: prova a secco dei riferimenti sul corpus, con
+    la riga delle risposte condivise verso Tecnigrafo; onda 0; trasversali in
+    testa; fino a 8 catene in parallelo; revisione del piano dell'altro agente
+    in un solo giro, con sei punti, dove le regole numeriche sono quelle del
+    contratto (ADR 0013 e intestazioni) e non un documento a parte
+    ([LAVORO-IN-PARALLELO.md](LAVORO-IN-PARALLELO.md), "Preparare il piano";
+    [tappe/0000-pacchetto.md](tappe/0000-pacchetto.md);
+    [tappe/0000-modello.md](tappe/0000-modello.md), sezione 6;
+    [agenti/revisione.md](agenti/revisione.md), "Revisione del piano");
+  - *Dimensione*: un pacchetto che estende il corpus o il validatore a più di
+    due tipi nuovi si divide ([LAVORO-IN-PARALLELO.md](LAVORO-IN-PARALLELO.md),
+    "Modello e impegno");
+  - *Autoprove*: gli script in Python e in shell raccolgono e stampano tutti i
+    controlli falliti prima di uscire ([agenti/comandi.md](agenti/comandi.md));
+  - *Sottomodulo al tag*: alla chiusura di una tappa, la pull request di
+    chiusura della tappa gemella di Tecnigrafo porta il sottomodulo al tag
+    appena pubblicato ([ROADMAP.md](ROADMAP.md), "Chiudere una tappa").
+
+  Il codice e la CI (`RELAY_PAT` nei push di Claude, `action_required` in
+  `scripts/ci-attendi.sh`, issue automatica «main rosso») arrivano in una pull
+  request a parte. Queste pull request le scrive la chat del progetto che
+  lavora su Tecnigrafo, autorizzata dal responsabile il 21 novembre per questa
+  pausa, seguendo l'AGENTS.md di questo repository.

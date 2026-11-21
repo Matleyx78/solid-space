@@ -52,3 +52,23 @@ I casi minimi che devono esistere.
 
 Condizioni verificabili per considerare il pacchetto concluso. Ognuna deve avere
 almeno un caso di verifica nel pacchetto di riferimenti.
+
+## Prova a secco dei riferimenti
+
+Solo per le schede con riferimenti; la scrive chi scrive il piano, insieme alla
+scheda (LAVORO-IN-PARALLELO.md, "Preparare il piano"). Un caso del corpus con
+l'ingresso, **senza i valori attesi**: non va in `tests/corpus/casi/`, chi
+scrive i riferimenti parte da qui. Se servono più di qualche riga, il pacchetto
+è troppo grosso e va diviso.
+
+```json
+{ "versione": 1, "id": "…", "componente": "…", "ingresso": { "operazione": "…" } }
+```
+
+- **Strumenti:** si scrive con il formato e il validatore di `main` (o
+  dell'onda 0: quale pacchetto).
+- **Dipendenze:** ogni funzione che usa viene da `main` o dai pacchetti in
+  "Dipende da".
+- **Risposte condivise:** questo pacchetto cambia una risposta del corpus
+  (valori, esiti, diagnosi)? Se sì, quali casi o riferimenti di Tecnigrafo ne
+  dipendono e quando li aggiorna il sottomodulo; altrimenti «nessuna».

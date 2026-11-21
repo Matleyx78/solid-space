@@ -70,3 +70,32 @@ Decisione del responsabile del 2026-11-04 ([DECISIONI.md](../DECISIONI.md)).
 Nelle revisioni una garanzia del contratto si verifica **con i test**, non con
 dimostrazioni matematiche. Il revisore che teme un ramo non coperto chiede un
 **test che lo raggiunga**, non un lemma.
+
+## Revisione del piano
+
+Prima dell'apertura di una tappa (guida del responsabile, B4a, con questo
+repository), l'agente che scriverà la maggior parte dei riferimenti rilegge
+**il piano intero**, con le schede e le prove a secco, in fascia forte. Prende
+in carico, non modifica la pull request del piano, scrive **un solo verbale**
+con [bloccante], [decisione] e [facoltativa]. **C'è un solo giro**: le
+[bloccante] le corregge chi ha scritto il piano, le [decisione] le prende il
+responsabile, le [facoltativa] non si trattano. Per ogni scheda controlla:
+
+1. **Raggiungibilità:** ogni "Fatto quando" e ogni diagnosi si raggiunge con le
+   sole dipendenze del pacchetto.
+2. **Strumenti:** la prova a secco si scrive con il formato e il validatore di
+   `main` o dell'onda 0.
+3. **Fonte:** ogni comportamento atteso ha la sua fonte, l'ADR di valutazione,
+   l'intestazione o la richiesta di Tecnigrafo; altrimenti è un buco del
+   contratto.
+4. **Trasversali:** sono segnati e stanno in testa, o in coda con il motivo e
+   l'elenco dei casi.
+5. **Regole numeriche:** per le schede che confrontano o scelgono fra valori
+   quasi uguali, la regola c'è nell'[ADR 0013](../adr/0013-esatto-dove-serve.md)
+   o nell'intestazione che la scheda usa; altrimenti è un buco del contratto,
+   cioè una [decisione].
+6. **Risposte condivise:** la riga della prova a secco c'è, e dice quali casi di
+   Tecnigrafo cambiano e quando li aggiorna il sottomodulo.
+
+Guarda anche la larghezza delle onde, fino a 8 pacchetti indipendenti
+([DECISIONI.md](../DECISIONI.md), 2026-11-21).
