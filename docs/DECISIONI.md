@@ -761,3 +761,30 @@ i rimandi ai documenti che cambia.
   [agenti/catena.md](agenti/catena.md), «Fermate senza decisione»). Il
   workflow a sé per «Submodule pointer» riguarda solo Tecnigrafo. Questa
   decisione autorizza le modifiche a `.github/workflows/`.
+- **2026-11-23 — Prestazioni della 0.3: cinque pacchetti fuori tappa.** Dopo
+  l'analisi del banco nella
+  [#304](https://github.com/Matleyx78/solid-space/issues/304) (ogni decisione
+  passa dall'aritmetica esatta senza filtro, e `clipToRegion` ripassa tutti i
+  pezzi della regione a ogni taglio), il responsabile decide in chat:
+  - il lavoro si fa in cinque pacchetti fuori tappa, in quest'ordine, uno
+    dopo l'altro: `clipToRegion` con scatole e fasce (FS1), filtro in virgola
+    mobile sui segni esatti (FS2), `detectBoundary` (FS3), intersezioni
+    dell'ellisse (FS4), `nestContours` (FS5); piano e schede in
+    [tappe/0.3-prestazioni.md](tappe/0.3-prestazioni.md), issue #307–#311;
+  - ordinamenti, fasce e scatole sono codice nostro e **non chiedono un ADR**:
+    gli ADR 0014 e 0015, punto 9, li prevedono già, e gli ADR 0010 e 0017
+    prevedono il filtro;
+  - **niente thread** (e niente GPU) in questo lavoro;
+  - gli obiettivi sono **quelli degli ADR**, punto 9, misurati con il banco sul
+    computer del responsabile; non si aspetta una misura di `-HATCH` in
+    Tecnigrafo;
+  - **Tecnigrafo non deve accorgersene**: firme, contratto, decisioni e
+    coordinate restano identici bit per bit, anche per i punti delle
+    intersezioni dell'ellisse (il modo di arrotondarli non cambia, a costo di
+    un guadagno minore). La prova è `risultati.txt` del corpus, uguale byte
+    per byte prima e dopo.
+
+  I pacchetti li realizza Claude e li rivede Codex; non hanno riferimenti,
+  perché il comportamento non cambia. Il prefisso `FS` (fuori tappa,
+  solid-space) e la cartella `docs/tappe/0.3-prestazioni/` valgono per questo
+  lavoro.
