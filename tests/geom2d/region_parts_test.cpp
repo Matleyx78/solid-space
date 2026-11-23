@@ -199,8 +199,9 @@ TEST(RegionParts, MixedHostsGiveThePartsOfEveryPiece) {
     hosts.emplace_back(Arc{{8, 8}, 6, 0.5, 2.0});
     hosts.emplace_back(PolylineSegment{{2, 9}, {6, 9}, 0.5});
     hosts.emplace_back(PolylineSegment{{-1, 3}, {17, 5}, -0.125});
-    hosts.emplace_back(Segment{{3, 5}, {3 + 0x1p-520, 5}});
-    hosts.emplace_back(Segment{{-1, 8}, {-1 + 0x1p-600, 8 + 0x1p-600}});
+    // Near zero, so that the ends differ in the doubles.
+    hosts.emplace_back(Segment{{0, 5}, {0x1p-520, 5}});
+    hosts.emplace_back(Segment{{0, 0}, {0x1p-600, 0x1p-600}});
     hosts.emplace_back(Segment{{4, 4}, {4, 4 + 0x1p-40}});
     expectSameWithIndex(hosts, loops);
 }
