@@ -10,6 +10,7 @@
 #include <bit>
 #include <cstddef>
 #include <cstdint>
+#include <span>
 #include <vector>
 
 namespace solid_space::geom2d {
@@ -103,6 +104,40 @@ TEST(Clipping, ShallowArcStationDoesNotRequireARepresentableRadius) {
     EXPECT_EQ(inside.front().from.onHost.location, Location::atStart);
     EXPECT_EQ(inside.front().to.onHost.location, Location::inside);
     EXPECT_NEAR(inside.front().to.onHost.station, 1.0, kRelativeStationError * 2.0);
+}
+
+TEST(Clipping, OneIndexForAllHostsGivesTheResultOfEachHostAlone) {
+    // clipToRegion builds one index for all its hosts (package FS1 of the 0.3
+    // performance work); the hosts change direction from one to the next.
+    const std::array<Loop, 4> loops{Polyline{{{{0, 0}, 0.25},
+                                              {{6, 0}, 0},
+                                              {{12, 0}, 0},
+                                              {{12, 6}, -0.5},
+                                              {{12, 12}, 0},
+                                              {{6, 12}, 0},
+                                              {{0, 12}, 0},
+                                              {{0, 6}, 0}},
+                                             true},
+                                    Circle{{4, 4}, 2}, square(7, 7, 3), square(8, 8, 1)};
+    std::vector<Curve> hosts;
+    for (int k = -1; k <= 13; ++k) {
+        const double c = k;
+        hosts.emplace_back(Segment{{-1, c}, {13, c}});
+        hosts.emplace_back(Segment{{c, -1}, {c, 13}});
+        hosts.emplace_back(Segment{{-1, c - 6}, {13, c + 8}});
+        hosts.emplace_back(PolylineSegment{{-1, c}, {13, c + 1}, 0.125});
+    }
+    hosts.emplace_back(Circle{{4, 4}, 2});
+    hosts.emplace_back(Arc{{6, 6}, 5, 0.25, 3.0});
+    for (const auto extension : {Extension::none, Extension::extended}) {
+        const auto together = clipToRegion(hosts, extension, loops);
+        ASSERT_EQ(together.hosts.size(), hosts.size());
+        for (std::size_t i = 0; i < hosts.size(); ++i) {
+            const auto alone = clipToRegion(std::span{&hosts.at(i), 1}, extension, loops);
+            SCOPED_TRACE(i);
+            expectSameHost(together.hosts.at(i), alone.hosts.front());
+        }
+    }
 }
 
 }  // namespace

@@ -17,8 +17,10 @@
 #include <gtest/gtest.h>
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstddef>
+#include <cstdint>
 #include <limits>
 #include <numeric>
 #include <span>
@@ -566,6 +568,282 @@ TEST(Winding, doesNotDependOnOrderDirectionOrFirstVertex) {
                                             half(vertical, Heading::backward)};
     expectIndependence({rectangle(0.0, 0.0, 4.0, 2.0), stadium()},
                        {at(2.0, 0.0), at(2.0, 2.0), at(2.0, 1.0), at(2.0, -1.0)}, references);
+}
+
+// --- boxes and bands (package FS1 of the 0.3 performance work) ------------------
+
+using solid_space::geom2d::detail::IntervalIndex;
+using solid_space::geom2d::detail::LoopIndex;
+using solid_space::geom2d::detail::PieceSearch;
+
+// A linear congruential generator with a fixed seed, as the bench does: the
+// same points on every system.
+class Lcg {
+public:
+    explicit Lcg(std::uint32_t seed) : m_state(seed) {}
+
+    std::uint32_t next() {
+        m_state = (m_state * 1664525U) + 1013904223U;
+        return m_state;
+    }
+
+    // A multiple of `step` in [low, low + count * step).
+    double grid(double low, double step, std::uint32_t count) {
+        return low + (step * static_cast<double>(next() % count));
+    }
+
+private:
+    std::uint32_t m_state;
+};
+
+TEST(Winding, intervalIndexFindsEveryMeetingInterval) {
+    Lcg random(0x51717U);
+    for (const std::size_t count : {0U, 1U, 2U, 3U, 7U, 64U, 100U}) {
+        std::vector<double> lows;
+        std::vector<double> highs;
+        for (std::size_t i = 0; i < count; ++i) {
+            const double low = random.grid(-8.0, 0.5, 33);
+            const double high = low + random.grid(0.0, 0.5, 9);
+            const auto kind = random.next() % 8;
+            lows.push_back(kind == 0 ? -kInfinity : low);
+            highs.push_back(kind == 1 ? kInfinity : high);
+        }
+        const IntervalIndex index(lows, highs);
+        for (std::size_t query = 0; query < 200; ++query) {
+            double low = random.grid(-10.0, 0.25, 81);
+            double high = low + random.grid(0.0, 0.25, 9);
+            if (query % 50 == 0) {
+                low = -kInfinity;
+            }
+            if (query % 70 == 0) {
+                high = kInfinity;
+            }
+            std::vector<std::size_t> expected;
+            for (std::size_t i = 0; i < count; ++i) {
+                if (lows[i] <= high && highs[i] >= low) {
+                    expected.push_back(i);
+                }
+            }
+            EXPECT_EQ(index.meeting(low, high), expected)
+                << "count " << count << ", query [" << low << ", " << high << "]";
+        }
+    }
+}
+
+TEST(Winding, piecesLieInTheirBoxes) {
+    // A box holds the ends of its piece, and an arc reaches the sides of its
+    // circle only where it passes its extreme points.
+    const auto pieces = detail::loopPieces(stadium());
+    for (const auto& piece : pieces.pieces) {
+        const auto& box = piece.box;
+        for (const auto& part : piece.parts) {
+            for (const auto& end : {part.from, part.to}) {
+                const Point2 p = detail::nearestPoint(end);
+                EXPECT_TRUE(box.minX <= p.x && p.x <= box.maxX && box.minY <= p.y &&
+                            p.y <= box.maxY)
+                    << "piece " << piece.index;
+            }
+        }
+    }
+    const auto circle = detail::loopPieces(Circle{{1.0, 2.0}, 3.0});
+    EXPECT_LE(circle.pieces[0].box.minX, -2.0);
+    EXPECT_GE(circle.pieces[0].box.maxY, 5.0);
+    // A shallow arc whose extreme points are off it keeps the box of its ends.
+    const auto shallow = detail::loopPieces(
+        polygon({{{0.0, 0.0}, 0.0}, {{4.0, 1.0}, 0.0}, {{3.0, 4.0}, 0.0}, {{1.0, 2.0}, 0.1}}));
+    const auto& arc = shallow.pieces.back();
+    ASSERT_TRUE(std::holds_alternative<detail::ArcMeaning>(arc.meaning.support));
+    EXPECT_EQ(arc.box.minX, 0.0);
+    EXPECT_EQ(arc.box.maxX, 1.0);
+    EXPECT_EQ(arc.box.minY, 0.0);
+    EXPECT_EQ(arc.box.maxY, 2.0);
+}
+
+// Everything the three functions answer about a point.
+struct FullAnswer {
+    PointState state = PointState::outside;
+    std::vector<PieceRef> pieces;
+    bool parity = false;
+    std::vector<PieceRef> owners;
+    std::vector<bool> inside;
+    std::vector<std::vector<std::size_t>> groups;
+
+    friend bool operator==(const FullAnswer&, const FullAnswer&) = default;
+};
+
+FullAnswer fullAnswer(const ExactPoint& point, const LoopIndex& loops,
+                      std::span<const HalfPiece> references) {
+    FullAnswer answer;
+    const auto status = detail::pointStatus(point, loops);
+    answer.state = status.state;
+    answer.pieces = status.pieces;
+    answer.parity = detail::parityAboveRay(point, loops);
+    const auto sectors = detail::sectorStates(point, loops, references);
+    answer.owners = sectors.owners;
+    answer.inside = sectors.inside;
+    for (std::size_t g = 0; g < sectors.order.groupCount(); ++g) {
+        const auto members = sectors.order.group(g);
+        answer.groups.emplace_back(members.begin(), members.end());
+    }
+    return answer;
+}
+
+// A point with the references that may go with it: the two half pieces of a
+// line through it, or none.
+struct Probe {
+    ExactPoint point;
+    std::vector<HalfPiece> references;
+};
+
+Probe probe(double x, double y) {
+    return {at(x, y), {}};
+}
+
+// The points where a line meets the carrier of a piece, with the line as
+// references: points with a radical on the arcs and circles.
+void addMeetings(std::vector<Probe>& probes, const Curve& line, const detail::LoopPiece& piece) {
+    const auto carrier = detail::carrierOf(detail::meaningOf(line));
+    const auto meeting = detail::meet(carrier, piece.carrier);
+    for (const auto& found : meeting.found()) {
+        probes.push_back(
+            {found.point,
+             {HalfPiece{carrier, Heading::forward}, HalfPiece{carrier, Heading::backward}}});
+    }
+}
+
+// The points of the test: a grid of random points over the box of the loops
+// (and a little beyond), and for every piece the corners and the middles of
+// the sides of its box, its ends, points 2^-40 (times the scale) away from
+// its ends, points at the exact height of its ends and of its box, and the
+// meetings of its carrier with a horizontal, a vertical and an oblique line
+// through its ends.
+std::vector<Probe> probesFor(std::span<const LoopPieces> loops, double scale, std::uint32_t seed) {
+    std::vector<Probe> probes;
+    const LoopIndex index(loops, PieceSearch::boxes);
+    const auto& whole = index.whole();
+    Lcg random(seed);
+    const double step = scale / 8.0;
+    for (std::size_t k = 0; k < 100; ++k) {
+        const auto columns = static_cast<std::uint32_t>(((whole.maxX - whole.minX) / step) + 17.0);
+        const auto rows = static_cast<std::uint32_t>(((whole.maxY - whole.minY) / step) + 17.0);
+        probes.push_back(probe(random.grid(whole.minX - (8.0 * step), step, columns),
+                               random.grid(whole.minY - (8.0 * step), step, rows)));
+    }
+    const double away = 0x1p-40 * scale;
+    for (const auto& loop : loops) {
+        for (const auto& piece : loop.pieces) {
+            const auto& box = piece.box;
+            const double midX = (box.minX / 2.0) + (box.maxX / 2.0);
+            const double midY = (box.minY / 2.0) + (box.maxY / 2.0);
+            for (const double x : {box.minX, midX, box.maxX}) {
+                for (const double y : {box.minY, midY, box.maxY}) {
+                    probes.push_back(probe(x, y));
+                }
+            }
+            probes.push_back(probe(whole.minX - step, box.minY));
+            probes.push_back(probe(whole.minX - step, box.maxY));
+            for (const auto& part : piece.parts) {
+                for (const auto& end : {part.from, part.to}) {
+                    probes.push_back({end, {}});
+                    const Point2 p = detail::nearestPoint(end);
+                    for (const double dx : {-away, 0.0, away}) {
+                        for (const double dy : {-away, 0.0, away}) {
+                            probes.push_back(probe(p.x + dx, p.y + dy));
+                        }
+                    }
+                    probes.push_back(probe(whole.minX - step, p.y));
+                    probes.push_back(probe(midX, p.y));
+                    probes.push_back(probe(p.x, midY));
+                    addMeetings(probes, Segment{p, {p.x + scale, p.y}}, piece);
+                    addMeetings(probes, Segment{p, {p.x, p.y + scale}}, piece);
+                    addMeetings(probes, Segment{p, {p.x + scale, p.y + (scale / 2.0)}}, piece);
+                }
+            }
+        }
+    }
+    return probes;
+}
+
+void expectSameWithBoxes(const std::vector<Loop>& loops, double scale, std::uint32_t seed,
+                         std::vector<Probe> extra = {}) {
+    const auto pieces = describe(loops);
+    auto probes = probesFor(pieces, scale, seed);
+    probes.insert(probes.end(), extra.begin(), extra.end());
+    const LoopIndex boxes(pieces, PieceSearch::boxes);
+    const LoopIndex every(pieces, PieceSearch::everyPiece);
+    const LoopIndex automatic(pieces);
+    EXPECT_EQ(boxes.search(), PieceSearch::boxes);
+    EXPECT_EQ(every.search(), PieceSearch::everyPiece);
+    for (std::size_t k = 0; k < probes.size(); ++k) {
+        const auto& probe = probes[k];
+        const Point2 rounded = detail::nearestPoint(probe.point);
+        const auto expected = fullAnswer(probe.point, every, probe.references);
+        EXPECT_TRUE(fullAnswer(probe.point, boxes, probe.references) == expected)
+            << "probe " << k << " near (" << rounded.x << ", " << rounded.y << ")";
+        EXPECT_TRUE(fullAnswer(probe.point, automatic, probe.references) == expected)
+            << "probe " << k;
+    }
+}
+
+// The bulge of the second side of every edge of the square below.
+double sideBulge(std::size_t edge) {
+    return edge % 2 == 0 ? 0.25 : -0.5;
+}
+
+// An outer square with many sides, four of them curved, with islands: two
+// circles, a curved polygon and a rectangle that shares a side of the
+// square's grid.
+std::vector<Loop> islands(double x, double y, double unit) {
+    Polyline outer{{}, true};
+    for (std::size_t edge = 0; edge < 4; ++edge) {
+        for (std::size_t k = 0; k < 4; ++k) {
+            const double step = unit * 4.0 * static_cast<double>(k);
+            const std::array<Point2, 4> points{{{x + step, y},
+                                                {x + (16.0 * unit), y + step},
+                                                {x + (16.0 * unit) - step, y + (16.0 * unit)},
+                                                {x, y + (16.0 * unit) - step}}};
+            const double bulge = k == 1 ? sideBulge(edge) : 0.0;
+            outer.vertices.push_back({points.at(edge), bulge});
+        }
+    }
+    return {outer, Circle{{x + (4.0 * unit), y + (4.0 * unit)}, 2.0 * unit},
+            Circle{{x + (12.0 * unit), y + (4.0 * unit)}, 1.5 * unit},
+            polygon({{{x + (2.0 * unit), y + (9.0 * unit)}, 0.5},
+                     {{x + (6.0 * unit), y + (9.0 * unit)}, 0.0},
+                     {{x + (6.0 * unit), y + (14.0 * unit)}, -1.5},
+                     {{x + (2.0 * unit), y + (14.0 * unit)}, 0.0}}),
+            rectangle(x + (8.0 * unit), y + (8.0 * unit), x + (12.0 * unit), y + (12.0 * unit))};
+}
+
+TEST(Winding, boxesGiveTheAnswersOfEveryPiece) {
+    expectSameWithBoxes(islands(0.0, 0.0, 1.0), 1.0, 0x51717U);
+    expectSameWithBoxes(islands(-8.0, -8.0, 1.0), 1.0, 0x1234U,
+                        {probe(0.0, 0.0), probe(0.0, -8.0), probe(-8.0, 0.0), probe(0x1p-50, 0.0),
+                         probe(0.0, 0x1p-50), probe(-0x1p-50, -8.0), probe(0x1p50, 0.0),
+                         probe(-0x1p50, 0.0), probe(-0x1p50, -8.0), probe(0.0, 0x1p50)});
+    expectSameWithBoxes({stadium(), lowerHalfDisc(), bowTie(), notched()}, 1.0, 0x777U);
+}
+
+TEST(Winding, boxesGiveTheAnswersOfEveryPieceAtTheLimitsOfTheDomain) {
+    // Coordinates 2^50 (the limit of the domain), 2^-50 and 0.
+    constexpr double kLarge = 0x1p50;
+    constexpr double kSmall = 0x1p-50;
+    expectSameWithBoxes(
+        {rectangle(-kLarge, -kLarge, kLarge, kLarge), Circle{{kLarge / 2.0, 0.0}, kLarge / 4.0},
+         polygon({{{0.0, 0.0}, 0.5}, {{kLarge / 2.0, 0.0}, 0.0}, {{0.0, kLarge / 2.0}, 0.0}})},
+        kLarge / 8.0, 0x50U,
+        {probe(0.0, 0.0), probe(kLarge, 0.0), probe(0.0, kLarge), probe(-kLarge, kLarge),
+         probe(kLarge, kLarge), probe(kSmall, 0.0), probe(-kLarge, kSmall)});
+    expectSameWithBoxes(
+        {rectangle(-kSmall, -kSmall, kSmall, kSmall), Circle{{0.0, 0.0}, kSmall / 2.0},
+         polygon({{{0.0, 0.0}, 0.5}, {{kSmall, kSmall}, 0.0}, {{-kSmall, kSmall}, -0.25}})},
+        kSmall, 0x51U,
+        {probe(0.0, 0.0), probe(kSmall, 0.0), probe(0.0, kSmall), probe(kSmall / 2.0, 0.0),
+         probe(0x1p-1074, 0.0), probe(0.0, -0x1p-1074), probe(kLarge, 0.0), probe(0.0, kLarge)});
+    // Islands whose circles reach to within 2^42 of the limit of the domain.
+    constexpr double kUnit = 0x1p40;
+    expectSameWithBoxes(islands(kLarge - (32.0 * kUnit), -kLarge + (16.0 * kUnit), kUnit), kUnit,
+                        0x52U, {probe(kLarge, -kLarge), probe(kLarge, 0.0), probe(0.0, -kLarge)});
 }
 
 }  // namespace
