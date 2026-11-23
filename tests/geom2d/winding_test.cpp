@@ -699,6 +699,16 @@ Probe probe(double x, double y) {
     return {at(x, y), {}};
 }
 
+// A segment from p by d, each coordinate of d turned the other way where p + d
+// would leave the domain (|d| is at most an eighth of the domain).
+double towardInside(double p, double d) {
+    return std::fabs(p + d) <= solid_space::robust::kMaxCoordinate ? p + d : p - d;
+}
+
+Curve lineThrough(Point2 p, Point2 d) {
+    return Segment{p, {towardInside(p.x, d.x), towardInside(p.y, d.y)}};
+}
+
 // The points where a line meets the carrier of a piece, with the line as
 // references: points with a radical on the arcs and circles.
 void addMeetings(std::vector<Probe>& probes, const Curve& line, const detail::LoopPiece& piece) {
@@ -754,9 +764,9 @@ std::vector<Probe> probesFor(std::span<const LoopPieces> loops, double scale, st
                     probes.push_back(probe(whole.minX - step, p.y));
                     probes.push_back(probe(midX, p.y));
                     probes.push_back(probe(p.x, midY));
-                    addMeetings(probes, Segment{p, {p.x + scale, p.y}}, piece);
-                    addMeetings(probes, Segment{p, {p.x, p.y + scale}}, piece);
-                    addMeetings(probes, Segment{p, {p.x + scale, p.y + (scale / 2.0)}}, piece);
+                    addMeetings(probes, lineThrough(p, {scale, 0.0}), piece);
+                    addMeetings(probes, lineThrough(p, {0.0, scale}), piece);
+                    addMeetings(probes, lineThrough(p, {scale, scale / 2.0}), piece);
                 }
             }
         }
