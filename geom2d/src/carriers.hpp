@@ -100,7 +100,10 @@ struct ExactPoint {
 /// request and kept with the point. Nothing when the point does not fit the
 /// doubles: a coordinate that may lie beyond robust::kMaxCoordinate, or that
 /// is nonzero and may lie below the smallest normal double (subnormal), or
-/// whose interval says nothing. Such a point always goes to the exact signs.
+/// whose interval says nothing. "May" is about the whole interval, not only
+/// its centre: a coordinate has an interval only when every value of it is
+/// within the domain and zero or normal (so an interval that contains zero
+/// only when it is exactly zero). Such a point always goes to the exact signs.
 [[nodiscard]] std::optional<PointIntervals> approximationOf(const ExactPoint& point);
 
 /// The exact value of a point of doubles: weight 1, no radical, and its

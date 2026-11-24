@@ -116,15 +116,48 @@ ExactPoint rationalPoint(ExactVector numerator, Dyadic weight) {
 // --- Filter ----------------------------------------------------------------
 
 // The smallest normal double: approximationOf() gives no intervals to a point
-// with a nonzero coordinate below it (carriers.hpp).
+// with a nonzero coordinate that may lie below it (carriers.hpp).
 constexpr double kSmallestNormal = 0x1p-1022;
 
-// True when an interval may serve as the coordinate of a point: it says
-// something, its centre is within the domain, and it is zero or normal.
+// |X| < K for a coordinate X: both K - X and K + X are positive. The two
+// differences are operations on intervals (interval.hpp), whose radii cover
+// their own roundings, and certainSign() decides them only when the whole
+// interval of each lies above zero: so every X of the interval is strictly
+// within the domain.
+bool certainlyWithin(const Interval& coordinate) {
+    const Interval limit = exact::intervalOf(robust::kMaxCoordinate);
+    return exact::certainSign(limit - coordinate) == Sign::positive &&
+           exact::certainSign(limit + coordinate) == Sign::positive;
+}
+
+// |X| > N for a coordinate X, N the smallest normal double: X - N > 0 for a
+// positive centre, -X - N > 0 for a negative one, decided on intervals as in
+// certainlyWithin(). Then every X of the interval is nonzero and normal. A
+// zero centre with a positive radius is never certain: X may be a nonzero
+// subnormal.
+bool certainlyNormal(const Interval& coordinate) {
+    const Interval limit = exact::intervalOf(kSmallestNormal);
+    const Interval magnitude = coordinate.centre < 0.0 ? -coordinate : coordinate;
+    return exact::certainSign(magnitude - limit) == Sign::positive;
+}
+
+// True when an interval may serve as the coordinate of a point, decided on
+// the whole interval, not only on its centre: it says something, and every X
+// in it is within the domain and zero or normal. A radius zero means that the
+// centre is the exact value: within the domain when |centre| <= K, and zero or
+// normal as the centre is. Otherwise the two tests above, which are strict and
+// so conservative: a coordinate that might be within the domain, or normal,
+// but is not certainly so goes to the exact signs.
 bool fitsTheDoubles(const Interval& coordinate) {
-    const double magnitude = std::fabs(coordinate.centre);
-    return exact::isKnown(coordinate) && magnitude <= robust::kMaxCoordinate &&
-           (magnitude == 0.0 || magnitude >= kSmallestNormal);
+    if (!exact::isKnown(coordinate)) {
+        return false;
+    }
+    if (coordinate.radius == 0.0) {
+        const double magnitude = std::fabs(coordinate.centre);
+        return magnitude <= robust::kMaxCoordinate &&
+               (magnitude == 0.0 || magnitude >= kSmallestNormal);
+    }
+    return certainlyWithin(coordinate) && certainlyNormal(coordinate);
 }
 
 PointApproximation approximationFrom(const Interval& x, const Interval& y) {
@@ -136,11 +169,17 @@ PointApproximation approximationFrom(const Interval& x, const Interval& y) {
 
 // The interval of (r + q sqrt(d)) / w: the numerator r + q * root, with root
 // the interval of sqrt(d) (or r alone when there is no radical), divided by
-// the interval of w. Each step keeps the exact value (interval.hpp).
+// the interval of w. Each step keeps the exact value (interval.hpp). A
+// coordinate whose numerator is exactly zero (r zero and no radical) is
+// exactly zero: radius zero, so that fitsTheDoubles() keeps it.
 Interval coordinateInterval(const Dyadic& rational, const Dyadic& radical, const Interval& root,
                             bool hasRadical, const Interval& weight) {
+    const bool withRadical = hasRadical && !radical.isZero();
+    if (rational.isZero() && !withRadical) {
+        return exact::intervalOf(0.0);
+    }
     Interval numerator = exact::intervalOf(rational);
-    if (hasRadical && !radical.isZero()) {
+    if (withRadical) {
         numerator = numerator + (exact::intervalOf(radical) * root);
     }
     return exact::quotient(numerator, weight);
@@ -225,13 +264,6 @@ std::optional<Sign> filteredCircleSign(const CircleSupport& circle, const ExactP
     const Interval dx = (weight * point.x) - exact::intervalOf(circle.centerX);
     const Interval dy = (weight * point.y) - exact::intervalOf(circle.centerY);
     return exact::certainSign(((dx * dx) + (dy * dy)) - exact::intervalOf(circle.radiusSquared));
-}
-
-// |X| < K for a coordinate X: both K - X and K + X are positive.
-bool certainlyWithin(const Interval& coordinate) {
-    const Interval limit = exact::intervalOf(robust::kMaxCoordinate);
-    return exact::certainSign(limit - coordinate) == Sign::positive &&
-           exact::certainSign(limit + coordinate) == Sign::positive;
 }
 
 // beyondDomain() is false when both coordinates are certainly within the

@@ -642,6 +642,86 @@ TEST(SignFilter, SameAnswersOnExactZeros) {
 
 // --- The ends of the domain -----------------------------------------------------
 
+// A rational point (x / weight, y / weight), with its intervals still to be
+// computed.
+ExactPoint rationalPoint(const Dyadic& x, const Dyadic& y, const Dyadic& weight) {
+    return ExactPoint{ExactVector{x, y}, ExactVector{}, Dyadic(), weight};
+}
+
+// Points whose intervals have a centre that fits the doubles while the
+// interval does not (a review of FS2, round 1): the exact coordinate, or a
+// value of its interval, beyond the domain or nonzero below the smallest
+// normal double. None of them may have intervals.
+std::vector<ExactPoint> pointsAtTheEdgeOfTheDoubles() {
+    const Dyadic one(1.0);
+    const Dyadic three = Dyadic::fromInteger(3);
+    const Dyadic limit(kMaxCoordinate);
+    // Just beyond and just within the domain: K + 2^-4 and K - 2^-5 both
+    // round to K (the doubles next to K are K - 2^-3 and K + 2^-2), so the
+    // centre is K and the radius positive.
+    const Dyadic justBeyond = limit + one.timesPowerOfTwo(-4);
+    const Dyadic justWithin = limit - one.timesPowerOfTwo(-5);
+    // The smallest normal double, and twice it, written with weight 3: the
+    // centre is normal, the radius (at least 2^-1020 / 3) reaches below the
+    // smallest normal double and past zero.
+    const Dyadic normal = Dyadic(kSmallestNormal) * three;
+    const Dyadic twiceNormal = Dyadic(2.0 * kSmallestNormal) * three;
+    // A normal number just above the smallest normal double, beyond the
+    // precision of a double: centre the smallest normal double.
+    const Dyadic aboveNormal = Dyadic(kSmallestNormal) + one.timesPowerOfTwo(-1080);
+    return {rationalPoint(justBeyond, Dyadic(1.0), one),
+            rationalPoint(-justBeyond, Dyadic(1.0), one),
+            rationalPoint(Dyadic(1.0), justBeyond, one),
+            rationalPoint(justWithin, Dyadic(2.0), one),
+            rationalPoint(Dyadic(2.0), -justWithin, one),
+            rationalPoint(justBeyond * three, Dyadic(3.0), three),
+            rationalPoint(normal, Dyadic(3.0), three),
+            rationalPoint(Dyadic(3.0), -normal, three),
+            rationalPoint(twiceNormal, twiceNormal, three),
+            rationalPoint(aboveNormal, Dyadic(1.0), one),
+            rationalPoint(Dyadic(1.0), -aboveNormal, one)};
+}
+
+TEST(SignFilter, NoIntervalsWhereTheIntervalMayLeaveTheDoubles) {
+    for (const auto& p : pointsAtTheEdgeOfTheDoubles()) {
+        const auto rounded = detail::roundedPoint(p);
+        EXPECT_FALSE(detail::approximationOf(p).has_value())
+            << "(" << rounded.x << ", " << rounded.y << ")";
+    }
+    // The beyond ones are beyond, the others are not, with the filter on and
+    // off (the filter never answers true).
+    const auto points = pointsAtTheEdgeOfTheDoubles();
+    for (const bool enabled : {false, true}) {
+        exact::enableFilter(enabled);
+        EXPECT_TRUE(detail::beyondDomain(points[0]));
+        EXPECT_TRUE(detail::beyondDomain(points[1]));
+        EXPECT_TRUE(detail::beyondDomain(points[2]));
+        EXPECT_FALSE(detail::beyondDomain(points[3]));
+        EXPECT_FALSE(detail::beyondDomain(points[4]));
+        EXPECT_TRUE(detail::beyondDomain(points[5]));
+        for (std::size_t k = 6; k < points.size(); ++k) {
+            EXPECT_FALSE(detail::beyondDomain(points[k])) << k;
+        }
+    }
+    exact::enableFilter(true);
+
+    // Exact values that fit keep their intervals: the doubles at the ends of
+    // the domain, and a meeting with a coordinate exactly zero.
+    for (const double value :
+         {0.0, kSmallestNormal, -kSmallestNormal, kMaxCoordinate, -kMaxCoordinate}) {
+        EXPECT_TRUE(detail::approximationOf(detail::exactPoint({value, 1.0})).has_value()) << value;
+    }
+    EXPECT_FALSE(
+        detail::approximationOf(detail::exactPoint({kSmallestNormal / 2.0, 1.0})).has_value());
+    const auto meeting =
+        detail::meet(lineThrough({-1.0, -3.0}, {1.0, 5.0}), lineThrough({0.0, 1.0}, {3.0, 2.0}));
+    ASSERT_EQ(meeting.count, 1U);
+    const auto crossing = detail::roundedPoint(meeting.points[0].point);
+    EXPECT_EQ(crossing.x, 0.0);
+    EXPECT_EQ(crossing.y, 1.0);
+    EXPECT_TRUE(detail::approximationOf(meeting.points[0].point).has_value());
+}
+
 TEST(SignFilter, SameAnswersAtTheEndsOfTheDomain) {
     Checker checker;
     const std::vector<double> values{0.0,
@@ -678,6 +758,10 @@ TEST(SignFilter, SameAnswersAtTheEndsOfTheDomain) {
     appendMeeting(carrierOf(Circle{{0.0, 0.0}, 0x1p49}), lineThrough({0.0, 0.0}, {1.0, 1.0}),
                   points);
     appendMeeting(carrierOf(Circle{{0.0, 0.0}, kSmallestNormal}), axis, points);
+    // Points whose centres fit the doubles while their intervals do not.
+    for (const auto& p : pointsAtTheEdgeOfTheDoubles()) {
+        points.push_back(p);
+    }
 
     const std::vector<Carrier> carriers{
         axis,
