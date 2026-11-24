@@ -3,19 +3,40 @@
 
 // The exact order of the pieces that leave a point (local_order.hpp; stage
 // 0.3, package PS2).
+//
+// Floating-point filter of compareDepartures() (stage 0.3 corrections,
+// package FS2; exact/interval.hpp). The order of two departures reads a few
+// signs: the half turn of each tangent (the sign of its y, and of its x when y
+// is zero), the cross product of the two tangents when they lie in the same
+// half turn, and the curvatures when the tangents are equal. With the filter,
+// the signs of the tangents are first read from intervals: each coordinate
+// t + s sqrt(d) is one sum and one product of intervals of the Dyadic data
+// (with the interval of the square root of the exact radicand), so it contains
+// the exact coordinate, and the cross product is two products and a
+// difference of those. A sign whose interval contains zero is computed by its
+// exact formula, the same function as on the exact path (inFirstHalfTurn(),
+// crossOfTangents()), and the curvatures are always compared exactly
+// (compareCurvatures()). The decisions that follow are those of
+// compareTangents() and exactCompareDepartures() on the same signs, so the
+// answer is the same; the intervals never answer zero. A LocalOrder computes
+// the intervals and the half turn of each departure once, for the whole sort.
 
 #include "local_order.hpp"
 
+#include "exact/interval.hpp"
 #include "exact/quadratic.hpp"
 
 #include <algorithm>
 #include <cassert>
 #include <numeric>
+#include <optional>
 #include <utility>
 #include <variant>
 
 namespace solid_space::geom2d::detail {
 namespace {
+
+using exact::Interval;
 
 Sign negated(Sign sign) noexcept {
     switch (sign) {
@@ -145,6 +166,102 @@ Sign compareCurvatures(const Departure& u, const Departure& v) {
     return u.bend == Sign::positive ? magnitude : negated(magnitude);
 }
 
+Sign exactCompareDepartures(const Departure& a, const Departure& b) {
+    assert((!usesRadical(a) || !usesRadical(b) || compare(a.radicand, b.radicand) == Sign::zero) &&
+           "departures must come from the same point");
+    const Sign tangents = compareTangents(a, b);
+    if (tangents != Sign::zero) {
+        return tangents;
+    }
+    return compareCurvatures(a, b);
+}
+
+// --- Filter ------------------------------------------------------------------
+
+// What the filter reads of a departure: the intervals of its tangent, and its
+// half turn (inFirstHalfTurn()), from the intervals when they decide it and
+// otherwise exactly; exactHalfTurn says which.
+struct TangentIntervals {
+    Interval x;
+    Interval y;
+    bool firstHalfTurn = false;
+    bool exactHalfTurn = false;
+};
+
+// t + s * root, or t alone without a radical.
+Interval coordinateInterval(const Dyadic& rational, const Dyadic& radical, const Interval* root) {
+    Interval value = exact::intervalOf(rational);
+    if (root != nullptr && !radical.isZero()) {
+        value = value + (exact::intervalOf(radical) * *root);
+    }
+    return value;
+}
+
+// inFirstHalfTurn() on the signs of the intervals: y > 0, or y == 0 and x > 0.
+std::optional<bool> filteredHalfTurn(const Departure& departure, const Interval& x,
+                                     const Interval& y) {
+    if (const auto sign = exact::certainSign(y)) {
+        return *sign == Sign::positive;
+    }
+    // y is exactly zero when both of its Dyadic parts are (or the radicand
+    // is): an exact fact, not a decision of the filter.
+    const bool yZero = departure.tangent.y.isZero() &&
+                       (departure.tangentRadical.y.isZero() || departure.radicand.isZero());
+    if (yZero) {
+        if (const auto sign = exact::certainSign(x)) {
+            return *sign == Sign::positive;
+        }
+    }
+    return std::nullopt;
+}
+
+TangentIntervals tangentIntervals(const Departure& departure) {
+    Interval root;
+    const bool radical = usesRadical(departure) && !departure.radicand.isZero();
+    if (radical) {
+        // sqrt(d) of the exact radicand d >= 0 (the radicand of a point).
+        root = exact::squareRoot(exact::intervalOf(departure.radicand));
+    }
+    const Interval* rootOrNull = radical ? &root : nullptr;
+    TangentIntervals result;
+    result.x = coordinateInterval(departure.tangent.x, departure.tangentRadical.x, rootOrNull);
+    result.y = coordinateInterval(departure.tangent.y, departure.tangentRadical.y, rootOrNull);
+    if (const auto half = filteredHalfTurn(departure, result.x, result.y)) {
+        result.firstHalfTurn = *half;
+    } else {
+        result.firstHalfTurn = inFirstHalfTurn(departure);
+        result.exactHalfTurn = true;
+    }
+    return result;
+}
+
+// compareTangents() with its signs filtered: the half turns as
+// tangentIntervals() found them, and the cross product of the two tangents
+// (two products and a difference of intervals), exactly by crossOfTangents()
+// when its interval contains zero. At equal tangents the curvatures decide,
+// exactly (compareCurvatures(), no floating point). The same decisions on the
+// same signs as exactCompareDepartures().
+Sign mixedCompare(const Departure& a, const TangentIntervals& u, const Departure& b,
+                  const TangentIntervals& v) {
+    bool exactUsed = u.exactHalfTurn || v.exactHalfTurn;
+    Sign tangents = Sign::zero;
+    if (u.firstHalfTurn != v.firstHalfTurn) {
+        tangents = u.firstHalfTurn ? Sign::negative : Sign::positive;
+    } else if (const auto cross = exact::certainSign((u.x * v.y) - (u.y * v.x))) {
+        tangents = negated(*cross);
+    } else {
+        exactUsed = true;
+        const Dyadic& radicand = usesRadical(a) ? a.radicand : b.radicand;
+        tangents = negated(crossOfTangents(a, b, radicand));
+    }
+    if (tangents == Sign::zero) {
+        exactUsed = true;
+        tangents = compareCurvatures(a, b);
+    }
+    exact::recordFilterAnswer(!exactUsed);
+    return tangents;
+}
+
 }  // namespace
 
 Heading reversed(Heading heading) noexcept {
@@ -169,13 +286,13 @@ Departure rayDeparture(const ExactPoint& point) {
 }
 
 Sign compareDepartures(const Departure& a, const Departure& b) {
-    assert((!usesRadical(a) || !usesRadical(b) || compare(a.radicand, b.radicand) == Sign::zero) &&
-           "departures must come from the same point");
-    const Sign tangents = compareTangents(a, b);
-    if (tangents != Sign::zero) {
-        return tangents;
+    if (exact::filterEnabled()) {
+        assert(
+            (!usesRadical(a) || !usesRadical(b) || compare(a.radicand, b.radicand) == Sign::zero) &&
+            "departures must come from the same point");
+        return mixedCompare(a, tangentIntervals(a), b, tangentIntervals(b));
     }
-    return compareCurvatures(a, b);
+    return exactCompareDepartures(a, b);
 }
 
 Sign compareAround(const ExactPoint& point, const HalfPiece& a, const HalfPiece& b) {
@@ -188,17 +305,29 @@ LocalOrder::LocalOrder(const ExactPoint& point, std::span<const HalfPiece> piece
     for (const auto& piece : pieces) {
         m_departures.push_back(departureOf(point, piece));
     }
+    // The intervals of every departure, once for the whole sort.
+    std::vector<TangentIntervals> intervals;
+    const bool filtered = exact::filterEnabled();
+    if (filtered) {
+        intervals.reserve(m_departures.size());
+        for (const auto& departure : m_departures) {
+            intervals.push_back(tangentIntervals(departure));
+        }
+    }
+    const auto order = [&](std::size_t a, std::size_t b) {
+        return filtered ? mixedCompare(m_departures[a], intervals[a], m_departures[b], intervals[b])
+                        : exactCompareDepartures(m_departures[a], m_departures[b]);
+    };
     m_sorted.resize(pieces.size());
     std::iota(m_sorted.begin(), m_sorted.end(), std::size_t{0});
     // A strict weak order (a lexicographic order of exact keys), so the
     // stable sort is well defined and keeps the input order within a group.
-    std::stable_sort(m_sorted.begin(), m_sorted.end(), [this](std::size_t a, std::size_t b) {
-        return compareDepartures(m_departures[a], m_departures[b]) == Sign::negative;
+    std::stable_sort(m_sorted.begin(), m_sorted.end(), [&order](std::size_t a, std::size_t b) {
+        return order(a, b) == Sign::negative;
     });
     m_groupOf.resize(pieces.size());
     for (std::size_t k = 0; k < m_sorted.size(); ++k) {
-        if (k == 0 || compareDepartures(m_departures[m_sorted[k - 1]], m_departures[m_sorted[k]]) !=
-                          Sign::zero) {
+        if (k == 0 || order(m_sorted[k - 1], m_sorted[k]) != Sign::zero) {
             m_groupStart.push_back(k);
         }
         m_groupOf[m_sorted[k]] = m_groupStart.size() - 1;
@@ -231,20 +360,31 @@ Placement LocalOrder::place(const Departure& reference) const {
     if (count == 0) {
         return Placement{false, 0};
     }
+    // The intervals of the reference, once for the whole search.
+    std::optional<TangentIntervals> referenceIntervals;
+    if (exact::filterEnabled()) {
+        referenceIntervals = tangentIntervals(reference);
+    }
+    const auto order = [&](const Departure& representative) {
+        if (referenceIntervals) {
+            return mixedCompare(representative, tangentIntervals(representative), reference,
+                                *referenceIntervals);
+        }
+        return exactCompareDepartures(representative, reference);
+    };
     // The first group not before the reference.
     std::size_t low = 0;
     std::size_t high = count;
     while (low < high) {
         const std::size_t middle = low + (high - low) / 2;
         const auto& representative = m_departures[m_sorted[m_groupStart[middle]]];
-        if (compareDepartures(representative, reference) == Sign::negative) {
+        if (order(representative) == Sign::negative) {
             low = middle + 1;
         } else {
             high = middle;
         }
     }
-    if (low < count &&
-        compareDepartures(m_departures[m_sorted[m_groupStart[low]]], reference) == Sign::zero) {
+    if (low < count && order(m_departures[m_sorted[m_groupStart[low]]]) == Sign::zero) {
         return Placement{true, low};
     }
     // Between group low - 1 and group low; before group 0 it is the sector

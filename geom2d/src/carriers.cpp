@@ -7,21 +7,36 @@
 // Every formula below works in homogeneous coordinates, so that no division
 // is ever taken and every sign is the sign of an exact polynomial in the
 // doubles of the curves. The derivations are written next to each formula.
+//
+// Floating-point filter (stage 0.3 corrections, package FS2). Each sign of the
+// list in carriers.hpp is first computed on intervals (exact/interval.hpp):
+// the same exact quantity, or the same quantity times a positive factor, is
+// written as a chain of sums, differences and products of intervals that
+// contain the exact data, so its interval contains the exact value (every
+// operation keeps that property, interval.cpp proves it for each one, with
+// the roundings of the result and of the bound). When that interval does not
+// contain zero, its side is the exact sign; otherwise the exact path below,
+// unchanged, decides. So the filter never answers zero, and its answers are
+// the exact ones.
 
 #include "carriers.hpp"
 
+#include "exact/interval.hpp"
 #include "exact/quadratic.hpp"
 #include "solid_space/robust/point.hpp"
 
 #include <algorithm>
 #include <array>
 #include <cassert>
+#include <cmath>
+#include <optional>
 #include <utility>
 #include <variant>
 
 namespace solid_space::geom2d::detail {
 namespace {
 
+using exact::Interval;
 using exact::QuadraticNumber;
 
 Dyadic squared(const Dyadic& value) {
@@ -96,6 +111,182 @@ bool coordinateBeyond(const Dyadic& rational, const Dyadic& radical, const Exact
 
 ExactPoint rationalPoint(ExactVector numerator, Dyadic weight) {
     return ExactPoint{std::move(numerator), ExactVector{}, Dyadic(), std::move(weight)};
+}
+
+// --- Filter ----------------------------------------------------------------
+
+// The smallest normal double: approximationOf() gives no intervals to a point
+// with a nonzero coordinate below it (carriers.hpp).
+constexpr double kSmallestNormal = 0x1p-1022;
+
+// True when an interval may serve as the coordinate of a point: it says
+// something, its centre is within the domain, and it is zero or normal.
+bool fitsTheDoubles(const Interval& coordinate) {
+    const double magnitude = std::fabs(coordinate.centre);
+    return exact::isKnown(coordinate) && magnitude <= robust::kMaxCoordinate &&
+           (magnitude == 0.0 || magnitude >= kSmallestNormal);
+}
+
+PointApproximation approximationFrom(const Interval& x, const Interval& y) {
+    if (!fitsTheDoubles(x) || !fitsTheDoubles(y)) {
+        return PointApproximation{PointApproximation::State::absent, {}};
+    }
+    return PointApproximation{PointApproximation::State::known, PointIntervals{x, y}};
+}
+
+// The interval of (r + q sqrt(d)) / w: the numerator r + q * root, with root
+// the interval of sqrt(d) (or r alone when there is no radical), divided by
+// the interval of w. Each step keeps the exact value (interval.hpp).
+Interval coordinateInterval(const Dyadic& rational, const Dyadic& radical, const Interval& root,
+                            bool hasRadical, const Interval& weight) {
+    Interval numerator = exact::intervalOf(rational);
+    if (hasRadical && !radical.isZero()) {
+        numerator = numerator + (exact::intervalOf(radical) * root);
+    }
+    return exact::quotient(numerator, weight);
+}
+
+PointApproximation computeApproximation(const ExactPoint& point) {
+    const bool hasRadical = !point.radicand.isZero();
+    // sqrt(d) of the exact radicand d >= 0 (ExactPoint invariant).
+    const Interval root =
+        hasRadical ? exact::squareRoot(exact::intervalOf(point.radicand)) : exact::intervalOf(0.0);
+    const Interval weight = exact::intervalOf(point.weight);
+    return approximationFrom(
+        coordinateInterval(point.rational.x, point.radical.x, root, hasRadical, weight),
+        coordinateInterval(point.rational.y, point.radical.y, root, hasRadical, weight));
+}
+
+// The sign of the difference of one coordinate of two points, when both
+// points have intervals and the interval of the difference decides it.
+template <typename Coordinate>
+std::optional<Sign> filteredDifference(const ExactPoint& a, const ExactPoint& b,
+                                       Coordinate coordinate) {
+    const auto first = approximationOf(a);
+    if (!first) {
+        return std::nullopt;
+    }
+    const auto second = approximationOf(b);
+    if (!second) {
+        return std::nullopt;
+    }
+    return exact::certainSign(coordinate(*first) - coordinate(*second));
+}
+
+Interval xOf(const PointIntervals& point) {
+    return point.x;
+}
+
+Interval yOf(const PointIntervals& point) {
+    return point.y;
+}
+
+// The answer of a filter, counted for the tests (interval.hpp).
+template <typename Answer>
+std::optional<Answer> counted(std::optional<Answer> answer) {
+    exact::recordFilterAnswer(answer.has_value());
+    return answer;
+}
+
+// The interval of the difference of two doubles (exact data).
+Interval differenceOf(double a, double b) {
+    return exact::intervalOf(a) - exact::intervalOf(b);
+}
+
+// cross(U, X - S) for the line from S to E, U = E - S, and the point X: the
+// number whose sign exactLineSign() takes, divided by w > 0, so the same sign.
+// Seven operations on intervals: U (two differences of doubles), X - S (two),
+// two products and a difference.
+std::optional<Sign> filteredLineSign(const LineMeaning& line, const ExactPoint& exactPoint) {
+    const auto intervals = approximationOf(exactPoint);
+    if (!intervals) {
+        return std::nullopt;
+    }
+    const auto& point = *intervals;
+    const Interval ux = differenceOf(line.end.x, line.start.x);
+    const Interval uy = differenceOf(line.end.y, line.start.y);
+    const Interval dx = point.x - exact::intervalOf(line.start.x);
+    const Interval dy = point.y - exact::intervalOf(line.start.y);
+    return exact::certainSign((ux * dy) - (uy * dx));
+}
+
+// (w x - cx)^2 + (w y - cy)^2 - rho for the circle with centre c / w and
+// squared radius rho / w^2 and the point (x, y): w^2 (|X - C|^2 - R^2), with
+// w^2 > 0, so the sign of exactCircleSign(). Four Dyadic data rounded to
+// intervals, then two products, two differences, two squares, a sum and a
+// difference.
+std::optional<Sign> filteredCircleSign(const CircleSupport& circle, const ExactPoint& exactPoint) {
+    const auto intervals = approximationOf(exactPoint);
+    if (!intervals) {
+        return std::nullopt;
+    }
+    const auto& point = *intervals;
+    const Interval weight = exact::intervalOf(circle.weight);
+    const Interval dx = (weight * point.x) - exact::intervalOf(circle.centerX);
+    const Interval dy = (weight * point.y) - exact::intervalOf(circle.centerY);
+    return exact::certainSign(((dx * dx) + (dy * dy)) - exact::intervalOf(circle.radiusSquared));
+}
+
+// |X| < K for a coordinate X: both K - X and K + X are positive.
+bool certainlyWithin(const Interval& coordinate) {
+    const Interval limit = exact::intervalOf(robust::kMaxCoordinate);
+    return exact::certainSign(limit - coordinate) == Sign::positive &&
+           exact::certainSign(limit + coordinate) == Sign::positive;
+}
+
+// beyondDomain() is false when both coordinates are certainly within the
+// domain; the filter never answers true.
+std::optional<bool> filteredBeyondDomain(const ExactPoint& point) {
+    const auto intervals = approximationOf(point);
+    if (intervals && certainlyWithin(intervals->x) && certainlyWithin(intervals->y)) {
+        return false;
+    }
+    return std::nullopt;
+}
+
+// samePoint() is false when x or y certainly differ; the filter never answers
+// true.
+std::optional<bool> filteredSamePoint(const ExactPoint& a, const ExactPoint& b) {
+    if (filteredDifference(a, b, xOf) || filteredDifference(a, b, yOf)) {
+        return false;
+    }
+    return std::nullopt;
+}
+
+// --- Exact path --------------------------------------------------------------
+
+Sign exactCompareX(const ExactPoint& a, const ExactPoint& b) {
+    return compareCoordinate(a.rational.x, a.radical.x, a, b.rational.x, b.radical.x, b);
+}
+
+Sign exactCompareY(const ExactPoint& a, const ExactPoint& b) {
+    return compareCoordinate(a.rational.y, a.radical.y, a, b.rational.y, b.radical.y, b);
+}
+
+bool exactBeyondDomain(const ExactPoint& point) {
+    return coordinateBeyond(point.rational.x, point.radical.x, point) ||
+           coordinateBeyond(point.rational.y, point.radical.y, point);
+}
+
+// cross(U, X - P) for X = (r + q sqrt(d)) / w, times w > 0:
+//     cross(U, r - P w) + cross(U, q) sqrt(d).
+Sign exactLineSign(const LineMeaning& line, const ExactPoint& point) {
+    const auto direction = directionOf(line);
+    assert(!(direction.x.isZero() && direction.y.isZero()) && "a line needs start != end");
+    const auto offset = minus(point.rational, times(exactVector(line.start), point.weight));
+    return exact::signOf(cross(direction, offset), cross(direction, point.radical), point.radicand);
+}
+
+// |X - c / w|^2 - rho / w^2 for X = (r + q sqrt(d)) / W, times (w W)^2 > 0:
+// with A = w r - c W and B = w q,
+//     |A + B sqrt(d)|^2 - rho W^2 = |A|^2 + |B|^2 d - rho W^2 + 2 (A . B) sqrt(d).
+Sign exactCircleSign(const CircleSupport& circle, const ExactPoint& point) {
+    const auto a =
+        minus(times(point.rational, circle.weight), times(centerOf(circle), point.weight));
+    const auto b = times(point.radical, circle.weight);
+    const auto rational =
+        dot(a, a) + dot(b, b) * point.radicand - circle.radiusSquared * squared(point.weight);
+    return exact::signOf(rational, dot(a, b).timesPowerOfTwo(1), point.radicand);
 }
 
 // The data of a line in a fixed order, so that meet() does not depend on the
@@ -234,27 +425,81 @@ CarrierMeeting meetCircles(const CircleSupport& first, const CircleSupport& seco
     return meeting;
 }
 
+CarrierMeeting meetCarriers(const Carrier& first, const Carrier& second) {
+    const auto* line1 = std::get_if<LineMeaning>(&first);
+    const auto* line2 = std::get_if<LineMeaning>(&second);
+    if (line1 != nullptr && line2 != nullptr) {
+        return lineComesFirst(*line1, *line2) ? meetLines(*line1, *line2)
+                                              : meetLines(*line2, *line1);
+    }
+    if (line1 != nullptr) {
+        return meetLineCircle(*line1, std::get<CircleSupport>(second));
+    }
+    if (line2 != nullptr) {
+        return meetLineCircle(*line2, std::get<CircleSupport>(first));
+    }
+    const auto& circle1 = std::get<CircleSupport>(first);
+    const auto& circle2 = std::get<CircleSupport>(second);
+    return circleComesFirst(circle1, circle2) ? meetCircles(circle1, circle2)
+                                              : meetCircles(circle2, circle1);
+}
+
 }  // namespace
 
+std::optional<PointIntervals> approximationOf(const ExactPoint& point) {
+    if (point.approximation.state == PointApproximation::State::notComputed) {
+        point.approximation = computeApproximation(point);
+    }
+    if (point.approximation.state == PointApproximation::State::known) {
+        return point.approximation.intervals;
+    }
+    return std::nullopt;
+}
+
 ExactPoint exactPoint(Point2 point) {
-    return rationalPoint(exactVector(point), Dyadic(1.0));
+    ExactPoint result = rationalPoint(exactVector(point), Dyadic(1.0));
+    // The doubles are the exact coordinates: radius zero.
+    result.approximation =
+        approximationFrom(exact::intervalOf(point.x), exact::intervalOf(point.y));
+    return result;
 }
 
+// x(a) - x(b): one difference of intervals.
 Sign compareX(const ExactPoint& a, const ExactPoint& b) {
-    return compareCoordinate(a.rational.x, a.radical.x, a, b.rational.x, b.radical.x, b);
+    if (exact::filterEnabled()) {
+        if (const auto sign = counted(filteredDifference(a, b, xOf))) {
+            return *sign;
+        }
+    }
+    return exactCompareX(a, b);
 }
 
+// y(a) - y(b): one difference of intervals.
 Sign compareY(const ExactPoint& a, const ExactPoint& b) {
-    return compareCoordinate(a.rational.y, a.radical.y, a, b.rational.y, b.radical.y, b);
+    if (exact::filterEnabled()) {
+        if (const auto sign = counted(filteredDifference(a, b, yOf))) {
+            return *sign;
+        }
+    }
+    return exactCompareY(a, b);
 }
 
 bool samePoint(const ExactPoint& a, const ExactPoint& b) {
-    return compareX(a, b) == Sign::zero && compareY(a, b) == Sign::zero;
+    if (exact::filterEnabled()) {
+        if (const auto same = counted(filteredSamePoint(a, b))) {
+            return *same;
+        }
+    }
+    return exactCompareX(a, b) == Sign::zero && exactCompareY(a, b) == Sign::zero;
 }
 
 bool beyondDomain(const ExactPoint& point) {
-    return coordinateBeyond(point.rational.x, point.radical.x, point) ||
-           coordinateBeyond(point.rational.y, point.radical.y, point);
+    if (exact::filterEnabled()) {
+        if (const auto beyond = counted(filteredBeyondDomain(point))) {
+            return *beyond;
+        }
+    }
+    return exactBeyondDomain(point);
 }
 
 Point2 roundedPoint(const ExactPoint& point) {
@@ -271,26 +516,23 @@ Carrier carrierOf(const CurveMeaning& meaning) {
     return std::get<ArcMeaning>(meaning.support).circle;
 }
 
-// cross(U, X - P) for X = (r + q sqrt(d)) / w, times w > 0:
-//     cross(U, r - P w) + cross(U, q) sqrt(d).
 Sign lineSign(const LineMeaning& line, const ExactPoint& point) {
-    const auto direction = directionOf(line);
-    assert(!(direction.x.isZero() && direction.y.isZero()) && "a line needs start != end");
-    const auto offset = minus(point.rational, times(exactVector(line.start), point.weight));
-    return exact::signOf(cross(direction, offset), cross(direction, point.radical), point.radicand);
+    if (exact::filterEnabled()) {
+        if (const auto sign = counted(filteredLineSign(line, point))) {
+            return *sign;
+        }
+    }
+    return exactLineSign(line, point);
 }
 
-// |X - c / w|^2 - rho / w^2 for X = (r + q sqrt(d)) / W, times (w W)^2 > 0:
-// with A = w r - c W and B = w q,
-//     |A + B sqrt(d)|^2 - rho W^2 = |A|^2 + |B|^2 d - rho W^2 + 2 (A . B) sqrt(d).
 Sign circleSign(const CircleSupport& circle, const ExactPoint& point) {
     assert(circle.weight.sign() == Sign::positive && "a circle needs a positive weight");
-    const auto a =
-        minus(times(point.rational, circle.weight), times(centerOf(circle), point.weight));
-    const auto b = times(point.radical, circle.weight);
-    const auto rational =
-        dot(a, a) + dot(b, b) * point.radicand - circle.radiusSquared * squared(point.weight);
-    return exact::signOf(rational, dot(a, b).timesPowerOfTwo(1), point.radicand);
+    if (exact::filterEnabled()) {
+        if (const auto sign = counted(filteredCircleSign(circle, point))) {
+            return *sign;
+        }
+    }
+    return exactCircleSign(circle, point);
 }
 
 Sign carrierSign(const Carrier& carrier, const ExactPoint& point) {
@@ -315,22 +557,12 @@ Sign sideSign(const CurveMeaning& meaning, const ExactPoint& point) {
 }
 
 CarrierMeeting meet(const Carrier& first, const Carrier& second) {
-    const auto* line1 = std::get_if<LineMeaning>(&first);
-    const auto* line2 = std::get_if<LineMeaning>(&second);
-    if (line1 != nullptr && line2 != nullptr) {
-        return lineComesFirst(*line1, *line2) ? meetLines(*line1, *line2)
-                                              : meetLines(*line2, *line1);
+    CarrierMeeting meeting = meetCarriers(first, second);
+    // The intervals now, so that every copy of the points carries them.
+    for (std::size_t k = 0; k < meeting.count; ++k) {
+        static_cast<void>(approximationOf(meeting.points.at(k).point));
     }
-    if (line1 != nullptr) {
-        return meetLineCircle(*line1, std::get<CircleSupport>(second));
-    }
-    if (line2 != nullptr) {
-        return meetLineCircle(*line2, std::get<CircleSupport>(first));
-    }
-    const auto& circle1 = std::get<CircleSupport>(first);
-    const auto& circle2 = std::get<CircleSupport>(second);
-    return circleComesFirst(circle1, circle2) ? meetCircles(circle1, circle2)
-                                              : meetCircles(circle2, circle1);
+    return meeting;
 }
 
 }  // namespace solid_space::geom2d::detail
