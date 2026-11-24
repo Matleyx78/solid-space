@@ -51,7 +51,7 @@ StretchEnd stretchEnd(const detail::CurveMeaning& host, const detail::RegionPart
 }
 
 ClippedHost clipHost(const detail::CurveMeaning& host, Extension extension,
-                     std::span<const detail::LoopPieces> loops) {
+                     detail::RegionIndex& loops) {
     using detail::PartClass;
     const auto parts = detail::regionParts(host, extension, loops);
     ClippedHost clipped;
@@ -89,12 +89,15 @@ RegionClipping clipToRegion(std::span<const Curve> hosts, Extension hostExtensio
             result.skippedLoops.push_back({i, checked.diagnosis()});
         }
     }
+    // One index for all the hosts (package FS1 of the 0.3 performance work):
+    // it only chooses which pieces each host looks at (region_parts.hpp).
+    detail::RegionIndex index(loops);
     for (std::size_t i = 0; i < hosts.size(); ++i) {
         const auto checked = detail::checkedMeaning(hosts[i], i);
         if (!checked.hasValue()) {
             result.skippedHosts.push_back({i, checked.diagnosis()});
         } else if (!loops.empty()) {
-            result.hosts[i] = clipHost(checked.value(), hostExtension, loops);
+            result.hosts[i] = clipHost(checked.value(), hostExtension, index);
         }
     }
     return result;
