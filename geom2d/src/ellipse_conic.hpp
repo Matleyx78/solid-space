@@ -33,7 +33,8 @@
 // Every decision below is exact: roots isolated and compared with
 // exact/polynomial.hpp, signs of polynomials of degree at most two at the
 // roots for the positions on both curves (Location) and for the order along
-// the ellipse. No tolerance, no floating point.
+// the ellipse. No tolerance: the floating-point filter of exact/polynomial.hpp
+// answers a sign only when it is certain (stage 0.3 corrections, FS4).
 
 #include "carriers.hpp"
 #include "curve_meaning.hpp"

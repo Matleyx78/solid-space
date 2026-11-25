@@ -10,16 +10,19 @@
 #include "exact/polynomial.hpp"
 
 #include "exact/dyadic.hpp"
+#include "exact/interval.hpp"
 
 #include <gtest/gtest.h>
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <initializer_list>
 #include <limits>
 #include <numbers>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -622,6 +625,696 @@ TEST(PolynomialTest, GeneratedSquareRoots) {
             }
         }
     }
+}
+
+// ---------------------------------------------------------------------------
+// Fixed intervals (stage 0.3 corrections, package FS4)
+
+// The point of a root of the quartic of an ellipse is built at the midpoint of
+// its narrowed interval (ellipse_intersection.cpp, roundedRootPoint), so the
+// dyadic ends that realRoots() and narrowed() give are part of the results: a
+// faster way to the same decisions must give the same ends. Unlike the other
+// expected values of this file, these were recorded from the code of main at
+// commit 86fdd8a, before the filters of FS4: they fix the behaviour, they do
+// not derive it. Each end is the exact sum of its doubles; the widths of
+// narrowed() are 2^(-20 + scale) and 2^(-56 + scale).
+struct FixedRoot {
+    int multiplicity = 1;
+    std::vector<double> lower;
+    std::vector<double> upper;
+    std::vector<double> coarseLower;
+    std::vector<double> coarseUpper;
+    std::vector<double> fineLower;
+    std::vector<double> fineUpper;
+    double rounded = 0.0;
+};
+
+struct FixedCase {
+    std::vector<double> coefficients;
+    std::int64_t scale = 0;
+    std::vector<FixedRoot> roots;
+};
+
+Dyadic sumOf(const std::vector<double>& parts) {
+    Dyadic sum;
+    for (const double part : parts) {
+        sum += d(part);
+    }
+    return sum;
+}
+
+Polynomial fromDoubles(const std::vector<double>& coefficients) {
+    std::vector<Dyadic> values;
+    values.reserve(coefficients.size());
+    for (const double c : coefficients) {
+        values.emplace_back(c);
+    }
+    return Polynomial(std::move(values));
+}
+
+void expectEnds(const RealRoot& root, const std::vector<double>& lower,
+                const std::vector<double>& upper, const char* what) {
+    EXPECT_TRUE(same(root.lower(), sumOf(lower))) << what << " lower " << root.lower().toDouble();
+    EXPECT_TRUE(same(root.upper(), sumOf(upper))) << what << " upper " << root.upper().toDouble();
+}
+
+TEST(PolynomialTest, IsolatingAndNarrowedIntervalsAreFixed) {
+    // Degrees one to four: simple, double and triple roots, roots 2^-40 apart,
+    // coefficients near 2^50 and 2^-50, and two quartics with full doubles.
+    // The ends are recorded dyadic numbers, not approximations of constants
+    // such as sqrt(2): std::numbers does not apply to them.
+    // NOLINTBEGIN(modernize-use-std-numbers)
+    const std::vector<FixedCase> cases = {
+        {{-0x1p+0, 0x1.8p+1},
+         0,
+         {
+             {1,
+              {-0x1p+1},
+              {0x1p+1},
+              {0x1.55554p-2},
+              {0x1.55558p-2},
+              {0x1.5555555555555p-2, 0x1p-56},
+              {0x1.5555555555556p-2, -0x1p-55},
+              0x1.5555555555555p-2},
+         }},
+        {{-0x1.8p-1, 0x1p+0},
+         0,
+         {
+             {1, {-0x1p+1}, {0x1p+1}, {0x1.8p-1}, {0x1.8p-1}, {0x1.8p-1}, {0x1.8p-1}, 0x1.8p-1},
+         }},
+        {{-0x1p+1, 0x0p+0, 0x1p+0},
+         0,
+         {
+             {1,
+              {-0x1p+2},
+              {0x0p+0},
+              {-0x1.6a09fp+0},
+              {-0x1.6a09ep+0},
+              {-0x1.6a09e667f3bcdp+0, 0x1.8p-54},
+              {-0x1.6a09e667f3bcdp+0, 0x1.cp-54},
+              -0x1.6a09e667f3bcdp+0},
+             {1,
+              {0x0p+0},
+              {0x1p+2},
+              {0x1.6a09ep+0},
+              {0x1.6a09fp+0},
+              {0x1.6a09e667f3bcdp+0, -0x1.cp-54},
+              {0x1.6a09e667f3bcdp+0, -0x1.8p-54},
+              0x1.6a09e667f3bcdp+0},
+         }},
+        {{0x1p+0, -0x1.8p+2, 0x1.2p+3},
+         0,
+         {
+             {2,
+              {-0x1p+0},
+              {0x1p+0},
+              {0x1.55554p-2},
+              {0x1.55558p-2},
+              {0x1.5555555555555p-2, 0x1p-56},
+              {0x1.5555555555556p-2, -0x1p-55},
+              0x1.5555555555555p-2},
+         }},
+        {{-0x1p+1, 0x0p+0, 0x0p+0, 0x1p+0},
+         0,
+         {
+             {1,
+              {-0x1p+2},
+              {0x1p+2},
+              {0x1.428a2p+0},
+              {0x1.428a3p+0},
+              {0x1.428a2f98d728bp+0, -0x1p-55},
+              {0x1.428a2f98d728bp+0, -0x1p-56},
+              0x1.428a2f98d728bp+0},
+         }},
+        {{0x1p+1, -0x1.4p+2, 0x1p+0, 0x1p+1},
+         0,
+         {
+             {1, {-0x1p+2}, {0x0p+0}, {-0x1p+1}, {-0x1p+1}, {-0x1p+1}, {-0x1p+1}, -0x1p+1},
+             {1,
+              {0x0p+0},
+              {0x1.8p-1},
+              {0x1.ffffep-2},
+              {0x1.000008p-1},
+              {0x1p-1, -0x1p-57},
+              {0x1p-1, 0x1p-58},
+              0x1p-1},
+             {1, {0x1p+0}, {0x1p+0}, {0x1p+0}, {0x1p+0}, {0x1p+0}, {0x1p+0}, 0x1p+0},
+         }},
+        {{0x1.8p+2, 0x0p+0, -0x1.4p+2, 0x0p+0, 0x1p+0},
+         0,
+         {
+             {1,
+              {-0x1p+1},
+              {-0x1.8p+0},
+              {-0x1.bb67bp+0},
+              {-0x1.bb67ap+0},
+              {-0x1.bb67ae8584caap+0, -0x1p-53},
+              {-0x1.bb67ae8584caap+0, -0x1.cp-54},
+              -0x1.bb67ae8584caap+0},
+             {1,
+              {-0x1.8p+0},
+              {-0x1p+0},
+              {-0x1.6a09fp+0},
+              {-0x1.6a09ep+0},
+              {-0x1.6a09e667f3bcdp+0, 0x1.8p-54},
+              {-0x1.6a09e667f3bcdp+0, 0x1.cp-54},
+              -0x1.6a09e667f3bcdp+0},
+             {1,
+              {0x1p+0},
+              {0x1.8p+0},
+              {0x1.6a09ep+0},
+              {0x1.6a09fp+0},
+              {0x1.6a09e667f3bcdp+0, -0x1.cp-54},
+              {0x1.6a09e667f3bcdp+0, -0x1.8p-54},
+              0x1.6a09e667f3bcdp+0},
+             {1,
+              {0x1.8p+0},
+              {0x1p+1},
+              {0x1.bb67ap+0},
+              {0x1.bb67bp+0},
+              {0x1.bb67ae8584caap+0, 0x1.cp-54},
+              {0x1.bb67ae8584caap+0, 0x1p-53},
+              0x1.bb67ae8584caap+0},
+         }},
+        {{0x1p+2, 0x0p+0, -0x1p+2, 0x0p+0, 0x1p+0},
+         0,
+         {
+             {2,
+              {-0x1p+2},
+              {0x0p+0},
+              {-0x1.6a09fp+0},
+              {-0x1.6a09ep+0},
+              {-0x1.6a09e667f3bcdp+0, 0x1.8p-54},
+              {-0x1.6a09e667f3bcdp+0, 0x1.cp-54},
+              -0x1.6a09e667f3bcdp+0},
+             {2,
+              {0x0p+0},
+              {0x1p+2},
+              {0x1.6a09ep+0},
+              {0x1.6a09fp+0},
+              {0x1.6a09e667f3bcdp+0, -0x1.cp-54},
+              {0x1.6a09e667f3bcdp+0, -0x1.8p-54},
+              0x1.6a09e667f3bcdp+0},
+         }},
+        {{-0x1.4p+2, 0x1.ep+4, -0x1.6p+5, -0x1.8p+2, 0x1.2p+3},
+         0,
+         {
+             {1,
+              {-0x1p+3},
+              {0x0p+0},
+              {-0x1.1e378p+1},
+              {-0x1.1e3778p+1},
+              {-0x1.1e3779b97f4a8p+1, 0x1.cp-54},
+              {-0x1.1e3779b97f4a8p+1, 0x1p-53},
+              -0x1.1e3779b97f4a8p+1},
+             {2,
+              {0x0p+0},
+              {0x1p+1},
+              {0x1.55554p-2},
+              {0x1.55558p-2},
+              {0x1.5555555555555p-2, 0x1p-56},
+              {0x1.5555555555556p-2, -0x1p-55},
+              0x1.5555555555555p-2},
+             {1,
+              {0x1p+1},
+              {0x1p+2},
+              {0x1.1e3778p+1},
+              {0x1.1e378p+1},
+              {0x1.1e3779b97f4a8p+1, -0x1p-53},
+              {0x1.1e3779b97f4a8p+1, -0x1.cp-54},
+              0x1.1e3779b97f4a8p+1},
+         }},
+        {{0x1.00000000008p+2, 0x0p+0, -0x1.00000000004p+2, 0x0p+0, 0x1p+0},
+         0,
+         {
+             {1,
+              {-0x1.6a09e667f8p+0},
+              {-0x1.6a09e667f4p+0},
+              {-0x1.6a09e667f8p+0},
+              {-0x1.6a09e667f4p+0},
+              {-0x1.6a09e667f4175p+0, 0x1p-54},
+              {-0x1.6a09e667f4175p+0, 0x1.4p-54},
+              -0x1.6a09e667f4175p+0},
+             {1,
+              {-0x1.6a09e667f4p+0},
+              {-0x1.6a09e667fp+0},
+              {-0x1.6a09e667f4p+0},
+              {-0x1.6a09e667fp+0},
+              {-0x1.6a09e667f3bcdp+0, 0x1.8p-54},
+              {-0x1.6a09e667f3bcdp+0, 0x1.cp-54},
+              -0x1.6a09e667f3bcdp+0},
+             {1,
+              {0x1.6a09e667fp+0},
+              {0x1.6a09e667f4p+0},
+              {0x1.6a09e667fp+0},
+              {0x1.6a09e667f4p+0},
+              {0x1.6a09e667f3bcdp+0, -0x1.cp-54},
+              {0x1.6a09e667f3bcdp+0, -0x1.8p-54},
+              0x1.6a09e667f3bcdp+0},
+             {1,
+              {0x1.6a09e667f4p+0},
+              {0x1.6a09e667f8p+0},
+              {0x1.6a09e667f4p+0},
+              {0x1.6a09e667f8p+0},
+              {0x1.6a09e667f4175p+0, -0x1.4p-54},
+              {0x1.6a09e667f4175p+0, -0x1p-54},
+              0x1.6a09e667f4175p+0},
+         }},
+        {{0x1.0000000003p+0, -0x1.80000000024p+2, 0x1.40000000006p+3, -0x1.80000000024p+2,
+          0x1.2p+3},
+         0,
+         {
+             {1,
+              {0x1.555555555p-2},
+              {0x1.5555555558p-2},
+              {0x1.555555555p-2},
+              {0x1.5555555558p-2},
+              {0x1.5555555555555p-2, 0x1p-56},
+              {0x1.5555555555556p-2, -0x1p-55},
+              0x1.5555555555555p-2},
+             {1,
+              {0x1.5555555558p-2},
+              {0x1.555555556p-2},
+              {0x1.5555555558p-2},
+              {0x1.555555556p-2},
+              {0x1.5555555559555p-2, 0x1p-56},
+              {0x1.5555555559556p-2, -0x1p-55},
+              0x1.5555555559555p-2},
+         }},
+        {{-0x1p-50, 0x0p+0, 0x1p+0, 0x0p+0, 0x1p+50},
+         -25,
+         {
+             {1,
+              {-0x1p-23},
+              {0x0p+0},
+              {-0x1.92828p-26},
+              {-0x1.92826p-26},
+              {-0x1.92826ef258d1bp-26, -0x1p-81},
+              {-0x1.92826ef258d1bp-26},
+              -0x1.92826ef258d1bp-26},
+             {1,
+              {0x0p+0},
+              {0x1p-23},
+              {0x1.92826p-26},
+              {0x1.92828p-26},
+              {0x1.92826ef258d1bp-26},
+              {0x1.92826ef258d1bp-26, 0x1p-81},
+              0x1.92826ef258d1bp-26},
+         }},
+        {{-0x1p+101, 0x0p+0, 0x1p+0},
+         50,
+         {
+             {1,
+              {-0x1p+52},
+              {0x0p+0},
+              {-0x1.6a09fp+50},
+              {-0x1.6a09ep+50},
+              {-0x1.6a09e667f3bcdp+50, 0x1.8p-4},
+              {-0x1.6a09e667f3bcdp+50, 0x1.cp-4},
+              -0x1.6a09e667f3bcdp+50},
+             {1,
+              {0x0p+0},
+              {0x1p+52},
+              {0x1.6a09ep+50},
+              {0x1.6a09fp+50},
+              {0x1.6a09e667f3bcdp+50, -0x1.cp-4},
+              {0x1.6a09e667f3bcdp+50, -0x1.8p-4},
+              0x1.6a09e667f3bcdp+50},
+         }},
+        {{-0x1p-99, 0x0p+0, 0x1p+0},
+         -50,
+         {
+             {1,
+              {-0x1p-48},
+              {0x0p+0},
+              {-0x1.6a09fp-50},
+              {-0x1.6a09ep-50},
+              {-0x1.6a09e667f3bcdp-50, 0x1.8p-104},
+              {-0x1.6a09e667f3bcdp-50, 0x1.cp-104},
+              -0x1.6a09e667f3bcdp-50},
+             {1,
+              {0x0p+0},
+              {0x1p-48},
+              {0x1.6a09ep-50},
+              {0x1.6a09fp-50},
+              {0x1.6a09e667f3bcdp-50, -0x1.cp-104},
+              {0x1.6a09e667f3bcdp-50, -0x1.8p-104},
+              0x1.6a09e667f3bcdp-50},
+         }},
+        {{0x1.8p-48, -0x1p-49, -0x1.8p-49, 0x1p-50},
+         0,
+         {
+             {1,
+              {-0x1p+3},
+              {0x0p+0},
+              {-0x1.6a09fp+0},
+              {-0x1.6a09ep+0},
+              {-0x1.6a09e667f3bcdp+0, 0x1.8p-54},
+              {-0x1.6a09e667f3bcdp+0, 0x1.cp-54},
+              -0x1.6a09e667f3bcdp+0},
+             {1,
+              {0x0p+0},
+              {0x1p+1},
+              {0x1.6a09ep+0},
+              {0x1.6a09fp+0},
+              {0x1.6a09e667f3bcdp+0, -0x1.cp-54},
+              {0x1.6a09e667f3bcdp+0, -0x1.8p-54},
+              0x1.6a09e667f3bcdp+0},
+             {1, {0x1p+1}, {0x1p+2}, {0x1.8p+1}, {0x1.8p+1}, {0x1.8p+1}, {0x1.8p+1}, 0x1.8p+1},
+         }},
+        {{0x1p+51, -0x1p+52, -0x1.cp+52, 0x1p+51, 0x1.8p+51},
+         0,
+         {
+             {1,
+              {-0x1p+1},
+              {-0x1.4p+0},
+              {-0x1.6a09fp+0},
+              {-0x1.6a09e4p+0},
+              {-0x1.6a09e667f3bcdp+0, 0x1.bp-54},
+              {-0x1.6a09e667f3bcdp+0, 0x1.ep-54},
+              -0x1.6a09e667f3bcdp+0},
+             {1, {-0x1p+0}, {-0x1p+0}, {-0x1p+0}, {-0x1p+0}, {-0x1p+0}, {-0x1p+0}, -0x1p+0},
+             {1,
+              {0x0p+0},
+              {0x1p+0},
+              {0x1.55554p-2},
+              {0x1.55558p-2},
+              {0x1.5555555555555p-2, 0x1p-56},
+              {0x1.5555555555556p-2, -0x1p-55},
+              0x1.5555555555555p-2},
+             {1,
+              {0x1p+0},
+              {0x1p+1},
+              {0x1.6a09ep+0},
+              {0x1.6a09fp+0},
+              {0x1.6a09e667f3bcdp+0, -0x1.cp-54},
+              {0x1.6a09e667f3bcdp+0, -0x1.8p-54},
+              0x1.6a09e667f3bcdp+0},
+         }},
+        {{-0x1p-3, 0x1.4p-1, -0x1.8p-1, -0x1p-1, 0x1p+0},
+         0,
+         {
+             {1, {-0x1p+1}, {0x0p+0}, {-0x1p+0}, {-0x1p+0}, {-0x1p+0}, {-0x1p+0}, -0x1p+0},
+             {3, {0x0p+0}, {0x1p+1}, {0x1p-1}, {0x1p-1}, {0x1p-1}, {0x1p-1}, 0x1p-1},
+         }},
+        {{-0x1p-80, 0x0p+0, 0x1p+0},
+         -40,
+         {
+             {1, {-0x1p-38}, {0x0p+0}, {-0x1p-40}, {-0x1p-40}, {-0x1p-40}, {-0x1p-40}, -0x1p-40},
+             {1, {0x0p+0}, {0x1p-38}, {0x1p-40}, {0x1p-40}, {0x1p-40}, {0x1p-40}, 0x1p-40},
+         }},
+        {{-0x1.9e3779b97f4a7p+3, 0x1.3c6ef372fe94fp+2, 0x1.daa66d2c7ddf7p+3, -0x1.78dde6e5fd29fp+1,
+          -0x1.0000000000001p+0},
+         0,
+         {
+             {1,
+              {-0x1p+3},
+              {-0x1p+2},
+              {-0x1.5b6658p+2},
+              {-0x1.5b6654p+2},
+              {-0x1.5b6656db57fe1p+2, -0x1.6p-53},
+              {-0x1.5b6656db57fe1p+2, -0x1.4p-53},
+              -0x1.5b6656db57fe1p+2},
+             {1,
+              {-0x1p+2},
+              {0x0p+0},
+              {-0x1.096bcp+0},
+              {-0x1.096bbp+0},
+              {-0x1.096bb5ffaf31dp+0, 0x1p-56},
+              {-0x1.096bb5ffaf31dp+0, 0x1p-55},
+              -0x1.096bb5ffaf31dp+0},
+             {1,
+              {0x0p+0},
+              {0x1p+1},
+              {0x1.bbb52p-1},
+              {0x1.bbb54p-1},
+              {0x1.bbb524f5787afp-1},
+              {0x1.bbb524f5787afp-1, 0x1p-56},
+              0x1.bbb524f5787afp-1},
+             {1,
+              {0x1p+1},
+              {0x1p+2},
+              {0x1.53b758p+1},
+              {0x1.53b76p+1},
+              {0x1.53b758932c4c7p+1, 0x1.ep-53},
+              {0x1.53b758932c4c8p+1, -0x1p-52},
+              0x1.53b758932c4c7p+1},
+         }},
+        {{0x1.6a09e667f3bcdp+40, -0x1.bb67ae8584caap+41, -0x1.1e3779b97f4a8p+41, 0x1.8p+20,
+          0x1.5555555555555p+0},
+         20,
+         {
+             {1,
+              {-0x1p+21},
+              {-0x1p+20},
+              {-0x1.f9723p+20},
+              {-0x1.f9722p+20},
+              {-0x1.f97225cf50a19p+20, -0x1p-35},
+              {-0x1.f97225cf50a19p+20, -0x1p-36},
+              -0x1.f97225cf50a19p+20},
+             {1,
+              {-0x1p+20},
+              {0x0p+0},
+              {-0x1p+1},
+              {-0x1p+0},
+              {-0x1.e27f4bb2bp+0},
+              {-0x1.e27f4bb2ap+0},
+              -0x1.e27f4bb2a54b1p+0},
+             {1,
+              {0x0p+0},
+              {0x1p+19},
+              {0x0p+0},
+              {0x1p+0},
+              {0x1.579df3eb4p-2},
+              {0x1.579df3eb8p-2},
+              0x1.579df3eb780c2p-2},
+             {1,
+              {0x1p+19},
+              {0x1p+20},
+              {0x1.b2e46p+19},
+              {0x1.b2e48p+19},
+              {0x1.b2e47d319b1a1p+19, 0x1p-36},
+              {0x1.b2e47d319b1a1p+19, 0x1p-35},
+              0x1.b2e47d319b1a1p+19},
+         }},
+    };
+    // NOLINTEND(modernize-use-std-numbers)
+    for (std::size_t index = 0; index < cases.size(); ++index) {
+        SCOPED_TRACE(index);
+        const FixedCase& fixed = cases[index];
+        const std::vector<RealRoot> roots = realRoots(fromDoubles(fixed.coefficients));
+        ASSERT_EQ(roots.size(), fixed.roots.size());
+        for (std::size_t i = 0; i < roots.size(); ++i) {
+            SCOPED_TRACE(i);
+            const FixedRoot& expected = fixed.roots[i];
+            EXPECT_EQ(roots[i].multiplicity(), expected.multiplicity);
+            expectEnds(roots[i], expected.lower, expected.upper, "realRoots");
+            expectEnds(narrowed(roots[i], power(-20 + fixed.scale)), expected.coarseLower,
+                       expected.coarseUpper, "narrowed 2^-20");
+            expectEnds(narrowed(roots[i], power(-56 + fixed.scale)), expected.fineLower,
+                       expected.fineUpper, "narrowed 2^-56");
+            EXPECT_EQ(toDouble(roots[i]), expected.rounded);
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Filtered and exact signs (stage 0.3 corrections, package FS4)
+
+using solid_space::geom2d::exact::enableFilter;
+using solid_space::geom2d::exact::FilterCounts;
+using solid_space::geom2d::exact::startFilterCount;
+using solid_space::geom2d::exact::stopFilterCount;
+
+// Calls each function with the filter off and on and compares the answers
+// (they must be the same); turns the filter back on at the end.
+class FilterChecker {
+public:
+    FilterChecker() = default;
+    FilterChecker(const FilterChecker&) = delete;
+    FilterChecker& operator=(const FilterChecker&) = delete;
+    FilterChecker(FilterChecker&&) = delete;
+    FilterChecker& operator=(FilterChecker&&) = delete;
+
+    ~FilterChecker() { enableFilter(true); }
+
+    template <typename Function>
+    void same(const std::string& what, Function function) {
+        enableFilter(false);
+        const auto exactAnswer = function();
+        enableFilter(true);
+        const auto filtered = function();
+        ++m_calls;
+        if (!(filtered == exactAnswer)) {
+            ++m_differences;
+            if (m_differences <= 5) {
+                ADD_FAILURE() << what;
+            }
+        }
+    }
+
+    [[nodiscard]] std::size_t calls() const noexcept { return m_calls; }
+
+private:
+    std::size_t m_calls = 0;
+    std::size_t m_differences = 0;
+};
+
+// The ends, exactness and multiplicity of a root, comparable with ==.
+struct RootData {
+    Dyadic lower;
+    Dyadic upper;
+    bool exact = false;
+    int multiplicity = 0;
+
+    friend bool operator==(const RootData& a, const RootData& b) {
+        return same(a.lower, b.lower) && same(a.upper, b.upper) && a.exact == b.exact &&
+               a.multiplicity == b.multiplicity;
+    }
+};
+
+RootData dataOf(const RealRoot& root) {
+    return {root.lower(), root.upper(), root.isExact(), root.multiplicity()};
+}
+
+std::vector<RootData> dataOf(const std::vector<RealRoot>& roots) {
+    std::vector<RootData> data;
+    data.reserve(roots.size());
+    for (const RealRoot& root : roots) {
+        data.push_back(dataOf(root));
+    }
+    return data;
+}
+
+// A polynomial of degree at most four from factors with known roots: dyadic
+// ones (some repeated, some 2^-40 or 2^-45 apart) and square roots of dyadic
+// numbers (some nearly equal), times a power of two from 2^-50 to 2^50. The
+// dyadic roots are collected, to give exact zeros.
+Polynomial generatedPolynomial(Generator& generator, std::vector<Dyadic>& dyadicRoots) {
+    Polynomial p = poly({1.0});
+    double previous = generator.coarse();
+    while (p.degree() < kMaxDegree) {
+        const auto choice = generator.next() % 6;
+        if (choice == 0 && p.degree() + 2 <= kMaxDegree) {
+            // x^2 - c, or a pair of nearly equal square roots.
+            const double c = std::abs(generator.coarse()) + 0x1p-8;
+            p = p * squareMinus(c);
+            if (generator.next() % 2 == 0 && p.degree() + 2 <= kMaxDegree) {
+                p = p * squareMinus(d(c) + power(-40));
+            }
+            continue;
+        }
+        double root = generator.coarse();
+        if (choice == 1) {
+            root = previous;  // a repeated root
+        } else if (choice == 2) {
+            root = previous + 0x1p-40;
+        } else if (choice == 3) {
+            root = previous + 0x1p-45;
+        }
+        dyadicRoots.emplace_back(root);
+        p = p * linear(root);
+        previous = root;
+        if (generator.next() % 4 == 0) {
+            break;
+        }
+    }
+    constexpr std::array<std::int64_t, 4> kScales{-50, 0, 0, 50};
+    return p * power(kScales.at(generator.next() % kScales.size()));
+}
+
+TEST(PolynomialTest, FilteredSignsAreTheExactOnes) {
+    Generator generator(0x4653340000000001ULL);
+    FilterChecker checker;
+    startFilterCount();
+    for (int round = 0; round < 150; ++round) {
+        SCOPED_TRACE(round);
+        std::vector<Dyadic> dyadicRoots;
+        const Polynomial p = generatedPolynomial(generator, dyadicRoots);
+        std::vector<Dyadic> otherRoots;
+        Polynomial q = generatedPolynomial(generator, otherRoots);
+        if (q.degree() > 2) {
+            q = squareMinus(std::abs(generator.coarse()) + 0x1p-8);
+        }
+        // A common root with p now and then: a zero of q at a root of p.
+        if (!dyadicRoots.empty() && generator.next() % 3 == 0) {
+            q = linear(dyadicRoots[generator.next() % dyadicRoots.size()]) *
+                poly({generator.coarse(), 1.0});
+        }
+        if (p.degree() < 1) {
+            continue;
+        }
+
+        // Point 1: signs at dyadic points. Coarse points, the exact roots, and
+        // points near the roots (the ends and midpoints of narrowed intervals).
+        std::vector<Dyadic> points = dyadicRoots;
+        for (int k = 0; k < 4; ++k) {
+            points.emplace_back(generator.coarse());
+        }
+        const std::vector<RealRoot> roots = realRoots(p);
+        for (const RealRoot& root : roots) {
+            for (const std::int64_t exponent : {-20, -45, -60}) {
+                const RealRoot narrow = narrowed(root, power(exponent));
+                points.push_back(narrow.lower());
+                points.push_back(narrow.upper());
+                points.push_back((narrow.lower() + narrow.upper()).timesPowerOfTwo(-1));
+            }
+        }
+        for (const Dyadic& x : points) {
+            checker.same("p at a point", [&] { return p.signAt(x); });
+            checker.same("p' at a point", [&] { return p.derivative().signAt(x); });
+            checker.same("q at a point", [&] { return q.signAt(x); });
+        }
+        for (std::size_t i = 0; i + 1 < points.size(); i += 2) {
+            const Dyadic& a =
+                compare(points[i], points[i + 1]) == Sign::positive ? points[i + 1] : points[i];
+            const Dyadic& b =
+                compare(points[i], points[i + 1]) == Sign::positive ? points[i] : points[i + 1];
+            checker.same("Sturm count", [&] { return SturmSequence(p).countRoots(a, b); });
+        }
+
+        // The same roots isolated with the filter off have no bracket
+        // (polynomial.cpp): the filter at them starts from their intervals.
+        enableFilter(false);
+        const std::vector<RealRoot> unbracketed = realRoots(p);
+        enableFilter(true);
+        ASSERT_EQ(unbracketed.size(), roots.size());
+        for (const RealRoot& root : unbracketed) {
+            checker.same("q at a root without bracket", [&] { return signAt(q, root); });
+            checker.same("narrowed without bracket",
+                         [&] { return dataOf(narrowed(root, power(-56))); });
+        }
+
+        // The isolation, the narrowing and the rounding, which bisect with
+        // these signs: the same intervals.
+        checker.same("realRoots", [&] { return dataOf(realRoots(p)); });
+        for (const RealRoot& root : roots) {
+            for (const std::int64_t exponent : {-20, -56, -80}) {
+                checker.same("narrowed", [&] { return dataOf(narrowed(root, power(exponent))); });
+            }
+            checker.same("toDouble", [&] { return toDouble(root); });
+
+            // Point 2: signs at the roots, of q (common roots included), of
+            // the derivatives, and of the comparisons.
+            checker.same("q at a root", [&] { return signAt(q, root); });
+            checker.same("p' at a root", [&] { return signAt(p.derivative(), root); });
+            checker.same("p'' at a root",
+                         [&] { return signAt(p.derivative().derivative(), root); });
+            for (const Dyadic& x : points) {
+                checker.same("root against a point", [&] { return compare(root, x); });
+            }
+            for (const RealRoot& other : realRoots(q)) {
+                checker.same("root against a root", [&] { return compare(root, other); });
+            }
+        }
+    }
+    const FilterCounts counts = stopFilterCount();
+    EXPECT_GT(checker.calls(), 10000U);
+    // Both ways are taken: the filter decides, and leaves the zeros and the
+    // points nearest the roots (most of these data, on purpose) to the exact
+    // path.
+    EXPECT_GT(counts.decided, 0U);
+    EXPECT_GT(counts.undecided, 0U);
 }
 
 }  // namespace

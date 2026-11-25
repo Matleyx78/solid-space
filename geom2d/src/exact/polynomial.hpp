@@ -69,10 +69,17 @@
 // content: Dyadic has no exact division). Isolation bisects until each
 // interval holds one root, so its cost grows with the logarithm of the
 // smallest distance between two roots; roots 2^-60 apart cost sixty
-// bisections. narrowed() and toDouble() bisect too, one bit per step. A
-// floating-point filter for the frequent cases far from multiple roots
-// belongs to the callers, next to their own error bounds (ADR 0017,
-// Decisione, point 9): the answers here are the exact ones.
+// bisections. narrowed() and toDouble() bisect too, one bit per step.
+//
+// Floating-point filter (stage 0.3 corrections, package FS4; ADR 0017,
+// Decisione, point 9). Every decision above is a sign: of a polynomial at a
+// dyadic point (the Sturm sequences, the bisections, narrowed() and
+// toDouble()), or of another polynomial at a root (signAt(), the
+// multiplicities). Each one is first computed with the intervals of
+// interval.hpp, and exactly only when they do not decide; the filter never
+// answers zero. So the answers, and the isolating intervals that come out of
+// realRoots() and narrowed(), are the same numbers as without the filter: only
+// the time changes (the proofs are in polynomial.cpp).
 //
 // All the computation is in polynomial.cpp (ADR 0008, point 5). The functions
 // may allocate, so they are not noexcept; std::bad_alloc is the only exception
@@ -83,6 +90,7 @@
 
 #include <cstddef>
 #include <initializer_list>
+#include <limits>
 #include <span>
 #include <vector>
 
@@ -232,7 +240,9 @@ public:
 
 private:
     friend std::vector<RealRoot> realRoots(const Polynomial& p);
+    friend robust::Sign signAt(const Polynomial& q, const RealRoot& root);
     friend RealRoot narrowed(const RealRoot& root, const Dyadic& width);
+    friend double toDouble(const RealRoot& root);
 
     RealRoot(Polynomial squarefree, Dyadic lower, Dyadic upper, int multiplicity);
 
@@ -242,6 +252,12 @@ private:
     int m_multiplicity = 1;
     bool m_exact = false;
     robust::Sign m_signAboveLower = robust::Sign::zero;
+    // Two doubles with m_below < root < m_above, found in floating point and
+    // checked with the filter (polynomial.cpp, "The bracket of a root"), or
+    // -infinity and +infinity when there is none. Only the filter reads them:
+    // they spare work, they never change an answer or an end above.
+    double m_below = -std::numeric_limits<double>::infinity();
+    double m_above = std::numeric_limits<double>::infinity();
 };
 
 /// The distinct real roots of p, in increasing order, each with its

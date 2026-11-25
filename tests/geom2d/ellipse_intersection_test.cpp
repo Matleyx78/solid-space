@@ -6,8 +6,10 @@
 // the corpus (references [0.3-RS7a], [0.3-RS7b] and [0.3-RS7c]).
 
 #include "carriers.hpp"
+#include "curve_meaning.hpp"
 #include "ellipse_conic.hpp"
 #include "ellipse_meaning.hpp"
+#include "exact/interval.hpp"
 #include "exact/polynomial.hpp"
 #include "positions.hpp"
 #include "solid_space/geom2d/ellipse.hpp"
@@ -20,6 +22,8 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <string>
+#include <variant>
 #include <vector>
 
 namespace {
@@ -277,6 +281,113 @@ TEST(EllipseIntersection, EveryPointLiesExactlyOnBothCarriers) {
         }
     }
     EXPECT_GT(checked, 0U);
+}
+
+// The box of a curved piece (stage 0.3 corrections, package FS4) skips only
+// pairs without a common point: intersect() gives as many points as the exact
+// meeting of the two carriers has points that take part, for pieces of every
+// bulge, near the ellipse and far from it, each input extended or not.
+TEST(EllipseIntersection, CurvedPiecesKeepEveryCommonPoint) {
+    static constexpr std::array<double, 10> kBulges{0x1p-10, -0.01, 0.3,    -1.0,  1.0,
+                                                    2.5,     -40.0, 1000.0, -0.75, 0.5};
+    static constexpr std::array<double, 6> kShifts{0.0, 0.0, 6.0, -9.0, 20.0, -64.0};
+    Generator random;
+    std::size_t withPoints = 0;
+    std::size_t withoutPoints = 0;
+    for (int i = 0; i < 400; ++i) {
+        const auto ellipse = randomEllipse(random);
+        const double shiftX = random.pick(kShifts);
+        const double shiftY = random.pick(kShifts);
+        const geom2d::PolylineSegment piece{
+            {random.coordinate(4) + shiftX, random.coordinate(4) + shiftY},
+            {random.coordinate(4) + shiftX, random.coordinate(4) + shiftY},
+            random.pick(kBulges)};
+        if (piece.start.x == piece.end.x && piece.start.y == piece.end.y) {
+            continue;
+        }
+        const auto meaning = detail::checkedEllipse(ellipse, 0).value();
+        const auto form = detail::rationalForm(meaning.support);
+        const auto pieceMeaning = detail::checkedMeaning(piece, 1);
+        ASSERT_TRUE(pieceMeaning.hasValue());
+        const auto& arc = std::get<detail::ArcMeaning>(pieceMeaning.value().support);
+        const auto trace = detail::traceOfCircle(form, arc.circle);
+        if (trace.equation.isZero()) {
+            continue;
+        }
+        const auto points = detail::meetEllipseConic(meaning, trace, arc);
+        for (const Extension ellipseExtension : {Extension::none, Extension::extended}) {
+            for (const Extension pieceExtension : {Extension::none, Extension::extended}) {
+                const auto expected = static_cast<std::size_t>(
+                    std::count_if(points.begin(), points.end(), [&](const auto& point) {
+                        return detail::takesPart(point.onEllipse, ellipseExtension) &&
+                               detail::takesPart(point.onOther, pieceExtension);
+                    }));
+                const auto result =
+                    geom2d::intersect(ellipse, ellipseExtension, piece, pieceExtension);
+                ASSERT_TRUE(result.hasValue());
+                EXPECT_EQ(result.value().points.size(), expected) << i;
+                ++(expected > 0 ? withPoints : withoutPoints);
+            }
+        }
+    }
+    EXPECT_GT(withPoints, 0U);
+    EXPECT_GT(withoutPoints, 0U);
+}
+
+// The points of an intersect(), bit for bit, with their contacts and
+// locations, and the count of the omitted ones.
+std::string textOf(const EllipseIntersections& result) {
+    std::string text = std::to_string(result.omittedBeyondDomain) + ";";
+    for (const auto& point : result.points) {
+        text += std::to_string(std::bit_cast<std::uint64_t>(point.point.x)) + " " +
+                std::to_string(std::bit_cast<std::uint64_t>(point.point.y)) + " " +
+                std::to_string(static_cast<int>(point.contact)) + " " +
+                std::to_string(static_cast<int>(point.onFirst)) + " " +
+                std::to_string(static_cast<int>(point.onSecond)) + ";";
+    }
+    return text + std::to_string(result.overlaps.size());
+}
+
+// The floating-point filter of the quartic (stage 0.3 corrections, package
+// FS4) changes no result: the same points, bit for bit, with the filter off
+// and on, for ellipses, circles and curved pieces.
+TEST(EllipseIntersection, TheFilterChangesNoResult) {
+    static constexpr std::array<double, 5> kBulges{0.3, -1.0, 1.0, 2.5, -0.75};
+    Generator random;
+    std::size_t points = 0;
+    for (int i = 0; i < 300; ++i) {
+        const auto ellipse = randomEllipse(random);
+        const auto other = randomEllipse(random);
+        const geom2d::Curve circle = Circle{{random.coordinate(3), random.coordinate(3)},
+                                            static_cast<double>(1 + random.next() % 6)};
+        const geom2d::Curve piece =
+            geom2d::PolylineSegment{{random.coordinate(4), random.coordinate(4)},
+                                    {random.coordinate(4), random.coordinate(4)},
+                                    random.pick(kBulges)};
+        for (const Extension extension : {Extension::none, Extension::extended}) {
+            std::array<std::string, 2> withEllipse;
+            std::array<std::string, 2> withCircle;
+            std::array<std::string, 2> withPiece;
+            for (const bool enabled : {false, true}) {
+                exact::enableFilter(enabled);
+                const auto k = static_cast<std::size_t>(enabled);
+                const auto a = geom2d::intersect(ellipse, extension, other, extension);
+                const auto b = geom2d::intersect(ellipse, extension, circle, extension);
+                const auto c = geom2d::intersect(ellipse, extension, piece, extension);
+                withEllipse.at(k) = a.hasValue() ? textOf(a.value()) : "diagnosis";
+                withCircle.at(k) = b.hasValue() ? textOf(b.value()) : "diagnosis";
+                withPiece.at(k) = c.hasValue() ? textOf(c.value()) : "diagnosis";
+                if (enabled && a.hasValue()) {
+                    points += a.value().points.size();
+                }
+            }
+            EXPECT_EQ(withEllipse[0], withEllipse[1]) << i;
+            EXPECT_EQ(withCircle[0], withCircle[1]) << i;
+            EXPECT_EQ(withPiece[0], withPiece[1]) << i;
+        }
+    }
+    exact::enableFilter(true);
+    EXPECT_GT(points, 0U);
 }
 
 TEST(EllipseIntersection, SegmentsGiveThePointsOfTheRectangleSides) {
