@@ -119,15 +119,20 @@ struct BoundaryRule {
 [[nodiscard]] std::vector<ArrangementCurve> arrangementCurves(const BoundaryRule& rule,
                                                               std::size_t inputCount);
 
+/// boxOf() (arrangement.hpp) of each curve of arrangementCurves(rule, ...),
+/// taken from the boxes of step 1 where they are the same.
+[[nodiscard]] std::vector<Box> arrangementBoxes(const BoundaryRule& rule,
+                                                std::span<const ArrangementCurve> curves);
+
 /// Step 4: the lowest input index of the curves (as extended in step 3) and
 /// links within the tolerance of the picked point (for a link, the lower
 /// index of its curves), or nothing. M counts the coordinates of the point
 /// and the magnitudes of the input curves (of both curves for a link).
-/// `curves` is arrangementCurves(rule, ...). Precondition: the point is
-/// finite and within the domain.
+/// `curves` is arrangementCurves(rule, ...) and `boxes` arrangementBoxes() of
+/// them. Precondition: the point is finite and within the domain.
 [[nodiscard]] std::optional<std::size_t> nearestCurve(const BoundaryRule& rule,
                                                       std::span<const ArrangementCurve> curves,
-                                                      Point2 picked,
+                                                      std::span<const Box> boxes, Point2 picked,
                                                       const robust::TolerancePolicy& policy);
 
 /// The pieces of polyline that stand for an Arc that is not a whole circle
@@ -135,8 +140,11 @@ struct BoundaryRule {
 /// curves.hpp), split at a rounded middle point when the arc turns by more
 /// than half a turn, each within kRelativeLoopError / 2 of the arc. None when
 /// the rounded ends of the arc coincide; a piece whose ends coincide (only
-/// below the bounds of curves.hpp, M < 2^-50) is left out too.
-/// Precondition: the arc is checked, not degenerate and not a whole circle.
+/// below the bounds of curves.hpp, M < 2^-50) is left out too. The doubles
+/// are the ones of the exact roundings; a floating-point filter skips the
+/// exact computation only when it would give the same double (boundary.cpp).
+/// Preconditions: the arc is checked, not degenerate and not a whole circle,
+/// and `meaning` is its meaning (meaningOf(), checkedMeaning()).
 [[nodiscard]] std::vector<PolylineSegment> convertedArc(const Arc& arc, const ArcMeaning& meaning);
 
 /// The bulge of the arc of a circle from `from` to `to`, turning by at most
