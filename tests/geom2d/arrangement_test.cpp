@@ -16,6 +16,8 @@
 #include <gtest/gtest.h>
 
 #include <algorithm>
+#include <array>
+#include <bit>
 #include <chrono>
 #include <cstddef>
 #include <cstdint>
@@ -23,7 +25,9 @@
 #include <optional>
 #include <span>
 #include <tuple>
+#include <type_traits>
 #include <utility>
+#include <variant>
 #include <vector>
 
 namespace {
@@ -684,6 +688,186 @@ TEST(ArrangementBoxes, OverlappingPairsSkipFarBoxes) {
     const std::vector<Box> boxes{{0, 0, 1, 1}, {5, 5, 6, 6}, {1, 1, 2, 2}, {0.5, 3, 0.7, 4}};
     const std::vector<std::pair<std::size_t, std::size_t>> expected{{0, 2}};
     EXPECT_EQ(detail::overlappingPairs(boxes), expected);
+}
+
+// --- The same arrangement as before the speed-up (0.3-FS3) -------------------------
+
+// A fingerprint of everything the arrangement builds: its vertices (their
+// rounded doubles, bit for bit), its pieces, the darts around every vertex,
+// next(), the cycles, the holes and the groups. FNV-1a on 64-bit words,
+// written byte by byte so that it is the same on every system.
+class Fingerprint {
+public:
+    void add(std::uint64_t word) {
+        for (int k = 0; k < 8; ++k) {
+            m_hash ^= (word >> (8U * static_cast<unsigned>(k))) & 0xffU;
+            m_hash *= 0x100000001b3ULL;
+        }
+    }
+
+    void add(double value) { add(std::bit_cast<std::uint64_t>(value)); }
+
+    [[nodiscard]] std::uint64_t value() const { return m_hash; }
+
+private:
+    std::uint64_t m_hash = 0xcbf29ce484222325ULL;
+};
+
+std::uint64_t fingerprintOf(const Arrangement& arrangement, std::size_t curveCount) {
+    Fingerprint print;
+    print.add(std::uint64_t{arrangement.vertexCount()});
+    for (std::size_t v = 0; v < arrangement.vertexCount(); ++v) {
+        const Point2 point = rounded(arrangement, v);
+        print.add(point.x);
+        print.add(point.y);
+        print.add(std::uint64_t{arrangement.around(v).size()});
+        for (const std::size_t dart : arrangement.around(v)) {
+            print.add(std::uint64_t{dart});
+        }
+    }
+    print.add(std::uint64_t{arrangement.pieces().size()});
+    for (const auto& piece : arrangement.pieces()) {
+        print.add(std::uint64_t{piece.curve});
+        print.add(std::uint64_t{piece.from});
+        print.add(std::uint64_t{piece.to});
+    }
+    for (std::size_t dart = 0; dart < arrangement.dartCount(); ++dart) {
+        print.add(std::uint64_t{arrangement.next(dart)});
+    }
+    print.add(std::uint64_t{arrangement.cycleCount()});
+    for (std::size_t c = 0; c < arrangement.cycleCount(); ++c) {
+        print.add(std::uint64_t{arrangement.isHole(c)});
+        print.add(std::uint64_t{arrangement.groupOfCycle(c)});
+        for (const std::size_t dart : arrangement.cycle(c)) {
+            print.add(std::uint64_t{dart});
+        }
+    }
+    print.add(std::uint64_t{arrangement.groupCount()});
+    for (std::size_t g = 0; g < arrangement.groupCount(); ++g) {
+        print.add(std::uint64_t{arrangement.holeCycle(g)});
+        print.add(std::uint64_t{arrangement.groupVertex(g)});
+    }
+    for (std::size_t curve = 0; curve < curveCount; ++curve) {
+        print.add(std::uint64_t{arrangement.groupOfCurve(curve)});
+    }
+    return print.value();
+}
+
+// A drawing from a seed: segments, curved pieces and circles on a small
+// integer grid (many crossings and touchings at vertices), copies of earlier
+// curves (coincident), halves of earlier segments (sharing a stretch), copies
+// moved by 2^-40 (nearly coincident), curves that start at an end of an
+// earlier one, and segments whose start is moved back along their line.
+std::vector<ArrangementCurve> seededDrawing(std::uint64_t seed, std::size_t count) {
+    std::uint64_t state = seed;
+    const auto next = [&state]() {
+        state = state * 6364136223846793005ULL + 1442695040888963407ULL;
+        return state >> 33U;
+    };
+    const auto coordinate = [&next]() {
+        return static_cast<double>(next() % 9);
+    };
+    constexpr double kNear = 0x1p-40;
+    constexpr std::array<double, 6> kBulges{0.5, -0.5, 1.0, -0.25, 2.0, -3.0};
+    std::vector<Curve> curves;
+    std::vector<std::optional<ExactPoint>> starts;
+    const auto push = [&](const Curve& curve, std::optional<ExactPoint> start = std::nullopt) {
+        curves.push_back(curve);
+        starts.push_back(std::move(start));
+    };
+    while (curves.size() < count) {
+        const std::uint64_t kind = curves.empty() ? 0 : next() % 9;
+        const Point2 a{coordinate(), coordinate()};
+        const Point2 b{coordinate(), coordinate()};
+        const Curve* earlier = curves.empty() ? nullptr : &curves[next() % curves.size()];
+        const auto* earlierSegment = earlier ? std::get_if<Segment>(earlier) : nullptr;
+        if (kind == 0 || kind == 1) {
+            if (a.x != b.x || a.y != b.y) {
+                push(Segment{a, b});
+            }
+        } else if (kind == 2) {
+            if (a.x != b.x || a.y != b.y) {
+                push(PolylineSegment{a, b, kBulges[next() % kBulges.size()]});
+            }
+        } else if (kind == 3) {
+            push(Circle{a, 1.0 + static_cast<double>(next() % 3)});
+        } else if (kind == 4) {
+            push(*earlier);
+        } else if (kind == 5 && earlierSegment != nullptr) {
+            const Point2 middle{(earlierSegment->start.x + earlierSegment->end.x) / 2,
+                                (earlierSegment->start.y + earlierSegment->end.y) / 2};
+            const Point2 to = next() % 2 == 0 ? earlierSegment->end : b;
+            if (middle.x != to.x || middle.y != to.y) {
+                push(Segment{middle, to});
+            }
+        } else if (kind == 6) {
+            Curve moved = *earlier;
+            std::visit(
+                [&](auto& data) {
+                    using T = std::decay_t<decltype(data)>;
+                    if constexpr (std::is_same_v<T, Circle>) {
+                        data.center.x += kNear;
+                    } else if constexpr (std::is_same_v<T, Segment> ||
+                                         std::is_same_v<T, PolylineSegment>) {
+                        data.start.y += kNear;
+                        if (next() % 2 == 0) {
+                            data.end.x -= kNear;
+                        }
+                    }
+                },
+                moved);
+            push(moved);
+        } else if (kind == 7 && earlier != nullptr) {
+            const auto ends = solid_space::geom2d::endpoints(*earlier).value();
+            const Point2 from = next() % 2 == 0 ? ends.start : ends.end;
+            if (from.x != b.x || from.y != b.y) {
+                push(Segment{from, b});
+            }
+        } else if (kind == 8 && (a.x != b.x || a.y != b.y)) {
+            // The start moved back by half the segment, on its line exactly.
+            const Point2 back{a.x - (b.x - a.x) / 2, a.y - (b.y - a.y) / 2};
+            push(Segment{a, b}, at(back.x, back.y));
+        }
+    }
+    std::vector<ArrangementCurve> result;
+    for (std::size_t i = 0; i < curves.size(); ++i) {
+        ArrangementCurve curve = given(curves[i], i);
+        curve.start = starts[i];
+        result.push_back(std::move(curve));
+    }
+    return result;
+}
+
+TEST(ArrangementProperties, SeededDrawingsKeepTheirArrangement) {
+    // The fingerprints were taken from the code before the speed-up of
+    // package FS3 (commit 685da52): vertices, pieces and cycles must stay
+    // the same, in the same order.
+    struct Expected {
+        std::uint64_t seed;
+        std::size_t vertices;
+        std::size_t pieces;
+        std::size_t cycles;
+        std::uint64_t fingerprint;
+    };
+
+    const std::vector<Expected> drawings{
+        {1, 210, 375, 167, 0x8b7b02850aa4e95aULL},  {2, 165, 270, 109, 0x9f1353e681793f7cULL},
+        {3, 170, 309, 143, 0xaa21f726a3b579deULL},  {4, 173, 323, 152, 0x3c79a079366edae0ULL},
+        {5, 215, 387, 174, 0xc6cf283b752be045ULL},  {6, 192, 341, 155, 0x78c4bd85491363efULL},
+        {7, 285, 521, 238, 0x96d2c82db329e1daULL},  {8, 216, 399, 185, 0x13cc1f5183bfe5c0ULL},
+        {9, 269, 496, 229, 0x76158f86cb3e6fa7ULL},  {10, 245, 455, 212, 0x0a70676e5b654c09ULL},
+        {11, 173, 322, 151, 0x863d4dc9feeb7004ULL}, {12, 171, 311, 142, 0x31c91d4b60fc0659ULL},
+    };
+    ASSERT_FALSE(drawings.empty());
+    for (const Expected& drawing : drawings) {
+        const auto input = seededDrawing(drawing.seed, 40);
+        const Arrangement arrangement(input);
+        EXPECT_EQ(arrangement.vertexCount(), drawing.vertices) << "seed " << drawing.seed;
+        EXPECT_EQ(arrangement.pieces().size(), drawing.pieces) << "seed " << drawing.seed;
+        EXPECT_EQ(arrangement.cycleCount(), drawing.cycles) << "seed " << drawing.seed;
+        EXPECT_EQ(fingerprintOf(arrangement, input.size()), drawing.fingerprint)
+            << "seed " << drawing.seed;
+    }
 }
 
 }  // namespace

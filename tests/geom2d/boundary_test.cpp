@@ -590,5 +590,258 @@ TEST(DetectBoundary, NoCurveLeavesThePointNotEnclosed) {
     EXPECT_EQ(result.value().skipped[1].diagnosis.input, 2U);
 }
 
+// --- Conversion of the arcs, bit for bit (0.3-FS3) ---------------------------------
+
+// The pieces of convertedArc() for arcs of every kind: small sweeps and sweeps
+// of almost a whole turn, radii 2^-20 and 2^40, counterclockwise and
+// clockwise. The doubles were taken from the code before the speed-up of
+// package FS3 (commit 685da52): the conversion must give the same bits.
+struct ExpectedPiece {
+    double startX = 0.0;
+    double startY = 0.0;
+    double endX = 0.0;
+    double endY = 0.0;
+    double bulge = 0.0;
+};
+
+struct ArcConversion {
+    Arc arc;
+    std::vector<ExpectedPiece> pieces;
+};
+
+std::vector<Arc> conversionArcs() {
+    constexpr double kTurn = 2 * kPi;
+    std::vector<Arc> arcs;
+    const std::array<double, 4> radii{1.0, 0x1p-20, 0x1p40, 5.0};
+    const std::array<Point2, 4> centres{
+        {{0.0, 0.0}, {0.375, -0.125}, {0x1p40, -0x1p39}, {12345.25, -678.5}}};
+    const std::array<double, 4> starts{0.0, 0.3, -kPi / 2, 2.5};
+    const std::array<double, 9> sweeps{1e-7, 1e-3, 0.7,          kPi / 2,     kPi,
+                                       3.5,  5.0,  kTurn - 1e-3, kTurn - 1e-9};
+    for (std::size_t r = 0; r < radii.size(); ++r) {
+        for (std::size_t s = 0; s < sweeps.size(); ++s) {
+            const double start = starts[(r + s) % starts.size()];
+            for (const double sign : {1.0, -1.0}) {
+                arcs.push_back(Arc{centres[r], radii[r], start, sign * sweeps[s]});
+            }
+        }
+    }
+    return arcs;
+}
+
+TEST(DetectBoundary, ConvertedArcsKeepTheirBits) {
+    const std::vector<Arc> arcs = conversionArcs();
+    const std::vector<std::vector<ExpectedPiece>> expected = {
+        {{0x1p+0, 0x0p+0, 0x1.fffffffffffd3p-1, 0x1.ad7f29abcaf3bp-24, 0x1.ad7f29abcaf48p-26}},
+        {{0x1p+0, 0x0p+0, 0x1.fffffffffffd3p-1, -0x1.ad7f29abcaf3bp-24, -0x1.ad7f29abcaf48p-26}},
+        {{0x1.e921dd42f09bap-1, 0x1.2e9cd95baba33p-2, 0x1.e8fb1138fa7e2p-1, 0x1.2f973efa588b8p-2,
+          0x1.0624dd8abae31p-12}},
+        {{0x1.e921dd42f09bap-1, 0x1.2e9cd95baba33p-2, 0x1.e948893e9fbdfp-1, 0x1.2da25fe7ff398p-2,
+          -0x1.0624dd8abadefp-12}},
+        {{0x1.1a62633145c07p-54, -0x1p+0, 0x1.49d6e694619b8p-1, -0x1.87996529f9d92p-1,
+          0x1.6a1aa2e1bef6ep-3}},
+        {{0x1.1a62633145c07p-54, -0x1p+0, -0x1.49d6e694619b9p-1, -0x1.87996529f9d92p-1,
+          -0x1.6a1aa2e1bef71p-3}},
+        {{-0x1.9a2f7ef858b7dp-1, 0x1.326af0dcfcab1p-1, -0x1.326af0dcfcab1p-1, -0x1.9a2f7ef858b7dp-1,
+          0x1.a827999fcef33p-2}},
+        {{-0x1.9a2f7ef858b7dp-1, 0x1.326af0dcfcab1p-1, 0x1.326af0dcfcabp-1, 0x1.9a2f7ef858b7dp-1,
+          -0x1.a827999fcef32p-2}},
+        {{0x1p+0, 0x0p+0, -0x1p+0, 0x1.1a62633145c07p-53, 0x1p+0}},
+        {{0x1p+0, 0x0p+0, -0x1p+0, -0x1.1a62633145c07p-53, -0x1p+0}},
+        {{0x1.e921dd42f09bap-1, 0x1.2e9cd95baba33p-2, -0x1.d823708a2aaeep-2, 0x1.c6545c41f67fdp-1,
+          0x1.def49eaab37ap-2},
+         {-0x1.d823708a2aaeep-2, 0x1.c6545c41f67fdp-1, -0x1.94f9b84dba8ebp-1, -0x1.39456ffecc09dp-1,
+          0x1.def49eaab37a1p-2}},
+        {{0x1.e921dd42f09bap-1, 0x1.2e9cd95baba33p-2, 0x1.ed944fd82a10ap-4, -0x1.fc44e08da43dcp-1,
+          -0x1.def49eaab37ap-2},
+         {0x1.ed944fd82a10ap-4, -0x1.fc44e08da43dcp-1, -0x1.ff207e2b9cbb6p-1, 0x1.de33739e82d32p-5,
+          -0x1.def49eaab37a3p-2}},
+        {{0x1.1a62633145c07p-54, -0x1p+0, 0x1.326af0dcfcabp-1, 0x1.9a2f7ef858b7dp-1,
+          0x1.7166689d41efp-1},
+         {0x1.326af0dcfcabp-1, 0x1.9a2f7ef858b7dp-1, -0x1.eaf81f5e09933p-1, -0x1.22785706b4adap-2,
+          0x1.7166689d41ef1p-1}},
+        {{0x1.1a62633145c07p-54, -0x1p+0, -0x1.326af0dcfcab1p-1, 0x1.9a2f7ef858b7dp-1,
+          -0x1.7166689d41efp-1},
+         {-0x1.326af0dcfcab1p-1, 0x1.9a2f7ef858b7dp-1, 0x1.eaf81f5e09933p-1, -0x1.22785706b4ad8p-2,
+          -0x1.7166689d41eefp-1}},
+        {{-0x1.9a2f7ef858b7dp-1, 0x1.326af0dcfcab1p-1, 0x1.9a0842e9f21dfp-1, -0x1.329f6f4fde032p-1,
+          0x1.ffdf3c70be23p-1},
+         {0x1.9a0842e9f21dfp-1, -0x1.329f6f4fde032p-1, -0x1.99e10023beb9fp-1, 0x1.32d3e8bcada59p-1,
+          0x1.ffdf3c70be231p-1}},
+        {{-0x1.9a2f7ef858b7dp-1, 0x1.326af0dcfcab1p-1, 0x1.9a56b44e4df7ap-1, -0x1.32366d64e5ca9p-1,
+          -0x1.ffdf3c70be232p-1},
+         {0x1.9a56b44e4df7ap-1, -0x1.32366d64e5ca9p-1, -0x1.9a7de2eb2d69fp-1, 0x1.3201e4e875a36p-1,
+          -0x1.ffdf3c70be231p-1}},
+        {{0x1p+0, 0x0p+0, -0x1p+0, 0x1.12e0c4673b40fp-31, 0x1.fffffffdda3e8p-1},
+         {-0x1p+0, 0x1.12e0c4673b40fp-31, 0x1p+0, -0x1.12e0c469898ccp-30, 0x1.fffffffdda3e8p-1}},
+        {{0x1p+0, 0x0p+0, -0x1p+0, -0x1.12e0c4673b40fp-31, -0x1.fffffffdda3e8p-1},
+         {-0x1p+0, -0x1.12e0c4673b40fp-31, 0x1p+0, 0x1.12e0c469898ccp-30, -0x1.fffffffdda3e8p-1}},
+        {{0x1.80003d243ba86p-2, -0x1.ffffb458c9a91p-4, 0x1.80003d243b88ap-2, -0x1.ffffb458c80ecp-4,
+          0x1.ad847fd3d04cbp-26}},
+        {{0x1.80003d243ba86p-2, -0x1.ffffb458c9a91p-4, 0x1.80003d243bc82p-2, -0x1.ffffb458cb436p-4,
+          -0x1.ad847fd3c4c83p-26}},
+        {{0x1.8p-2, -0x1.00008p-3, 0x1.80000010624dap-2, -0x1.00007ffffbce4p-3,
+          0x1.0624dd38a57a5p-12}},
+        {{0x1.8p-2, -0x1.00008p-3, 0x1.7fffffef9db26p-2, -0x1.00007ffffbce4p-3,
+          -0x1.0624dd38a57a5p-12}},
+        {{0x1.7fffccba1020fp-2, -0x1.ffff66ca87918p-4, 0x1.7fffc01bf03a9p-2, -0x1.00000778cdce8p-3,
+          0x1.6a1aa2e1c4dafp-3}},
+        {{0x1.7fffccba1020fp-2, -0x1.ffff66ca87918p-4, 0x1.7ffff17585587p-2, -0x1.ffff06b1ebf21p-4,
+          -0x1.6a1aa2e1ef2ccp-3}},
+        {{0x1.80004p-2, -0x1p-3, 0x1.8p-2, -0x1.ffffp-4, 0x1.a827999fcef33p-2}},
+        {{0x1.80004p-2, -0x1p-3, 0x1.8p-2, -0x1.00008p-3, -0x1.a827999fcef33p-2}},
+        {{0x1.80003d243ba86p-2, -0x1.ffffb458c9a91p-4, 0x1.7fffc2dbc457ap-2, -0x1.000025d39b2b7p-3,
+          0x1.00000000067e1p+0}},
+        {{0x1.80003d243ba86p-2, -0x1.ffffb458c9a91p-4, 0x1.7fffc2dbc457ap-2, -0x1.000025d39b2b7p-3,
+          -0x1.00000000067e1p+0}},
+        {{0x1.8p-2, -0x1.00008p-3, 0x1.80003ef9a0316p-2, -0x1.ffffd25e776c6p-4,
+          0x1.def49eaa9974ep-2},
+         {0x1.80003ef9a0316p-2, -0x1.ffffd25e776c6p-4, 0x1.7fffe98cc4814p-2, -0x1.ffff10445fe1fp-4,
+          0x1.def49eaac9a39p-2}},
+        {{0x1.8p-2, -0x1.00008p-3, 0x1.7fffc1065fceap-2, -0x1.ffffd25e776c6p-4,
+          -0x1.def49eaa9974ep-2},
+         {0x1.7fffc1065fceap-2, -0x1.ffffd25e776c6p-4, 0x1.800016733b7ecp-2, -0x1.ffff10445fe1fp-4,
+          -0x1.def49eaac9a39p-2}},
+        {{0x1.7fffccba1020fp-2, -0x1.ffff66ca87918p-4, 0x1.8000122785707p-2, -0x1.00007abe07d78p-3,
+          0x1.7166689d525cbp-1},
+         {0x1.8000122785707p-2, -0x1.00007abe07d78p-3, 0x1.8000162f45e67p-2, -0x1.ffff0fdf3bc82p-4,
+          0x1.7166689d2e97ep-1}},
+        {{0x1.7fffccba1020fp-2, -0x1.ffff66ca87918p-4, 0x1.80004p-2, -0x1p-3,
+          -0x1.7166689d47f6dp-1},
+         {0x1.80004p-2, -0x1p-3, 0x1.7fffccba1020fp-2, -0x1.00004c9abc374p-3,
+          -0x1.7166689d47f6dp-1}},
+        {{0x1.80004p-2, -0x1p-3, 0x1.7fffc00000863p-2, -0x1.ffffffdf3b647p-4, 0x1.ffdf3c70ec0bcp-1},
+         {0x1.7fffc00000863p-2, -0x1.ffffffdf3b647p-4, 0x1.80003ffffde72p-2, -0x1.00000020c49b5p-3,
+          0x1.ffdf3c70de52ep-1}},
+        {{0x1.80004p-2, -0x1p-3, 0x1.7fffc00000863p-2, -0x1.00000010624dcp-3,
+          -0x1.ffdf3c70ec0acp-1},
+         {0x1.7fffc00000863p-2, -0x1.00000010624dcp-3, 0x1.80003ffffde72p-2, -0x1.ffffffbe76c97p-4,
+          -0x1.ffdf3c70de4ccp-1}},
+        {{0x1.80003d243ba86p-2, -0x1.ffffb458c9a91p-4, 0x1.7fffc2dbc4578p-2, -0x1.000025d39b2a7p-3,
+          0x1.fffffffde0346p-1},
+         {0x1.7fffc2dbc4578p-2, -0x1.000025d39b2a7p-3, 0x1.80003d243ba8bp-2, -0x1.ffffb458c9ad3p-4,
+          0x1.fffffffdad2a9p-1}},
+        {{0x1.80003d243ba86p-2, -0x1.ffffb458c9a91p-4, 0x1.7fffc2dbc457dp-2, -0x1.000025d39b2c8p-3,
+          -0x1.fffffffdb9e3cp-1},
+         {0x1.7fffc2dbc457dp-2, -0x1.000025d39b2c8p-3, 0x1.80003d243ba81p-2, -0x1.ffffb458c9a5p-4,
+          -0x1.fffffffde833p-1}},
+        {{0x1p+40, -0x1.8p+40, 0x1.000001ad7f29bp+40, -0x1.7ffffffffffe9p+40,
+          0x1.ad7f29b00001p-26}},
+        {{0x1p+40, -0x1.8p+40, 0x1.fffffca501acbp+39, -0x1.7ffffffffffe9p+40,
+          -0x1.ad7f29a80001p-26}},
+        {{0x1.9742041e9d20dp+37, 0x1.935786e7e5587p+36, 0x1.960874534a595p+37,
+          0x1.900f2743ad1d6p+36, 0x1.0624dd8abac7cp-12}},
+        {{0x1.9742041e9d20dp+37, 0x1.935786e7e5587p+36, 0x1.987bff710516p+37, 0x1.969f45e56d268p+36,
+          -0x1.0624dd8abaa24p-12}},
+        {{0x1p+41, -0x1p+39, 0x1.c3ccb294fcec9p+40, 0x1.275b9a51866dfp+37, 0x1.6a1aa2e1bef7p-3}},
+        {{0x1p+41, -0x1p+39, 0x1.c3ccb294fcec9p+40, -0x1.24eb734a30cdcp+40, -0x1.6a1aa2e1bef7p-3}},
+        {{0x1.f490eea1784ddp+40, -0x1.a2c64d48a8b9ap+37, 0x1.68b193522a2e6p+39,
+          0x1.d243ba85e1375p+38, 0x1.a827999fcef32p-2}},
+        {{0x1.f490eea1784ddp+40, -0x1.a2c64d48a8b9ap+37, 0x1.4ba73656eae8dp+40,
+          -0x1.7490eea1784ddp+40, -0x1.a827999fcef32p-2}},
+        {{0x1p+40, -0x1.8p+40, 0x1p+40, 0x1p+39, 0x1p+0}},
+        {{0x1p+40, -0x1.8p+40, 0x1.ffffffffffffep+39, 0x1p+39, -0x1p+0}},
+        {{0x1.9742041e9d20dp+37, 0x1.935786e7e5587p+36, 0x1.1b9a6ba754c06p+39,
+          -0x1.651e05c7dc1b8p+40, 0x1.def49eaab37a1p-2},
+         {0x1.1b9a6ba754c06p+39, -0x1.651e05c7dc1b8p+40, 0x1.f5cdb84bc117bp+40,
+          -0x1.8f0f8c558516p+39, 0x1.def49eaab37a3p-2}},
+        {{0x1.9742041e9d20dp+37, 0x1.935786e7e5587p+36, 0x1.bb4ff632a908fp+40,
+          0x1.73ff05afe3c35p+37, -0x1.def49eaab379fp-2},
+         {0x1.bb4ff632a908fp+40, 0x1.73ff05afe3c35p+37, 0x1.8a51407da8346p+40,
+          -0x1.576aa47848677p+40, -0x1.def49eaab37a3p-2}},
+        {{0x1p+41, -0x1p+39, 0x1.9742041e9d20cp+37, 0x1.935786e7e5584p+36, 0x1.7166689d41efp-1},
+         {0x1.9742041e9d20cp+37, 0x1.935786e7e5584p+36, 0x1.489e15c1ad2b6p+40,
+          -0x1.757c0faf04c9ap+40, 0x1.7166689d41eeep-1}},
+        {{0x1p+41, -0x1p+39, 0x1.9742041e9d20cp+37, -0x1.1935786e7e558p+40, -0x1.7166689d41efp-1},
+         {0x1.9742041e9d20cp+37, -0x1.1935786e7e558p+40, 0x1.489e15c1ad2b6p+40,
+          0x1.d5f03ebc13266p+38, -0x1.7166689d41eefp-1}},
+        {{0x1.f490eea1784ddp+40, -0x1.a2c64d48a8b9ap+37, 0x1.6cac8bd465a45p+35,
+          -0x1.970fcf8db760ep+39, 0x1.ffdf3c70be231p-1},
+         {0x1.6cac8bd465a45p+35, -0x1.970fcf8db760ep+39, 0x1.f4a4449f4fdfp+40,
+          -0x1.a4bb4030018ebp+37, 0x1.ffdf3c70be232p-1}},
+        {{0x1.f490eea1784ddp+40, -0x1.a2c64d48a8b9ap+37, 0x1.6f184c06a359fp+35,
+          -0x1.978d0753544f8p+39, -0x1.ffdf3c70be232p-1},
+         {0x1.6f184c06a359fp+35, -0x1.978d0753544f8p+39, 0x1.f47d889c7d3f1p+40,
+          -0x1.a0d1820b4ee82p+37, -0x1.ffdf3c70be233p-1}},
+        {{0x1p+40, -0x1.8p+40, 0x1.0000000225c18p+40, 0x1p+39, 0x1.fffffffdda3e8p-1},
+         {0x1.0000000225c18p+40, 0x1p+39, 0x1.fffffff768f9ep+39, -0x1.8p+40, 0x1.fffffffdda3e8p-1}},
+        {{0x1p+40, -0x1.8p+40, 0x1.fffffffbb47cep+39, 0x1p+39, -0x1.fffffffdda3e8p-1},
+         {0x1.fffffffbb47cep+39, 0x1p+39, 0x1.000000044b831p+40, -0x1.8p+40,
+          -0x1.fffffffdda3e8p-1}},
+        {{0x1.81a9f44a14991p+13, -0x1.51c0fa52ebc43p+9, 0x1.81a9f449ec6f6p+13,
+          -0x1.51c0fa5647fcep+9, 0x1.ad7f385826b01p-26}},
+        {{0x1.81a9f44a14991p+13, -0x1.51c0fa52ebc43p+9, 0x1.81a9f44a3cc2cp+13,
+          -0x1.51c0fa4f8f8b8p+9, -0x1.ad7f3858267ddp-26}},
+        {{0x1.81f2p+13, -0x1.534p+9, 0x1.81f1fffeb074bp+13, -0x1.533f5c28f78cbp+9,
+          0x1.0624dd8abb97ap-12}},
+        {{0x1.81f2p+13, -0x1.534p+9, 0x1.81f1fffeb074bp+13, -0x1.5340a3d708735p+9,
+          -0x1.0624dd8abb97ap-12}},
+        {{0x1.81f036a5493adp+13, -0x1.5282ddf826b4cp+9, 0x1.81df9cb213a25p+13, -0x1.51257564d34bp+9,
+          0x1.6a1aa2e1bec48p-3}},
+        {{0x1.81f036a5493adp+13, -0x1.5282ddf826b4cp+9, 0x1.81eed7aa21d29p+13,
+          -0x1.54393a4d1bb21p+9, -0x1.6a1aa2e1bee39p-3}},
+        {{0x1.81cap+13, -0x1.55cp+9, 0x1.81f2p+13, -0x1.534p+9, 0x1.a827999fcef32p-2}},
+        {{0x1.81cap+13, -0x1.55cp+9, 0x1.81a2p+13, -0x1.534p+9, -0x1.a827999fcef32p-2}},
+        {{0x1.81a9f44a14991p+13, -0x1.51c0fa52ebc43p+9, 0x1.81ea0bb5eb66fp+13,
+          -0x1.54bf05ad143bdp+9, 0x1.0000000000071p+0}},
+        {{0x1.81a9f44a14991p+13, -0x1.51c0fa52ebc43p+9, 0x1.81ea0bb5eb66fp+13,
+          -0x1.54bf05ad143bdp+9, -0x1.0000000000071p+0}},
+        {{0x1.81f2p+13, -0x1.534p+9, 0x1.81c2dec2a8edcp+13, -0x1.50ca3fbe1221dp+9,
+          0x1.def49eaab3b21p-2},
+         {0x1.81c2dec2a8edcp+13, -0x1.50ca3fbe1221dp+9, 0x1.81a48aaefb4eap+13,
+          -0x1.54208052f347dp+9, 0x1.def49eaab3462p-2}},
+        {{0x1.81f2p+13, -0x1.534p+9, 0x1.81c2dec2a8edcp+13, -0x1.55b5c041edde3p+9,
+          -0x1.def49eaab3b21p-2},
+         {0x1.81c2dec2a8edcp+13, -0x1.55b5c041edde3p+9, 0x1.81a48aaefb4eap+13,
+          -0x1.525f7fad0cb83p+9, -0x1.def49eaab3462p-2}},
+        {{0x1.81f036a5493adp+13, -0x1.5282ddf826b4cp+9, 0x1.81a44fa4aad2bp+13, -0x1.52699b8a9e55p+9,
+          0x1.7166689d42134p-1},
+         {0x1.81a44fa4aad2bp+13, -0x1.52699b8a9e55p+9, 0x1.81e02ccb0f514p+13, -0x1.5554a6b29eb17p+9,
+          0x1.7166689d4219fp-1}},
+        {{0x1.81f036a5493adp+13, -0x1.5282ddf826b4cp+9, 0x1.81b275bfa1952p+13,
+          -0x1.5545700d0158dp+9, -0x1.7166689d42019p-1},
+         {0x1.81b275bfa1952p+13, -0x1.5545700d0158dp+9, 0x1.81c98123dcaf7p+13,
+          -0x1.50c00c92cfa19p+9, -0x1.7166689d41b5dp-1}},
+        {{0x1.81cap+13, -0x1.55cp+9, 0x1.81ca051eb84e5p+13, -0x1.50c000053e2d6p+9,
+          0x1.ffdf3c70beb82p-1},
+         {0x1.81ca051eb84e5p+13, -0x1.50c000053e2d6p+9, 0x1.81c9f5c28f78dp+13,
+          -0x1.55bfffeb074a9p+9, 0x1.ffdf3c70be12bp-1}},
+        {{0x1.81cap+13, -0x1.55cp+9, 0x1.81c9fae147b1bp+13, -0x1.50c000053e2d6p+9,
+          -0x1.ffdf3c70beb82p-1},
+         {0x1.81c9fae147b1bp+13, -0x1.50c000053e2d6p+9, 0x1.81ca0a3d70873p+13,
+          -0x1.55bfffeb074a9p+9, -0x1.ffdf3c70be12bp-1}},
+        {{0x1.81a9f44a14991p+13, -0x1.51c0fa52ebc43p+9, 0x1.81ea0bb5eb338p+13,
+          -0x1.54bf05ad1888fp+9, 0x1.fffffffdd9cbap-1},
+         {0x1.81ea0bb5eb338p+13, -0x1.54bf05ad1888fp+9, 0x1.81a9f44a14ffep+13, -0x1.51c0fa52e32ap+9,
+          0x1.fffffffdda575p-1}},
+        {{0x1.81a9f44a14991p+13, -0x1.51c0fa52ebc43p+9, 0x1.81ea0bb5eb9a5p+13,
+          -0x1.54bf05ad0feecp+9, -0x1.fffffffdda49ap-1},
+         {0x1.81ea0bb5eb9a5p+13, -0x1.54bf05ad0feecp+9, 0x1.81a9f44a14324p+13,
+          -0x1.51c0fa52f45e5p+9, -0x1.fffffffdd9cbep-1}},
+    };
+    ASSERT_EQ(expected.size(), arcs.size());
+    for (std::size_t k = 0; k < arcs.size(); ++k) {
+        const Arc& arc = arcs[k];
+        auto checked = detail::checkedMeaning(Curve{arc}, 1);
+        ASSERT_TRUE(checked.hasValue()) << "arc " << k;
+        const auto& meaning = std::get<detail::ArcMeaning>(checked.value().support);
+        ASSERT_EQ(meaning.span, detail::ArcSpan::partial) << "arc " << k;
+        const auto pieces = detail::convertedArc(arc, meaning);
+        ASSERT_EQ(pieces.size(), expected[k].size()) << "arc " << k;
+        for (std::size_t p = 0; p < pieces.size(); ++p) {
+            const ExpectedPiece& want = expected[k][p];
+            // Bit for bit: equal doubles of the same sign.
+            const auto same = [](double a, double b) {
+                return a == b && std::signbit(a) == std::signbit(b);
+            };
+            EXPECT_TRUE(same(pieces[p].start.x, want.startX)) << "arc " << k << " piece " << p;
+            EXPECT_TRUE(same(pieces[p].start.y, want.startY)) << "arc " << k << " piece " << p;
+            EXPECT_TRUE(same(pieces[p].end.x, want.endX)) << "arc " << k << " piece " << p;
+            EXPECT_TRUE(same(pieces[p].end.y, want.endY)) << "arc " << k << " piece " << p;
+            EXPECT_TRUE(same(pieces[p].bulge, want.bulge)) << "arc " << k << " piece " << p;
+        }
+    }
+}
+
 }  // namespace
 }  // namespace solid_space::geom2d
