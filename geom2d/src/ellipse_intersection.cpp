@@ -35,10 +35,21 @@
 // ellipse along x is sqrt(major.x^2 + minor.x^2) <= |major.x| + |minor.x|,
 // and |minor.x| = ratio * |major.y| <= |major.y| (likewise along y). The box
 // of a circle is centre +- radius, that of a segment not extended the box of
-// its ends. Every bound is a sum of doubles rounded to nearest, so within half
-// an ulp of its exact value, and is moved one ulp outwards (std::nextafter),
-// after each rounding, so that it contains the exact box. Lines that are
-// extended and curved pieces get no box: they go to the exact path.
+// its ends, that of a curved piece a box of its whole circle (boxOfPiece(),
+// with the proof), extended or not. Every bound is a sum or a product of
+// doubles rounded to nearest, so within half an ulp of its exact value, and
+// is moved one ulp outwards (std::nextafter), after each rounding, so that it
+// contains the exact box. Lines that are extended get no box: they go to the
+// exact meeting with the line, which has no quartic.
+//
+// The quartic (stage 0.3 corrections, package FS4). Its roots are isolated,
+// and every sign at a root decided, by exact/polynomial.hpp, which filters
+// each sign in floating point first and computes it exactly only when the
+// filter does not decide: the isolating intervals, and so the points built at
+// their midpoints (roundedRootPoint()), are the same numbers as without the
+// filter. The polynomials that a pair needs are computed once for it: the
+// rational form and the trace (intersect()), the cross and dot products of
+// meetEllipseConic(), and the bounds of the domain (DomainBounds).
 
 #include "carriers.hpp"
 #include "curve_meaning.hpp"
@@ -255,6 +266,32 @@ Box boxOfEnds(Point2 start, Point2 end) {
             std::max(start.y, end.y)};
 }
 
+// A box of the whole circle of a curved piece (bulge b != 0), so of the piece
+// extended or not. With (dx, dy) = end - start, c = |(dx, dy)| and M the
+// midpoint of the chord, the point m of curves.hpp is at distance s = |b| c / 2
+// from M, so the circle through start, m and end has radius
+// r = (c^2 / 4 + s^2) / (2 s) = c (1 + b^2) / (4 |b|), and its centre lies on
+// the bisector of the chord at distance |r - s| = c |1 - b^2| / (4 |b|) from
+// M. Every point of the circle is then within |r - s| + r of M, which is
+// c |b| / 2 when |b| >= 1 and c / (2 |b|) when |b| < 1: at most
+// (c / 2) max(|b|, 1 / |b|) <= ((|dx| + |dy|) / 2) max(|b|, 1 / |b|), the
+// reach below. Each rounded bound is moved one ulp outwards (the top of the
+// file); an overflow gives an infinite reach, and a box of the whole plane (a
+// NaN, from a zero chord times an infinite factor, makes every comparison of
+// apart() false: no box either).
+Box boxOfPiece(const PolylineSegment& piece) {
+    const double bulge = std::fabs(piece.bulge);
+    const double factor = std::max(bulge, above(1.0 / bulge));
+    const double chord = above(above(std::fabs(piece.end.x - piece.start.x)) +
+                               above(std::fabs(piece.end.y - piece.start.y)));
+    const double reach = above(above(chord * factor) * 0.5);
+    const double lowX = below(below(piece.start.x + piece.end.x) * 0.5);
+    const double lowY = below(below(piece.start.y + piece.end.y) * 0.5);
+    const double highX = above(above(piece.start.x + piece.end.x) * 0.5);
+    const double highY = above(above(piece.start.y + piece.end.y) * 0.5);
+    return {below(lowX - reach), below(lowY - reach), above(highX + reach), above(highY + reach)};
+}
+
 // No value: the whole plane.
 std::optional<Box> boxOf(const Curve& curve, Extension extension) {
     if (const auto* circle = std::get_if<Circle>(&curve)) {
@@ -263,6 +300,10 @@ std::optional<Box> boxOf(const Curve& curve, Extension extension) {
     if (const auto* arc = std::get_if<Arc>(&curve)) {
         return boxOfCircle(arc->center, arc->radius);
     }
+    if (const auto* piece = std::get_if<PolylineSegment>(&curve);
+        piece != nullptr && piece->bulge != 0.0) {
+        return boxOfPiece(*piece);
+    }
     if (extension == Extension::extended) {
         return std::nullopt;
     }
@@ -270,10 +311,7 @@ std::optional<Box> boxOf(const Curve& curve, Extension extension) {
         return boxOfEnds(segment->start, segment->end);
     }
     const auto& piece = std::get<PolylineSegment>(curve);
-    if (piece.bulge == 0.0) {
-        return boxOfEnds(piece.start, piece.end);
-    }
-    return std::nullopt;
+    return boxOfEnds(piece.start, piece.end);
 }
 
 bool apart(const Box& a, const Box& b) noexcept {
@@ -366,16 +404,28 @@ Point2 roundedRootPoint(const RationalEllipse& form, const RealRoot& root) {
             quotientToDouble(form.y.evaluate(parameter), weight)};
 }
 
-// True when a coordinate of P(s) has magnitude beyond robust::kMaxCoordinate:
-// |x / weight| > K exactly when x - K weight > 0 or x + K weight < 0.
-bool rootBeyondDomain(const RationalEllipse& form, const RealRoot& root) {
+// x - K weight, x + K weight, y - K weight and y + K weight, with
+// K = robust::kMaxCoordinate: computed once for a pair (rootBeyondDomain()).
+struct DomainBounds {
+    Polynomial xAbove;
+    Polynomial xBelow;
+    Polynomial yAbove;
+    Polynomial yBelow;
+};
+
+DomainBounds domainBounds(const RationalEllipse& form) {
     const Dyadic limit{robust::kMaxCoordinate};
     const auto bound = form.weight * limit;
-    const auto beyond = [&root, &bound](const exact::Polynomial& coordinate) {
-        return exact::signAt(coordinate - bound, root) == Sign::positive ||
-               exact::signAt(coordinate + bound, root) == Sign::negative;
-    };
-    return beyond(form.x) || beyond(form.y);
+    return {form.x - bound, form.x + bound, form.y - bound, form.y + bound};
+}
+
+// True when a coordinate of P(s) has magnitude beyond robust::kMaxCoordinate:
+// |x / weight| > K exactly when x - K weight > 0 or x + K weight < 0.
+bool rootBeyondDomain(const DomainBounds& bounds, const RealRoot& root) {
+    return exact::signAt(bounds.xAbove, root) == Sign::positive ||
+           exact::signAt(bounds.xBelow, root) == Sign::negative ||
+           exact::signAt(bounds.yAbove, root) == Sign::positive ||
+           exact::signAt(bounds.yBelow, root) == Sign::negative;
 }
 
 // --- The three ways --------------------------------------------------------
@@ -417,13 +467,17 @@ void meetLine(const Inputs& inputs, const LineMeaning& line, EllipseIntersection
 
 void meetConic(const Inputs& inputs, const RationalEllipse& form, const detail::ConicTrace& trace,
                const ArcMeaning& otherArc, EllipseIntersections& result) {
+    std::optional<DomainBounds> bounds;
     for (const auto& point : detail::meetEllipseConic(inputs.first, trace, otherArc)) {
         if (!takesPart(inputs, point.onEllipse, point.onOther)) {
             continue;
         }
         Point2 rounded;
         if (point.parameter) {
-            if (rootBeyondDomain(form, *point.parameter)) {
+            if (!bounds) {
+                bounds = domainBounds(form);
+            }
+            if (rootBeyondDomain(*bounds, *point.parameter)) {
                 ++result.omittedBeyondDomain;
                 continue;
             }

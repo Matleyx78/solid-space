@@ -9,14 +9,24 @@
 // positive factor so that the signs Sturm's theorem and the Tarski query look
 // at are the true ones (a positive multiple of a term has the same signs, and
 // the later remainders are positive multiples of the true ones).
+//
+// The signs are filtered first (stage 0.3 corrections, package FS4; section
+// "The floating-point filter" below): the filter decides a sign only when it
+// is certain, and otherwise the exact computation runs, so every answer and
+// every interval is the one the exact computation alone gives.
 
 #include "polynomial.hpp"
 
+#include "interval.hpp"
+
 #include <algorithm>
+#include <array>
 #include <cassert>
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <initializer_list>
+#include <limits>
 #include <optional>
 #include <ranges>
 #include <span>
@@ -48,6 +58,105 @@ Sign negated(Sign sign) noexcept {
             break;
     }
     return Sign::zero;
+}
+
+// ---------------------------------------------------------------------------
+// The floating-point filter (stage 0.3 corrections, package FS4)
+//
+// Every decision here is the sign of a polynomial with dyadic coefficients:
+// at a dyadic point, or at a root. The filter computes it first with the
+// intervals of interval.hpp. Each operation there gives an interval of the
+// exact result of the same operation on any exact operands within the
+// intervals of its operands (the proofs are next to each operation, in
+// interval.cpp), and intervalOf() rounds a dyadic number with the bound of its
+// rounding. So Horner's rule written with those operations is Horner's rule
+// with a running error bound: by induction on its steps, its last interval
+// contains p(X) for every exact X within the interval of the point, with the
+// exact coefficients of p. certainSign() answers only when that interval lies
+// on one side of zero: an answer of the filter is the exact sign, and never
+// zero. When the filter does not answer, the exact computation runs as
+// before. The filter is on unless the tests turn it off (filterEnabled()), and
+// every filtered sign is counted for them (recordFilterAnswer()).
+
+constexpr double kInfinity = std::numeric_limits<double>::infinity();
+
+// The coefficients of a polynomial of degree at most kMaxDegree, as
+// intervals, for the signs at many points.
+class IntervalPolynomial {
+public:
+    explicit IntervalPolynomial(std::span<const Dyadic> coefficients) noexcept {
+        assert(coefficients.size() <= m_values.size());
+        for (const Dyadic& coefficient : coefficients) {
+            m_values.at(m_size) = intervalOf(coefficient);
+            ++m_size;
+        }
+    }
+
+    // An interval of p(X) for every exact X within x (Horner's rule, above).
+    [[nodiscard]] Interval valueAt(const Interval& x) const noexcept {
+        Interval value = intervalOf(0.0);
+        for (std::size_t i = m_size; i-- > 0;) {
+            value = (value * x) + m_values.at(i);
+        }
+        return value;
+    }
+
+private:
+    std::array<Interval, static_cast<std::size_t>(kMaxDegree) + 1> m_values{};
+    std::size_t m_size = 0;
+};
+
+// The same for a polynomial of any degree, its coefficients rounded on the way.
+Interval valueInterval(std::span<const Dyadic> coefficients, const Interval& x) noexcept {
+    Interval value = intervalOf(0.0);
+    for (const Dyadic& coefficient : std::views::reverse(coefficients)) {
+        value = (value * x) + intervalOf(coefficient);
+    }
+    return value;
+}
+
+// The sign of the exact number of `value` when the filter decides it; counted.
+std::optional<Sign> decided(const Interval& value) noexcept {
+    const auto sign = certainSign(value);
+    recordFilterAnswer(sign.has_value());
+    return sign;
+}
+
+// An interval of every X with L <= X <= U, from intervals a of L and b of U.
+// M = (L + U) / 2 is within middle and H = (U - L) / 2 >= 0 within reach, so
+// |X - M| <= H <= |reach.centre| + reach.radius: X = M + Y1 + Y2 with
+// |Y1| <= |reach.centre| and |Y2| <= reach.radius (Y1 and Y2 the parts of
+// X - M in proportion to the two bounds), and the sums of intervals contain it.
+Interval spanOf(const Interval& a, const Interval& b) noexcept {
+    const Interval half = intervalOf(0.5);
+    const Interval middle = (a + b) * half;
+    const Interval reach = (b - a) * half;
+    return (middle + Interval{0.0, std::fabs(reach.centre)}) + Interval{0.0, reach.radius};
+}
+
+// The exact sign of p at x: filtered with the intervals of its coefficients,
+// exact otherwise. `point` is intervalOf(x).
+Sign filteredSign(const Polynomial& p, const IntervalPolynomial& intervals, const Dyadic& x,
+                  const Interval& point) {
+    if (filterEnabled()) {
+        if (const auto sign = decided(intervals.valueAt(point))) {
+            return *sign;
+        }
+    }
+    return p.evaluate(x).sign();
+}
+
+// The coefficients of p(c + h) as a polynomial in h, exact: Taylor's shift by
+// repeated synthetic division (the k-th pass leaves the k-th coefficient).
+std::vector<Dyadic> shiftedCoefficients(const Polynomial& p, const Dyadic& c) {
+    std::vector<Dyadic> shifted(p.coefficients().begin(), p.coefficients().end());
+    const std::size_t size = shifted.size();
+    for (std::size_t k = 0; k + 1 < size; ++k) {
+        for (std::size_t j = size - 1; j-- > k;) {
+            shifted[j] += c * shifted[j + 1];
+        }
+    }
+    return shifted;
 }
 
 Dyadic powerOfTwo(std::int64_t exponent) {
@@ -226,6 +335,242 @@ std::vector<Polynomial> sturmTerms(const Polynomial& s) {
     return signedRemainderSequence(s, s.derivative());
 }
 
+// A Sturm sequence with the intervals of the coefficients of its terms,
+// computed once for all the points where realRoots() counts its sign changes.
+class FilteredSequence {
+public:
+    explicit FilteredSequence(std::vector<Polynomial> terms) : m_terms(std::move(terms)) {
+        m_intervals.reserve(m_terms.size());
+        for (const Polynomial& term : m_terms) {
+            m_intervals.emplace_back(term.coefficients());
+        }
+    }
+
+    // The sign of the first term at x, exact.
+    [[nodiscard]] Sign frontSignAt(const Dyadic& x) const {
+        return filteredSign(m_terms.front(), m_intervals.front(), x, intervalOf(x));
+    }
+
+    // The sign changes at x, as signChangesAt().
+    [[nodiscard]] std::size_t changesAt(const Dyadic& x) const {
+        const Interval point = intervalOf(x);
+        std::vector<Sign> signs;
+        signs.reserve(m_terms.size());
+        for (std::size_t i = 0; i < m_terms.size(); ++i) {
+            signs.push_back(filteredSign(m_terms[i], m_intervals[i], x, point));
+        }
+        return signChanges(signs);
+    }
+
+private:
+    std::vector<Polynomial> m_terms;
+    std::vector<IntervalPolynomial> m_intervals;
+};
+
+// ---------------------------------------------------------------------------
+// The bracket of a root (RealRoot::m_below and m_above)
+//
+// Within the isolating interval (lower, upper) of a root r, the squarefree
+// part s has the sign of lower (signAboveLower()) below r, the opposite one
+// above r, and no zero but r. So a double t is below r when t <= lower, or
+// when lower < t < upper and the filter decides that s has the sign of lower
+// at t; it is above r when t >= upper, or when lower < t < upper and the
+// filter decides the opposite sign. Two doubles a < b checked so are a
+// bracket of r: a < r < b. They are searched for in plain floating point
+// (Newton's method, kept within a pair of doubles that bisection shrinks),
+// whose errors do not matter: only the checks make a and b a bracket, and
+// when a check fails the root has none, and the exact paths run.
+
+struct Bracket {
+    double below = -kInfinity;
+    double above = kInfinity;
+};
+
+// At most this many steps of Newton's method or bisection in floating point.
+constexpr int kBracketSteps = 64;
+
+// The first half-width tried around the approximation x: 2^-44 times the
+// size of the terms of s at x over its slope, so that s at x +- reach is
+// about 2^9 times its rounding error ((2 degree + 1) 2^-53 times that size at
+// most, and the radius of the filter is of the same order); 2^-50 |x| more
+// for a root where the size of the terms is zero. Each failed check widens it
+// 2^8 times, at most kBracketAttempts times.
+constexpr double kReachFactor = 0x1p-44;
+constexpr double kRelativeReach = 0x1p-50;
+constexpr double kWidening = 0x1p8;
+constexpr int kBracketAttempts = 3;
+
+// Where the double t lies with respect to the root isolated in
+// (lower, upper), by the checks above: negative below it, positive above it,
+// zero when the checks do not decide. Precondition: t is finite.
+Sign sideOf(double t, const RealRoot& root, const IntervalPolynomial& squarefree) {
+    const Dyadic value(t);
+    if (compare(value, root.lower()) != Sign::positive) {
+        return Sign::negative;
+    }
+    if (compare(value, root.upper()) != Sign::negative) {
+        return Sign::positive;
+    }
+    const auto sign = certainSign(squarefree.valueAt(intervalOf(t)));
+    if (!sign) {
+        return Sign::zero;
+    }
+    return *sign == root.signAboveLower() ? Sign::negative : Sign::positive;
+}
+
+// The value of s at x in floating point, its derivative, and the size of its
+// terms (the sum of |c_i| |x|^i). Only estimates: nothing is decided on them.
+struct Estimate {
+    double value = 0.0;
+    double slope = 0.0;
+    double size = 0.0;
+};
+
+Estimate estimate(std::span<const double> coefficients, double x) noexcept {
+    Estimate result;
+    const double magnitude = std::fabs(x);
+    for (const double coefficient : std::views::reverse(coefficients)) {
+        result.slope = (result.slope * x) + result.value;
+        result.value = (result.value * x) + coefficient;
+        result.size = (result.size * magnitude) + std::fabs(coefficient);
+    }
+    return result;
+}
+
+// The bracket of a root that is not exact, or none (see above). Only with the
+// filter on: with it off the exact paths run alone.
+Bracket findBracket(const RealRoot& root) {
+    if (root.isExact() || !filterEnabled()) {
+        return {};
+    }
+    const std::span<const Dyadic> exactCoefficients = root.squarefree().coefficients();
+    std::array<double, static_cast<std::size_t>(kMaxDegree) + 1> values{};
+    for (std::size_t i = 0; i < exactCoefficients.size(); ++i) {
+        values.at(i) = exactCoefficients[i].toDouble();
+        if (!std::isfinite(values.at(i))) {
+            return {};
+        }
+    }
+    const std::span<const double> coefficients(values.data(), exactCoefficients.size());
+    double low = root.lower().toDouble();
+    double high = root.upper().toDouble();
+    if (!std::isfinite(low) || !std::isfinite(high)) {
+        return {};
+    }
+    const double lowerSide = root.signAboveLower() == Sign::positive ? 1.0 : -1.0;
+    double x = (0.5 * low) + (0.5 * high);
+    for (int step = 0; step < kBracketSteps; ++step) {
+        const Estimate at = estimate(coefficients, x);
+        if (at.value == 0.0) {
+            break;
+        }
+        if (at.value * lowerSide > 0.0) {
+            low = x;
+        } else {
+            high = x;
+        }
+        double next = x - (at.value / at.slope);
+        // Bisection when the step leaves the pair, or is not a number.
+        if (!std::isfinite(next) || next <= low || next >= high) {
+            next = (0.5 * low) + (0.5 * high);
+        }
+        if (next == x) {
+            break;
+        }
+        x = next;
+    }
+    const Estimate at = estimate(coefficients, x);
+    double reach =
+        (kReachFactor * (at.size / std::fabs(at.slope))) + (kRelativeReach * std::fabs(x));
+    if (!std::isfinite(reach)) {
+        return {};
+    }
+    const IntervalPolynomial squarefree(exactCoefficients);
+    for (int attempt = 0; attempt < kBracketAttempts; ++attempt) {
+        const double below = x - reach;
+        const double above = x + reach;
+        if (!std::isfinite(below) || !std::isfinite(above)) {
+            break;
+        }
+        if (sideOf(below, root, squarefree) == Sign::negative &&
+            sideOf(above, root, squarefree) == Sign::positive) {
+            return {below, above};
+        }
+        reach *= kWidening;
+    }
+    return {};
+}
+
+// The sign of the squarefree part s of a root at a dyadic x strictly within
+// its isolating interval, as the bisections of narrowed() and toDouble() need
+// it: exact, the same as s.signAt(x).
+// - At or below the lower end of the bracket x is below the root, where s has
+//   the sign of the lower end of the interval; at or above its upper end, the
+//   opposite sign (see "The bracket of a root").
+// - Otherwise the filter on s at x; then the filter on the shifted polynomial
+//   s(c + h) = t0 + t1 h + ... at h = x - c, exact, for a double c near the
+//   root. Near the root the terms of s nearly cancel, and the rounding of
+//   s(x) in floating point is too large to decide; the shifted coefficients
+//   carry that cancellation exactly (t0 = s(c) is small, h is small), so the
+//   rounding left is far smaller. s(x) is exactly the shifted polynomial at
+//   x - c, so the filter of the section above applies to it unchanged.
+// - Otherwise the exact value.
+class BisectionSigns {
+public:
+    BisectionSigns(const RealRoot& root, double below, double above)
+        : m_root(root), m_values(root.squarefree().coefficients()) {
+        if (std::isfinite(below) && std::isfinite(above)) {
+            m_bracket = {Dyadic(below), Dyadic(above)};
+        }
+    }
+
+    [[nodiscard]] Sign at(const Dyadic& x) {
+        if (filterEnabled()) {
+            if (const auto sign = filtered(x)) {
+                recordFilterAnswer(true);
+                return *sign;
+            }
+            recordFilterAnswer(false);
+        }
+        return m_root.squarefree().evaluate(x).sign();
+    }
+
+private:
+    struct Shifted {
+        Dyadic centre;
+        IntervalPolynomial values;
+    };
+
+    [[nodiscard]] std::optional<Sign> filtered(const Dyadic& x) {
+        if (m_bracket) {
+            if (compare(x, m_bracket->first) != Sign::positive) {
+                return m_root.signAboveLower();
+            }
+            if (compare(x, m_bracket->second) != Sign::negative) {
+                return negated(m_root.signAboveLower());
+            }
+        }
+        const Interval point = intervalOf(x);
+        if (const auto sign = certainSign(m_values.valueAt(point))) {
+            return sign;
+        }
+        if (!isKnown(point)) {
+            return std::nullopt;
+        }
+        if (!m_shifted) {
+            Dyadic centre(point.centre);
+            const IntervalPolynomial values(shiftedCoefficients(m_root.squarefree(), centre));
+            m_shifted.emplace(Shifted{std::move(centre), values});
+        }
+        return certainSign(m_shifted->values.valueAt(intervalOf(x - m_shifted->centre)));
+    }
+
+    const RealRoot& m_root;
+    IntervalPolynomial m_values;
+    std::optional<std::pair<Dyadic, Dyadic>> m_bracket;
+    std::optional<Shifted> m_shifted;
+};
+
 // A power of two B with every complex root z of p in |z| < B. Fujiwara's bound
 // says |z| <= 2 * max over i = 1..n of |a_{n-i} / a_n|^(1/i) (the last term
 // even halved); with k the smallest integer such that |a_{n-i}| < |a_n| *
@@ -314,6 +659,11 @@ Dyadic Polynomial::evaluate(const Dyadic& x) const {
 }
 
 robust::Sign Polynomial::signAt(const Dyadic& x) const {
+    if (filterEnabled()) {
+        if (const auto sign = decided(valueInterval(m_coefficients, intervalOf(x)))) {
+            return *sign;
+        }
+    }
     return evaluate(x).sign();
 }
 
@@ -450,8 +800,18 @@ std::vector<RealRoot> realRoots(const Polynomial& p) {
     if (p.degree() < 1) {
         return roots;
     }
-    const Polynomial squarefree = squarefreePart(p);
-    const std::vector<Polynomial> terms = sturmTerms(squarefree);
+    // The Sturm sequence of p is, up to the signs of its terms, the remainder
+    // sequence of greatestCommonDivisor(p, p'), whose last term is that
+    // divisor: when it is a constant, p is its own squarefree part
+    // (squarefreePart() returns p itself) and the sequence is already the one
+    // of the squarefree part, so it is not computed twice.
+    std::vector<Polynomial> sequence = sturmTerms(p);
+    Polynomial squarefree = p;
+    if (sequence.back().degree() > 0) {
+        squarefree = squarefreePart(p);
+        sequence = sturmTerms(squarefree);
+    }
+    const FilteredSequence terms(std::move(sequence));
 
     // An open interval (lower, upper) whose ends are not roots, with the sign
     // changes there: it holds changesLower - changesUpper roots. Or an exact
@@ -466,7 +826,7 @@ std::vector<RealRoot> realRoots(const Polynomial& p) {
 
     const Dyadic bound = rootBound(squarefree);
     std::vector<Pending> stack;
-    stack.push_back({-bound, signChangesAt(terms, -bound), bound, signChangesAt(terms, bound)});
+    stack.push_back({-bound, terms.changesAt(-bound), bound, terms.changesAt(bound)});
     // Last in, first out: the lower half is pushed last, so the roots come out
     // in increasing order.
     while (!stack.empty()) {
@@ -485,8 +845,8 @@ std::vector<RealRoot> realRoots(const Polynomial& p) {
             continue;
         }
         const Dyadic middle = midpoint(item.lower, item.upper);
-        if (squarefree.signAt(middle) != Sign::zero) {
-            const std::size_t changesMiddle = signChangesAt(terms, middle);
+        if (terms.frontSignAt(middle) != Sign::zero) {
+            const std::size_t changesMiddle = terms.changesAt(middle);
             stack.push_back({middle, changesMiddle, item.upper, item.changesUpper});
             stack.push_back({item.lower, item.changesLower, middle, changesMiddle});
             continue;
@@ -502,9 +862,9 @@ std::vector<RealRoot> realRoots(const Polynomial& p) {
         while (true) {
             below = middle - gap;
             above = middle + gap;
-            if (squarefree.signAt(below) != Sign::zero && squarefree.signAt(above) != Sign::zero) {
-                changesBelow = signChangesAt(terms, below);
-                changesAbove = signChangesAt(terms, above);
+            if (terms.frontSignAt(below) != Sign::zero && terms.frontSignAt(above) != Sign::zero) {
+                changesBelow = terms.changesAt(below);
+                changesAbove = terms.changesAt(above);
                 if (changesBelow - changesAbove == 1) {
                     break;
                 }
@@ -517,6 +877,9 @@ std::vector<RealRoot> realRoots(const Polynomial& p) {
     }
 
     for (RealRoot& root : roots) {
+        const Bracket bracket = findBracket(root);
+        root.m_below = bracket.below;
+        root.m_above = bracket.above;
         root.m_multiplicity = multiplicityOf(p, root);
     }
     return roots;
@@ -529,6 +892,17 @@ robust::Sign signAt(const Polynomial& q, const RealRoot& root) {
     }
     if (root.isExact()) {
         return q.signAt(root.lower());
+    }
+    // The filter: q on an interval that contains the root, its bracket when it
+    // has one (as narrow as floating point finds it), its isolating interval
+    // otherwise. The interval of the caller does not change.
+    if (filterEnabled()) {
+        const Interval enclosure = std::isfinite(root.m_below)
+                                       ? spanOf(intervalOf(root.m_below), intervalOf(root.m_above))
+                                       : spanOf(intervalOf(root.lower()), intervalOf(root.upper()));
+        if (const auto sign = decided(valueInterval(q.coefficients(), enclosure))) {
+            return *sign;
+        }
     }
     // The Tarski query: with s squarefree, R a positive multiple of s' q
     // modulo s, and (lower, upper) an isolating interval of the root whose
@@ -601,11 +975,14 @@ RealRoot narrowed(const RealRoot& root, const Dyadic& width) {
     if (root.isExact()) {
         return root;
     }
+    BisectionSigns signs(root, root.m_below, root.m_above);
     Dyadic lower = root.lower();
     Dyadic upper = root.upper();
-    while (compare(upper - lower, width) == Sign::positive) {
+    // upper - lower, halved exactly at each step.
+    Dyadic span = upper - lower;
+    while (compare(span, width) == Sign::positive) {
         Dyadic middle = midpoint(lower, upper);
-        const Sign value = root.squarefree().signAt(middle);
+        const Sign value = signs.at(middle);
         if (value == Sign::zero) {
             return {root.squarefree(), middle, middle, root.multiplicity()};
         }
@@ -614,8 +991,13 @@ RealRoot narrowed(const RealRoot& root, const Dyadic& width) {
         } else {
             upper = std::move(middle);
         }
+        span = span.timesPowerOfTwo(-1);
     }
-    return {root.squarefree(), std::move(lower), std::move(upper), root.multiplicity()};
+    // The bracket of the root is the bracket of the same root here.
+    RealRoot result{root.squarefree(), std::move(lower), std::move(upper), root.multiplicity()};
+    result.m_below = root.m_below;
+    result.m_above = root.m_above;
+    return result;
 }
 
 double toDouble(const RealRoot& root) {
@@ -623,6 +1005,7 @@ double toDouble(const RealRoot& root) {
         return root.lower().toDouble();
     }
     const Dyadic absoluteWidth = powerOfTwo(kAbsoluteWidthExponent);
+    BisectionSigns signs(root, root.m_below, root.m_above);
     Dyadic lower = root.lower();
     Dyadic upper = root.upper();
     while (true) {
@@ -640,7 +1023,7 @@ double toDouble(const RealRoot& root) {
             }
         }
         Dyadic middle = midpoint(lower, upper);
-        const Sign value = root.squarefree().signAt(middle);
+        const Sign value = signs.at(middle);
         if (value == Sign::zero) {
             return middle.toDouble();
         }
