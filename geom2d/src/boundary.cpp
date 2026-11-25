@@ -177,12 +177,14 @@ constexpr double kLargestFiltered = 0x1p1000;
 // The double nearest to every number within 2^-120 |X| of X = c + T, with T
 // in `offset`, when the filter decides it; nothing otherwise.
 std::optional<double> nearestSum(double c, const exact::Interval& offset) {
+    // A known interval has a finite centre (exact/interval.hpp), so no
+    // comparison below meets a NaN.
     const double t = offset.centre;
-    if (!exact::isKnown(offset) || !(std::fabs(t) <= kLargestFiltered)) {
+    if (!exact::isKnown(offset) || std::fabs(t) > kLargestFiltered) {
         return std::nullopt;
     }
     const double s = c + t;
-    if (!(std::fabs(s) >= kSmallestFiltered && std::fabs(s) <= kLargestFiltered)) {
+    if (std::fabs(s) < kSmallestFiltered || std::fabs(s) > kLargestFiltered) {
         return std::nullopt;
     }
     const double tPart = s - c;

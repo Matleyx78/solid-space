@@ -780,14 +780,14 @@ std::vector<ArrangementCurve> seededDrawing(std::uint64_t seed, std::size_t coun
         const Point2 a{coordinate(), coordinate()};
         const Point2 b{coordinate(), coordinate()};
         const Curve* earlier = curves.empty() ? nullptr : &curves[next() % curves.size()];
-        const auto* earlierSegment = earlier ? std::get_if<Segment>(earlier) : nullptr;
+        const auto* earlierSegment = earlier != nullptr ? std::get_if<Segment>(earlier) : nullptr;
         if (kind == 0 || kind == 1) {
             if (a.x != b.x || a.y != b.y) {
                 push(Segment{a, b});
             }
         } else if (kind == 2) {
             if (a.x != b.x || a.y != b.y) {
-                push(PolylineSegment{a, b, kBulges[next() % kBulges.size()]});
+                push(PolylineSegment{a, b, kBulges.at(next() % kBulges.size())});
             }
         } else if (kind == 3) {
             push(Circle{a, 1.0 + static_cast<double>(next() % 3)});

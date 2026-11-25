@@ -208,12 +208,22 @@ enum class StretchSpot : std::uint8_t {
 };
 
 // The start and the end of a curve as the arrangement keeps them: startPoint()
-// and endPoint(), but the doubles of the data for a curved piece of polyline.
-// They are the same points (the circle of the piece passes exactly through
+// and endPoint(), but the doubles of the data for a piece of polyline that is
+// not turned into a whole circle (boundary_rule.hpp, arrangementCurves()).
+// They are the same points (the carrier of the piece passes exactly through
 // its ends, curve_meaning.hpp), written without a radical, so that comparing
 // them with the ends of other curves, often the same doubles, is short.
+const PolylineSegment* pieceWithEnds(const CurveMeaning& meaning) {
+    const auto* piece = std::get_if<PolylineSegment>(&meaning.curve);
+    const auto* arc = std::get_if<ArcMeaning>(&meaning.support);
+    if (piece == nullptr || (arc != nullptr && arc->span != ArcSpan::partial)) {
+        return nullptr;
+    }
+    return piece;
+}
+
 ExactPoint stretchStart(const CurveMeaning& meaning) {
-    if (const auto* piece = std::get_if<PolylineSegment>(&meaning.curve)) {
+    if (const auto* piece = pieceWithEnds(meaning)) {
         ExactPoint point = exactPoint(piece->start);
         assert(samePoint(point, startPoint(meaning)));
         return point;
@@ -222,7 +232,7 @@ ExactPoint stretchStart(const CurveMeaning& meaning) {
 }
 
 ExactPoint stretchEnd(const CurveMeaning& meaning) {
-    if (const auto* piece = std::get_if<PolylineSegment>(&meaning.curve)) {
+    if (const auto* piece = pieceWithEnds(meaning)) {
         ExactPoint point = exactPoint(piece->end);
         assert(samePoint(point, endPoint(meaning)));
         return point;

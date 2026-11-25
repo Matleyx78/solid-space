@@ -45,6 +45,17 @@
 // through pairs that are not needed, never drop one: the result does not
 // depend on them. No floating-point filter enters a decision.
 //
+// Speed (stage 0.3 corrections, package FS3), with the same result: every
+// exact point is kept once and named by the curves through it; a meeting at
+// an end of a curve names that end; a meeting at an end shared by both
+// curves is skipped when the intervals of carriers.hpp show that every other
+// meeting differs from that end (then it is that end, and adds nothing); the
+// start and the end of a stretch take their places along it with no
+// comparison; points with no radical and the same weight are compared by
+// their numerators; the ends of a curved polyline piece are written with the
+// doubles of its data (the same points); the rounded vertices and the boxes
+// are computed once.
+//
 // Why a parity count of its own and not winding.hpp. The vertices of the
 // arrangement are exact points with radicals (meetings of lines and circles,
 // moved ends), so the pieces are not curves of doubles, as LoopPieces of

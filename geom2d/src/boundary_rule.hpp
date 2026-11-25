@@ -140,8 +140,11 @@ struct BoundaryRule {
 /// curves.hpp), split at a rounded middle point when the arc turns by more
 /// than half a turn, each within kRelativeLoopError / 2 of the arc. None when
 /// the rounded ends of the arc coincide; a piece whose ends coincide (only
-/// below the bounds of curves.hpp, M < 2^-50) is left out too.
-/// Precondition: the arc is checked, not degenerate and not a whole circle.
+/// below the bounds of curves.hpp, M < 2^-50) is left out too. The doubles
+/// are the ones of the exact roundings; a floating-point filter skips the
+/// exact computation only when it would give the same double (boundary.cpp).
+/// Preconditions: the arc is checked, not degenerate and not a whole circle,
+/// and `meaning` is its meaning (meaningOf(), checkedMeaning()).
 [[nodiscard]] std::vector<PolylineSegment> convertedArc(const Arc& arc, const ArcMeaning& meaning);
 
 /// The bulge of the arc of a circle from `from` to `to`, turning by at most

@@ -9,6 +9,7 @@
 
 #include "boundary_rule.hpp"
 #include "curve_meaning.hpp"
+#include "exact/interval.hpp"
 #include "solid_space/robust/tolerance.hpp"
 
 #include <gtest/gtest.h>
@@ -620,9 +621,9 @@ std::vector<Arc> conversionArcs() {
                                        3.5,  5.0,  kTurn - 1e-3, kTurn - 1e-9};
     for (std::size_t r = 0; r < radii.size(); ++r) {
         for (std::size_t s = 0; s < sweeps.size(); ++s) {
-            const double start = starts[(r + s) % starts.size()];
+            const double start = starts.at((r + s) % starts.size());
             for (const double sign : {1.0, -1.0}) {
-                arcs.push_back(Arc{centres[r], radii[r], start, sign * sweeps[s]});
+                arcs.push_back(Arc{centres.at(r), radii.at(r), start, sign * sweeps.at(s)});
             }
         }
     }
@@ -841,6 +842,62 @@ TEST(DetectBoundary, ConvertedArcsKeepTheirBits) {
             EXPECT_TRUE(same(pieces[p].bulge, want.bulge)) << "arc " << k << " piece " << p;
         }
     }
+}
+
+TEST(DetectBoundary, ConvertedArcsAreTheSameWithAndWithoutTheFilter) {
+    // The filter of convertedArc() (boundary.cpp) only skips the exact
+    // roundings: with the filters off, the exact path gives the same bits.
+    // Centres far from the origin and small radii, as in a drawing, where
+    // the filter decides; and centres near the origin, where it often gives
+    // the coordinate to the exact path.
+    Generator random(11);
+    std::size_t compared = 0;
+    exact::FilterCounts counts;
+    const std::array<double, 3> scales{1.0, 1e3, 1e7};
+    for (int k = 0; k < 600; ++k) {
+        const double scale = scales.at(static_cast<std::size_t>(k % 3));
+        const double radius = (k % 2 == 0 ? 1e-3 : 1.0) * scale * (0.01 + random.uniform());
+        const Arc arc{{scale * (random.uniform() - 0.5), scale * (random.uniform() - 0.5)},
+                      radius,
+                      7 * (random.uniform() - 0.5),
+                      (random.uniform() - 0.5) * 2 * 6.2};
+        auto checked = detail::checkedMeaning(Curve{arc}, 1);
+        if (!checked.hasValue()) {
+            continue;
+        }
+        const auto& meaning = std::get<detail::ArcMeaning>(checked.value().support);
+        if (meaning.span != detail::ArcSpan::partial) {
+            continue;
+        }
+        exact::startFilterCount();
+        const auto filtered = detail::convertedArc(arc, meaning);
+        const exact::FilterCounts these = exact::stopFilterCount();
+        if (k % 2 == 0) {
+            counts.decided += these.decided;
+            counts.undecided += these.undecided;
+        }
+        exact::enableFilter(false);
+        const auto exactPieces = detail::convertedArc(arc, meaning);
+        exact::enableFilter(true);
+        ASSERT_EQ(filtered.size(), exactPieces.size()) << "arc " << k;
+        const auto same = [](double a, double b) {
+            return a == b && std::signbit(a) == std::signbit(b);
+        };
+        for (std::size_t p = 0; p < filtered.size(); ++p) {
+            EXPECT_TRUE(same(filtered[p].start.x, exactPieces[p].start.x)) << "arc " << k;
+            EXPECT_TRUE(same(filtered[p].start.y, exactPieces[p].start.y)) << "arc " << k;
+            EXPECT_TRUE(same(filtered[p].end.x, exactPieces[p].end.x)) << "arc " << k;
+            EXPECT_TRUE(same(filtered[p].end.y, exactPieces[p].end.y)) << "arc " << k;
+            EXPECT_TRUE(same(filtered[p].bulge, exactPieces[p].bulge)) << "arc " << k;
+        }
+        ++compared;
+    }
+    EXPECT_GT(compared, 500U);
+    // With a radius far below the coordinates of the centre the filter
+    // decides most points, so the comparison above is not one of the exact
+    // path with itself. (A radius close to them leaves an error of a few
+    // units of 2^-53 on r D / |D|, and the exact path rounds those.)
+    EXPECT_GT(counts.decided, 9 * counts.undecided);
 }
 
 }  // namespace
