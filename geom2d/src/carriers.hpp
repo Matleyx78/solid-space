@@ -25,26 +25,52 @@
 //   the Contact of every point decided exactly.
 //
 // No tolerance enters here: every answer is exact about the doubles of the
-// curves. There is no floating-point filter yet: every sign is computed with
-// the exact numbers, which allocate nothing for the small products of ordinary
-// data (exact/dyadic.hpp). A filter, if the bench of P17 asks for one, goes in
-// carriers.cpp with its error bound written next to it.
+// curves. The signs have a floating-point filter in front of them (stage 0.3
+// corrections, package FS2; exact/interval.hpp): an interval of each
+// coordinate of a point, kept with the point, and the sign computed on the
+// intervals, which decides positive or negative when the interval of the
+// result does not contain zero; every other case, zero included, goes to the
+// exact numbers, unchanged. The answers are the same either way: the filter
+// only changes the time. The error bounds are written in carriers.cpp, next to
+// each formula.
 //
 // All the computation is in carriers.cpp (ADR 0008, point 5). The functions
 // may allocate (exact numbers), so they are not noexcept.
 
 #include "curve_meaning.hpp"
 #include "exact/dyadic.hpp"
+#include "exact/interval.hpp"
 #include "solid_space/geom2d/curves.hpp"
 #include "solid_space/geom2d/intersection.hpp"
 #include "solid_space/robust/predicates.hpp"
 
 #include <array>
 #include <cstddef>
+#include <cstdint>
+#include <optional>
 #include <span>
 #include <variant>
 
 namespace solid_space::geom2d::detail {
+
+/// The intervals of the coordinates of an exact point, for the floating-point
+/// filter (exact/interval.hpp): the exact x lies in x, the exact y in y.
+struct PointIntervals {
+    exact::Interval x;
+    exact::Interval y;
+};
+
+/// The intervals of a point as the point keeps them: not computed yet,
+/// computed, or absent for a point that has none (see approximationOf()).
+struct PointApproximation {
+    enum class State : std::uint8_t {
+        notComputed,
+        known,
+        absent,
+    };
+    State state = State::notComputed;
+    PointIntervals intervals;
+};
 
 /// A point with exact coordinates
 ///     x = (rational.x + radical.x * sqrt(radicand)) / weight,
@@ -52,15 +78,37 @@ namespace solid_space::geom2d::detail {
 /// Invariants: weight is positive and radicand is not negative. A rational
 /// point has a zero radical and a zero radicand. The same point has many
 /// representations: compare points with samePoint(), never field by field.
+///
+/// The point keeps the intervals of its coordinates for the filter
+/// (approximationOf()): computed when exactPoint() or meet() builds the point,
+/// or at the first request, and copied with the point. They describe the value
+/// of the fields when they were computed: a point whose fields change after
+/// it has been compared keeps the intervals of its old value, so set the
+/// fields of a new point before comparing it, as every builder here does. A
+/// point is not shared between threads (geom2d starts none, and every point
+/// lives within one call), so the first request may write the intervals of a
+/// const point.
 struct ExactPoint {
     ExactVector rational;
     ExactVector radical;
     Dyadic radicand;
     Dyadic weight = Dyadic(1.0);
+    mutable PointApproximation approximation{};
 };
 
-/// The exact value of a point of doubles: weight 1, no radical. Precondition:
-/// finite coordinates.
+/// The intervals of the coordinates of the point, computed at the first
+/// request and kept with the point. Nothing when the point does not fit the
+/// doubles: a coordinate that may lie beyond robust::kMaxCoordinate, or that
+/// is nonzero and may lie below the smallest normal double (subnormal), or
+/// whose interval says nothing. "May" is about the whole interval, not only
+/// its centre: a coordinate has an interval only when every value of it is
+/// within the domain and zero or normal (so an interval that contains zero
+/// only when it is exactly zero). Such a point always goes to the exact signs.
+[[nodiscard]] std::optional<PointIntervals> approximationOf(const ExactPoint& point);
+
+/// The exact value of a point of doubles: weight 1, no radical, and its
+/// intervals (each coordinate exactly, radius zero). Precondition: finite
+/// coordinates.
 [[nodiscard]] ExactPoint exactPoint(Point2 point);
 
 /// The sign of a.x - b.x, decided exactly (any two radicands).
@@ -74,7 +122,8 @@ struct ExactPoint {
 
 /// True when a coordinate of the exact point has magnitude beyond
 /// robust::kMaxCoordinate (intersection.hpp, omittedBeyondDomain). Decided
-/// exactly.
+/// exactly (the filter only answers false, when the intervals of both
+/// coordinates lie strictly within the domain).
 [[nodiscard]] bool beyondDomain(const ExactPoint& point);
 
 /// The point rounded to doubles, each coordinate within one ulp of its exact
@@ -159,7 +208,8 @@ struct CarrierMeeting {
 ///
 /// Every point lies exactly on both carriers (onCarrier()). A point may lie
 /// beyond robust::kMaxCoordinate (two almost parallel lines): beyondDomain()
-/// says so. Preconditions: as carrierOf() (no degenerate carrier).
+/// says so. The points come with their intervals already computed
+/// (approximationOf()). Preconditions: as carrierOf() (no degenerate carrier).
 [[nodiscard]] CarrierMeeting meet(const Carrier& first, const Carrier& second);
 
 }  // namespace solid_space::geom2d::detail

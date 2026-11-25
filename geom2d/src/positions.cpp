@@ -28,9 +28,30 @@
 //   few u of the result, which is at least pi/4 there; the clamps to the
 //   bounds of an eighth of a turn move phi only towards the exact value. The
 //   product with R adds u. In all, below 16 u of max(M, |s|), far below 128 u.
+//
+// Floating-point filter of locate() and compareAlong() (stage 0.3
+// corrections, package FS2). Each of them reads a few signs: the position of
+// the point from the start and from the end of a straight curve; the cross
+// and dot products of the direction from the centre with D0 (the sector), and
+// with D1 or with the direction of the other point, on a circular one. With
+// the filter, every one of those signs is first taken on the intervals of the
+// points (carriers.hpp, approximationOf(); exact/interval.hpp), as
+// carriers.cpp does: the sign of the same exact quantity as on the exact path,
+// or of that quantity times a positive factor, computed with operations that
+// keep the exact value in the interval. A sign whose interval contains zero is
+// computed by its exact formula, the same function as on the exact path
+// (exact::signOf of alongFrom(), crossWith(), dotWith(), crossOfDirections()).
+// The decisions that follow (sectorOf(), locateOnArc(), compareTurns()) are
+// those of the exact path, applied to the same signs, so the answer is the
+// same; the intervals never answer zero, so atStart, atEnd, the axes of a
+// sector and two points at the same position always come from the exact
+// numbers. compareAlong() on a straight curve reads one sign only, and goes to
+// the exact path, unchanged, when the intervals do not decide it; so does a
+// point without intervals.
 
 #include "positions.hpp"
 
+#include "exact/interval.hpp"
 #include "exact/quadratic.hpp"
 
 #include <algorithm>
@@ -48,6 +69,7 @@
 namespace solid_space::geom2d::detail {
 namespace {
 
+using exact::Interval;
 using exact::QuadraticNumber;
 using robust::Sign;
 
@@ -418,6 +440,220 @@ double stationOnCircle(const ArcMeaning& arc, const ExactPoint& point) {
     return radius * turnAngle(arc, point);
 }
 
+// --- Filter ------------------------------------------------------------------
+
+struct IntervalVector {
+    Interval x;
+    Interval y;
+};
+
+IntervalVector intervalsOf(const ExactVector& vector) {
+    return {exact::intervalOf(vector.x), exact::intervalOf(vector.y)};
+}
+
+// The direction U = E - S of a line: two differences of doubles.
+IntervalVector lineDirection(const LineMeaning& line) {
+    return {exact::intervalOf(line.end.x) - exact::intervalOf(line.start.x),
+            exact::intervalOf(line.end.y) - exact::intervalOf(line.start.y)};
+}
+
+Interval dotOf(const IntervalVector& a, const IntervalVector& b) {
+    return (a.x * b.x) + (a.y * b.y);
+}
+
+Interval crossOf(const IntervalVector& a, const IntervalVector& b) {
+    return (a.x * b.y) - (a.y * b.x);
+}
+
+// dot(U, X - O) for a point O of doubles: the position of X along the line
+// from O, the number whose sign exact::signOf(alongFrom(...)) takes divided by
+// w > 0. Two differences, two products and a sum.
+std::optional<Sign> alongSign(const IntervalVector& direction, Point2 origin,
+                              const PointIntervals& point) {
+    const IntervalVector offset{point.x - exact::intervalOf(origin.x),
+                                point.y - exact::intervalOf(origin.y)};
+    return exact::certainSign(dotOf(direction, offset));
+}
+
+// A sign from the intervals when they decide it, otherwise from its exact
+// formula, the one of the exact path; `exactUsed` records that the exact
+// numbers were needed.
+template <typename ExactSign>
+Sign signFrom(std::optional<Sign> filtered, ExactSign exactSign, bool& exactUsed) {
+    if (filtered) {
+        return *filtered;
+    }
+    exactUsed = true;
+    return exactSign();
+}
+
+// locateOnLine(), with each of its two signs filtered.
+Location mixedLocateOnLine(const LineMeaning& line, const ExactPoint& point,
+                           const PointIntervals& intervals, bool& exactUsed) {
+    const auto direction = lineDirection(line);
+    const Sign fromStart = signFrom(
+        alongSign(direction, line.start, intervals),
+        [&] { return exact::signOf(alongFrom(directionOf(line), line.start, point)); }, exactUsed);
+    switch (fromStart) {
+        case Sign::negative:
+            return Location::beforeStart;
+        case Sign::zero:
+            return Location::atStart;
+        case Sign::positive:
+            break;
+    }
+    const Sign fromEnd = signFrom(
+        alongSign(direction, line.end, intervals),
+        [&] { return exact::signOf(alongFrom(directionOf(line), line.end, point)); }, exactUsed);
+    switch (fromEnd) {
+        case Sign::negative:
+            return Location::inside;
+        case Sign::zero:
+            return Location::atEnd;
+        case Sign::positive:
+            break;
+    }
+    return Location::afterEnd;
+}
+
+// dot(U, A - B): the number whose sign compareOnLine() takes divided by
+// wA wB > 0. Four differences, two products and a sum.
+std::optional<Sign> filteredCompareOnLine(const LineMeaning& line, const PointIntervals& a,
+                                          const PointIntervals& b) {
+    const IntervalVector difference{a.x - b.x, a.y - b.y};
+    return exact::certainSign(dotOf(lineDirection(line), difference));
+}
+
+// The direction of X from the centre c / W of the circle, W X - c = W (X - C):
+// directionFromCentre() divided by w > 0, the same direction. Two products and
+// two differences, after rounding the three data of the centre.
+IntervalVector filteredDirection(const CircleSupport& circle, const PointIntervals& point) {
+    const Interval weight = exact::intervalOf(circle.weight);
+    return {(weight * point.x) - exact::intervalOf(circle.centerX),
+            (weight * point.y) - exact::intervalOf(circle.centerY)};
+}
+
+// A point of a circle with the interval of its direction from the centre and,
+// only when a sign needs it, its exact direction (directionFromCentre()).
+class PointOnCircle {
+public:
+    PointOnCircle(const CircleSupport& circle, const ExactPoint& point,
+                  const PointIntervals& intervals)
+        : m_circle(circle), m_point(point), m_direction(filteredDirection(circle, intervals)) {}
+
+    [[nodiscard]] const IntervalVector& direction() const noexcept { return m_direction; }
+
+    [[nodiscard]] const Direction& exactDirection() {
+        if (!m_exactDirection) {
+            m_exactDirection = directionFromCentre(m_circle, m_point);
+        }
+        return *m_exactDirection;
+    }
+
+    [[nodiscard]] const Dyadic& radicand() const noexcept { return m_point.radicand; }
+
+private:
+    const CircleSupport& m_circle;
+    const ExactPoint& m_point;
+    IntervalVector m_direction;
+    std::optional<Direction> m_exactDirection;
+};
+
+// sectorFrom(), with its two signs filtered: cross(D0, V) and dot(D0, V).
+TurnSector mixedSector(const ArcMeaning& arc, const IntervalVector& start, PointOnCircle& point,
+                       bool& exactUsed) {
+    const Sign cross = signFrom(
+        exact::certainSign(crossOf(start, point.direction())),
+        [&] { return crossWith(arc.startDirection, point.exactDirection(), point.radicand()); },
+        exactUsed);
+    const Sign dot = signFrom(
+        exact::certainSign(dotOf(start, point.direction())),
+        [&] { return dotWith(arc.startDirection, point.exactDirection(), point.radicand()); },
+        exactUsed);
+    return sectorOf(oriented(arc.turn, cross), dot);
+}
+
+// locateOnCircle(), with each of its signs filtered, for an arc that is not a
+// whole Circle.
+Location mixedLocateOnCircle(const ArcMeaning& arc, const ExactPoint& exactPoint,
+                             const PointIntervals& intervals, bool& exactUsed) {
+    PointOnCircle point(arc.circle, exactPoint, intervals);
+    const auto fromStart = mixedSector(arc, intervalsOf(arc.startDirection), point, exactUsed);
+    Sign toEnd = Sign::zero;
+    if (arc.span == ArcSpan::partial && fromStart == arc.endSector && isOpenQuarter(fromStart)) {
+        // cross(v, D1) = -cross(D1, v).
+        const Sign cross = signFrom(
+            exact::certainSign(crossOf(intervalsOf(arc.endDirection), point.direction())),
+            [&] { return crossWith(arc.endDirection, point.exactDirection(), point.radicand()); },
+            exactUsed);
+        toEnd = oriented(arc.turn, negated(cross));
+    }
+    return locateOnArc(arc, fromStart, toEnd);
+}
+
+// compareOnCircle(), with each of its signs filtered. cross(Va, Vb) on the
+// intervals is the exact cross product times wA wB > 0.
+Sign mixedCompareOnCircle(const ArcMeaning& arc, const ExactPoint& exactA,
+                          const PointIntervals& intervalsA, const ExactPoint& exactB,
+                          const PointIntervals& intervalsB, bool& exactUsed) {
+    const auto start = intervalsOf(arc.startDirection);
+    PointOnCircle a(arc.circle, exactA, intervalsA);
+    PointOnCircle b(arc.circle, exactB, intervalsB);
+    const auto sa = mixedSector(arc, start, a, exactUsed);
+    const auto sb = mixedSector(arc, start, b, exactUsed);
+    Sign orientedCross = Sign::zero;
+    if (sa == sb && isOpenQuarter(sa)) {
+        const Sign cross = signFrom(
+            exact::certainSign(crossOf(a.direction(), b.direction())),
+            [&] {
+                return crossOfDirections(a.exactDirection(), a.radicand(), b.exactDirection(),
+                                         b.radicand());
+            },
+            exactUsed);
+        orientedCross = oriented(arc.turn, cross);
+    }
+    return compareTurns(sa, sb, orientedCross);
+}
+
+// locate() with the filter: nothing when the point has no intervals.
+std::optional<Location> filteredLocate(const CurveMeaning& curve, const ExactPoint& exactPoint,
+                                       bool& exactUsed) {
+    const auto* arc = std::get_if<ArcMeaning>(&curve.support);
+    if (arc != nullptr && arc->span == ArcSpan::circle) {
+        // Every point of a Circle is inside: no sign is read, as in
+        // locateOnCircle().
+        return Location::inside;
+    }
+    const auto intervals = approximationOf(exactPoint);
+    if (!intervals) {
+        return std::nullopt;
+    }
+    if (arc == nullptr) {
+        return mixedLocateOnLine(std::get<LineMeaning>(curve.support), exactPoint, *intervals,
+                                 exactUsed);
+    }
+    return mixedLocateOnCircle(*arc, exactPoint, *intervals, exactUsed);
+}
+
+// compareAlong() with the filter: nothing when a point has no intervals, or
+// when the single sign of a straight curve is not decided.
+std::optional<Sign> filteredCompareAlong(const CurveMeaning& curve, const ExactPoint& exactA,
+                                         const ExactPoint& exactB, bool& exactUsed) {
+    const auto a = approximationOf(exactA);
+    if (!a) {
+        return std::nullopt;
+    }
+    const auto b = approximationOf(exactB);
+    if (!b) {
+        return std::nullopt;
+    }
+    if (const auto* line = std::get_if<LineMeaning>(&curve.support)) {
+        return filteredCompareOnLine(*line, *a, *b);
+    }
+    return mixedCompareOnCircle(std::get<ArcMeaning>(curve.support), exactA, *a, exactB, *b,
+                                exactUsed);
+}
+
 }  // namespace
 
 bool takesPart(Location location, Extension extension) noexcept {
@@ -430,6 +666,14 @@ bool takesPart(Location location, Extension extension) noexcept {
 
 Location locate(const CurveMeaning& curve, const ExactPoint& point) {
     assert(!curve.degenerate);
+    if (exact::filterEnabled()) {
+        bool exactUsed = false;
+        const auto location = filteredLocate(curve, point, exactUsed);
+        exact::recordFilterAnswer(location.has_value() && !exactUsed);
+        if (location) {
+            return *location;
+        }
+    }
     if (const auto* line = std::get_if<LineMeaning>(&curve.support)) {
         return locateOnLine(*line, point);
     }
@@ -438,6 +682,14 @@ Location locate(const CurveMeaning& curve, const ExactPoint& point) {
 
 Sign compareAlong(const CurveMeaning& curve, const ExactPoint& a, const ExactPoint& b) {
     assert(!curve.degenerate);
+    if (exact::filterEnabled()) {
+        bool exactUsed = false;
+        const auto sign = filteredCompareAlong(curve, a, b, exactUsed);
+        exact::recordFilterAnswer(sign.has_value() && !exactUsed);
+        if (sign) {
+            return *sign;
+        }
+    }
     if (const auto* line = std::get_if<LineMeaning>(&curve.support)) {
         return compareOnLine(*line, a, b);
     }
