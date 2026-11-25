@@ -5,6 +5,7 @@
 
 #include "carriers.hpp"
 #include "curve_meaning.hpp"
+#include "solid_space/geom2d/boundary.hpp"
 #include "solid_space/geom2d/region.hpp"
 #include "winding.hpp"
 
@@ -86,5 +87,22 @@ private:
                                       RegionIndex& loops);
 [[nodiscard]] RegionParts regionParts(const CurveMeaning& host, Extension extension,
                                       std::span<const LoopPieces> loops);
+
+/// Which pairs of contours nestContours (boundary.hpp) looks at in full. The
+/// answers are the same with both (nest_contours.cpp).
+enum class NestSearch : std::uint8_t {
+    /// Only the pairs whose boxes overlap and whose pieces share a point, or
+    /// run on the same carrier, go through regionParts(); the other pairs
+    /// overlapping in their boxes are decided by the parity of one point of
+    /// each contour: package FS5 of the 0.3 performance work. What the public
+    /// nestContours runs.
+    boxes,
+    /// Every pair through regionParts(), in both directions: the exact path of
+    /// stage 0.3, kept for the tests that compare it with boxes.
+    everyPair,
+};
+
+/// nestContours (boundary.hpp) with the given search.
+[[nodiscard]] ContourNesting nestContours(std::span<const Loop> contours, NestSearch search);
 
 }  // namespace solid_space::geom2d::detail
