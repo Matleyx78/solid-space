@@ -30,8 +30,9 @@
 //   other contour. The exact parity of one point of each contour (the start
 //   of its first piece, through pointStatus() of winding.hpp) is then the
 //   class of all of it, and countEnclosures() gets the same flags. A point
-//   that the intervals of its coordinates put strictly outside the box of
-//   the other contour is outside it with no further work (disjointParts());
+//   whose correctly rounded coordinates lie strictly outside the box of the
+//   other contour is outside it with no further work (outsideBox(),
+//   disjointParts());
 // - as soon as two pieces share a point, or two carriers are the same, the
 //   pair takes the exact path of stage 0.3, unchanged: the conflicts same
 //   and crossing, the touching and the shared stretches are decided there.
@@ -43,6 +44,7 @@
 #include "positions.hpp"
 #include "region_parts.hpp"
 #include "solid_space/geom2d/boundary.hpp"
+#include "solid_space/geom2d/curves.hpp"
 #include "winding.hpp"
 
 #include <algorithm>
@@ -85,29 +87,30 @@ OffLoopParts offLoopParts(const LoopPieces& host, const LoopPieces& loop) {
     return offLoop;
 }
 
-// True when the exact point lies strictly outside the box, by the intervals
-// of its coordinates (carriers.hpp, approximationOf()): the exact x lies
-// within centre +- radius, and rounding to nearest never decreases, so when
-// the rounded centre + radius is below minX the exact sum is too, and so is
-// x (the same on the other three sides). False when there are no intervals.
-bool outsideBox(const ExactPoint& point, const Box& box) {
-    const auto intervals = approximationOf(point);
-    if (!intervals.has_value()) {
-        return false;
-    }
-    const auto& [x, y] = *intervals;
-    return x.centre + x.radius < box.minX || x.centre - x.radius > box.maxX ||
-           y.centre + y.radius < box.minY || y.centre - y.radius > box.maxY;
+// True when the exact point P lies strictly outside the box, from `rounded`,
+// its coordinates rounded correctly (positions.hpp, nearestPoint()). The bound
+// of the error is zero, as in winding.cpp: rounding to nearest is a
+// non-decreasing function of the exact value, and a corner c of the box is a
+// double, which rounds to itself. So P.x >= c gives rounded.x >= c, and read
+// backwards rounded.x < c proves P.x < c; rounded.x > c proves P.x > c in the
+// same way, and the same for y. The comparisons are strict: a rounded
+// coordinate equal to a corner proves nothing (P may lie on either side, or
+// on the corner), and the pair goes to pointStatus(). No margin is needed on
+// the point; the box contains the contour exactly (winding.hpp, pieceBox()).
+bool outsideBox(Point2 rounded, const Box& box) {
+    return rounded.x < box.minX || rounded.x > box.maxX || rounded.y < box.minY ||
+           rounded.y > box.maxY;
 }
 
 // The flags offLoopParts() gives when the host, whose first piece starts at
-// `start`, shares no point with the loop: every part has the parity of any of
-// its points (see the top of the file).
+// `start` (rounded correctly to `rounded`), shares no point with the loop:
+// every part has the parity of any of its points (see the top of the file).
 // A point strictly outside the box of the loop, which contains the loop, lies
 // with all the outside of the box in the unbounded component of the plane
 // without the loop, which is outside: then pointStatus() is not needed.
-OffLoopParts disjointParts(const ExactPoint& start, const LoopIndex& loop, const Box& loopBox) {
-    if (outsideBox(start, loopBox)) {
+OffLoopParts disjointParts(const ExactPoint& start, Point2 rounded, const LoopIndex& loop,
+                           const Box& loopBox) {
+    if (outsideBox(rounded, loopBox)) {
         return {false, true};
     }
     const auto status = pointStatus(start, loop);
@@ -179,13 +182,16 @@ void nestByBoxes(ContourNesting& result, std::span<const LoopPieces> loops,
     std::vector<LoopIndex> indices;
     std::vector<Box> boxes;
     std::vector<ExactPoint> starts;
+    std::vector<Point2> roundedStarts;
     indices.reserve(kept.size());
     boxes.reserve(kept.size());
     starts.reserve(kept.size());
+    roundedStarts.reserve(kept.size());
     for (const std::size_t i : kept) {
         indices.emplace_back(loops.subspan(i, 1));
         boxes.push_back(loopBox(loops[i]));
         starts.push_back(startPoint(loops[i].pieces.front().meaning));
+        roundedStarts.push_back(nearestPoint(starts.back()));
     }
     // The pairs come sorted by (i, j) of kept, which grows with the index of
     // the contour: the order of the loop of stage 0.3.
@@ -195,8 +201,9 @@ void nestByBoxes(ContourNesting& result, std::span<const LoopPieces> loops,
         if (touch(loops[first], indices[j])) {
             countEnclosures(result, loops, first, second);
         } else {
-            countEnclosures(result, first, second, disjointParts(starts[i], indices[j], boxes[j]),
-                            disjointParts(starts[j], indices[i], boxes[i]));
+            countEnclosures(result, first, second,
+                            disjointParts(starts[i], roundedStarts[i], indices[j], boxes[j]),
+                            disjointParts(starts[j], roundedStarts[j], indices[i], boxes[i]));
         }
     }
 }

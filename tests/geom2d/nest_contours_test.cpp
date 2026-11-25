@@ -156,6 +156,39 @@ TEST(NestContours, BoxesMatchEveryPairOnChosenRelations) {
     }
 }
 
+// The point of a contour that decides a pair with disjoint pieces lies near
+// a side of the box of the other contour: the start of a circle, centre +
+// (radius, 0), whose exact x is not a double and rounds to the right side
+// maxX of the other box, from inside the side (the circle lies inside the
+// rectangle, 2^-30 from its right side) and from outside it (the circle lies
+// to the right of the triangle, whose box ends at maxX). Then the box does not
+// decide, and the parity of the point does. A polyline that starts on a
+// corner of the other box, outside the other contour, needs the strict
+// comparison too.
+TEST(NestContours, BoxesMatchEveryPairNearTheSideOfABox) {
+    constexpr double kCentre = 0x1p40;
+    constexpr double kSide = kCentre + 1;
+    const Polyline aside{{{{kSide - 20, -10}, 0}, {{kSide, -10}, 0}, {{kSide - 20, 10}, 0}}, true};
+    const Polyline corner{{{{0, 0}, 0}, {{4, 0}, 0}, {{0, 4}, 0}}, true};
+    const std::vector<std::pair<std::string, std::vector<Loop>>> families{
+        {"inside, near the side",
+         {rectangle(kSide - 10, -5, 10, 10), Circle{{kCentre, 0}, 1 - 0x1p-30}}},
+        {"outside, near the side", {aside, Circle{{kCentre, 0}, 1 + 0x1p-30}}},
+        {"start on a corner", {corner, square(4, 4, 1)}},
+    };
+    const std::vector<std::vector<std::size_t>> depths{{0, 1}, {0, 0}, {0, 0}};
+    for (std::size_t f = 0; f < families.size(); ++f) {
+        const auto& [name, contours] = families.at(f);
+        expectSameAsEveryPair(contours, name);
+        const auto result = nestContours(contours);
+        EXPECT_TRUE(result.conflicts.empty()) << name;
+        ASSERT_EQ(result.depth.size(), depths.at(f).size()) << name;
+        for (std::size_t i = 0; i < depths.at(f).size(); ++i) {
+            EXPECT_EQ(result.depth.at(i), depths.at(f).at(i)) << name << ' ' << i;
+        }
+    }
+}
+
 // A linear congruential generator with a fixed seed: the same contours on
 // every system.
 class Generator {
