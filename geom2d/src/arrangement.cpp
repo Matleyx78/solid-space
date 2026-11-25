@@ -6,6 +6,7 @@
 
 #include "arrangement.hpp"
 
+#include "exact/interval.hpp"
 #include "positions.hpp"
 
 #include <algorithm>
@@ -60,9 +61,16 @@ void include(Box& box, const Box& other) {
 // The box of a whole circle. A centre or a radius beyond the doubles (a
 // polyline segment with a tiny bulge) gives the whole plane.
 Box circleBox(const CircleSupport& circle) {
-    const double cx = quotientToDouble(circle.centerX, circle.weight);
-    const double cy = quotientToDouble(circle.centerY, circle.weight);
-    double squared = quotientToDouble(circle.radiusSquared, circle.weight * circle.weight);
+    // With weight 1 (a Circle or an Arc), quotientToDouble() of a number by 1
+    // is its toDouble(): both round to nearest, ties to even, the same way.
+    const bool unitWeight = compare(circle.weight, Dyadic(1.0)) == Sign::zero;
+    const double cx =
+        unitWeight ? circle.centerX.toDouble() : quotientToDouble(circle.centerX, circle.weight);
+    const double cy =
+        unitWeight ? circle.centerY.toDouble() : quotientToDouble(circle.centerY, circle.weight);
+    double squared = unitWeight
+                         ? circle.radiusSquared.toDouble()
+                         : quotientToDouble(circle.radiusSquared, circle.weight * circle.weight);
     // Below 2^-900 the rounded square may have lost all its digits (it may
     // even be zero): its absolute error is at most 2^-1074, so the radius is
     // below 2^-449 and that bound stands for it.
@@ -86,13 +94,61 @@ bool isPositive(Sign sign) noexcept {
     return sign == Sign::positive;
 }
 
+// True when two exact points are written with the same numbers, so that they
+// are the same point with no arithmetic. Two different writings may still be
+// the same point: samePoint() decides that.
+bool sameRepresentation(const ExactPoint& a, const ExactPoint& b) noexcept {
+    return compare(a.rational.x, b.rational.x) == Sign::zero &&
+           compare(a.rational.y, b.rational.y) == Sign::zero &&
+           compare(a.radical.x, b.radical.x) == Sign::zero &&
+           compare(a.radical.y, b.radical.y) == Sign::zero &&
+           compare(a.radicand, b.radicand) == Sign::zero &&
+           compare(a.weight, b.weight) == Sign::zero;
+}
+
+// True when two points have no radical and the same weight: their
+// coordinates are their rational parts over that positive weight, so the
+// order of the rational parts (compare(), which allocates nothing) is the
+// order of the points. The ends of the data are such points (weight 1).
+bool sameRationalWeight(const ExactPoint& a, const ExactPoint& b) noexcept {
+    return a.radical.x.isZero() && a.radical.y.isZero() && b.radical.x.isZero() &&
+           b.radical.y.isZero() && compare(a.weight, b.weight) == Sign::zero;
+}
+
 // a < b in the exact order of (x, y).
 bool lexicographicallyBefore(const ExactPoint& a, const ExactPoint& b) {
+    if (sameRationalWeight(a, b)) {
+        const Sign x = compare(a.rational.x, b.rational.x);
+        if (x != Sign::zero) {
+            return isNegative(x);
+        }
+        return isNegative(compare(a.rational.y, b.rational.y));
+    }
     const Sign x = compareX(a, b);
     if (x != Sign::zero) {
         return isNegative(x);
     }
     return isNegative(compareY(a, b));
+}
+
+// samePoint(), shorter for points written alike or with no radical and the
+// same weight.
+bool sameVertex(const ExactPoint& a, const ExactPoint& b) {
+    if (sameRationalWeight(a, b)) {
+        return compare(a.rational.x, b.rational.x) == Sign::zero &&
+               compare(a.rational.y, b.rational.y) == Sign::zero;
+    }
+    return sameRepresentation(a, b) || samePoint(a, b);
+}
+
+// True when the intervals of the two points show that they differ (the
+// filter of carriers.hpp: it never claims that two equal points differ).
+bool surelyApart(const ExactPoint& a, const ExactPoint& b) {
+    const auto first = approximationOf(a);
+    const auto second = approximationOf(b);
+    return first && second &&
+           (exact::certainSign(first->x - second->x).has_value() ||
+            exact::certainSign(first->y - second->y).has_value());
 }
 
 // The sign of position(a) - position(b) on a circular curve, both measured
@@ -141,6 +197,37 @@ ExactPoint circlePoint(const CircleSupport& circle, CircleSpot spot) {
             break;
     }
     return point;
+}
+
+// Where a point of the carrier of a curve lies on its stretch.
+enum class StretchSpot : std::uint8_t {
+    off,      ///< not on the stretch
+    atStart,  ///< at its start (never for a whole circle)
+    atEnd,    ///< at its end (never for a whole circle)
+    inside,   ///< on it, at neither end, or anywhere on a whole circle
+};
+
+// The start and the end of a curve as the arrangement keeps them: startPoint()
+// and endPoint(), but the doubles of the data for a curved piece of polyline.
+// They are the same points (the circle of the piece passes exactly through
+// its ends, curve_meaning.hpp), written without a radical, so that comparing
+// them with the ends of other curves, often the same doubles, is short.
+ExactPoint stretchStart(const CurveMeaning& meaning) {
+    if (const auto* piece = std::get_if<PolylineSegment>(&meaning.curve)) {
+        ExactPoint point = exactPoint(piece->start);
+        assert(samePoint(point, startPoint(meaning)));
+        return point;
+    }
+    return startPoint(meaning);
+}
+
+ExactPoint stretchEnd(const CurveMeaning& meaning) {
+    if (const auto* piece = std::get_if<PolylineSegment>(&meaning.curve)) {
+        ExactPoint point = exactPoint(piece->end);
+        assert(samePoint(point, endPoint(meaning)));
+        return point;
+    }
+    return endPoint(meaning);
 }
 
 // A union-find whose roots are the smallest members, so that the result does
@@ -206,8 +293,20 @@ Box boxOf(const ArrangementCurve& curve) {
     return box;
 }
 
-Arrangement::Arrangement(std::span<const ArrangementCurve> curves) {
-    split(curves);
+// The point x - margin(|x|) and x + margin(|x|) are the same for +0 and -0,
+// so the doubles of the data give the box of their nearestPoint().
+Box boxOf(const Carrier& carrier, Point2 start, Point2 end) {
+    if (const auto* circle = std::get_if<CircleSupport>(&carrier)) {
+        return circleBox(*circle);
+    }
+    Box box = emptyBox();
+    include(box, start);
+    include(box, end);
+    return box;
+}
+
+Arrangement::Arrangement(std::span<const ArrangementCurve> curves, std::span<const Box> boxes) {
+    split(curves, boxes);
     link();
     buildCycles();
     buildGroups();
@@ -222,10 +321,13 @@ Sign Arrangement::compareOn(const CurveData& curve, const ExactPoint& a, const E
     return compareFrom(curve.meaning, curve.start, a, b);
 }
 
-void Arrangement::split(std::span<const ArrangementCurve> curves) {
-    std::vector<Box> boxes;
+void Arrangement::split(std::span<const ArrangementCurve> curves, std::span<const Box> boxes) {
+    assert((boxes.empty() || boxes.size() == curves.size()) && "one box for each curve");
+    std::vector<Box> curveBoxes;
+    curveBoxes.reserve(curves.size());
     m_curves.reserve(curves.size());
-    for (const ArrangementCurve& given : curves) {
+    for (std::size_t k = 0; k < curves.size(); ++k) {
+        const ArrangementCurve& given = curves[k];
         assert(!given.meaning.degenerate && "the arrangement needs curves that are not points");
         CurveData curve;
         curve.meaning = given.meaning;
@@ -236,38 +338,83 @@ void Arrangement::split(std::span<const ArrangementCurve> curves) {
             curve.heading = arc->turn == Turn::clockwise ? Heading::backward : Heading::forward;
         }
         assert(!(curve.whole && (given.start || given.end)) && "a whole circle has no ends");
-        curve.start = given.start.value_or(startPoint(given.meaning));
-        curve.end = given.end.value_or(endPoint(given.meaning));
+        curve.start = given.start ? *given.start : stretchStart(given.meaning);
+        curve.end = given.end ? *given.end : stretchEnd(given.meaning);
         assert(onCarrier(curve.carrier, curve.start) && onCarrier(curve.carrier, curve.end));
+        if (curve.circular && !curve.whole) {
+            curve.endWraps = isNegative(compareAlong(curve.meaning, curve.end, curve.start));
+        }
         curve.priority = given.priority;
-        curve.box = boxOf(given);
-        boxes.push_back(curve.box);
+        if (!boxes.empty()) {
+            curve.box = boxes[k];
+        } else if (curve.circular) {
+            curve.box = boxOf(curve.carrier, Point2{}, Point2{});
+        } else {
+            curve.box = boxOf(curve.carrier, nearestPoint(curve.start), nearestPoint(curve.end));
+        }
+        curveBoxes.push_back(curve.box);
         m_curves.push_back(std::move(curve));
     }
 
-    // Whether a point of the carrier lies on the stretch, its ends included.
+    // Where a point of the carrier lies on the stretch, its ends included:
+    // as compareFrom() for a circular stretch, with the order of its end from
+    // D0 computed once. A point at the same position as an end is that end.
     const auto onStretch = [&](const CurveData& curve, const ExactPoint& point) {
         if (curve.whole) {
-            return true;
+            return StretchSpot::inside;
         }
         if (!curve.circular) {
-            return !isPositive(compareAlong(curve.meaning, curve.start, point)) &&
-                   !isPositive(compareAlong(curve.meaning, point, curve.end));
+            const Sign fromStart = compareAlong(curve.meaning, curve.start, point);
+            if (isPositive(fromStart)) {
+                return StretchSpot::off;
+            }
+            const Sign toEnd = compareAlong(curve.meaning, point, curve.end);
+            if (isPositive(toEnd)) {
+                return StretchSpot::off;
+            }
+            if (fromStart == Sign::zero) {
+                return StretchSpot::atStart;
+            }
+            return toEnd == Sign::zero ? StretchSpot::atEnd : StretchSpot::inside;
         }
-        return !isPositive(compareFrom(curve.meaning, curve.start, point, curve.end));
+        const Sign fromStart = compareAlong(curve.meaning, point, curve.start);
+        if (fromStart == Sign::zero) {
+            return StretchSpot::atStart;
+        }
+        const bool wraps = isNegative(fromStart);
+        if (wraps != curve.endWraps) {
+            return wraps ? StretchSpot::off : StretchSpot::inside;
+        }
+        const Sign toEnd = compareAlong(curve.meaning, point, curve.end);
+        if (isPositive(toEnd)) {
+            return StretchSpot::off;
+        }
+        return toEnd == Sign::zero ? StretchSpot::atEnd : StretchSpot::inside;
     };
 
-    // Every point where a curve meets another or ends, with its curve.
+    // Every point where a curve meets another or ends, with its curve. The
+    // exact points are kept once in `found`, each point naming one of them:
+    // the ends of the curves first, then each meeting, which is named by
+    // both curves. A meeting at an end of one of its curves names that end
+    // instead: it is the same point, and the end comes first.
+    std::vector<ExactPoint> found;
+
     struct SplitPoint {
-        ExactPoint point;
+        std::size_t point = 0;
         std::size_t curve = 0;
     };
 
     std::vector<SplitPoint> points;
+    std::vector<std::size_t> startOf(m_curves.size(), kNone);
+    std::vector<std::size_t> endOf(m_curves.size(), kNone);
     for (std::size_t i = 0; i < m_curves.size(); ++i) {
         if (!m_curves[i].whole) {
-            points.push_back({m_curves[i].start, i});
-            points.push_back({m_curves[i].end, i});
+            startOf[i] = found.size();
+            found.push_back(m_curves[i].start);
+            points.push_back({startOf[i], i});
+            endOf[i] = found.size();
+            found.push_back(m_curves[i].end);
+            points.push_back({endOf[i], i});
         }
     }
     const auto addEnds = [&](std::size_t from, std::size_t into) {
@@ -275,24 +422,82 @@ void Arrangement::split(std::span<const ArrangementCurve> curves) {
         if (source.whole) {
             return;
         }
-        for (const ExactPoint* end : {&source.start, &source.end}) {
-            if (onStretch(m_curves[into], *end)) {
-                points.push_back({*end, into});
-            }
+        if (onStretch(m_curves[into], source.start) != StretchSpot::off) {
+            points.push_back({startOf[from], into});
+        }
+        if (onStretch(m_curves[into], source.end) != StretchSpot::off) {
+            points.push_back({endOf[from], into});
         }
     };
-    for (const auto& [i, j] : overlappingPairs(boxes)) {
+    // The meetings of two curves at an end of both, written alike (as the
+    // doubles of the data often are): each is one of the points found, since
+    // meet() gives every common point of two different carriers. When the
+    // intervals show that every other point found differs from that end, the
+    // one left is it, with no exact arithmetic. Such a meeting adds nothing:
+    // the end of each curve is already a point of it, at the same vertex,
+    // named earlier, and the two curves are in the same group through it.
+    const auto sharedEnds = [&](std::size_t i, std::size_t j, const CarrierMeeting& meeting) {
+        std::array<bool, 2> known{false, false};
+        if (m_curves[i].whole || m_curves[j].whole) {
+            return known;
+        }
+        for (const std::size_t first : {startOf[i], endOf[i]}) {
+            const ExactPoint& end = found[first];
+            if (!sameRepresentation(end, found[startOf[j]]) &&
+                !sameRepresentation(end, found[endOf[j]])) {
+                continue;
+            }
+            std::size_t candidate = kNone;
+            std::size_t candidates = 0;
+            for (std::size_t k = 0; k < meeting.count; ++k) {
+                if (!surelyApart(meeting.points.at(k).point, end)) {
+                    candidate = k;
+                    ++candidates;
+                }
+            }
+            if (candidates == 1) {
+                known.at(candidate) = true;
+            }
+        }
+        return known;
+    };
+    const auto endNamed = [&](std::size_t curve, StretchSpot spot) {
+        if (spot == StretchSpot::atStart) {
+            return startOf[curve];
+        }
+        return spot == StretchSpot::atEnd ? endOf[curve] : kNone;
+    };
+    for (const auto& [i, j] : overlappingPairs(curveBoxes)) {
         const CarrierMeeting meeting = meet(m_curves[i].carrier, m_curves[j].carrier);
         if (meeting.sameCarrier) {
             addEnds(j, i);
             addEnds(i, j);
             continue;
         }
-        for (const CarrierPoint& found : meeting.found()) {
-            if (onStretch(m_curves[i], found.point) && onStretch(m_curves[j], found.point)) {
-                points.push_back({found.point, i});
-                points.push_back({found.point, j});
+        const std::array<bool, 2> known = sharedEnds(i, j, meeting);
+        for (std::size_t k = 0; k < meeting.count; ++k) {
+            if (known.at(k)) {
+                continue;
             }
+            const CarrierPoint& meetingPoint = meeting.points.at(k);
+            const StretchSpot onFirst = onStretch(m_curves[i], meetingPoint.point);
+            if (onFirst == StretchSpot::off) {
+                continue;
+            }
+            const StretchSpot onSecond = onStretch(m_curves[j], meetingPoint.point);
+            if (onSecond == StretchSpot::off) {
+                continue;
+            }
+            std::size_t named = endNamed(i, onFirst);
+            if (named == kNone) {
+                named = endNamed(j, onSecond);
+            }
+            if (named == kNone) {
+                named = found.size();
+                found.push_back(meetingPoint.point);
+            }
+            points.push_back({named, i});
+            points.push_back({named, j});
         }
     }
     // A whole circle that meets nothing gets a vertex at its start. Two equal
@@ -304,36 +509,42 @@ void Arrangement::split(std::span<const ArrangementCurve> curves) {
     }
     for (std::size_t i = 0; i < m_curves.size(); ++i) {
         if (!hasPoint[i]) {
-            points.push_back({startPoint(m_curves[i].meaning), i});
+            points.push_back({found.size(), i});
+            found.push_back(startPoint(m_curves[i].meaning));
         }
     }
 
-    // The vertices: the distinct points, by increasing (x, y).
-    std::vector<std::size_t> order(points.size());
+    // The vertices: the distinct points, by increasing (x, y). The exact
+    // points are numbered in the order in which a point first names them,
+    // so sorting them stably keeps, for each vertex, the point that came
+    // first.
+    std::vector<std::size_t> order(found.size());
     std::iota(order.begin(), order.end(), std::size_t{0});
     std::stable_sort(order.begin(), order.end(), [&](std::size_t a, std::size_t b) {
-        return lexicographicallyBefore(points[a].point, points[b].point);
+        return !sameRepresentation(found[a], found[b]) &&
+               lexicographicallyBefore(found[a], found[b]);
     });
-    std::vector<std::size_t> vertexOfPoint(points.size());
+    std::vector<std::size_t> vertexOfFound(found.size());
     for (const std::size_t index : order) {
-        const ExactPoint& point = points[index].point;
-        if (m_vertices.empty() || !samePoint(m_vertices.back(), point)) {
+        const ExactPoint& point = found[index];
+        if (m_vertices.empty() || !sameVertex(m_vertices.back(), point)) {
             m_vertices.push_back(point);
         }
-        vertexOfPoint[index] = m_vertices.size() - 1;
+        vertexOfFound[index] = m_vertices.size() - 1;
     }
+    m_roundedVertices.assign(m_vertices.size(), std::nullopt);
 
     // The vertices of each curve, along it; and the groups.
     std::vector<std::vector<std::size_t>> onCurve(m_curves.size());
     std::vector<std::size_t> firstCurve(m_vertices.size(), kNone);
     Partition groups(m_curves.size());
-    for (std::size_t k = 0; k < points.size(); ++k) {
-        const std::size_t v = vertexOfPoint[k];
-        onCurve[points[k].curve].push_back(v);
+    for (const SplitPoint& point : points) {
+        const std::size_t v = vertexOfFound[point.point];
+        onCurve[point.curve].push_back(v);
         if (firstCurve[v] == kNone) {
-            firstCurve[v] = points[k].curve;
+            firstCurve[v] = point.curve;
         } else {
-            groups.unite(firstCurve[v], points[k].curve);
+            groups.unite(firstCurve[v], point.curve);
         }
     }
     m_groupOfCurve.assign(m_curves.size(), kNone);
@@ -351,7 +562,21 @@ void Arrangement::split(std::span<const ArrangementCurve> curves) {
     for (std::size_t i = 0; i < m_curves.size(); ++i) {
         const CurveData& curve = m_curves[i];
         auto& vertices = onCurve[i];
+        // A stretch starts at its start and ends at its end: every other
+        // point of it lies strictly between them, from its start (it is
+        // simple), so those two vertices need no comparison.
+        const std::size_t first = curve.whole ? kNone : vertexOfFound[startOf[i]];
+        const std::size_t last = curve.whole ? kNone : vertexOfFound[endOf[i]];
         std::sort(vertices.begin(), vertices.end(), [&](std::size_t a, std::size_t b) {
+            if (a == b) {
+                return false;
+            }
+            if (a == first || b == last) {
+                return true;
+            }
+            if (b == first || a == last) {
+                return false;
+            }
             const Sign along = compareOn(curve, m_vertices[a], m_vertices[b]);
             return along != Sign::zero ? isNegative(along) : a < b;
         });
@@ -390,6 +615,14 @@ HalfPiece Arrangement::halfPiece(std::size_t dart) const {
 
 const ExactPoint& Arrangement::vertex(std::size_t v) const {
     return m_vertices.at(v);
+}
+
+Point2 Arrangement::roundedVertex(std::size_t v) const {
+    std::optional<Point2>& cached = m_roundedVertices.at(v);
+    if (!cached) {
+        cached = nearestPoint(m_vertices[v]);
+    }
+    return *cached;
 }
 
 std::span<const std::size_t> Arrangement::around(std::size_t v) const {
@@ -508,8 +741,8 @@ Box Arrangement::pieceBox(std::size_t piece) const {
         return curve.box;
     }
     Box box = emptyBox();
-    include(box, nearestPoint(m_vertices[stretch.from]));
-    include(box, nearestPoint(m_vertices[stretch.to]));
+    include(box, roundedVertex(stretch.from));
+    include(box, roundedVertex(stretch.to));
     return box;
 }
 

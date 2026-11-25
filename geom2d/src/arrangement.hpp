@@ -114,6 +114,11 @@ struct ArrangementCurve {
 /// curve, the stretch for a straight one.
 [[nodiscard]] Box boxOf(const ArrangementCurve& curve);
 
+/// The same box from the carrier of the curve and the ends of its stretch,
+/// rounded (nearestPoint()) or given as doubles: a zero of either sign gives
+/// the same box. The ends are read only for a straight carrier.
+[[nodiscard]] Box boxOf(const Carrier& carrier, Point2 start, Point2 end);
+
 /// A piece of the arrangement: a stretch of one curve between two vertices,
 /// with no vertex inside, in the direction of that curve. from == to only for
 /// a whole circle with a single vertex on it.
@@ -132,8 +137,10 @@ struct ArrangementPiece {
 class Arrangement {
 public:
     /// Splits the curves, merges the shared stretches and traces the faces.
-    /// The curves are copied: the span may go away afterwards.
-    explicit Arrangement(std::span<const ArrangementCurve> curves);
+    /// The curves are copied: the span may go away afterwards. `boxes`, when
+    /// not empty, holds boxOf() of every curve, already computed by the
+    /// caller (the same values: they only skip pairs, as everywhere).
+    explicit Arrangement(std::span<const ArrangementCurve> curves, std::span<const Box> boxes = {});
 
     // --- Vertices and pieces -------------------------------------------
 
@@ -146,6 +153,9 @@ public:
     /// The exact point of a vertex. All the pieces through it use this same
     /// representation (local_order.hpp, LocalOrder).
     [[nodiscard]] const ExactPoint& vertex(std::size_t v) const;
+
+    /// nearestPoint() of a vertex, computed once and kept.
+    [[nodiscard]] Point2 roundedVertex(std::size_t v) const;
 
     /// The pieces, by curve and then along the curve from its start.
     [[nodiscard]] std::span<const ArrangementPiece> pieces() const noexcept { return m_pieces; }
@@ -253,6 +263,9 @@ private:
         bool whole = false;
         ExactPoint start;
         ExactPoint end;
+        // For a circular stretch: whether its end comes before its start
+        // from D0, as compareFrom() asks for every point of the stretch.
+        bool endWraps = false;
         std::size_t priority = 0;
         Box box;
     };
@@ -278,13 +291,14 @@ private:
     [[nodiscard]] std::size_t westLeft(const ExactPoint& point,
                                        std::span<const std::size_t> darts) const;
     [[nodiscard]] Box pieceBox(std::size_t piece) const;
-    void split(std::span<const ArrangementCurve> curves);
+    void split(std::span<const ArrangementCurve> curves, std::span<const Box> boxes);
     void link();
     void buildCycles();
     void buildGroups();
 
     std::vector<CurveData> m_curves;
     std::vector<ExactPoint> m_vertices;
+    mutable std::vector<std::optional<Point2>> m_roundedVertices;
     std::vector<VertexData> m_vertexData;
     std::vector<ArrangementPiece> m_pieces;
     // Position of each dart in around(tail(dart)).

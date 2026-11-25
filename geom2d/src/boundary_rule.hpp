@@ -119,15 +119,20 @@ struct BoundaryRule {
 [[nodiscard]] std::vector<ArrangementCurve> arrangementCurves(const BoundaryRule& rule,
                                                               std::size_t inputCount);
 
+/// boxOf() (arrangement.hpp) of each curve of arrangementCurves(rule, ...),
+/// taken from the boxes of step 1 where they are the same.
+[[nodiscard]] std::vector<Box> arrangementBoxes(const BoundaryRule& rule,
+                                                std::span<const ArrangementCurve> curves);
+
 /// Step 4: the lowest input index of the curves (as extended in step 3) and
 /// links within the tolerance of the picked point (for a link, the lower
 /// index of its curves), or nothing. M counts the coordinates of the point
 /// and the magnitudes of the input curves (of both curves for a link).
-/// `curves` is arrangementCurves(rule, ...). Precondition: the point is
-/// finite and within the domain.
+/// `curves` is arrangementCurves(rule, ...) and `boxes` arrangementBoxes() of
+/// them. Precondition: the point is finite and within the domain.
 [[nodiscard]] std::optional<std::size_t> nearestCurve(const BoundaryRule& rule,
                                                       std::span<const ArrangementCurve> curves,
-                                                      Point2 picked,
+                                                      std::span<const Box> boxes, Point2 picked,
                                                       const robust::TolerancePolicy& policy);
 
 /// The pieces of polyline that stand for an Arc that is not a whole circle
