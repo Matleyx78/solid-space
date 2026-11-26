@@ -804,3 +804,18 @@ i rimandi ai documenti che cambia.
   in `.github/workflows/claude.yml` anche il checkout riceve `RELAY_PAT`
   ([#318](https://github.com/Matleyx78/solid-space/issues/318)). Questa
   decisione autorizza la modifica a `.github/workflows/claude.yml`.
+- **2026-11-26 — Comandi lunghi di Claude in primo piano.** Nella catena,
+  Claude Code sposta in background i comandi che superano il timeout
+  predefinito di 2 minuti (`scripts/controlla.sh`, `scripts/ci-attendi.sh`),
+  e in modalità non interattiva la shell in background ha solo pochi secondi
+  dopo l'ultimo turno. Il 2026-11-25 la sessione delle correzioni della
+  [#317](https://github.com/Matleyx78/solid-space/pull/317) (esecuzione
+  45655031264) è finita 13 secondi dopo il «CI da approvare» di
+  `scripts/ci-attendi.sh`, senza nota di fermata, con `AA-Presa in carico`
+  rimasta e senza passaggio al revisore. Il responsabile decide in chat di
+  portare qui il blocco `settings` che Tecnigrafo ha in `claude.yml` dal
+  2026-11-15 ([Matleyx78/tecnigrafo#673](https://github.com/Matleyx78/tecnigrafo/issues/673),
+  [Matleyx78/tecnigrafo#674](https://github.com/Matleyx78/tecnigrafo/issues/674)):
+  timeout dei comandi a 10 minuti e niente comandi in background
+  ([#320](https://github.com/Matleyx78/solid-space/issues/320)). Questa
+  decisione autorizza la modifica a `.github/workflows/claude.yml`.
