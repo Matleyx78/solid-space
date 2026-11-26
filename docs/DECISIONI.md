@@ -788,3 +788,19 @@ i rimandi ai documenti che cambia.
   perché il comportamento non cambia. Il prefisso `FS` (fuori tappa,
   solid-space) e la cartella `docs/tappe/0.3-prestazioni/` valgono per questo
   lavoro.
+- **2026-11-26 — Anche i push di Claude dalla shell con `RELAY_PAT`.**
+  Corregge la voce del 2026-11-21, «Codice e CI della pausa dopo la 0.3»:
+  `github_token` dell'azione vale solo per ciò che l'azione pubblica da sé,
+  mentre un `git push` dalla shell di Claude usa le credenziali che
+  `actions/checkout` lascia in git, cioè quelle del token del job, e parte come
+  `github-actions[bot]`. Il 2026-11-25 la CI della
+  [#317](https://github.com/Matleyx78/solid-space/pull/317) (commit `e6a9f6a`,
+  esecuzione 45657038446) è rimasta in `action_required` per questo. Il
+  responsabile decide in chat, in via eccezionale a tappa aperta, di portare
+  qui la correzione F13 di Tecnigrafo (voce del 2026-11-25, «Anche i push di
+  Claude dalla shell con `RELAY_PAT` (Catena 11)», nel
+  [registro di Tecnigrafo](https://github.com/Matleyx78/tecnigrafo/blob/main/docs/DECISIONI.md);
+  [Matleyx78/tecnigrafo#1047](https://github.com/Matleyx78/tecnigrafo/issues/1047)):
+  in `.github/workflows/claude.yml` anche il checkout riceve `RELAY_PAT`
+  ([#318](https://github.com/Matleyx78/solid-space/issues/318)). Questa
+  decisione autorizza la modifica a `.github/workflows/claude.yml`.

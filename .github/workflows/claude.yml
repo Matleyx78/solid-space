@@ -15,10 +15,13 @@
 #
 # gh inside Claude's shell uses RELAY_PAT, not the default GITHUB_TOKEN: a
 # pull request opened with GITHUB_TOKEN would start no workflow, so ci.yml,
-# which runs on pull requests only, would never run. The action itself gets
-# RELAY_PAT too (github_token), so Claude's pushes come from the owner like the
-# rest: pushed with the job token, the runs on an existing pull request waited
-# in action_required for an approval (docs/DECISIONI.md, 2026-11-21).
+# which runs on pull requests only, would never run. Every push of Claude must
+# come from the owner too: pushed with the job token, the runs on an existing
+# pull request wait in action_required for an approval. The action's
+# github_token covers only what the action publishes itself; a `git push` from
+# Claude's shell uses the credentials that actions/checkout leaves in git, so
+# the checkout gets RELAY_PAT as well (docs/DECISIONI.md, 2026-11-21 and
+# 2026-11-26).
 #
 # What the job installs and which commands Claude may run are decided by the
 # owner (docs/agenti/comandi.md, "Gli ambienti della catena").
@@ -61,9 +64,13 @@ jobs:
       GH_TOKEN_LETTURA: ${{ github.token }}
       SS_BUILD_SUFFIX: -claude
     steps:
+      # The credentials kept in git (persist-credentials) are those of this
+      # token: with the default one, `git push` from the shell came from
+      # github-actions[bot] (docs/DECISIONI.md, 2026-11-26).
       - uses: actions/checkout@v7
         with:
           fetch-depth: 1
+          token: ${{ secrets.RELAY_PAT }}
 
       - name: Read model and effort
         id: opts
