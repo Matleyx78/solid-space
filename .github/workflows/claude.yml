@@ -99,10 +99,24 @@ jobs:
           echo "effort=$effort" >> "$GITHUB_OUTPUT"
           echo "Model: $model, effort: $effort"
 
+      # Long commands (scripts/controlla.sh, scripts/ci-attendi.sh, which waits
+      # up to 9 minutes at a time) must run in the foreground. With the default
+      # 2-minute timeout Claude Code moves them to the background; in
+      # non-interactive mode a background shell gets only a few seconds after
+      # the final turn, so the session ended with the work unpublished or the
+      # hand-over never written (Tecnigrafo #673 and #674 on 2026-11-15, here
+      # #317 on 2026-11-25; docs/DECISIONI.md, 2026-11-26). The job's env is
+      # not passed to Claude Code, hence the settings input.
       - uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           github_token: ${{ secrets.RELAY_PAT }}
+          settings: >-
+            {"env": {
+              "BASH_DEFAULT_TIMEOUT_MS": "600000",
+              "BASH_MAX_TIMEOUT_MS": "600000",
+              "CLAUDE_CODE_DISABLE_BACKGROUND_TASKS": "1"
+            }}
           claude_args: >-
             --model ${{ steps.opts.outputs.model }}
             --effort ${{ steps.opts.outputs.effort }}
