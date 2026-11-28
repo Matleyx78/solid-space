@@ -74,9 +74,9 @@ Il lavoro è finito quando ogni "Fatto quando" della scheda è soddisfatto e
 3. con tutto verde togli l'etichetta, scrivi il riepilogo e **termina la
    sessione**.
 
-Se sei stato avviato da un commento su GitHub, prima di terminare passa il
-lavoro, o fermati per una decisione, come dice
-[catena.md](docs/agenti/catena.md).
+Prima di terminare passa il lavoro, o fermati per una decisione, come dice
+[catena.md](docs/agenti/catena.md): vale sempre, sia che tu sia stato avviato
+da un commento su GitHub sia dalla chat.
 
 Fermati prima del verde, scrivendo nella pull request che cosa hai visto e
 provato, solo se il controllo fallisce per un motivo estraneo (la CI, un servizio
@@ -155,6 +155,6 @@ Vale ogni riga che corrisponde.
 | tocchi `*/include/solid_space/` o `docs/CONTRATTI.md`; la scheda ha **Contratto:** o intestazioni in **Da leggere**; etichetta `contratto` | [contratto.md](docs/agenti/contratto.md) |
 | apri o aggiorni una pull request; lanci o tocchi `scripts/`; tocchi `CMake*`, `cmake/`, `.github/` | [comandi.md](docs/agenti/comandi.md) |
 | ramo `docs/chiusura-X.Y`; il messaggio chiede la chiusura; tocchi `docs/rilasci/` | [chiusura.md](docs/agenti/chiusura.md) |
-| sei stato avviato da un commento su GitHub; il messaggio cita `docs/agenti/catena.md`, un giro di revisione o una «Decisione del responsabile» | [catena.md](docs/agenti/catena.md) |
+| lavori a una issue o a una pull request, comunque tu sia stato avviato (commento su GitHub o chat); il messaggio cita `docs/agenti/catena.md`, un giro di revisione o una «Decisione del responsabile» | [catena.md](docs/agenti/catena.md) |
 | leggi o commenti un repository diverso da solid-space | [altro-repository.md](docs/agenti/altro-repository.md) |
 | il messaggio del responsabile è «SITUAZIONE GENERALE» | [situazione-generale.md](https://github.com/Matleyx78/tecnigrafo/blob/main/docs/agenti/situazione-generale.md) di Tecnigrafo |

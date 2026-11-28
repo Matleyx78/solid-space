@@ -1,10 +1,15 @@
 # Catena degli agenti
 
-Si legge insieme al nucleo, [AGENTS.md](../../AGENTS.md), quando sei stato
-avviato da un commento su GitHub, o quando il messaggio cita questo file, un
-giro di revisione o una «Decisione del responsabile». Vale insieme ai file del
-lavoro che fai: qui c'è solo **come il lavoro passa da un agente all'altro**
-senza il responsabile ([ADR 0018](../adr/0018-catena-degli-agenti.md)).
+Da leggere ogni volta che lavori a una issue o a una pull request, comunque
+tu sia stato avviato: da un commento su GitHub o dalla chat. Il passaggio
+finale ("Fine del lavoro") vale nei due casi, perché anche chi parte dalla
+chat lascia il lavoro alla catena ([DECISIONI.md](../DECISIONI.md),
+2026-11-28). Da leggere anche quando il messaggio cita questo file, un giro di
+revisione o una «Decisione del responsabile» ([AGENTS.md](../../AGENTS.md),
+"Se ... leggi anche ...").
+Vale insieme al nucleo e ai file del lavoro che fai: qui c'è solo **come il
+lavoro passa da un agente all'altro** senza il responsabile
+([ADR 0018](../adr/0018-catena-degli-agenti.md)).
 
 Il responsabile avvia un lavoro con **un solo commento** nella issue; gli
 agenti si passano il lavoro con commenti scritti dagli script. Lui torna solo
