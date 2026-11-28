@@ -819,3 +819,36 @@ i rimandi ai documenti che cambia.
   timeout dei comandi a 10 minuti e niente comandi in background
   ([#320](https://github.com/Matleyx78/solid-space/issues/320)). Questa
   decisione autorizza la modifica a `.github/workflows/claude.yml`.
+- **2026-11-28 — Proposte di metodo della 0.8.1.** Il responsabile ha deciso
+  le proposte della
+  [Matleyx78/tecnigrafo#991](https://github.com/Matleyx78/tecnigrafo/issues/991)
+  il 22 e il 28 novembre (voce dello stesso nome nel
+  [registro di Tecnigrafo](https://github.com/Matleyx78/tecnigrafo/blob/main/docs/DECISIONI.md)).
+  Le voci comuni hanno lo stesso testo di Tecnigrafo, adattato a questo
+  repository, e come il 2026-11-21 arrivano in una pull request di soli
+  documenti e in una di codice e CI. In questa:
+  - **Catena 1:** il passaggio finale di [agenti/catena.md](agenti/catena.md)
+    vale per ogni agente, avviato da un commento o dalla chat
+    ([AGENTS.md](../AGENTS.md), "Quando fermarsi" e la riga della tabella per
+    catena.md). La frase di avvio dalla chat è una sola, nella guida comune
+    (A2a, «Avvio dalla chat»);
+  - **Catena 5:** correggere «impegno non noto» prima del merge è
+    facoltativo; la regola è nella guida comune (A2), e quella per gli agenti
+    non cambia ([agenti/catena.md](agenti/catena.md), «modello e impegno non
+    noti»).
+
+  Nella pull request di codice e CI, con i documenti che descrivono script e
+  workflow: **Catena 2** (la sentinella fa il passaggio mancante quando è
+  certo), **Catena 4** (smistamento delle [decisione] da parte dell'altro
+  agente), **Catena 9** (`ci-attendi.sh` riconosce una pull request in
+  conflitto), **Catena 10** (timeout e nuovi tentativi sui passi apt, tetto di
+  90 minuti sui job) e, della **Catena 12**, i workflow rossi diversi dalla CI
+  mostrati da `ci-errori.sh` (la CI la sceglie già; le righe `INVALID:` qui
+  non ci sono). La Catena 16 qui non vale, perché non c'è l'oracolo ezdxf;
+  la Catena 3 sta solo nella guida comune; le Catena 6, 7, 13, 14, 15, 17 e
+  il primo passaggio sulle interfacce delle schede il responsabile non le ha
+  chieste per solid-space. Queste pull request le
+  scrive una chat che lavora su solid-space, su indicazione del responsabile
+  del 28 novembre. Questa decisione autorizza le modifiche a
+  `.github/workflows/` e la riga **Corretto:** dell'ADR 0018 (punti 4 e 8)
+  della pull request di codice e CI.
