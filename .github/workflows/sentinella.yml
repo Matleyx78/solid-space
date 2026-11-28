@@ -7,7 +7,11 @@
 # docs/adr/0018): every 30 minutes, label as `ferma` the chains with no
 # movement for 60 minutes or more that did not say why (no pronta, no
 # decisione), and the decisions written and never picked up. Pull requests
-# with a CI run still going are left alone. It can also be started by hand,
+# with a CI run still going are left alone. When the next step is a single,
+# certain one (green CI, first review or `pronta` missing), it makes the
+# hand-over itself instead (docs/DECISIONI.md, 2026-11-28, Catena 2): the
+# mention goes out with RELAY_PAT, because only the owner's mentions start an
+# agent. It can also be started by hand,
 # with another threshold or as a dry run.
 name: Sentinella
 
@@ -39,6 +43,7 @@ jobs:
       - name: Look for stuck chains
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          GH_TOKEN_UTENTE: ${{ secrets.RELAY_PAT }}
           SOGLIA_MINUTI: ${{ inputs.soglia_minuti || '60' }}
           DRY_RUN: ${{ inputs.dry_run && '1' || '0' }}
         run: python3 scripts/sentinella.py

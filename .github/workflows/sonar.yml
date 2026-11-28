@@ -29,6 +29,7 @@ jobs:
     # A manual run started from another branch does nothing: only main is analysed.
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v7
         with:
@@ -36,7 +37,14 @@ jobs:
           fetch-depth: 0
           submodules: false
       # Same packages as the Linux job of ci.yml.
-      - run: sudo apt-get update && sudo apt-get install -y ninja-build libgtest-dev clang-format-18 clang-tidy-18
+      - name: Install dependencies
+        # Retries and a short timeout instead of a mirror that hangs for hours
+        # (docs/DECISIONI.md, 2026-11-28, Catena 10).
+        timeout-minutes: 10
+        run: |
+          apt_options=(-o Acquire::Retries=3 -o Acquire::http::Timeout=60 -o Acquire::https::Timeout=60)
+          sudo apt-get "${apt_options[@]}" update
+          sudo apt-get "${apt_options[@]}" install -y ninja-build libgtest-dev clang-format-18 clang-tidy-18
       # The release preset writes build/release/compile_commands.json, which
       # sonar-project.properties points the C++ analysis to.
       - run: cmake --preset release

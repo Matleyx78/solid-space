@@ -25,6 +25,7 @@ jobs:
       contains(github.event.issue.labels.*.name, 'richiesta') &&
       (github.event.action != 'labeled' || github.event.label.name == 'richiesta')
     runs-on: ubuntu-24.04
+    timeout-minutes: 90
     permissions:
       contents: read
       issues: write
@@ -74,6 +75,7 @@ jobs:
     name: Request checker tests
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v7
         with:

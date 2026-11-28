@@ -11,13 +11,19 @@
 #     scripts/passa.sh <claude|codex> <pr> revisione <round>
 #     scripts/passa.sh <claude|codex> <pr> correzioni <round>
 #     scripts/passa.sh <claude|codex> <pr> analisi
+#     scripts/passa.sh <claude|codex> <pr> smistamento
+#
+# "smistamento" goes to the executor: before the label decisione, the other
+# agent checks the [decisione] of the last review against the rules already
+# written (docs/agenti/catena.md, "Smistamento"; docs/DECISIONI.md,
+# 2026-11-28, Catena 4).
 #
 # Token: GH_TOKEN_UTENTE if set (Claude in GitHub Actions, the RELAY_PAT
 # secret), otherwise GH_TOKEN (Codex, whose token already belongs to the
 # owner), otherwise the one of `gh auth login` (the owner in a terminal).
 #
 # On a pull request, any review-like request to Codex starts its built-in code
-# review instead of a task. Review and analysis requests for Codex therefore go
+# review instead of a task. Review, analysis and triage requests for Codex therefore go
 # to an issue: the one the pull request closes or, for a pull request that
 # closes none (a correction of the specs, of references), the one of its line
 # "Avvia dopo il merge: #N" (scripts/catena.py).
@@ -26,7 +32,7 @@ set -euo pipefail
 repo="${GITHUB_REPOSITORY:-Matleyx78/solid-space}"
 
 usage() {
-  echo "usage: $0 <claude|codex> <pr> <revisione|correzioni|analisi> [round]" >&2
+  echo "usage: $0 <claude|codex> <pr> <revisione|correzioni|analisi|smistamento> [round]" >&2
   exit 2
 }
 
@@ -43,7 +49,7 @@ esac
 case "$kind" in
   revisione|correzioni)
     case "$round" in ''|*[!0-9]*) usage ;; esac ;;
-  analisi) ;;
+  analisi|smistamento) ;;
   *) usage ;;
 esac
 
@@ -54,6 +60,8 @@ case "$kind" in
     task="Correggi le segnalazioni [bloccante] e [fascia] del giro di revisione $round (e della ripresa dopo la decisione, se c'è) come dice docs/agenti/catena.md in \"Correzioni (esecutore)\", e pubblica i commit con git push sullo stesso ramo. Se il giro aveva solo [fascia], alla fine metti pronta invece di passare a un altro giro." ;;
   analisi)
     task="La CI di questa pull request non passa dopo tre tentativi: analizzala come dice docs/agenti/catena.md in \"Analisi di una CI rossa (revisore)\"." ;;
+  smistamento)
+    task="Nell'ultimo verbale di revisione ci sono segnalazioni [decisione]: smistale come dice docs/agenti/catena.md in \"Smistamento (esecutore)\", e pubblica gli eventuali commit con git push sullo stesso ramo." ;;
 esac
 
 token="${GH_TOKEN_UTENTE:-${GH_TOKEN:-$(gh auth token 2>/dev/null || true)}}"
@@ -71,7 +79,9 @@ if [ "$agent" = codex ] && [ "$kind" != correzioni ]; then
       "cannot hand it to Codex" >&2
     exit 1
   fi
-  task="Sei il revisore della pull request #$pr: lavora sulla pull request #$pr, non su questa issue. $task"
+  role="il revisore"
+  if [ "$kind" = smistamento ]; then role="l'esecutore"; fi
+  task="Sei $role della pull request #$pr: lavora sulla pull request #$pr, non su questa issue. $task"
   task="${task//questa pull request/la pull request #$pr}"
 fi
 

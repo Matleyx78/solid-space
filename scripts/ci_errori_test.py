@@ -107,5 +107,57 @@ class Annotations(unittest.TestCase):
         self.assertTrue(any(c.endswith("/runs/4279201937") for c in calls))
 
 
+# A commit whose CI is green and whose other workflow (Tecnigrafo core) failed.
+FAKE_OTHERS = r'''#!/usr/bin/env bash
+path=$2
+echo "$path" >> "$FAKE_LOG"
+case $path in
+    */annotations*) echo '[{"annotation_level":"failure","path":"robust/src/b.cpp","start_line":9,"title":"","message":"core boom"}]' ;;
+    */workflows/ci.yml/runs\?head_sha=*) echo '{"workflow_runs":[{"id":4279201937}]}' ;;
+    */actions/runs\?head_sha=*) echo '{"workflow_runs":[
+        {"id":4279201937,"workflow_id":1,"run_number":5,"path":".github/workflows/ci.yml","name":"CI","conclusion":"success","html_url":"u1"},
+        {"id":4279201950,"workflow_id":2,"run_number":3,"path":".github/workflows/tecnigrafo-core.yml","name":"Tecnigrafo core","conclusion":"failure","html_url":"u2"},
+        {"id":4279201940,"workflow_id":2,"run_number":2,"path":".github/workflows/tecnigrafo-core.yml","name":"Tecnigrafo core","conclusion":"failure","html_url":"u3"},
+        {"id":4279201960,"workflow_id":3,"run_number":1,"path":".github/workflows/sonar.yml","name":"Sonar","conclusion":"success","html_url":"u4"}]}' ;;
+    */runs/4279201950/jobs*) echo '{"jobs":[{"id":9,"name":"Tecnigrafo core (Linux)","conclusion":"failure","steps":[{"name":"Test","conclusion":"failure"}]}]}' ;;
+    */jobs*) echo '{"jobs":[]}' ;;
+    */runs/*) echo '{"id":4279201937,"status":"completed","conclusion":"success","html_url":"u1"}' ;;
+    *) echo '{}' ;;
+esac
+'''
+
+
+@unittest.skipUnless(shutil.which("jq") and shutil.which("bash"), "needs bash and jq")
+class OtherWorkflows(unittest.TestCase):
+    """The failed workflows other than the CI (docs/DECISIONI.md, 2026-11-28)."""
+
+    def run_script(self, arg: str) -> str:
+        with tempfile.TemporaryDirectory() as tmp:
+            bin_dir = Path(tmp) / "bin"
+            bin_dir.mkdir()
+            fake = bin_dir / "gh"
+            fake.write_text(FAKE_OTHERS)
+            fake.chmod(0o755)
+            for tool in ("jq", "bash"):
+                (bin_dir / tool).symlink_to(shutil.which(tool))
+            log = Path(tmp) / "log"
+            log.touch()
+            env = {"PATH": str(bin_dir), "FAKE_LOG": str(log), "HOME": tmp}
+            return subprocess.run(["bash", str(SCRIPT), arg], env=env, capture_output=True,
+                                  text=True, check=True).stdout
+
+    def test_commit_shows_the_newest_failed_run_of_each_other_workflow(self):
+        out = self.run_script("abc1234")
+        self.assertIn("No failed job (yet).", out)
+        self.assertIn("== workflow Tecnigrafo core, run 4279201950", out)
+        self.assertIn("robust/src/b.cpp:9 core boom", out)
+        self.assertNotIn("4279201940", out)
+        self.assertNotIn("Sonar", out)
+
+    def test_run_id_shows_only_that_run(self):
+        out = self.run_script("4279201937")
+        self.assertNotIn("Tecnigrafo core", out)
+
+
 if __name__ == "__main__":
     unittest.main()

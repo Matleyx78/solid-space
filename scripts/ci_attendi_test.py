@@ -136,5 +136,60 @@ class Approval(unittest.TestCase):
         self.assertFalse(any(c.startswith("POST ") for c in calls))
 
 
+# A fake for a commit without a run: PR_JSON is its pull request.
+FAKE_NO_RUN = r'''#!/usr/bin/env bash
+path=$2
+echo "$path" >> "$FAKE_LOG"
+case $path in
+    */commits/*/pulls) echo '[{"number":321}]' ;;
+    */pulls/*) echo "$PR_JSON" ;;
+    *runs\?head_sha=*) echo '{"workflow_runs":[]}' ;;
+    *) echo '{}' ;;
+esac
+'''
+
+
+@unittest.skipUnless(shutil.which("jq") and shutil.which("bash"), "needs bash and jq")
+class Conflict(unittest.TestCase):
+    """No run because the pull request is in conflict with main (Catena 9,
+    docs/DECISIONI.md, 2026-11-28)."""
+
+    def run_script(self, arg: str, state: str) -> tuple[subprocess.CompletedProcess, list[str]]:
+        pr = '{"head":{"sha":"abc1234"},"mergeable_state":"%s"}' % state
+        with tempfile.TemporaryDirectory() as tmp:
+            bin_dir = Path(tmp) / "bin"
+            bin_dir.mkdir()
+            fake = bin_dir / "gh"
+            fake.write_text(FAKE_NO_RUN)
+            fake.chmod(0o755)
+            for tool in ("jq", "bash", "rm", "mktemp", "tail", "sed", "grep", "cat", "sleep"):
+                if shutil.which(tool):
+                    (bin_dir / tool).symlink_to(shutil.which(tool))
+            log = Path(tmp) / "log"
+            log.touch()
+            env = {"PATH": str(bin_dir), "FAKE_LOG": str(log), "HOME": tmp, "TMPDIR": tmp,
+                   "SS_ATTESA_PAUSA": "1", "SS_ATTESA_MAX": "2", "PR_JSON": pr}
+            done = subprocess.run(["bash", str(SCRIPT), arg], env=env,
+                                  capture_output=True, text=True)
+            return done, log.read_text().splitlines()
+
+    def test_pull_request_in_conflict_exits_with_seven(self):
+        done, _ = self.run_script("321", "dirty")
+        self.assertEqual(done.returncode, 7, done.stdout + done.stderr)
+        self.assertIn("in conflict with main", done.stdout)
+
+    def test_commit_of_a_pull_request_in_conflict_exits_with_seven(self):
+        done, calls = self.run_script("abc1234", "dirty")
+        self.assertEqual(done.returncode, 7, done.stdout + done.stderr)
+        self.assertEqual(sum(c.endswith("/commits/abc1234/pulls") for c in calls), 1)
+
+    def test_no_conflict_keeps_the_old_exit(self):
+        for state in ("clean", "unknown", "blocked"):
+            with self.subTest(state=state):
+                done, _ = self.run_script("321", state)
+                self.assertEqual(done.returncode, 1, done.stdout + done.stderr)
+                self.assertIn("No CI run", done.stderr)
+
+
 if __name__ == "__main__":
     unittest.main()

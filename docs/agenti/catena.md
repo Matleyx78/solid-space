@@ -53,9 +53,10 @@ testo giusto a nome del responsabile.
 scripts/passa.sh <claude|codex> <numero della pull request> revisione <N>
 scripts/passa.sh <claude|codex> <numero della pull request> correzioni <N>
 scripts/passa.sh <claude|codex> <numero della pull request> analisi
+scripts/passa.sh <claude|codex> <numero della pull request> smistamento
 ```
 
-Le richieste di revisione e di analisi per Codex lo script le scrive nella
+Le richieste di revisione, di analisi e di smistamento per Codex lo script le scrive nella
 issue collegata (quella di `Closes #N` o, se manca, di `Avvia dopo il merge:
 #N`): su una pull request attiverebbero la sua revisione automatica.
 
@@ -94,8 +95,9 @@ caso di riferimento che sembra sbagliato ([pacchetto.md](pacchetto.md), "In un
 pacchetto di lavoro"), una pull request da rivedere scritta con il tuo stesso
 modello ([revisione.md](revisione.md)), un file che il pacchetto non prevede, un
 cambiamento che servirebbe in Tecnigrafo ([altro-repository.md](altro-repository.md)).
-In revisione ti fermi anche per una segnalazione **[decisione]** o al giro 3 con
-delle [bloccante] ancora aperte. Un buco nel contratto ha la sua strada ("Buco
+In revisione ti fermi anche per una segnalazione **[decisione]** rimasta dopo
+lo smistamento ("Smistamento (esecutore)") o al giro 3 con delle [bloccante]
+ancora aperte. Un buco nel contratto ha la sua strada ("Buco
 nel contratto"). Allora, oltre a ciò che chiede il file del tuo lavoro:
 
 1. aggiungi l'etichetta `decisione` alla issue e, se c'è, alla pull request;
@@ -172,6 +174,14 @@ Due fermate non chiedono niente al responsabile, quindi **non** mettono
   correzione di `main`, togli `AA-Presa in carico` e termina. Riprende chi
   aggiorna la pull request con `main` dopo la correzione.
 
+Una pull request **in conflitto con `main`**, invece, non è una fermata:
+GitHub non avvia la CI, e `scripts/ci-attendi.sh` esce con 7. Aggiorna la pull
+request con `main` (merge commit, mai rebase), risolvi i conflitti, pubblica e
+aspetta di nuovo ([comandi.md](comandi.md), "Aspettare la CI"). Ti fermi solo
+se per risolverli dovresti cambiare in modo non meccanico file fuori dal tuo
+lavoro, o se dopo l'aggiornamento la CI non parte ancora
+([DECISIONI.md](../DECISIONI.md), 2026-11-28).
+
 ## Ripresa dopo una decisione
 
 Il responsabile riprende con un commento nella issue che comincia con la
@@ -221,8 +231,13 @@ del giro prima. Che cosa blocca e che cosa no lo dice
 
 Alla fine, in quest'ordine:
 
-- almeno una [decisione], o [bloccante] al giro 3 (scrivi «Fermato dopo tre
-  giri»): "Fermarsi per una decisione";
+- almeno una [decisione]: `scripts/passa.sh <esecutore> <numero> smistamento`,
+  **senza** `decisione` ("Smistamento (esecutore)"). Se ripresenti un punto
+  che lo smistamento di un giro precedente ha già risolto con una regola, o
+  che il responsabile ha già deciso, quel punto va diretto al responsabile:
+  "Fermarsi per una decisione", senza un secondo smistamento;
+- [bloccante] al giro 3 (scrivi «Fermato dopo tre giri»): "Fermarsi per una
+  decisione";
 - [bloccante] o [fascia] ai giri 1 o 2, o [fascia] al giro 3:
   `scripts/passa.sh <esecutore> <numero> correzioni <N>`;
 - altrimenti (solo [facoltativa] o nessuna segnalazione): etichetta `pronta`.
@@ -236,6 +251,36 @@ per ogni funzione, più la riga «Giro di revisione: N» e le stesse classi. Ogn
 buco nuovo visibile è una [decisione], con l'esempio e le scelte possibili,
 invece di una issue `contratto` a parte: la decisione entra nella stessa pull
 request (lo stesso file, «Il merge»), e non la scegli tu.
+
+## Smistamento (esecutore)
+
+Il revisore ti passa lo smistamento quando il suo verbale ha almeno una
+**[decisione]**: prima che arrivi al responsabile, l'altro agente controlla se
+una regola la decide già ([DECISIONI.md](../DECISIONI.md), 2026-11-28). Prendi
+in carico e, per ogni [decisione] del giro, cerca la risposta nelle regole
+esistenti: scheda, intestazioni del contratto, ADR (la fascia dell'ADR 0013
+compresa), `docs/DECISIONI.md`, [revisione.md](revisione.md). Lascia **un
+solo** commento che comincia con «Smistamento di <nome dell'agente>», con la
+riga «Smistamento del giro N», e per ogni punto:
+
+- **decisa da una regola**: la regola citata (file e sezione) e l'esempio
+  risolto; il punto diventa una **[bloccante]**, o una **[fascia]** se la
+  regola è la fascia;
+- **nessuna regola**: resta **[decisione]**, con l'esempio e le scelte
+  possibili.
+
+Poi:
+
+- se resta almeno una [decisione], o il giro è il 3 e c'è almeno una
+  [bloccante] (anche nata dallo smistamento): "Fermarsi per una decisione",
+  con la riga da copiare per il **revisore** («Ripresa dopo la decisione (giro
+  N)», "Ripresa dopo una decisione"), che porterà come [bloccante] anche i
+  punti smistati;
+- altrimenti correggi tu le [bloccante] e le [fascia] del giro, comprese
+  quelle nate dallo smistamento, come in "Correzioni (esecutore)", e alla
+  fine `scripts/passa.sh <revisore> <numero> revisione <N+1>` (o `pronta` se
+  restano solo [fascia]). Il giro successivo controlla anche come hai
+  applicato la regola: la revisione resta dell'altro agente.
 
 ## Analisi di una CI rossa (revisore)
 
@@ -299,6 +344,16 @@ sulle decisioni scritte dal responsabile e mai riprese (per esempio per la
 quota di Codex). Una pull request e le issue collegate (`Closes #N`, la riga
 `Avvia dopo il merge: #N`) sono una catena sola: i passaggi a Codex scritti
 nella issue contano per la pull request. Lascia stare le pull request con la
-CI ancora in corso e segnala `AA-Presa in carico` rimasta. Come avvio o
+CI ancora in corso e segnala `AA-Presa in carico` rimasta.
+
+Prima di mettere `ferma` su una pull request, la sentinella guarda se il passo
+successivo è **uno solo e certo**: tutti i controlli dell'ultimo commit verdi,
+`AA-Presa in carico` tolta, niente `decisione` e nessun passaggio già scritto,
+verbale, smistamento, analisi o ripresa. Allora il passo lo fa lei, con un
+commento «Passaggio mancante» ([DECISIONI.md](../DECISIONI.md), 2026-11-28):
+`scripts/passa.sh <revisore> <numero> revisione 1` per un pacchetto di lavoro
+o una correzione del contratto (il revisore è l'altro rispetto all'etichetta
+`agente:` della issue collegata), l'etichetta `pronta` per i riferimenti. In
+tutti gli altri casi, per esempio la chiusura della tappa, resta `ferma`. Come avvio o
 decisione conta solo un commento dell'account del responsabile, che è anche
 quello degli agenti; i commenti di altri account non contano.
