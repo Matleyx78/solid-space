@@ -849,4 +849,6 @@ i rimandi ai documenti che cambia.
   il primo passaggio sulle interfacce delle schede il responsabile non le ha
   chieste per solid-space. Queste pull request le
   scrive una chat che lavora su solid-space, su indicazione del responsabile
-  del 28 novembre.
+  del 28 novembre. Questa decisione autorizza le modifiche a
+  `.github/workflows/` e la riga **Corretto:** dell'ADR 0018 (punti 4 e 8)
+  della pull request di codice e CI.
