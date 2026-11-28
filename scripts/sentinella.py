@@ -30,8 +30,19 @@
 # issue, so the pull request counts their comments and their movement too,
 # and the issue is left to the pull request.
 #
+# Before labelling a pull request as `ferma`, the sentinel looks for a single,
+# certain next step (docs/agenti/catena.md, "Sentinella"; docs/DECISIONI.md,
+# 2026-11-28, Catena 2): every check of the last commit is green,
+# `AA-Presa in carico` is gone, there is no `decisione` and no review, analysis
+# or resume yet. Then it makes the hand-over itself, with a comment:
+# - the first review (scripts/passa.sh <reviewer> <pr> revisione 1) for a work
+#   package or a correction of the contract;
+# - the label `pronta` for references.
+# In every other case it labels `ferma`, as before.
+#
 # Environment: GITHUB_TOKEN, GITHUB_REPOSITORY, SOGLIA_MINUTI (default 60),
-# DRY_RUN=1 to only print.
+# DRY_RUN=1 to only print, GH_TOKEN_UTENTE (the RELAY_PAT secret: the
+# hand-over is a mention, and only the owner's mentions start an agent).
 
 from __future__ import annotations
 
@@ -39,6 +50,7 @@ import datetime as dt
 import json
 import os
 import re
+import subprocess
 import sys
 import urllib.request
 from dataclasses import dataclass, field
@@ -56,6 +68,15 @@ STARTED = re.compile(r"Presa in carico|@claude|@codex", re.IGNORECASE)
 # scripts/avvia.sh, a hand-over written by scripts/passa.sh.
 AGENT_START = re.compile(r"^\s*@(?:claude|codex)\b", re.IGNORECASE)
 MAX_IDLE = 24 * 60
+# A hand-over already written (scripts/passa.sh), or anything after it: the
+# next step is no longer the first one.
+LATER_STEP = re.compile(r"Giro di revisione:|^\s*(?:\*\*)?(?:Analisi di |Smistamento di |"
+                        r"Ripresa dopo la decisione|Verbale della revisione)|"
+                        r"docs/agenti/catena\.md in \"(?:Revisione|Correzioni|Analisi|Smistamento)",
+                        re.MULTILINE)
+REFERENCES_TITLE = re.compile(r"\[\d+\.\d+-R\d+[a-z]?\]")
+WORK_TITLE = re.compile(r"\[(?:\d+\.\d+-)?(?:P|FS)\d+[a-z]?\]")
+GREEN = {"success", "skipped", "neutral"}
 
 
 @dataclass
@@ -69,6 +90,9 @@ class Item:
     handled_by_pr: bool = False
     ci_running: bool = False
     linked: list[int] = field(default_factory=list)
+    title: str = ""
+    body: str = ""
+    linked_labels: set[str] = field(default_factory=set)  # of the linked issues
 
 
 def decision_pending(labels: set[str]) -> bool:
@@ -118,6 +142,39 @@ def stuck(it: Item, soglia: int, owner: str) -> str | None:
     return text
 
 
+def next_step(it: Item, ci_green: bool) -> tuple[str, str | None] | None:
+    """The single, certain next step of a stuck pull request, or None:
+    ("revisione", reviewer) or ("pronta", None)."""
+    if not it.is_pr or not ci_green or HELD in it.labels or "decisione" in it.labels:
+        return None
+    if any(LATER_STEP.search(c["body"]) for c in it.comments):
+        return None
+    labels = it.labels | it.linked_labels
+    if REFERENCES_TITLE.search(it.title) or "riferimenti" in labels:
+        return ("pronta", None)
+    work = (WORK_TITLE.search(it.title) or labels & {"pacchetto", "contratto"}
+            or "Revisione del contratto: da fare" in it.body)
+    if not work:
+        return None
+    agents = {"claude" if l.startswith("agente:claude") else l.removeprefix("agente:")
+              for l in it.linked_labels if l.startswith("agente:")}
+    if agents == {"claude"}:
+        return ("revisione", "codex")
+    if agents == {"codex"}:
+        return ("revisione", "claude")
+    return None
+
+
+def handover_text(step: tuple[str, str | None], idle: float) -> str:
+    kind, reviewer = step
+    text = (f"**Passaggio mancante** (sentinella): nessun movimento da {int(idle)} minuti, "
+            "con la CI verde e senza `AA-Presa in carico`, `decisione` né revisioni. "
+            "Il passo successivo è uno solo")
+    if kind == "pronta":
+        return text + ": metto io l'etichetta `pronta` (riferimenti)."
+    return text + f": passo io la pull request a {reviewer.capitalize()} per il giro di revisione 1."
+
+
 class GitHub:
     def __init__(self, repo: str, token: str) -> None:
         self.repo, self.token = repo, token
@@ -138,6 +195,12 @@ class GitHub:
         runs = self.call("GET", f"/commits/{sha}/check-runs?per_page=100")
         return any(r["status"] != "completed" for r in runs.get("check_runs", []))
 
+    def ci_green(self, number: int) -> bool:
+        sha = self.call("GET", f"/pulls/{number}")["head"]["sha"]
+        runs = self.call("GET", f"/commits/{sha}/check-runs?per_page=100").get("check_runs", [])
+        return bool(runs) and all(r["status"] == "completed" and r["conclusion"] in GREEN
+                                  for r in runs)
+
     def comments(self, number: int) -> list[dict]:
         raw = self.call("GET", f"/issues/{number}/comments?per_page=100")
         return [{"login": c["user"]["login"], "body": c.get("body") or "",
@@ -145,10 +208,11 @@ class GitHub:
 
 
 def find(raw: list[dict], now: dt.datetime, soglia: int, gh,
-         owner: str) -> list[tuple[Item, str]]:
+         owner: str) -> list[tuple[Item, str, tuple[str, str | None] | None]]:
     """The stuck chains among the open issues and pull requests `raw` (as the
-    REST API lists them), with the comment to write. `gh` gives
-    ci_running(number) and comments(number)."""
+    REST API lists them), with the comment to write and the next step that
+    the sentinel makes itself (None: label `ferma`). `gh` gives
+    ci_running(number), ci_green(number) and comments(number)."""
     idle_of = {}
     for r in raw:
         updated = dt.datetime.fromisoformat(r["updated_at"].replace("Z", "+00:00"))
@@ -160,6 +224,7 @@ def find(raw: list[dict], now: dt.datetime, soglia: int, gh,
             linked_of[r["number"]] = catena.collegate(r.get("body") or "")
             handled.update(linked_of[r["number"]])
 
+    labels_of = {r["number"]: {lab["name"] for lab in r["labels"]} for r in raw}
     found = []
     for r in raw:
         is_pr = "pull_request" in r
@@ -168,7 +233,8 @@ def find(raw: list[dict], now: dt.datetime, soglia: int, gh,
         it = Item(number=r["number"], is_pr=is_pr,
                   labels={lab["name"] for lab in r["labels"]},
                   idle=idle, comments=[], handled_by_pr=r["number"] in handled,
-                  linked=linked)
+                  linked=linked, title=r.get("title") or "", body=r.get("body") or "",
+                  linked_labels=set().union(*[labels_of.get(n, set()) for n in linked]))
         if not needs_comments(it, soglia):
             continue
         if it.is_pr:
@@ -180,9 +246,29 @@ def find(raw: list[dict], now: dt.datetime, soglia: int, gh,
             it.comments += gh.comments(n)
         it.comments.sort(key=lambda c: c["created_at"])
         text = stuck(it, soglia, owner)
-        if text is not None:
-            found.append((it, text))
+        if text is None:
+            continue
+        step = None
+        if it.is_pr and not decision_pending(it.labels):
+            step = next_step(it, gh.ci_green(it.number))
+            if step is not None:
+                text = handover_text(step, it.idle)
+        found.append((it, text, step))
     return found
+
+
+def hand_over(repo: str, number: int, reviewer: str) -> bool:
+    """Write the hand-over with scripts/passa.sh, as the owner."""
+    script = Path(__file__).resolve().parent / "passa.sh"
+    env = dict(os.environ, GITHUB_REPOSITORY=repo)
+    if not env.get("GH_TOKEN_UTENTE"):
+        print("no GH_TOKEN_UTENTE: cannot hand over as the owner", file=sys.stderr)
+        return False
+    done = subprocess.run(["bash", str(script), reviewer, str(number), "revisione", "1"],
+                          env=env, capture_output=True, text=True)
+    sys.stdout.write(done.stdout)
+    sys.stderr.write(done.stderr)
+    return done.returncode == 0
 
 
 def main() -> int:
@@ -192,8 +278,22 @@ def main() -> int:
     dry_run = os.environ.get("DRY_RUN") == "1"
     now = dt.datetime.now(dt.timezone.utc)
     raw = gh.call("GET", "/issues?state=open&per_page=100")
-    for it, text in find(raw, now, soglia, gh, repo.split("/")[0]):
+    for it, text, step in find(raw, now, soglia, gh, repo.split("/")[0]):
         kind = "PR" if it.is_pr else "issue"
+        if step is not None:
+            print(f"{kind} #{it.number}: passaggio mancante ({step[0]}"
+                  + (f" a {step[1]}" if step[1] else "") + ")")
+            if dry_run:
+                continue
+            if step[0] == "pronta":
+                gh.call("POST", f"/issues/{it.number}/labels", {"labels": ["pronta"]})
+                gh.call("POST", f"/issues/{it.number}/comments", {"body": text})
+                continue
+            if hand_over(repo, it.number, step[1]):
+                gh.call("POST", f"/issues/{it.number}/comments", {"body": text})
+                continue
+            # The hand-over failed: fall back to `ferma`.
+            text = stuck(it, soglia, repo.split("/")[0]) or text
         print(f"{kind} #{it.number}: ferma da {int(it.idle)} min"
               + (" (AA rimasta)" if HELD in it.labels else ""))
         if not dry_run:

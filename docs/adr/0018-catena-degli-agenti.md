@@ -2,6 +2,12 @@
 
 - **Stato:** Accettato
 - **Data:** 2026-11-15
+- **Corretto:** 2026-11-28 — punto 4: una [decisione] passa prima dallo
+  smistamento dell'esecutore, che risolve con le regole esistenti quelle che
+  una regola decide; ferma solo ciò che resta. Punto 8: prima di `ferma` la
+  sentinella fa il passaggio mancante quando è uno solo e certo (prima
+  revisione o `pronta`) ([DECISIONI.md](../DECISIONI.md), 2026-11-28,
+  Catena 2 e 4)
 
 ## Contesto
 

@@ -134,9 +134,10 @@ class Stuck(unittest.TestCase):
 NOW = dt.datetime(2026, 11, 14, 20, 0, tzinfo=dt.timezone.utc)
 
 
-def raw(number: int, minutes_ago: int, labels=(), body: str = "", pr: bool = False) -> dict:
+def raw(number: int, minutes_ago: int, labels=(), body: str = "", pr: bool = False,
+        title: str = "") -> dict:
     updated = (NOW - dt.timedelta(minutes=minutes_ago)).strftime("%Y-%m-%dT%H:%M:%SZ")
-    r = {"number": number, "updated_at": updated, "body": body,
+    r = {"number": number, "updated_at": updated, "body": body, "title": title,
          "labels": [{"name": n} for n in labels]}
     if pr:
         r["pull_request"] = {}
@@ -144,11 +145,14 @@ def raw(number: int, minutes_ago: int, labels=(), body: str = "", pr: bool = Fal
 
 
 class FakeGitHub:
-    def __init__(self, comments: dict[int, list[dict]], running=()):
-        self._comments, self._running = comments, set(running)
+    def __init__(self, comments: dict[int, list[dict]], running=(), green=()):
+        self._comments, self._running, self._green = comments, set(running), set(green)
 
     def ci_running(self, number: int) -> bool:
         return number in self._running
+
+    def ci_green(self, number: int) -> bool:
+        return number in self._green
 
     def comments(self, number: int) -> list[dict]:
         return list(self._comments.get(number, []))
@@ -169,14 +173,14 @@ class Find(unittest.TestCase):
         gh = FakeGitHub({10: [comment("Presa in carico da Claude"),
                               handover(20, "2026-11-14T18:30:00Z")]})
         found = find(items, NOW, 60, gh)
-        self.assertEqual([it.number for it, _ in found], [20])
+        self.assertEqual([it.number for it, _, _ in found], [20])
         self.assertIn("90 minuti", found[0][1])
 
     def test_handover_linked_by_the_start_line(self):
         items = [raw(10, 90, {"agente:codex"}),
                  raw(20, 95, {}, "Revisione della correzione: da fare\n\nAvvia dopo il merge: #10", pr=True)]
         gh = FakeGitHub({10: [handover(20, "2026-11-14T18:30:00Z")]})
-        self.assertEqual([it.number for it, _ in find(items, NOW, 60, gh)], [20])
+        self.assertEqual([it.number for it, _, _ in find(items, NOW, 60, gh)], [20])
 
     def test_recent_movement_in_the_issue_keeps_the_chain_alive(self):
         items = [raw(10, 10, {"agente:claude"}),
@@ -194,7 +198,83 @@ class Find(unittest.TestCase):
         items = [raw(10, 90, {"agente:claude"}),
                  raw(20, 95, {}, "Abbiamo tolto la riga Avvia dopo il merge: #10", pr=True)]
         gh = FakeGitHub({10: [comment("Presa in carico da Claude")]})
-        self.assertEqual([it.number for it, _ in find(items, NOW, 60, gh)], [10])
+        self.assertEqual([it.number for it, _, _ in find(items, NOW, 60, gh)], [10])
+
+
+class MissingHandOver(unittest.TestCase):
+    """The sentinel makes the hand-over itself when it is certain
+    (docs/DECISIONI.md, 2026-11-28, Catena 2)."""
+
+    def run_find(self, title="[0.4-P3] feat: x", issue_labels=("agente:claude", "pacchetto"),
+                 pr_labels=(), body="Closes #10", green=True, pr_comments=(),
+                 issue_comments=None):
+        items = [raw(10, 90, issue_labels),
+                 raw(20, 95, pr_labels, body, pr=True, title=title)]
+        if issue_comments is None:
+            issue_comments = [comment("Presa in carico da Claude")]
+        gh = FakeGitHub({10: list(issue_comments), 20: list(pr_comments)},
+                        green={20} if green else ())
+        found = find(items, NOW, 60, gh)
+        self.assertEqual([it.number for it, _, _ in found], [20])
+        return found[0][1], found[0][2]
+
+    def test_work_package_of_claude_goes_to_codex(self):
+        text, step = self.run_find()
+        self.assertEqual(step, ("revisione", "codex"))
+        self.assertIn("Passaggio mancante", text)
+        self.assertIn("giro di revisione 1", text)
+
+    def test_work_package_of_codex_goes_to_claude(self):
+        _, step = self.run_find(issue_labels=("agente:codex", "pacchetto"),
+                                issue_comments=[comment("Presa in carico da Codex")])
+        self.assertEqual(step, ("revisione", "claude"))
+
+    def test_second_claude_session_counts_as_claude(self):
+        _, step = self.run_find(issue_labels=("agente:claude-2",), title="[0.3-FS2] perf: y")
+        self.assertEqual(step, ("revisione", "codex"))
+
+    def test_contract_correction(self):
+        _, step = self.run_find(title="fix(geom2d): contract", issue_labels=("agente:codex", "contratto"),
+                                body="Revisione del contratto: da fare\n\nCloses #10\nAvvia dopo il merge: #11",
+                                issue_comments=[comment("Presa in carico da Codex")])
+        self.assertEqual(step, ("revisione", "claude"))
+
+    def test_references_get_pronta(self):
+        text, step = self.run_find(title="[0.4-R2] test: cases", issue_labels=("agente:codex", "riferimenti"),
+                                   issue_comments=[comment("Presa in carico da Codex")])
+        self.assertEqual(step, ("pronta", None))
+        self.assertIn("`pronta`", text)
+
+    def test_red_or_unknown_ci_is_ferma(self):
+        text, step = self.run_find(green=False)
+        self.assertIsNone(step)
+        self.assertIn("Catena ferma", text)
+
+    def test_held_label_is_ferma(self):
+        _, step = self.run_find(pr_labels=("AA-Presa in carico",))
+        self.assertIsNone(step)
+
+    def test_after_a_review_is_ferma(self):
+        _, step = self.run_find(pr_comments=[comment("Revisione di Codex\n\nGiro di revisione: 1")])
+        self.assertIsNone(step)
+
+    def test_hand_over_already_written_is_ferma(self):
+        _, step = self.run_find(issue_comments=[comment("Presa in carico da Claude"),
+                                                handover(20, "2026-11-14T18:30:00Z")
+                                                | {"body": "@codex Prima di tutto esegui git fetch origin. "
+                                                   "Leggi AGENTS.md e seguilo alla lettera. Rivedi la pull "
+                                                   "request #20 come dice docs/agenti/catena.md in "
+                                                   "\"Revisione (revisore)\" (giro 1)."}])
+        self.assertIsNone(step)
+
+    def test_closing_of_the_stage_is_ferma(self):
+        _, step = self.run_find(title="docs: chiusura della tappa 0.4", issue_labels=("agente:codex",),
+                                issue_comments=[comment("Presa in carico da Codex")])
+        self.assertIsNone(step)
+
+    def test_unknown_executor_is_ferma(self):
+        _, step = self.run_find(issue_labels=("pacchetto",))
+        self.assertIsNone(step)
 
 
 if __name__ == "__main__":

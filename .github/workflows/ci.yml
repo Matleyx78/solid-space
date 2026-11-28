@@ -22,6 +22,7 @@ jobs:
   references:
     name: Reference separation (ADR 0004)
     runs-on: ubuntu-24.04
+    timeout-minutes: 90
     outputs:
       build: ${{ steps.changes.outputs.build }}
       base: ${{ steps.changes.outputs.base }}
@@ -94,6 +95,7 @@ jobs:
     name: Commit addresses
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v7
         with:
@@ -109,11 +111,19 @@ jobs:
     name: Formatting (clang-format 18)
     needs: references
     runs-on: ubuntu-24.04
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v7
         with:
           submodules: false
-      - run: sudo apt-get update && sudo apt-get install -y clang-format-18
+      - name: Install dependencies
+        # Retries and a short timeout instead of a mirror that hangs for hours
+        # (docs/DECISIONI.md, 2026-11-28, Catena 10).
+        timeout-minutes: 10
+        run: |
+          apt_options=(-o Acquire::Retries=3 -o Acquire::http::Timeout=60 -o Acquire::https::Timeout=60)
+          sudo apt-get "${apt_options[@]}" update
+          sudo apt-get "${apt_options[@]}" install -y clang-format-18
       - name: Reject a deliberately malformed trial commit
         run: |
           trial=$(mktemp -d)
@@ -136,6 +146,7 @@ jobs:
     needs: references
     if: needs.references.outputs.build == 'true'
     runs-on: ubuntu-24.04
+    timeout-minutes: 90
     env:
       SS_BASE_REF: ${{ needs.references.outputs.base }}
     steps:
@@ -143,7 +154,14 @@ jobs:
         with:
           fetch-depth: 0
           submodules: false
-      - run: sudo apt-get update && sudo apt-get install -y ninja-build libgtest-dev clang-format-18 clang-tidy-18
+      - name: Install dependencies
+        # Retries and a short timeout instead of a mirror that hangs for hours
+        # (docs/DECISIONI.md, 2026-11-28, Catena 10).
+        timeout-minutes: 10
+        run: |
+          apt_options=(-o Acquire::Retries=3 -o Acquire::http::Timeout=60 -o Acquire::https::Timeout=60)
+          sudo apt-get "${apt_options[@]}" update
+          sudo apt-get "${apt_options[@]}" install -y ninja-build libgtest-dev clang-format-18 clang-tidy-18
       - run: scripts/controlla.sh --tidy 2>&1 | scripts/ci-annota.sh
 
       - name: Verify determinism guards and automatic source discovery
@@ -192,6 +210,7 @@ jobs:
     needs: references
     if: needs.references.outputs.build == 'true'
     runs-on: windows-2025-vs2026
+    timeout-minutes: 90
     defaults:
       run:
         shell: bash
@@ -218,6 +237,7 @@ jobs:
     needs: references
     if: needs.references.outputs.build == 'true'
     runs-on: macos-26
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v7
         with:
@@ -240,6 +260,7 @@ jobs:
     needs: references
     if: needs.references.outputs.build == 'true'
     runs-on: ubuntu-24.04
+    timeout-minutes: 90
     env:
       SS_PRESET: asan
       ASAN_OPTIONS: detect_leaks=1:halt_on_error=1
@@ -248,7 +269,14 @@ jobs:
       - uses: actions/checkout@v7
         with:
           submodules: false
-      - run: sudo apt-get update && sudo apt-get install -y ninja-build libgtest-dev clang-format-18
+      - name: Install dependencies
+        # Retries and a short timeout instead of a mirror that hangs for hours
+        # (docs/DECISIONI.md, 2026-11-28, Catena 10).
+        timeout-minutes: 10
+        run: |
+          apt_options=(-o Acquire::Retries=3 -o Acquire::http::Timeout=60 -o Acquire::https::Timeout=60)
+          sudo apt-get "${apt_options[@]}" update
+          sudo apt-get "${apt_options[@]}" install -y ninja-build libgtest-dev clang-format-18
       - run: scripts/controlla.sh 2>&1 | scripts/ci-annota.sh
 
   determinism:
@@ -256,6 +284,7 @@ jobs:
     needs: [references, linux, windows, macos]
     if: needs.references.outputs.build == 'true'
     runs-on: ubuntu-24.04
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v7
         with:

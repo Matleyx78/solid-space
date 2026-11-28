@@ -86,12 +86,17 @@ termina. Sono motivi estranei anche una CI che aspetta un'approvazione
 (`scripts/ci-attendi.sh` esce con 6) e una CI che fallisce solo nei casi della
 issue «main rosso» aperta: scrivilo nella pull request, con il rimando alla
 issue, e fermati **senza** l'etichetta `decisione`. Per un caso di riferimento
-sbagliato scrivi nella issue ([pacchetto.md](docs/agenti/pacchetto.md)).
+sbagliato scrivi nella issue ([pacchetto.md](docs/agenti/pacchetto.md)). Una
+pull request in conflitto con `main` non è un motivo estraneo
+(`scripts/ci-attendi.sh` esce con 7): aggiornala con `main` e aspetta di nuovo
+([comandi.md](docs/agenti/comandi.md)).
 
 Prima di fermarti per un dubbio (un buco, un caso che sembra sbagliato),
 controlla se una regola esistente lo decide già, come fa chi rivede
 ([revisione.md](docs/agenti/revisione.md), «A che cosa serve la revisione»): se
-sì, applicala, scrivilo nella pull request e vai avanti.
+sì, applicala, scrivilo nella pull request e vai avanti. Le [decisione] di una
+revisione passano prima dallo smistamento dell'altro agente
+([catena.md](docs/agenti/catena.md), "Smistamento (esecutore)").
 
 **Un buco nel contratto** (un punto che intestazione, ADR e scheda non
 determinano, o su cui si contraddicono): **fermati subito**, prima di scrivere

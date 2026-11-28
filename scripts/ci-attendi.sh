@@ -32,6 +32,10 @@
 #      The script has written once "CI da approvare" in the pull request; stop
 #      without the label decisione (docs/agenti/catena.md, docs/DECISIONI.md,
 #      2026-11-21)
+#   7  there is no run for the commit and its pull request is in conflict with
+#      main (mergeable_state dirty): GitHub does not start the CI. Update the
+#      pull request with main (merge commit, never rebase), solve the
+#      conflicts, push and wait again (docs/DECISIONI.md, 2026-11-28)
 #
 # A run in action_required is not finished: the script writes the note in the
 # pull request once and goes on waiting, so an approval within the time lets
@@ -105,6 +109,20 @@ fi
 # Counts how many times in a row the wait ran out on this run.
 timeouts_file() {
     printf '%s/ss-ci-attendi-%s.timeouts' "${TMPDIR:-/tmp}" "$run"
+}
+
+# True when the pull request of the commit is in conflict with main. GitHub
+# computes mergeable_state after a push (it is "unknown" meanwhile), so only
+# "dirty" counts; the pull request of a commit is looked up once.
+in_conflict() {
+    local state
+    if [[ -z ${pr:-} && -z ${pr_looked_up:-} ]]; then
+        pr_looked_up=1
+        pr=$(api "repos/$repo/commits/$ref/pulls" 2>> "$err" | jq -r '.[0].number // empty') || pr=
+    fi
+    [[ -n ${pr:-} ]] || return 1
+    state=$(api "repos/$repo/pulls/$pr" 2>> "$err" | jq -r '.mergeable_state // "unknown"') || return 1
+    [[ $state == dirty ]]
 }
 
 # Names of the jobs of the run that have already failed, even if the run goes on.
@@ -182,6 +200,11 @@ while :; do
                 echo "Do not wait for the other jobs: read why with scripts/ci-errori.sh $run"
                 exit 1
             fi
+        elif in_conflict; then
+            echo "No CI run for $ref: pull request #$pr is in conflict with main, and GitHub"
+            echo "does not start the CI. Update it with main (merge commit, never rebase), solve"
+            echo "the conflicts, push and wait again (docs/agenti/comandi.md)."
+            exit 7
         fi
     else
         # A network hiccup or the anonymous limit: try again a few times.
